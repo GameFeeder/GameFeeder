@@ -1,0 +1,27 @@
+{
+  "name": "valvegamesannouncerbot",
+  "version": "0.1.0",
+  "description": "A notification bot for Dota 2 and Artifact.",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimJentzsch/valveGamesAnnouncerBot.git"
+  },
+  "author": "Tim Jentzsch",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
+  },
+  "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot#readme",
+  "devDependencies": {
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "dependencies": {
+    "rss-parser": "^3.6.0"
+  }
+}

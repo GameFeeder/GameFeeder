@@ -1,0 +1,23 @@
+{
+  "artifact": {
+    "reddit": {
+      "usernames": [
+          "Magesunite",
+          "SirBelvedere",
+          "wykrhm"
+        ]
+      }
+  },
+  "dota": {
+    "reddit": {
+      "usernames": [
+        "Magesunite",
+        "SirBelvedere",
+        "wykrhm"
+      ]
+    },
+    "blogs": [
+      "http://blog.dota2.com/feed/"
+    ]
+  }
+}
