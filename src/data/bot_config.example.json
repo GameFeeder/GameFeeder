@@ -1,0 +1,9 @@
+{
+  "telegram": {
+    "prefix": "!"
+  },
+  
+  "discord": {
+    "prefix": "!"
+  }
+}
