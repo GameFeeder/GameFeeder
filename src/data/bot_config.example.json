@@ -1,11 +1,13 @@
 {
   "telegram": {
+    "autostart": true,
     "prefix": "!",
-    "token": "<YOUR BOT TOKEN>"
+    "token": ""
   },
   
   "discord": {
+    "autostart": true,
     "prefix": "!",
-    "token": "<YOUR BOT TOKEN>"
+    "token": ""
   }
 }
