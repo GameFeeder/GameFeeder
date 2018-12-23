@@ -1,9 +1,11 @@
 {
   "telegram": {
-    "prefix": "!"
+    "prefix": "!",
+    "token": "<YOUR BOT TOKEN>"
   },
   
   "discord": {
-    "prefix": "!"
+    "prefix": "!",
+    "token": "<YOUR BOT TOKEN>"
   }
 }
