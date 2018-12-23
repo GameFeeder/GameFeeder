@@ -1,83 +1,65 @@
 const TelegramBot = require('node-telegram-bot-api');
-const Util = require('./util');
+const Data = require('./data');
 
 // Get the Telegram bot token from the bot_config.json
-const { token } = Util.getBotConfig().telegram;
+const { token } = Data.getBotConfig().telegram;
 
 // Create the bot
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
 
-/**
- * Add a Telegram chat to the subscriptions.
- * @param  {number} chatId - The ID of the chat to be subscribed.
- * @returns {boolean} false, if the chat was already subscribed, else true.
- */
-function addDotaSubscriber(chatId) {
-  const subscribers = Util.readJSON(Util.getFilePath('subscribers'));
-  const dotaSubscribers = subscribers.telegram.dota;
-
-  // Check if the chat is already subscribed
-  if (dotaSubscribers.includes(chatId)) {
-    return false;
-  }
-
-  // Add chat to subscription list
-  dotaSubscribers.push(chatId);
-  // Save changes
-  subscribers.telegram.dota = dotaSubscribers;
-  Util.writeJSON(Util.getFilePath('subscribers'), subscribers);
-  return true;
-}
-
-
-/**
- * Remove a Telegram chat from the subscriptions.
- * @param  {number} chatId - The Id of the chat to be unsubscribed.
- * @returns {boolean} false, if the chat wasn't subscribed, else true.
- */
-function removeDotaSubscriber(chatId) {
-  const subscribers = Util.readJSON(Util.getFilePath('subscribers'));
-  let dotaSubscribers = subscribers.telegram.dota;
-
-  // Check if the chat isn't subscribed
-  if (!dotaSubscribers.includes(chatId)) {
-    return false;
-  }
-
-  // Unsubscribe chat
-  dotaSubscribers = dotaSubscribers.filter(value => value !== chatId);
-  // Save changes
-  subscribers.telegram.dota = dotaSubscribers;
-  Util.writeJSON(Util.getFilePath('subscribers'), subscribers);
-  return true;
-}
-
-/** Handle user subscriptions */
-bot.onText(/\/subscribe/, (msg) => {
+function onDotaSub(msg) {
   const chatId = msg.chat.id;
-  const chatUser = msg.chat.username;
+  const userName = msg.chat.username;
 
-  if (addDotaSubscriber(chatId)) {
+  if (Data.addSubscriber(chatId, 'telegram', 'dota')) {
     // Confirm subscription
-    console.info(`[Telegram] ${chatUser} subscribed to the Dota feed.`);
+    console.info(`[Telegram] ${userName} subscribed to the Dota feed.`);
     bot.sendMessage(chatId, 'I will notify you in case of updates!');
   } else {
     // User was already subscribed
     bot.sendMessage(chatId, 'You have already subscribed!');
   }
-});
+}
 
-/** Handle user unsubscriptions */
-bot.onText(/\/unsubscribe/, (msg) => {
+function onDotaUnsub(msg) {
   const chatId = msg.chat.id;
-  const chatUser = msg.chat.username;
+  const userName = msg.chat.username;
 
-  if (removeDotaSubscriber(chatId)) {
+  if (Data.removeSubscriber(chatId, 'telegram', 'dota')) {
     // Confirm unsubscription
-    console.info(`[Telegram] ${chatUser} unsubscribed from the Dota feed.`);
+    console.info(`[Telegram] ${userName} unsubscribed from the Dota feed.`);
     bot.sendMessage(chatId, 'I will no longer notify you about any updates!');
   } else {
     // User wasn't subscribed
     bot.sendMessage(chatId, 'You have never subscribed in the first place!');
   }
+}
+
+/*
+ * ------------------
+ * COMMANDS
+ * ------------------
+ */
+
+/** Handle Dota subscription */
+bot.onText(/\/subscribe dota/, (msg) => {
+  onDotaSub(msg);
 });
+
+/** Handle Dota unsubscription */
+bot.onText(/\/unsubscribe dota/, (msg) => {
+  onDotaUnsub(msg);
+});
+
+async function start() {
+  if (token) {
+    console.info('[Telegram] Starting bot.');
+    bot.startPolling({ restart: true });
+  } else {
+    console.warn('[Telegram] Token not provided, start ommited. Set the token in "bot_config.json".');
+  }
+}
+
+module.exports = {
+  start,
+};

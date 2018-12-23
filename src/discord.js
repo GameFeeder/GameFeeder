@@ -1,55 +1,17 @@
 const Discord = require('discord.js');
-const Util = require('./util');
+const Data = require('./data');
 
-const client = new Discord.Client();
-const { token } = Util.getBotConfig().discord;
-const { prefix } = Util.getBotConfig().discord;
+const bot = new Discord.Client();
+const { token } = Data.getBotConfig().discord;
+const { prefix } = Data.getBotConfig().discord;
 
-/**
- * Add a Discord chat to the Dota subscriptions.
- * @param  {number} chatId - The ID of the chat to be subscribed.
- * @returns {boolean} false, if the chat was already subscribed, else true.
- */
-function addDotaSubscriber(chatId) {
-  const subscribers = Util.readJSON(Util.getFilePath('subscribers'));
-  const dotaSubscribers = subscribers.discord.dota;
+function onDotaSub(msg) {
+  const chatId = msg.channel.id;
+  const userName = msg.author.username;
 
-  // Check if the chat is already subscribed
-  if (dotaSubscribers.includes(chatId)) {
-    return false;
-  }
-
-  // Add chat to subscription list
-  dotaSubscribers.push(chatId);
-  // Save changes
-  subscribers.discord.dota = dotaSubscribers;
-  Util.writeJSON(Util.getFilePath('subscribers'), subscribers);
-  return true;
-}
-
-/**
- * Remove a Discord chat from the Dota subscriptions.
- * @param  {number} chatId - The Id of the chat to be unsubscribed.
- * @returns {boolean} false, if the chat wasn't subscribed, else true.
- */
-function removeDotaSubscriber(chatId) {
-  let subscribers = Util.readJSON(Util.getFilePath('subscribers')).discord.dota;
-
-  // Check if the chat isn't already subscribed
-  if (!subscribers.includes(chatId)) {
-    return false;
-  }
-
-  // Remove chat from subscription list
-  subscribers = subscribers.filter(value => value === chatId);
-  // Save changes
-  Util.writeJSON(Util.getFilePath('subscribers'), subscribers);
-  return true;
-}
-
-function onDotaSubscribe(msg) {
-  if (addDotaSubscriber(msg)) {
+  if (Data.addSubscriber(chatId, 'discord', 'dota')) {
     // Confirm subscription
+    console.info(`[Discord] ${userName} subscribed to the Dota feed.`);
     msg.reply('I will notify you in case of updates!');
   } else {
     // User was already subscribed
@@ -57,9 +19,13 @@ function onDotaSubscribe(msg) {
   }
 }
 
-function onDotaUnsubscribe(msg) {
-  if (removeDotaSubscriber(msg.chatId)) {
+function onDotaUnsub(msg) {
+  const chatId = msg.channel.id;
+  const userName = msg.author.username;
+
+  if (Data.removeSubscriber(chatId, 'discord', 'dota')) {
     // Confirm unsubscription
+    console.info(`[Discord] ${userName} unsubscribed from the Dota feed.`);
     msg.reply('I will no longer notify you on any updates.');
   } else {
     // User wasn't subscribed
@@ -67,20 +33,31 @@ function onDotaUnsubscribe(msg) {
   }
 }
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-});
-
-client.on('message', (msg) => {
+bot.on('message', (msg) => {
   switch (msg.content) {
     case `${prefix}subscribe dota`:
-      onDotaSubscribe(msg);
+      onDotaSub(msg);
       break;
     case `${prefix}unsubscribe dota`:
-      onDotaUnsubscribe(msg);
+      onDotaUnsub(msg);
       break;
     default:
   }
 });
 
-client.login(token);
+bot.on('ready', () => {
+  console.info(`[Discord] Logged in as ${bot.user.tag}.`);
+});
+
+async function start() {
+  if (token) {
+    console.info('[Discord] Starting bot.');
+    bot.login(token);
+  } else {
+    console.warn('[Discord] Token not provided, start ommited. Set the token in "bot_config.json".');
+  }
+}
+
+module.exports = {
+  start,
+};
