@@ -3,6 +3,7 @@
 # ------------------------------
 
 src/data/bot_config.json
+src/data/subscribers.json
 
 # ------------------------------
 # VS CODE
