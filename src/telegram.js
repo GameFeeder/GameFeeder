@@ -4,7 +4,7 @@ const Util = require('./util');
 
 // Get the Telegram bot token from the bot_config.json
 const { token } = Data.getBotConfig().telegram;
-const prefix = new RegExp(Data.getBotConfig().telegram.prefix);
+const prefix = Util.escapeRegExp(Data.getBotConfig().telegram.prefix);
 
 // Create the bot
 const bot = new TelegramBot(token, { polling: false });
@@ -19,12 +19,11 @@ function onGameSub(msg, alias) {
     return;
   }
 
-  const trimmedAlias = alias.trim();
-  const gameName = Data.getGameName(trimmedAlias);
+  const gameName = Data.getGameName(alias);
 
   if (!gameName) {
     // The game does not exist
-    bot.sendMessage(chatId, `We don't know a game named "${trimmedAlias}"!`);
+    bot.sendMessage(chatId, `We don't know a game named "${alias.trim()}"!`);
     return;
   }
 
@@ -36,7 +35,7 @@ function onGameSub(msg, alias) {
     bot.sendMessage(chatId, `I will notify you about any updates for ${gameTitle}!`);
   } else {
     // User was already subscribed
-    bot.sendMessage(chatId, 'You have already subscribed!');
+    bot.sendMessage(chatId, `You have already subscribed to the ${gameTitle} feed!`);
   }
 }
 
@@ -50,12 +49,11 @@ function onGameUnsub(msg, alias) {
     return;
   }
 
-  const trimmedAlias = alias.trim();
-  const gameName = Data.getGameName(trimmedAlias);
+  const gameName = Data.getGameName(alias);
 
   if (!gameName) {
     // The game does not exist
-    bot.sendMessage(chatId, `We don't know a game named "${trimmedAlias}"!`);
+    bot.sendMessage(chatId, `We don't know a game named "${alias.trim()}"!`);
     return;
   }
 
@@ -67,7 +65,7 @@ function onGameUnsub(msg, alias) {
     bot.sendMessage(chatId, `I will no longer notify you about any updates for ${gameTitle}!`);
   } else {
     // User wasn't subscribed
-    bot.sendMessage(chatId, 'You have never subscribed in the first place!');
+    bot.sendMessage(chatId, `You have never subscribed to the ${gameTitle} feed in the first place!`);
   }
 }
 
@@ -78,13 +76,13 @@ function onGameUnsub(msg, alias) {
  */
 
 /** Handle game subscription */
-bot.onText(/^\/subscribe(?<alias>.*)$/, (msg, match) => {
+bot.onText(new RegExp(`^${prefix}subscribe(?<alias>.*)$`), (msg, match) => {
   const { alias } = match.groups;
   onGameSub(msg, alias);
 });
 
 /** Handle game unsubscription */
-bot.onText(/^\/unsubscribe(?<alias>.*)$/, (msg, match) => {
+bot.onText(new RegExp(`^${prefix}unsubscribe(?<alias>.*)$`), (msg, match) => {
   const { alias } = match.groups;
   onGameUnsub(msg, alias);
 });
