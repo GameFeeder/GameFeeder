@@ -2,9 +2,16 @@ const Parser = require('rss-parser');
 
 const parser = new Parser();
 
-/** One item of a RSS feed. */
+/** @description One item of a RSS feed. */
 class RSSEntry {
-  /** Create a new RSS entry. */
+  /** @description Create a new RSS entry.
+   *
+   * @param {string} title - The title of the RSS entry.
+   * @param {string} date - The publish date of the RSS entry.
+   * @param {string} link - The URL of the RSS entry.
+   * @param {string} image - The URL to the image of the RSS entry.
+   * @param {string} description - The description of the RSS entry.
+   */
   constructor(title, date, link, image, description) {
     this.title = title;
     this.date = date;
@@ -13,17 +20,24 @@ class RSSEntry {
     this.description = description;
   }
 
-  /** Returns a string representation of this RSS entry. */
+  /** @description Returns a string representation of this RSS entry.
+   *
+   * @returns {string} The string representation of this RSS entry.
+  */
   toString() {
     return `${this.title}\n${this.link}\n\n${this.description}`;
   }
 
-  /** Print this RSS entry to the console. */
+  /** @description Print this RSS entry to the console. */
   print() {
     console.log(this.toString());
   }
 
-  /** Compare two RSSEntries according to their date. */
+  /** @description Compares two RSSEntries according to their date.
+   *
+   * @param {RSSEntry} a - The first RSSEntry to compare to the second.
+   * @param {RSSEntry} b - The second RSSEntry to compare to the first.
+  */
   static compare(a, b) {
     if (a.date < b.date) {
       return -1;
@@ -33,7 +47,11 @@ class RSSEntry {
     return 0;
   }
 
-  /** Convert an item of a RSS feed to a RSS entry object. */
+  /** @description Convert an item of a RSS feed to a RSS entry object.
+   *
+   * @param {Object} feedItem - The RSS feed item to convert to a RSSEntry.
+   * @returns {RSSEntry} The RSSEntry representation of the feed item.
+  */
   static feedItemToRSSEntry(feedItem) {
     const { title } = feedItem;
     const date = new Date(feedItem.isoDate);
@@ -47,7 +65,11 @@ class RSSEntry {
 
 /** A RSS feed. */
 class RSSFeed {
-  /** Create a new RSS feed. */
+  /** @description Create a new RSS feed.
+   *
+   * @param {string} url - The URL to the RSS feed.
+   * @param {string} message - The message to display in the bot notifications.
+  */
   constructor(url, message) {
     this.url = url;
     this.message = message;
@@ -58,13 +80,17 @@ class RSSFeed {
     this.refreshNewEntries(date, limit);
   }
 
-  /** Refresh this RSS feed. */
+  /** @description Refresh this RSS feed. */
   async refresh() {
     this.feed = await parser.parseURL(this.url);
     this.title = this.feed.title;
   }
 
-  /** Refresh the new entries of this RSS feed. */
+  /** @description Refresh the new entries of this RSS feed.
+   *
+   * @param {string} date - The start date to take entries from.
+   * @param {number} limit - The maximum numbers of entries to take.
+  */
   refreshNewEntries(date, limit) {
     const items = [];
 
@@ -79,7 +105,7 @@ class RSSFeed {
     this.newEntries = items;
   }
 
-  /** Return a string representation of this RSS feed. */
+  /** @description Return a string representation of this RSS feed. */
   toString() {
     let str = `${this.title}\n-------\n-------\n\n`;
 
@@ -90,7 +116,7 @@ class RSSFeed {
     return str;
   }
 
-  /** Print this RSS feed to the console. */
+  /** @description Print this RSS feed to the console. */
   print() {
     console.log(this.toString());
   }
