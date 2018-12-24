@@ -11,7 +11,7 @@ function isEmptyOrWhitespace(str) {
  * @param  {string} text - The text to escape.
  */
 function escapeRegExp(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 module.exports = {
