@@ -1,27 +1,42 @@
 const fs = require('fs');
 
-/** Reads the content of the specified file. */
+/** @description Reads the content of the specified file.
+ *
+ * @param {string} path - The file path to the file.
+ * @returns {string} The content of the file.
+ */
 function readFile(path) {
   return fs.readFileSync(path, 'utf8');
 }
 
-/** Writes the specified content to the specified file. */
+/** @description Writes the specified content to the specified file.
+ *
+ * @param {string} path - The file path to the file.
+ * @param {string} content - The string to write to the file.
+ */
 function writeFile(path, content) {
   fs.writeFileSync(path, content);
 }
 
-/** Returns the JS object representation of the specified JSON file. */
+/** @description Returns the JS object representation of the specified JSON file.
+ *
+ * @param {string} path - The file path to the JSON file.
+ */
 function readJSON(path) {
   return JSON.parse(readFile(path));
 }
 
-/** Writes the specified JS object to the specified JSON file. */
+/** @description Writes the specified JS object to the specified JSON file.
+ *
+ * @param {string} path - The path to the JSON file.
+ * @param {Object} obj - The JS object to write to the JSON file.
+ */
 function writeJSON(path, obj) {
   writeFile(path, JSON.stringify(obj, null, 2));
 }
 
-/** Get the path of important files. */
-/**
+/** @description Get the path of important files.
+ *
  * @param {string} file - The file to get the path from.
  * @returns {string} The path of the file.
  */
@@ -40,18 +55,18 @@ function getFilePath(file) {
   }
 }
 
-/** Get the bot_config.json file as a JS object. */
+/** @description Get the bot_config.json file as a JS object. */
 function getBotConfig() {
   return readJSON(getFilePath('bot_config'));
 }
 
-/** Get the data_conig.json file as a JS object. */
+/** @description Get the data_conig.json file as a JS object. */
 function getDataConfig() {
   return readJSON(getFilePath('data_config'));
 }
 
-/**
- * Get the name of a game by an alias
+/** @description Get the name of a game by an alias.
+ *
  * @param  {string} alias - The alias to convert to a game name.
  * @returns {string} The name of the game or ''.
  */
@@ -73,8 +88,8 @@ function getGameName(alias) {
   return gameName;
 }
 
-/**
- * Get the title of a game.
+/** @description Get the title of a game.
+ *
  * @param  {string} alias - An alias of the game.
  * @returns {string} The title of the game or ''.
  */
@@ -95,12 +110,12 @@ function getGameTitle(alias) {
   return gameTitle;
 }
 
-/**
- * Add a chat to the subscriptions.
+/** @description Add a chat to the subscriptions.
+ *
  * @param  {number} chatId - The ID of the chat to be subscribed.
  * @param {string} client - The name of the client. 'telegram' or 'discord'.
  * @param {string} game - The name of the game to subscribe to. 'dota' or 'artifact'.
- * @returns {boolean} false, if the chat was already subscribed, else true.
+ * @returns {boolean} False, if the chat was already subscribed, else true.
  */
 function addSubscriber(chatId, client, game) {
   const subscribers = readJSON(getFilePath('subscribers'));
@@ -119,12 +134,12 @@ function addSubscriber(chatId, client, game) {
   return true;
 }
 
-/**
- * Remove a chat from the subscriptions.
+/** @description Remove a chat from the subscriptions.
+ *
  * @param  {number} chatId - The Id of the chat to be unsubscribed.
  * @param {string} client - The name of the client. 'telegram' or 'discord'.
  * @param {string} game - The name of the game to unsubscribe from. 'dota' or 'artifact'.
- * @returns {boolean} false, if the chat wasn't subscribed, else true.
+ * @returns {boolean} False, if the chat wasn't subscribed, else true.
  */
 function removeSubscriber(chatId, client, game) {
   const subscribers = readJSON(getFilePath('subscribers'));

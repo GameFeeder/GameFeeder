@@ -4,7 +4,8 @@ const Util = require('./util');
 
 const bot = new Discord.Client();
 const { token } = Data.getBotConfig().discord;
-const prefix = Util.escapeRegExp(Data.getBotConfig().discord.prefix);
+const { prefix } = Data.getBotConfig().discord;
+const regPrefix = Util.escapeRegExp(prefix);
 
 function onGameSub(msg, alias) {
   const chatId = msg.channel.id;
@@ -12,7 +13,7 @@ function onGameSub(msg, alias) {
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to subscribe to
-    msg.reply('Use this command to subscribe to a game feed.\nUse /subscribe <GAME NAME>!');
+    msg.reply(`Use this command to subscribe to a game feed.\nTry \`\`${prefix}subscribe <GAME NAME>\`\`!`);
     return;
   }
 
@@ -42,7 +43,7 @@ function onGameUnsub(msg, alias) {
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to unsubscribe from
-    msg.reply('Use this command to unsubscribe from a game feed.\nUse /unsubscribe <GAME NAME>!');
+    msg.reply(`Use this command to unsubscribe from a game feed.\nTry \`\`${prefix}unsubscribe <GAME NAME>\`\`!`);
     return;
   }
 
@@ -78,13 +79,13 @@ function onText(msg, regex, handler) {
 
 bot.on('message', (message) => {
   /** Handle game subscription */
-  onText(message, new RegExp(`^${prefix}subscribe(?<alias>.*)$`), (msg, match) => {
+  onText(message, new RegExp(`^${regPrefix}subscribe(?<alias>.*)$`), (msg, match) => {
     const { alias } = match.groups;
     onGameSub(msg, alias);
   });
 
   /** Handle game unsubscription */
-  onText(message, new RegExp(`^${prefix}unsubscribe(?<alias>.*)$`), (msg, match) => {
+  onText(message, new RegExp(`^${regPrefix}unsubscribe(?<alias>.*)$`), (msg, match) => {
     const { alias } = match.groups;
     onGameUnsub(msg, alias);
   });
