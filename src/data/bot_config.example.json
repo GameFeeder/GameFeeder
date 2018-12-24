@@ -2,7 +2,7 @@
   "telegram": {
     "autostart": true,
     "prefix": "!",
-    "token": ""
+    "token": "s"
   },
   
   "discord": {
