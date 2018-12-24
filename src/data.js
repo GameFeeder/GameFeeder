@@ -1,8 +1,5 @@
 const fs = require('fs');
 
-const subscriberPath = 'src/data/subscribers.json';
-const botConfigPath = 'src/data/bot_config.json';
-
 /** Reads the content of the specified file. */
 function readFile(path) {
   return fs.readFileSync(path, 'utf8');
@@ -29,19 +26,73 @@ function writeJSON(path, obj) {
  * @returns {string} The path of the file.
  */
 function getFilePath(file) {
+  const basePath = 'src/data';
+
   switch (file) {
     case 'subscribers':
-      return subscriberPath;
+      return `${basePath}/subscribers.json`;
     case 'bot_config':
-      return botConfigPath;
+      return `${basePath}/bot_config.json`;
+    case 'data_config':
+      return `${basePath}/data_config.json`;
     default:
       throw new SyntaxError('Unexpected file.');
   }
 }
 
-/** Returns the bot_config.json file as a JS object. */
+/** Get the bot_config.json file as a JS object. */
 function getBotConfig() {
   return readJSON(getFilePath('bot_config'));
+}
+
+/** Get the data_conig.json file as a JS object. */
+function getDataConfig() {
+  return readJSON(getFilePath('data_config'));
+}
+
+/**
+ * Get the name of a game by an alias
+ * @param  {string} alias - The alias to convert to a game name.
+ * @returns {string} The name of the game or ''.
+ */
+function getGameName(alias) {
+  const { games } = getDataConfig();
+  // Ignore capitalization
+  const lowerAlias = alias.toLocaleLowerCase();
+
+  let gameName = '';
+
+  // Iterate through all available games
+  games.forEach((game) => {
+    // Look for the alias in the game
+    if (game.aliases.includes(lowerAlias)) {
+      gameName = game.name;
+    }
+  });
+
+  return gameName;
+}
+
+/**
+ * Get the title of a game.
+ * @param  {string} alias - An alias of the game.
+ * @returns {string} The title of the game or ''.
+ */
+function getGameTitle(alias) {
+  const gameName = getGameName(alias);
+  let { games } = getDataConfig();
+
+  let gameTitle = '';
+
+  // Look for the game name
+  games = games.filter(game => (game.name === gameName));
+
+  // Get the title of the game
+  if (games) {
+    gameTitle = games[0].title;
+  }
+
+  return gameTitle;
 }
 
 /**
@@ -95,6 +146,9 @@ function removeSubscriber(chatId, client, game) {
 // Export the functions
 module.exports = {
   getBotConfig,
+  getDataConfig,
+  getGameName,
+  getGameTitle,
   getFilePath,
   addSubscriber,
   removeSubscriber,
