@@ -58,7 +58,7 @@ function getDataConfig() {
 function getGameName(alias) {
   const { games } = getDataConfig();
   // Ignore capitalization
-  const lowerAlias = alias.toLocaleLowerCase();
+  const lowerAlias = alias.trim().toLocaleLowerCase();
 
   let gameName = '';
 
