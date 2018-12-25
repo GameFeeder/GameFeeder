@@ -24,6 +24,7 @@
   "dependencies": {
     "discord.js": "^11.4.2",
     "eslint-plugin-jsdoc": "^3.14.1",
+    "implement-js": "0.0.26",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0"
   }

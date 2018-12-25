@@ -1,6 +1,7 @@
 const DiscordBot = require('./discord');
 const TelegramBot = require('./telegram');
 const Data = require('./data');
+const Updater = require('./updater');
 
 const discordAutostart = Data.getBotConfig().discord.autostart;
 const telegramAutostart = Data.getBotConfig().telegram.autostart;
@@ -16,6 +17,7 @@ function startBots() {
   } else {
     console.warn('[Telegram] Bot disabled. To enable, set the "autostart" parameter in "bot_config.json".');
   }
+  Updater.start();
 }
 
 startBots();

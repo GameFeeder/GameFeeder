@@ -3,7 +3,7 @@ const Parser = require('rss-parser');
 const parser = new Parser();
 
 /** @description One item of a RSS feed. */
-class RSSEntry {
+class Entry {
   /** @description Create a new RSS entry.
    *
    * @param {string} title - The title of the RSS entry.
@@ -35,8 +35,8 @@ class RSSEntry {
 
   /** @description Compares two RSSEntries according to their date.
    *
-   * @param {RSSEntry} a - The first RSSEntry to compare to the second.
-   * @param {RSSEntry} b - The second RSSEntry to compare to the first.
+   * @param {Entry} a - The first RSSEntry to compare to the second.
+   * @param {Entry} b - The second RSSEntry to compare to the first.
   */
   static compare(a, b) {
     if (a.date < b.date) {
@@ -50,7 +50,7 @@ class RSSEntry {
   /** @description Convert an item of a RSS feed to a RSS entry object.
    *
    * @param {Object} feedItem - The RSS feed item to convert to a RSSEntry.
-   * @returns {RSSEntry} The RSSEntry representation of the feed item.
+   * @returns {Entry} The RSSEntry representation of the feed item.
   */
   static feedItemToRSSEntry(feedItem) {
     const { title } = feedItem;
@@ -59,12 +59,12 @@ class RSSEntry {
     const image = null;
     const { contentSnippet: description } = feedItem;
 
-    return new RSSEntry(title, date, link, image, description);
+    return new Entry(title, date, link, image, description);
   }
 }
 
 /** A RSS feed. */
-class RSSFeed {
+class Feed {
   /** @description Create a new RSS feed.
    *
    * @param {string} url - The URL to the RSS feed.
@@ -95,7 +95,7 @@ class RSSFeed {
     const items = [];
 
     this.feed.items.forEach((item) => {
-      const newEntry = RSSEntry.feedItemToRSSEntry(item);
+      const newEntry = Entry.feedItemToRSSEntry(item);
 
       if ((items.length < limit) && (newEntry.date > date)) {
         items.push(newEntry);
@@ -122,10 +122,7 @@ class RSSFeed {
   }
 }
 
-
-(async () => {
-  const feed = new RSSFeed('http://blog.dota2.com/feed/', 'New analysis by /u/Magesnunite!');
-
-  await feed.init(new Date('2018-12-18'), 5);
-  feed.print();
-})();
+module.exports = {
+  Feed,
+  Entry,
+};
