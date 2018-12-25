@@ -10,13 +10,18 @@ const regPrefix = Util.escapeRegExp(prefix);
 // Create the bot
 const bot = new TelegramBot(token, { polling: false });
 
+/** @description Handle game subscriptions.
+ *
+ * @param  {Object} msg - The Telegram msg object that triggered the event.
+ * @param  {string} alias - The alias of the game to subscribe to.
+ */
 function onGameSub(msg, alias) {
   const chatId = msg.chat.id;
   const userName = msg.chat.username;
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to subscribe to
-    bot.sendMessage(chatId, `Use this command to subscribe to a game feed.\nTry ${prefix}subscribe <GAME NAME>!`);
+    bot.sendMessage(chatId, `Use this command to subscribe to a game feed.\nTry \`${prefix}subscribe <GAME NAME>\`!`, { parse_mode: 'Markdown' });
     return;
   }
 
@@ -40,13 +45,18 @@ function onGameSub(msg, alias) {
   }
 }
 
+/** @description Handle game unsubscriptions.
+ *
+ * @param  {Object} msg - The Telegram msg object that triggered the event.
+ * @param  {string} alias - The alias of the game to unsubscribe from.
+ */
 function onGameUnsub(msg, alias) {
   const chatId = msg.chat.id;
   const userName = msg.chat.username;
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to unsubscribe from
-    bot.sendMessage(chatId, `Use this command to unsubscribe from a game feed.\nTry ${prefix}unsubscribe <GAME NAME>!`);
+    bot.sendMessage(chatId, `Use this command to unsubscribe from a game feed.\nTry \`${prefix}unsubscribe <GAME NAME>\`!`, { parse_mode: 'Markdown' });
     return;
   }
 

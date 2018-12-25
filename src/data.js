@@ -110,24 +110,31 @@ function getGameTitle(alias) {
   return gameTitle;
 }
 
+function getSubscribers() {
+  return readJSON(getFilePath('subscribers'));
+}
+
 /** @description Add a chat to the subscriptions.
  *
  * @param  {number} chatId - The ID of the chat to be subscribed.
+ * @param {string} type - The type of the chat.
  * @param {string} client - The name of the client. 'telegram' or 'discord'.
  * @param {string} game - The name of the game to subscribe to. 'dota' or 'artifact'.
  * @returns {boolean} False, if the chat was already subscribed, else true.
  */
-function addSubscriber(chatId, client, game) {
-  const subscribers = readJSON(getFilePath('subscribers'));
+function addSubscriber(chatId, type, client, game) {
+  const subscribers = getSubscribers();
   const gameSubscribers = subscribers[client][game];
 
   // Check if the chat is already subscribed
-  if (gameSubscribers.includes(chatId)) {
-    return false;
+  for (let i = 0; i < gameSubscribers.length; i += 1) {
+    if (gameSubscribers[i].id === chatId) {
+      return false;
+    }
   }
 
   // Add chat to subscription list
-  gameSubscribers.push(chatId);
+  gameSubscribers.push({ id: chatId, type });
   // Save changes
   subscribers[client][game] = gameSubscribers;
   writeJSON(getFilePath('subscribers'), subscribers);
@@ -137,25 +144,65 @@ function addSubscriber(chatId, client, game) {
 /** @description Remove a chat from the subscriptions.
  *
  * @param  {number} chatId - The Id of the chat to be unsubscribed.
+ * @param {string} type - The type of the chat.
  * @param {string} client - The name of the client. 'telegram' or 'discord'.
  * @param {string} game - The name of the game to unsubscribe from. 'dota' or 'artifact'.
  * @returns {boolean} False, if the chat wasn't subscribed, else true.
  */
-function removeSubscriber(chatId, client, game) {
-  const subscribers = readJSON(getFilePath('subscribers'));
-  let gameSubscribers = subscribers[client][game];
+function removeSubscriber(chatId, type, client, game) {
+  const subscribers = getSubscribers();
+  const gameSubscribers = subscribers[client][game];
 
-  // Check if the chat isn't subscribed
-  if (!gameSubscribers.includes(chatId)) {
-    return false;
+  // Check if the chat is already subscribed
+  for (let i = 0; i < gameSubscribers.length; i += 1) {
+    if (gameSubscribers[i].id === chatId) {
+      // Unsubscribe chat
+      gameSubscribers.splice(i, 1);
+      // Save changes
+      writeJSON(getFilePath('subscribers'), subscribers);
+      return true;
+    }
   }
 
-  // Unsubscribe chat
-  gameSubscribers = gameSubscribers.filter(value => value !== chatId);
-  // Save changes
-  subscribers[client][game] = gameSubscribers;
-  writeJSON(getFilePath('subscribers'), subscribers);
-  return true;
+  // Chat isn't subscribed
+  return false;
+}
+
+function getSubscribersByGameAndClient(client, alias) {
+  const subscribers = getSubscribers();
+  return subscribers[client][alias];
+}
+
+/** @description Get an array of all game names.
+ *
+ * @returns {string[]} An array of all game names.
+ */
+function getAllGameNames() {
+  const { games } = getDataConfig();
+  const gameNames = [];
+
+  games.forEach((game) => {
+    // Add the name of the game to the array
+    gameNames.push(game.name);
+  });
+
+  return gameNames;
+}
+
+/** @description Get an array of all game titles.
+ *
+ * @returns {string[]} An array of all game titles.
+ */
+function getAllGameTitles() {
+  const { games } = getDataConfig();
+  const gameTitles = [];
+
+  games.forEach((game) => {
+    // Add the name of the game to the array
+    gameTitles.push(game.title);
+  });
+
+  return gameTitles;
 }
 
 // Export the functions
@@ -163,10 +210,14 @@ module.exports = {
   getBotConfig,
   getDataConfig,
   getGameName,
+  getAllGameNames,
   getGameTitle,
+  getAllGameTitles,
   getFilePath,
   addSubscriber,
   removeSubscriber,
+  getSubscribers,
+  getSubscribersByGameAndClient,
   writeJSON,
   readJSON,
 };

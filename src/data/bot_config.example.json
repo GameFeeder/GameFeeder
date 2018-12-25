@@ -1,8 +1,8 @@
 {
   "telegram": {
     "autostart": true,
-    "prefix": "!",
-    "token": "s"
+    "prefix": "/",
+    "token": ""
   },
   
   "discord": {

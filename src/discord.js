@@ -7,6 +7,30 @@ const { token } = Data.getBotConfig().discord;
 const { prefix } = Data.getBotConfig().discord;
 const regPrefix = Util.escapeRegExp(prefix);
 
+function sendMessageByChat(chat, text) {
+  const dest = (chat.type === 'dm') ? 'users' : 'channels';
+  if (bot[dest] && bot[dest].get(chat.id)) {
+    bot[dest].get(chat.id).send(text);
+  }
+}
+
+function notifySubs(game, feed) {
+  const subscribers = Data.getSubscribersByGameAndClient('discord', game);
+  const entries = feed.newEntries;
+
+  entries.forEach((entry) => {
+    const text = entry.toString();
+    subscribers.forEach((chat) => {
+      sendMessageByChat(chat, text);
+    });
+  });
+}
+
+/** @description Handle game subscriptions.
+ *
+ * @param  {Object} msg - The Telegram msg object that triggered the event.
+ * @param  {string} alias - The alias of the game to subscribe to.
+ */
 function onGameSub(msg, alias) {
   const chatId = msg.channel.id;
   const userName = msg.author.username;
@@ -26,8 +50,9 @@ function onGameSub(msg, alias) {
   }
 
   const gameTitle = Data.getGameTitle(gameName);
+  const channelType = msg.channel.type;
 
-  if (Data.addSubscriber(chatId, 'discord', gameName)) {
+  if (Data.addSubscriber(chatId, channelType, 'discord', gameName)) {
     // Confirm subscription
     console.info(`[Discord] ${userName} subscribed to the ${gameTitle} feed.`);
     msg.reply(`I will notify you about any updates for ${gameTitle}!`);
@@ -37,6 +62,11 @@ function onGameSub(msg, alias) {
   }
 }
 
+/** @description Handle game unsubscriptions.
+ *
+ * @param  {Object} msg - The Telegram msg object that triggered the event.
+ * @param  {string} alias - The alias of the game to unsubscribe from.
+ */
 function onGameUnsub(msg, alias) {
   const chatId = msg.channel.id;
   const userName = msg.author.username;
@@ -56,8 +86,9 @@ function onGameUnsub(msg, alias) {
   }
 
   const gameTitle = Data.getGameTitle(gameName);
+  const channelType = msg.channel.type;
 
-  if (Data.removeSubscriber(chatId, 'discord', gameName)) {
+  if (Data.removeSubscriber(chatId, channelType, 'discord', gameName)) {
     // Confirm unsubscription
     console.info(`[Discord] ${userName} unsubscribed from the ${gameTitle} feed.`);
     msg.reply(`I will no longer notify you about any updates for ${gameTitle}!`);
@@ -66,7 +97,12 @@ function onGameUnsub(msg, alias) {
     msg.reply(`You have never subscribed to the ${gameTitle} feed in the first place!`);
   }
 }
-
+/** @description Handle command registrations.
+ *
+ * @param  {Object} msg - The Discord msg object that triggered the event.
+ * @param  {RegExp} regex - The regular expression that shall trigger the command.
+ * @param  {Function} handler - The function to handle the command.
+ */
 function onText(msg, regex, handler) {
   // Run regex on the msg
   const match = regex.exec(msg);
@@ -77,6 +113,7 @@ function onText(msg, regex, handler) {
   }
 }
 
+/** Handle any messages to the bot. */
 bot.on('message', (message) => {
   /** Handle game subscription */
   onText(message, new RegExp(`^${regPrefix}subscribe(?<alias>.*)$`), (msg, match) => {
@@ -95,6 +132,7 @@ bot.on('ready', () => {
   console.info(`[Discord] Logged in as ${bot.user.tag}.`);
 });
 
+/** @description Start the Discord bot. */
 async function start() {
   if (token) {
     console.info('[Discord] Starting bot.');
@@ -106,4 +144,5 @@ async function start() {
 
 module.exports = {
   start,
+  notifySubs,
 };
