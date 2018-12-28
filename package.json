@@ -4,9 +4,11 @@
   "description": "A notification bot for Dota 2 and Artifact.",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo 'Error: no test specified' && exit 0",
+    "test": "jest src",
     "lint-js": "eslint src/*.js --color",
-    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1"
+    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1",
+    "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
+
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,10 @@
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.1.2",
     "eslint-plugin-prettier": "3.0.0",
     "husky": "^1.2.1",
+    "jest": "^23.6.0",
     "prettier": "1.15.3"
   },
   "dependencies": {
