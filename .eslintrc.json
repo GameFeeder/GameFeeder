@@ -1,18 +1,17 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "plugin:jest/recommended"],
 
   "env": {
     "browser": false,
-    "node": true
+    "node": true,
+    "jest/globals": true
   },
 
-  "plugins": [
-    "jsdoc"
-],
-  
+  "plugins": ["jsdoc", "prettier", "jest"],
+
   "rules": {
     "no-console": 0,
-    
+
     "jsdoc/check-examples": 1,
     "jsdoc/check-param-names": 1,
     "jsdoc/check-tag-names": 1,
@@ -29,6 +28,10 @@
     "jsdoc/require-param-type": 1,
     "jsdoc/require-returns-description": 1,
     "jsdoc/require-returns-type": 1,
-    "jsdoc/valid-types": 1
+    "jsdoc/valid-types": 1,
+
+    "prettier/prettier": "error",
+    "arrowParens": "always",
+    "arrow-body-style": ["error", "always"]
   }
 }
