@@ -20,7 +20,9 @@ async function updater() {
   console.debug('[Updater] Update circle...');
   if (doUpdate) {
     update();
-    setTimeout(() => updater(), updaterDelay);
+    setTimeout(() => {
+      updater();
+    }, updaterDelay);
   }
 }
 
@@ -28,7 +30,9 @@ async function updater() {
 async function start() {
   console.log('[Updater] Starting updater.');
   doUpdate = true;
-  setTimeout(() => updater(), 2000);
+  setTimeout(() => {
+    updater();
+  }, 2000);
 }
 
 module.exports = {
