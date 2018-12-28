@@ -8,7 +8,6 @@
     "lint-js": "eslint src/*.js --color",
     "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1",
     "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
-
   },
   "repository": {
     "type": "git",
@@ -34,8 +33,10 @@
     "discord.js": "^11.4.2",
     "eslint-plugin-jsdoc": "^3.14.1",
     "implement-js": "0.0.26",
+    "install-peerdeps": "^1.9.0",
     "node-telegram-bot-api": "^0.30.0",
-    "rss-parser": "^3.6.0"
+    "rss-parser": "^3.6.0",
+    "yarn": "^1.12.3"
   },
   "husky": {
     "hooks": {
