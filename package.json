@@ -19,6 +19,9 @@
     "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
   },
   "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot#readme",
+  "engines" : { 
+    "node" : ">=10.14.2" 
+  },
   "devDependencies": {
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -40,8 +43,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-js",
-      "pre-push": "npm run test"
+      "pre-commit": "yarn lint-js",
+      "pre-push": "yarn test"
     }
   }
 }
