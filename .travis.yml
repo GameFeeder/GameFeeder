@@ -1,8 +1,15 @@
 language: node_js
 
 node_js:
-  - "10"
+  - '10'
 
 script:
   - yarn lint-js
   - yarn test
+
+jobs:
+  include:
+    - stage: lint
+      script: yarn lint-js
+    - stage: test
+      script: yarn test
