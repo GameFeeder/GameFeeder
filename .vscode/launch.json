@@ -5,13 +5,17 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Bots",
-      "program": "${workspaceFolder}/src/main.js"
+      "program": "${workspaceFolder}/src/main.js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch File",
-      "program": "${file}"
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
     }
   ]
 }
