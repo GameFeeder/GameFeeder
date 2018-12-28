@@ -1,16 +1,14 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "plugin:jest/recommended"],
 
   "env": {
     "browser": false,
-    "node": true
+    "node": true,
+    "jest/globals": true
   },
 
-  "plugins": [
-    "jsdoc",
-    "prettier"
-],
-  
+  "plugins": ["jsdoc", "prettier", "jest"],
+
   "rules": {
     "no-console": 0,
 
