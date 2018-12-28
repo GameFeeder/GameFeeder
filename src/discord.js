@@ -8,7 +8,7 @@ const { prefix } = Data.getBotConfig().discord;
 const regPrefix = Util.escapeRegExp(prefix);
 
 function sendMessageByChat(chat, text) {
-  const dest = (chat.type === 'dm') ? 'users' : 'channels';
+  const dest = chat.type === 'dm' ? 'users' : 'channels';
   if (bot[dest] && bot[dest].get(chat.id)) {
     bot[dest].get(chat.id).send(text);
   }

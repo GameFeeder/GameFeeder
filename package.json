@@ -4,7 +4,9 @@
   "description": "A notification bot for Dota 2 and Artifact.",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo 'Error: no test specified' && exit 0",
+    "lint-js": "eslint src/*.js --color",
+    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,10 @@
   "devDependencies": {
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "3.0.0",
+    "husky": "^1.2.1",
+    "prettier": "1.15.3"
   },
   "dependencies": {
     "discord.js": "^11.4.2",
@@ -27,5 +32,11 @@
     "implement-js": "0.0.26",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-js",
+      "pre-push": "npm run test"
+    }
   }
 }

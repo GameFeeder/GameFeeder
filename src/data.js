@@ -100,7 +100,9 @@ function getGameTitle(alias) {
   let gameTitle = '';
 
   // Look for the game name
-  games = games.filter(game => (game.name === gameName));
+  games = games.filter((game) => {
+    return game.name === gameName;
+  });
 
   // Get the title of the game
   if (games) {

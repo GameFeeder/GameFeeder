@@ -21,7 +21,9 @@ function onGameSub(msg, alias) {
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to subscribe to
-    bot.sendMessage(chatId, `Use this command to subscribe to a game feed.\nTry \`${prefix}subscribe <GAME NAME>\`!`, { parse_mode: 'Markdown' });
+    bot.sendMessage(chatId, `Use this command to subscribe to a game feed.\nTry \`${prefix}subscribe <GAME NAME>\`!`, {
+      parse_mode: 'Markdown',
+    });
     return;
   }
 
@@ -56,7 +58,11 @@ function onGameUnsub(msg, alias) {
 
   if (Util.isEmptyOrWhitespace(alias)) {
     // The user didn't provide the game to unsubscribe from
-    bot.sendMessage(chatId, `Use this command to unsubscribe from a game feed.\nTry \`${prefix}unsubscribe <GAME NAME>\`!`, { parse_mode: 'Markdown' });
+    bot.sendMessage(
+      chatId,
+      `Use this command to unsubscribe from a game feed.\nTry \`${prefix}unsubscribe <GAME NAME>\`!`,
+      { parse_mode: 'Markdown' },
+    );
     return;
   }
 

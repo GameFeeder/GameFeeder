@@ -23,7 +23,7 @@ class Entry {
   /** @description Returns a string representation of this RSS entry.
    *
    * @returns {string} The string representation of this RSS entry.
-  */
+   */
   toString() {
     return `${this.title}\n${this.link}\n\n${this.description}`;
   }
@@ -37,11 +37,12 @@ class Entry {
    *
    * @param {Entry} a - The first RSSEntry to compare to the second.
    * @param {Entry} b - The second RSSEntry to compare to the first.
-  */
+   */
   static compare(a, b) {
     if (a.date < b.date) {
       return -1;
-    } if (a.date > b.date) {
+    }
+    if (a.date > b.date) {
       return 1;
     }
     return 0;
@@ -51,7 +52,7 @@ class Entry {
    *
    * @param {Object} feedItem - The RSS feed item to convert to a RSSEntry.
    * @returns {Entry} The RSSEntry representation of the feed item.
-  */
+   */
   static feedItemToRSSEntry(feedItem) {
     const { title } = feedItem;
     const date = new Date(feedItem.isoDate);
@@ -69,7 +70,7 @@ class Feed {
    *
    * @param {string} url - The URL to the RSS feed.
    * @param {string} message - The message to display in the bot notifications.
-  */
+   */
   constructor(url, message) {
     this.url = url;
     this.message = message;
@@ -90,14 +91,14 @@ class Feed {
    *
    * @param {string} date - The start date to take entries from.
    * @param {number} limit - The maximum numbers of entries to take.
-  */
+   */
   refreshNewEntries(date, limit) {
     const items = [];
 
     this.feed.items.forEach((item) => {
       const newEntry = Entry.feedItemToRSSEntry(item);
 
-      if ((items.length < limit) && (newEntry.date > date)) {
+      if (items.length < limit && newEntry.date > date) {
         items.push(newEntry);
       }
     });
