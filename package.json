@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest src",
     "lint-js": "eslint src/*.js --color",
-    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1",
+    "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
   },
   "repository": {
@@ -33,18 +33,19 @@
     "install-peerdeps": "^1.9.0",
     "jest": "^23.6.0",
     "prettier": "1.15.3",
-    "typescript": "^3.2.2"
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "yarn": "^1.12.3"
   },
   "dependencies": {
     "discord.js": "^11.4.2",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0",
-    "winston": "^3.1.0",
-    "yarn": "^1.12.3"
+    "winston": "^3.1.0"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint-js",
+      "pre-commit": "yarn lint-ts",
       "pre-push": "yarn test"
     }
   }
