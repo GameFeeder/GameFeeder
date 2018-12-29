@@ -1,12 +1,22 @@
 import Winston from 'winston';
 
 abstract class BotClient {
+  /** The internal name of the bot. */
   public name: string;
+  /** The human-readable label of the bot. */
   public label: string;
+  /** The prefix to use for commands. */
   public prefix: string;
 
+  /** The logger used for the bot. */
   private logger: Winston.Logger;
 
+  /** Creates a new BotClient.
+   *
+   * @param  {string} name - The internal name of the bot.
+   * @param  {string} label - The human-readable label of the bot.
+   * @param  {string} prefix - The prefix to use for commands.
+   */
   constructor(name: string, label: string, prefix: string) {
     this.name = name;
     this.label = label;
@@ -18,42 +28,72 @@ abstract class BotClient {
     });
 
     this.logger = Winston.createLogger({
-      format: Winston.format.combine(
-        Winston.format.timestamp(),
-        loggerFormat,
-      ),
+      format: Winston.format.combine(Winston.format.timestamp(), loggerFormat),
       transports: [new Winston.transports.Console()],
     });
   }
 
-  public abstract registerCommand(reg: RegExp, handler: (channel: any, match: RegExpMatchArray) => void): void;
-  public abstract start(): void;
-  public abstract stop(): void;
-
-  public abstract addSubscriber(channel: any, game: Game): boolean;
-  public abstract removeSubscriber(channel: any, game: Game): boolean;
-
-  public abstract sendTextToChannel(channel: any, text: string): void;
-  public abstract sendNotificationToChannel(channel: any, notification: BotNotification): void;
-  public abstract sendTextToGameSubs(game: Game, text: string): void;
-  public abstract sendNotificationToGameSubs(game: Game, notification: BotNotification): void;
-
-  public sendTextToAllSubs(text: string): void {
-    // TODO
-  }
-
-  /**
-   * Sends a notification to all subscribers.
+  /** Register a bot command.
    *
-   * @param  {BotNotification} msg - The message to error-log.
+   * @param  {RegExp} reg - The regular expression triggering the command.
+   * @param  {(channel:any,match:RegExpMatchArray)=>void} handler - The function handling the command.
    * @returns void
    */
-  public sendNotificationToAllSubs(notification: BotNotification): void {
-    // TODO
+  public abstract registerCommand(reg: RegExp, handler: (channel: any, match: RegExpMatchArray) => void): void;
+  /** Start the bot.
+   * @returns void
+   */
+  public abstract start(): void;
+  /** Stop the bot.
+   *
+   * @returns void
+   */
+  public abstract stop(): void;
+
+  /** Add a channel supscription to a game.
+   *
+   * @param  {any} channel - The channel to subscribe to the game.
+   * @param  {Game} game - The game to subscribe to.
+   * @returns True, if the subscription was successful, else false.
+   */
+  public abstract addSubscriber(channel: any, game: Game): boolean;
+
+  /** Remove a channel subscription from a game.
+   *
+   * @param  {any} channel - The channel to unsubscribe from the game.
+   * @param  {Game} game - The game to unsubscribe from.
+   * @returns True, if the unsubscription was successful, else false.
+   */
+  public abstract removeSubscriber(channel: any, game: Game): boolean;
+
+  /** Sends a message to a channel.
+   *
+   * @param  {any} channel - The channel to message.
+   * @param  {string|BotNotification} message - The message to send to the channel.
+   * @returns void
+   */
+  public abstract sendMessageToChannel(channel: any, message: string | BotNotification): void;
+
+  /** Sends a message to all subscribers of a game.
+   *
+   * @param  {Game} game - The game to notify the subscribers of.
+   * @param  {string|BotNotification} message - The message to send to the subscribers.
+   * @returns void
+   */
+  public sendMessageToGameSubs(game: Game, message: string | BotNotification): void {
+    // TODO: Implement
   }
 
-  /**
-   * Logs a debug message.
+  /** Sends a message to all subscribers.
+   *
+   * @param  {string|BotNotification} message - The message to send to the subscribers.
+   * @returns void
+   */
+  public sendMessageToAllSubs(message: string | BotNotification): void {
+    // TODO: Implement
+  }
+
+  /** Logs a debug message.
    *
    * @param  {string} msg - The message to debug-log.
    * @returns void
@@ -62,8 +102,7 @@ abstract class BotClient {
     this.logger.debug(msg);
   }
 
-  /**
-   * Logs an info message.
+  /** Logs an info message.
    *
    * @param  {string} msg - The message to info-log.
    * @returns void
@@ -72,8 +111,7 @@ abstract class BotClient {
     this.logger.info(msg);
   }
 
-  /**
-   * Logs a warning message.
+  /** Logs a warning message.
    *
    * @param  {string} msg - The message to warn-log.
    * @returns void
@@ -82,8 +120,7 @@ abstract class BotClient {
     this.logger.warn(msg);
   }
 
-  /**
-   * Logs an error message.
+  /** Logs an error message.
    *
    * @param  {string} msg - The message to error-log.
    * @returns void
