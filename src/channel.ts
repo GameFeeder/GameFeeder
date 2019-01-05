@@ -1,12 +1,9 @@
 /** A representation of a bot's channel. */
-abstract class BotChannel {
-  /** The human-readable name of the channel. */
-  public label: string;
+class BotChannel {
   /** The unique ID of the channel. */
   public id: string;
   /** Creates a new BotChannel. */
-  constructor(label: string, id: string) {
-    this.label = label;
+  constructor(id: string) {
     this.id = id;
   }
   /** Compares the channel to another channel.
@@ -14,7 +11,15 @@ abstract class BotChannel {
    * @param  {IBotChannel} other - The other channel to compare to.
    * @returns {boolean} True, if the channels are equal, else false.
    */
-  public abstract isEqual(other: BotChannel): boolean;
+  public isEqual(other: BotChannel | string): boolean {
+    if (typeof(other) === 'string') {
+      return this.id === other;
+    }
+    return this.id === other.id;
+  }
+  public toJSON(): string {
+    return this.id;
+  }
 }
 
 export { BotChannel };

@@ -18,4 +18,23 @@ class Game {
     this.aliases = aliases;
     this.label = label;
   }
+
+  public hasAlias(alias: string) {
+    // Ignore casing
+    alias = alias.toLocaleLowerCase();
+
+    if (alias === this.name.toLocaleLowerCase() || alias === this.label.toLocaleLowerCase()) {
+      return true;
+    }
+
+    for (const entry of this.aliases) {
+      if (entry === alias) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
+
+export { Game };

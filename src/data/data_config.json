@@ -2,7 +2,7 @@
   "games": [
     {
       "name": "artifact",
-      "title": "Artifact",
+      "label": "Artifact",
       "aliases": [
         "artifact",
         "card game",
@@ -20,7 +20,7 @@
     },
     {
       "name": "dota",
-      "title": "Dota 2",
+      "label": "Dota 2",
       "aliases": [
         "dota",
         "dota2",

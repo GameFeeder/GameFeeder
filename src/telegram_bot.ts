@@ -2,7 +2,6 @@ import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
 import { BotChannel } from './channel';
 import { BotNotification } from './notification';
-import { TelegramChannel } from './telegram_channel';
 
 class TelegramBot extends BotClient {
   private bot: TelegramAPI;
@@ -16,9 +15,9 @@ class TelegramBot extends BotClient {
     this.bot = new TelegramAPI(token, { polling: false });
   }
 
-  public registerCommand(reg: RegExp, callback: (channel: TelegramChannel, match: RegExpExecArray) => void): void {
+  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpExecArray) => void): void {
     this.bot.onText(reg, (msg: TelegramAPI.Message, match: RegExpExecArray) => {
-      callback(new TelegramChannel(msg), match);
+      callback(new BotChannel(msg.chat.id.toString()), match);
     });
   }
   public async start(): Promise<boolean> {
@@ -32,12 +31,13 @@ class TelegramBot extends BotClient {
   public stop(): void {
     this.bot.stopPolling();
   }
-  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): void {
+  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof(message) === 'string') {
       this.bot.sendMessage(channel.id, message);
     } else {
       this.bot.sendMessage(channel.id, message.text);
     }
+    return true;
   }
 }
 

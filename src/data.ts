@@ -65,4 +65,12 @@ function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
 
-export { getBotConfig, getDataConfig };
+function getSubscribers(): any {
+  return readJSON(getFilePath('subscribers'));
+}
+
+function setSubscribers(subscribers: object): void {
+  writeJSON(getFilePath('subscribers'), subscribers);
+}
+
+export { getBotConfig, getDataConfig, getSubscribers, setSubscribers };

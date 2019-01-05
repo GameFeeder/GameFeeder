@@ -1,7 +1,6 @@
 import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
 import { BotChannel } from './channel';
-import { DiscordChannel } from './discord_channel';
 import { BotNotification } from './notification';
 
 class DiscordBot extends BotClient {
@@ -23,7 +22,7 @@ class DiscordBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         this.logDebug(`Channel ID: ${message.channel.id}`);
-        callback(new DiscordChannel(message.channel), regMatch);
+        callback(new BotChannel(message.channel.id), regMatch);
       }
     });
   }
@@ -38,26 +37,26 @@ class DiscordBot extends BotClient {
   public stop(): void {
     this.bot.destroy();
   }
-  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): void {
+  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     const botChannels = this.bot.channels;
-    const discordChannel = botChannels.get(channel.id.toString());
-<<<<<<< HEAD
-=======
-    this.logDebug(`MAIN ID: ${channel.id}`);
+    const discordChannel = botChannels.get(channel.id);
 
-    for (const key of botChannels.keyArray()) {
-      const c = botChannels.get(key);
-      this.logDebug(`ID: ${c.id}`);
+    if (!discordChannel) {
+      return false;
     }
->>>>>>> 562356e1dd2f317702185ab5d3bee61b438f7e4f
 
     // Cast to the specific channel and send the message
     if (discordChannel instanceof DMChannel) {
       discordChannel.send(message);
+      return true;
     } else if (discordChannel instanceof TextChannel) {
       discordChannel.send(message);
+      return true;
     } else if (discordChannel instanceof GroupDMChannel) {
       discordChannel.send(message);
+      return true;
+    } else {
+      return false;
     }
   }
 }

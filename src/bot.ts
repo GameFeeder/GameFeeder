@@ -1,5 +1,7 @@
 import Winston from 'winston';
 import { BotChannel } from './channel';
+import { getSubscribers, setSubscribers } from './data';
+import { Game } from './game';
 import { BotNotification } from './notification';
 
 abstract class BotClient {
@@ -61,8 +63,22 @@ abstract class BotClient {
    * @returns True, if the subscription was successful, else false.
    */
   public addSubscriber(channel: BotChannel, game: Game): boolean {
-    // TODO: Implement
-    return false;
+    const subscribers = getSubscribers();
+    const gameSubs = subscribers[this.name][game.name];
+
+    // Check if channel is already subscribed to this client
+    for (const sub of gameSubs) {
+      if (channel.isEqual(sub)) {
+        return false;
+      }
+    }
+
+    // Save changes
+    gameSubs.push(channel.toJSON());
+    subscribers[this.name][game.name] = gameSubs;
+    setSubscribers(subscribers);
+
+    return true;
   }
 
   /** Remove a channel subscription from a game.
@@ -72,8 +88,29 @@ abstract class BotClient {
    * @returns True, if the unsubscription was successful, else false.
    */
   public removeSubscriber(channel: BotChannel, game: Game): boolean {
-    // TODO: Implement
-    return false;
+    const subscribers = getSubscribers();
+    const gameSubs: string[] = subscribers[this.name][game.name];
+
+    // Check if channel is already subscribed to this client
+    let hasSubbed = false;
+    for (let i = 0; i < gameSubs.length; i++) {
+      if (channel.isEqual(gameSubs[i])) {
+        gameSubs.splice(i, 1);
+        this.logDebug(`Index ${i}, Subs: ${gameSubs}`);
+        hasSubbed = true;
+        break;
+      }
+    }
+
+    if (!hasSubbed) {
+      return false;
+    }
+
+    // Save changes
+    subscribers[this.name][game.name] = gameSubs;
+    setSubscribers(subscribers);
+
+    return true;
   }
 
   /** Sends a message to a channel.
@@ -82,7 +119,7 @@ abstract class BotClient {
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract sendMessageToChannel(channel: BotChannel, message: string | BotNotification): void;
+  public abstract sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean;
 
   /** Sends a message to all subscribers of a game.
    *
