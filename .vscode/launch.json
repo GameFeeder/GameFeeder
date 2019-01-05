@@ -5,9 +5,10 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Bots",
-      "program": "${workspaceFolder}/src/main.js",
+      "program": "${workspaceRoot}/src/main.ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
+      "outFiles": [ "${worspaceRoot}/src/dist/**/*.js" ]
     },
     {
       "type": "node",
@@ -16,6 +17,7 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
+      "outFiles": [ "${worspaceFolder}/src/dist/**/*.js" ],
     }
   ]
 }

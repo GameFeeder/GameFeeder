@@ -1,6 +1,6 @@
 import Winston from 'winston';
 
-abstract class BotClient<T extends BotChannel> {
+abstract class BotClient {
   /** The internal name of the bot. */
   public name: string;
   /** The human-readable label of the bot. */
@@ -39,7 +39,7 @@ abstract class BotClient<T extends BotChannel> {
    * @param  {(channel:BotChannel,match:RegExpMatchArray)=>void} callback - The function handling the command.
    * @returns void
    */
-  public abstract registerCommand(reg: RegExp, callback: (channel: T, match: RegExpMatchArray) => void): void;
+  public abstract registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpMatchArray) => void): void;
   /** Start the bot.
    *
    * @returns True, if the start was successful, else false.
@@ -57,7 +57,7 @@ abstract class BotClient<T extends BotChannel> {
    * @param  {Game} game - The game to subscribe to.
    * @returns True, if the subscription was successful, else false.
    */
-  public addSubscriber(channel: T, game: Game): boolean {
+  public addSubscriber(channel: BotChannel, game: Game): boolean {
     // TODO: Implement
     return false;
   }
@@ -68,7 +68,7 @@ abstract class BotClient<T extends BotChannel> {
    * @param  {Game} game - The game to unsubscribe from.
    * @returns True, if the unsubscription was successful, else false.
    */
-  public removeSubscriber(channel: T, game: Game): boolean {
+  public removeSubscriber(channel: BotChannel, game: Game): boolean {
     // TODO: Implement
     return false;
   }
@@ -79,7 +79,7 @@ abstract class BotClient<T extends BotChannel> {
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract sendMessageToChannel(channel: T, message: string | BotNotification): void;
+  public abstract sendMessageToChannel(channel: BotChannel, message: string | BotNotification): void;
 
   /** Sends a message to all subscribers of a game.
    *

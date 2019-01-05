@@ -2,7 +2,7 @@ import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
 import { TelegramChannel } from './telegram_channel';
 
-class TelegramBot extends BotClient<TelegramChannel> {
+class TelegramBot extends BotClient {
   private bot: TelegramAPI;
   private token: string;
 

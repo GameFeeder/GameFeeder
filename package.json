@@ -2,7 +2,7 @@
   "name": "valvegamesannouncerbot",
   "version": "0.1.0",
   "description": "A notification bot for Dota 2 and Artifact.",
-  "main": "src/main.js",
+  "main": "src/main.ts",
   "scripts": {
     "test": "jest src",
     "lint-js": "eslint src/*.js --color",
@@ -41,6 +41,7 @@
     "@types/node": "^10.12.18",
     "@types/node-telegram-bot-api": "^0.30.3",
     "discord.js": "^11.4.2",
+    "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0",
     "winston": "^3.1.0"

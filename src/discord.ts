@@ -1,7 +1,7 @@
 import { BotClient } from './bot';
 
 class DiscordBot extends BotClient {
-  public registerCommand(reg: RegExp, handler: (channel: any, match: RegExpMatchArray) => void): void {
+  public registerCommand(reg: RegExp, callback: (channel: any, match: RegExpMatchArray) => void): void {
     throw new Error('Method not implemented.');
   }
   public async start(): Promise<boolean> {
