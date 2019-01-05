@@ -15,6 +15,9 @@ bots.forEach((bot) => {
 
 // Start bots
 bots.forEach((bot) => {
-  bot.start();
-  bot.logInfo('Starting bot.');
+  if (bot.start()) {
+    bot.logInfo('Started bot.');
+  } else {
+    bot.logWarn('Bot did not start. Did you provide a token in "bot_conig.json"?');
+  }
 });
