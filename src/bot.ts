@@ -31,6 +31,7 @@ abstract class BotClient {
 
     this.logger = Winston.createLogger({
       format: Winston.format.combine(Winston.format.timestamp(), loggerFormat),
+      level: 'debug',
       transports: [new Winston.transports.Console()],
     });
   }

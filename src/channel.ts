@@ -3,9 +3,9 @@ abstract class BotChannel {
   /** The human-readable name of the channel. */
   public label: string;
   /** The unique ID of the channel. */
-  public id: number;
+  public id: string;
   /** Creates a new BotChannel. */
-  constructor(label: string, id: number) {
+  constructor(label: string, id: string) {
     this.label = label;
     this.id = id;
   }

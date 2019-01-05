@@ -3,7 +3,7 @@ import { BotChannel } from './channel';
 
 class TelegramChannel extends BotChannel {
   constructor(msg: Message) {
-    super(msg.chat.title, msg.chat.id);
+    super(msg.chat.title, msg.chat.id.toString());
   }
   public isEqual(other: BotChannel): boolean {
     if (other instanceof TelegramChannel) {
