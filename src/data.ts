@@ -54,3 +54,15 @@ function getFilePath(file: string): string {
       throw new SyntaxError('Unexpected file.');
   }
 }
+
+/** @description Get the bot_config.json file as a JS object. */
+function getBotConfig(): any {
+  return readJSON(getFilePath('bot_config'));
+}
+
+/** @description Get the data_conig.json file as a JS object. */
+function getDataConfig(): any {
+  return readJSON(getFilePath('data_config'));
+}
+
+export { getBotConfig, getDataConfig };

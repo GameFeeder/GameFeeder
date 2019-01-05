@@ -1,7 +1,9 @@
 import { BotClient } from './bot';
+import { getBotConfig } from './data';
 import { TelegramBot } from './telegram';
 
-const telegramBot = new TelegramBot('/', '');
+const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
+const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
 const bots = [ telegramBot ];
 
 // Register commands
@@ -14,4 +16,5 @@ bots.forEach((bot) => {
 // Start bots
 bots.forEach((bot) => {
   bot.start();
+  bot.logInfo('Starting bot.');
 });
