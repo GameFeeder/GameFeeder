@@ -17,6 +17,7 @@ const bots = [ telegramBot , discordBot ];
 // Register commands
 bots.forEach((bot) => {
   bot.registerCommand(new RegExp(`${bot.prefix}test`), (channel) => {
+    bot.logDebug('Test command...');
     bot.sendMessageToChannel(channel, 'Test!');
   });
 });
