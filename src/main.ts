@@ -1,10 +1,18 @@
 import { BotClient } from './bot';
 import { getBotConfig } from './data';
-import { TelegramBot } from './telegram';
+import { DiscordBot } from './discord_bot';
+import { TelegramBot } from './telegram_bot';
 
+// Telegram Bot
 const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
 const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
-const bots = [ telegramBot ];
+
+// Discord Bot
+const { prefix: discordPrefix, token: discordToken } = getBotConfig().discord;
+const discordBot = new DiscordBot(discordPrefix, discordToken);
+
+// All bots
+const bots = [ telegramBot , discordBot ];
 
 // Register commands
 bots.forEach((bot) => {
@@ -18,6 +26,6 @@ bots.forEach((bot) => {
   if (bot.start()) {
     bot.logInfo('Started bot.');
   } else {
-    bot.logWarn('Bot did not start. Did you provide a token in "bot_conig.json"?');
+    bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
   }
 });
