@@ -1,6 +1,6 @@
 import Winston from 'winston';
 
-abstract class BotClient {
+abstract class BotClient<T extends BotChannel> {
   /** The internal name of the bot. */
   public name: string;
   /** The human-readable label of the bot. */
@@ -36,14 +36,15 @@ abstract class BotClient {
   /** Register a bot command.
    *
    * @param  {RegExp} reg - The regular expression triggering the command.
-   * @param  {(channel:any,match:RegExpMatchArray)=>void} handler - The function handling the command.
+   * @param  {(channel:BotChannel,match:RegExpMatchArray)=>void} callback - The function handling the command.
    * @returns void
    */
-  public abstract registerCommand(reg: RegExp, handler: (channel: any, match: RegExpMatchArray) => void): void;
+  public abstract registerCommand(reg: RegExp, callback: (channel: T, match: RegExpMatchArray) => void): void;
   /** Start the bot.
-   * @returns void
+   *
+   * @returns True, if the start was successful, else false.
    */
-  public abstract start(): void;
+  public abstract async start(): Promise<boolean>;
   /** Stop the bot.
    *
    * @returns void
@@ -52,27 +53,33 @@ abstract class BotClient {
 
   /** Add a channel supscription to a game.
    *
-   * @param  {any} channel - The channel to subscribe to the game.
+   * @param  {BotChannel} channel - The channel to subscribe to the game.
    * @param  {Game} game - The game to subscribe to.
    * @returns True, if the subscription was successful, else false.
    */
-  public abstract addSubscriber(channel: any, game: Game): boolean;
+  public addSubscriber(channel: T, game: Game): boolean {
+    // TODO: Implement
+    return false;
+  }
 
   /** Remove a channel subscription from a game.
    *
-   * @param  {any} channel - The channel to unsubscribe from the game.
+   * @param  {BotChannel} channel - The channel to unsubscribe from the game.
    * @param  {Game} game - The game to unsubscribe from.
    * @returns True, if the unsubscription was successful, else false.
    */
-  public abstract removeSubscriber(channel: any, game: Game): boolean;
+  public removeSubscriber(channel: T, game: Game): boolean {
+    // TODO: Implement
+    return false;
+  }
 
   /** Sends a message to a channel.
    *
-   * @param  {any} channel - The channel to message.
+   * @param  {BotChannel} channel - The channel to message.
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract sendMessageToChannel(channel: any, message: string | BotNotification): void;
+  public abstract sendMessageToChannel(channel: T, message: string | BotNotification): void;
 
   /** Sends a message to all subscribers of a game.
    *
@@ -129,3 +136,5 @@ abstract class BotClient {
     this.logger.error(msg);
   }
 }
+
+export { BotClient };

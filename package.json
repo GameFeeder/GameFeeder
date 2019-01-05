@@ -38,6 +38,8 @@
     "yarn": "^1.12.3"
   },
   "dependencies": {
+    "@types/node": "^10.12.18",
+    "@types/node-telegram-bot-api": "^0.30.3",
     "discord.js": "^11.4.2",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0",
