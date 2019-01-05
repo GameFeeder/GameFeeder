@@ -1,5 +1,6 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
+import { BotNotification } from './notification';
 import { TelegramChannel } from './telegram_channel';
 
 class TelegramBot extends BotClient {

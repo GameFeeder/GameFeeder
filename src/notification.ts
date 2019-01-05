@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 /** A representation of a bot notification. */
 class BotNotification {
   /** Simple text in the notification. */
@@ -63,3 +65,5 @@ class BotNotification {
     this.footer = footer;
   }
 }
+
+export { BotNotification };

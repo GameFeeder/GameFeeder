@@ -1,4 +1,5 @@
 import { BotClient } from './bot';
+import { BotNotification } from './notification';
 
 class DiscordBot extends BotClient {
   public registerCommand(reg: RegExp, callback: (channel: any, match: RegExpMatchArray) => void): void {
