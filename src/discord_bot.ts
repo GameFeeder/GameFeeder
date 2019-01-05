@@ -41,6 +41,15 @@ class DiscordBot extends BotClient {
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): void {
     const botChannels = this.bot.channels;
     const discordChannel = botChannels.get(channel.id.toString());
+<<<<<<< HEAD
+=======
+    this.logDebug(`MAIN ID: ${channel.id}`);
+
+    for (const key of botChannels.keyArray()) {
+      const c = botChannels.get(key);
+      this.logDebug(`ID: ${c.id}`);
+    }
+>>>>>>> 562356e1dd2f317702185ab5d3bee61b438f7e4f
 
     // Cast to the specific channel and send the message
     if (discordChannel instanceof DMChannel) {
