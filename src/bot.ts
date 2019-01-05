@@ -1,4 +1,5 @@
 import Winston from 'winston';
+import { BotChannel } from './channel';
 import { BotNotification } from './notification';
 
 abstract class BotClient {

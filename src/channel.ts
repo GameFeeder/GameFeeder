@@ -16,3 +16,5 @@ abstract class BotChannel {
    */
   public abstract isEqual(other: BotChannel): boolean;
 }
+
+export { BotChannel };

@@ -1,4 +1,5 @@
 import { Message } from 'node-telegram-bot-api';
+import { BotChannel } from './channel';
 
 class TelegramChannel extends BotChannel {
   constructor(msg: Message) {

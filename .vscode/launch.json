@@ -8,7 +8,7 @@
       "program": "${workspaceRoot}/src/main.ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "outFiles": [ "${worspaceRoot}/src/dist/**/*.js" ]
+      "outFiles": [ "${workspaceRoot}/src/dist/**/*.js" ]
     },
     {
       "type": "node",
@@ -17,7 +17,7 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "outFiles": [ "${worspaceFolder}/src/dist/**/*.js" ],
+      "outFiles": [ "${workspaceFolder}/src/dist/**/*.js" ],
     }
   ]
 }
