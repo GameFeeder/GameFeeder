@@ -21,7 +21,6 @@ class DiscordBot extends BotClient {
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
-        this.logDebug(`Channel ID: ${message.channel.id}`);
         callback(new BotChannel(message.channel.id), regMatch);
       }
     });

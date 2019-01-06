@@ -31,8 +31,20 @@ abstract class BotClient {
       return `${log.timestamp} [${this.label}] ${log.level.toUpperCase()}: \t${log.message}`;
     });
 
+    const alignedWithColorsAndTime = Winston.format.combine(
+      Winston.format.colorize(),
+      Winston.format.timestamp(),
+      Winston.format.printf((info) => {
+        const { timestamp, level, message, ...args } = info;
+
+        const ts = timestamp.slice(0, 19).replace('T', ' ');
+        const obj = Object.keys(args).length ? JSON.stringify(args, null, 2) : '';
+        return `${ts} [${this.label}]\t ${level}:\t ${message} ${obj}`;
+      }),
+    );
+
     this.logger = Winston.createLogger({
-      format: Winston.format.combine(Winston.format.timestamp(), loggerFormat),
+      format: alignedWithColorsAndTime,
       level: 'debug',
       transports: [new Winston.transports.Console()],
     });
