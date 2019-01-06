@@ -24,7 +24,7 @@ const bots = [ telegramBot , discordBot ];
 
 // Register commands
 bots.forEach((bot) => {
-  const botPrefix = bot.prefix;
+  const botPrefix = `${bot.prefix}`;
 
   // Test
   bot.registerCommand(new RegExp(`${botPrefix}test`), (channel) => {

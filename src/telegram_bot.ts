@@ -45,6 +45,9 @@ class TelegramBot extends BotClient {
   public msgFromMarkdown(markdown: string): string {
     // Bold
     markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
+    markdown = markdown.replace(/__(.+)__/g, '*$1*');
+    // Italic
+    markdown = markdown.replace(/\*(.+)\*/g, '_$1_');
 
     // Linewise formatting
     const lineArray = markdown.split('\n');
