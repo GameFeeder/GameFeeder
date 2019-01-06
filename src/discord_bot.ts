@@ -76,12 +76,12 @@ class DiscordBot extends BotClient {
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
       // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s*/, '- ');
+      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
     }
 
     let newMarkdown = '';
     for (const line of lineArray) {
-      newMarkdown += line;
+      newMarkdown += line + '\n';
     }
 
     return newMarkdown;

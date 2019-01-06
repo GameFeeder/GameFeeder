@@ -29,7 +29,8 @@ bots.forEach((bot) => {
   // Test
   bot.registerCommand(new RegExp(`${botPrefix}test`), (channel) => {
     bot.logDebug('Command: Test.');
-    bot.sendMessageToChannel(channel, 'Test!');
+    bot.sendMessageToChannel(channel,
+      'Test!\n*Italic*\n**Bold**\n[Link](https://github.com/TimJentzsch/valveGamesAnnouncerBot)');
   });
 
   // About

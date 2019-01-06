@@ -43,22 +43,22 @@ class TelegramBot extends BotClient {
   }
 
   public msgFromMarkdown(markdown: string): string {
-    // Bold
-    markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
-    markdown = markdown.replace(/__(.+)__/g, '*$1*');
     // Italic
-    markdown = markdown.replace(/\*(.+)\*/g, '_$1_');
+    markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
+    // Bold
+    markdown = markdown.replace(/__(.+)__/g, '*$1*');
+    markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
 
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
       // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s*/, '- ');
+      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
     }
 
     let newMarkdown = '';
     for (const line of lineArray) {
-      newMarkdown += line;
+      newMarkdown += line + '\n';
     }
 
     return newMarkdown;
