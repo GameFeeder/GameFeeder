@@ -37,26 +37,49 @@ class DiscordBot extends BotClient {
     this.bot.destroy();
   }
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
-    const botChannels = this.bot.channels;
-    const discordChannel = botChannels.get(channel.id);
+    if (typeof message === 'string') {
+      // Parse markdown
+      message = this.msgFromMarkdown(message);
+      const botChannels = this.bot.channels;
+      const discordChannel = botChannels.get(channel.id);
 
-    if (!discordChannel) {
-      return false;
-    }
+      if (!discordChannel) {
+        return false;
+      }
 
-    // Cast to the specific channel and send the message
-    if (discordChannel instanceof DMChannel) {
-      discordChannel.send(message);
-      return true;
-    } else if (discordChannel instanceof TextChannel) {
-      discordChannel.send(message);
-      return true;
-    } else if (discordChannel instanceof GroupDMChannel) {
-      discordChannel.send(message);
-      return true;
+      // Cast to the specific channel and send the message
+      if (discordChannel instanceof DMChannel) {
+        discordChannel.send(message);
+        return true;
+      } else if (discordChannel instanceof TextChannel) {
+        discordChannel.send(message);
+        return true;
+      } else if (discordChannel instanceof GroupDMChannel) {
+        discordChannel.send(message);
+        return true;
+      } else {
+        return false;
+      }
     } else {
+      // TODO: Implement BotNotification handling
       return false;
     }
+  }
+
+  public msgFromMarkdown(markdown: string): string {
+    // Linewise formatting
+    const lineArray = markdown.split('\n');
+    for (let i = 0; i < lineArray.length; i++) {
+      // Lists
+      lineArray[i] = lineArray[i].replace(/^\s*\*\s*/, '- ');
+    }
+
+    let newMarkdown = '';
+    for (const line of lineArray) {
+      newMarkdown += line;
+    }
+
+    return newMarkdown;
   }
 }
 
