@@ -23,12 +23,23 @@ const bots = [ telegramBot , discordBot ];
 
 // Register commands
 bots.forEach((bot) => {
-  bot.registerCommand(new RegExp(`${bot.prefix}test`), (channel) => {
+  const botPrefix = bot.prefix;
+
+  // Test
+  bot.registerCommand(new RegExp(`${botPrefix}test`), (channel) => {
     bot.logDebug('Command: Test.');
     bot.sendMessageToChannel(channel, 'Test!');
   });
 
-  bot.registerCommand(new RegExp(`${bot.prefix}subscribe(?<alias>.*)`), (channel, match: any) => {
+  // About
+  bot.registerCommand(new RegExp(`${botPrefix}about`), (channel) => {
+    bot.logDebug('Command: About.');
+    const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
+    bot.sendMessageToChannel(channel, `A notification bot for Valve's games. Learn more on GitHub:\n${gitLink}`);
+  });
+
+  // Subscribe
+  bot.registerCommand(new RegExp(`${botPrefix}sub(scribe)?(?<alias>.*)`), (channel, match: any) => {
     bot.logDebug('Command: Subscribe.');
 
     let { alias } = match.groups;
@@ -46,7 +57,8 @@ bots.forEach((bot) => {
     }
   });
 
-  bot.registerCommand(new RegExp(`${bot.prefix}unsubscribe(?<alias>.*)`), (channel, match: any) => {
+  // Unsubscribe
+  bot.registerCommand(new RegExp(`${bot.prefix}unsub(scribe)?(?<alias>.*)`), (channel, match: any) => {
     bot.logDebug('Command: Unsubscribe.');
 
     let { alias } = match.groups;
