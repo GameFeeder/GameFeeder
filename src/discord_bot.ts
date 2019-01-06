@@ -15,7 +15,7 @@ class DiscordBot extends BotClient {
     this.bot = new DiscordAPI.Client();
   }
 
-  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpMatchArray) => void): void {
+  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpExecArray) => void): void {
     this.bot.on('message', (message) => {
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
@@ -39,7 +39,7 @@ class DiscordBot extends BotClient {
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof message === 'string') {
       // Parse markdown
-      message = this.msgFromMarkdown(message);
+      message = this.msgFromMarkdown(message, false);
       const botChannels = this.bot.channels;
       const discordChannel = botChannels.get(channel.id);
 
@@ -66,7 +66,12 @@ class DiscordBot extends BotClient {
     }
   }
 
-  public msgFromMarkdown(markdown: string): string {
+  public msgFromMarkdown(markdown: string, isEmbed: boolean): string {
+    if (!isEmbed) {
+      // Short links are not supported outside of embeds
+      markdown = markdown.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
+    }
+
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {

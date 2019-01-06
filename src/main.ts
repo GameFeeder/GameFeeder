@@ -1,4 +1,5 @@
 import { BotClient } from './bot';
+import { BotChannel } from './channel';
 import { getBotConfig, getDataConfig } from './data';
 import { DiscordBot } from './discord_bot';
 import { Game } from './game';
@@ -35,7 +36,7 @@ bots.forEach((bot) => {
   bot.registerCommand(new RegExp(`${botPrefix}about`), (channel) => {
     bot.logDebug('Command: About.');
     const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
-    bot.sendMessageToChannel(channel, `A notification bot for Valve's games. Learn more on GitHub:\n${gitLink}`);
+    bot.sendMessageToChannel(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
   });
 
   // Subscribe
@@ -48,9 +49,11 @@ bots.forEach((bot) => {
     for (const game of games) {
       if (game.hasAlias(alias)) {
         if (bot.addSubscriber(channel, game)) {
-          bot.sendMessageToChannel(channel, `You are now subscribed to the ${game.name} feed!`);
+          bot.sendMessageToChannel(channel,
+            `You are now subscribed to the **${game.label}** feed!`);
         } else {
-          bot.sendMessageToChannel(channel, `You have already subscribed to the ${game.name} feed!`);
+          bot.sendMessageToChannel(channel,
+            `You have already subscribed to the **${game.label}** feed!`);
         }
         break;
       }
@@ -58,7 +61,8 @@ bots.forEach((bot) => {
   });
 
   // Unsubscribe
-  bot.registerCommand(new RegExp(`${bot.prefix}unsub(scribe)?(?<alias>.*)`), (channel, match: any) => {
+  bot.registerCommand(new RegExp(`${bot.prefix}unsub(scribe)?(?<alias>.*)`),
+                     (channel, match: any) => {
     bot.logDebug('Command: Unsubscribe.');
 
     let { alias } = match.groups;
@@ -67,9 +71,11 @@ bots.forEach((bot) => {
     for (const game of games) {
       if (game.hasAlias(alias)) {
         if (bot.removeSubscriber(channel, game)) {
-          bot.sendMessageToChannel(channel, `You are now unsubscribed from the ${game.name} feed!`);
+          bot.sendMessageToChannel(channel,
+            `You are now unsubscribed from the **${game.label}** feed!`);
         } else {
-          bot.sendMessageToChannel(channel, `You have never subscribed to the ${game.name} feed in the first place!`);
+          bot.sendMessageToChannel(channel,
+            `You have never subscribed to the **${game.label}** feed in the first place!`);
         }
         break;
       }

@@ -32,12 +32,33 @@ class TelegramBot extends BotClient {
     this.bot.stopPolling();
   }
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
-    if (typeof(message) === 'string') {
-      this.bot.sendMessage(channel.id, message);
+    if (typeof (message) === 'string') {
+      message = this.msgFromMarkdown(message);
+      this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
     } else {
-      this.bot.sendMessage(channel.id, message.text);
+      message.text = this.msgFromMarkdown(message.text);
+      this.bot.sendMessage(channel.id, message.text, { parse_mode: 'Markdown' });
     }
     return true;
+  }
+
+  public msgFromMarkdown(markdown: string): string {
+    // Bold
+    markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
+
+    // Linewise formatting
+    const lineArray = markdown.split('\n');
+    for (let i = 0; i < lineArray.length; i++) {
+      // Lists
+      lineArray[i] = lineArray[i].replace(/^\s*\*\s*/, '- ');
+    }
+
+    let newMarkdown = '';
+    for (const line of lineArray) {
+      newMarkdown += line;
+    }
+
+    return newMarkdown;
   }
 }
 
