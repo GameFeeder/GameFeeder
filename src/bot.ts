@@ -2,6 +2,7 @@ import Winston from 'winston';
 import { BotChannel } from './channel';
 import { getSubscribers, setSubscribers } from './data';
 import { Game } from './game';
+import { botLogger } from './logger';
 import { BotNotification } from './notification';
 
 abstract class BotClient {
@@ -11,9 +12,6 @@ abstract class BotClient {
   public label: string;
   /** The prefix to use for commands. */
   public prefix: string;
-
-  /** The logger used for the bot. */
-  private logger: Winston.Logger;
 
   /** Creates a new BotClient.
    *
@@ -25,29 +23,6 @@ abstract class BotClient {
     this.name = name;
     this.label = label;
     this.prefix = prefix;
-
-    // Create logger
-    const loggerFormat = Winston.format.printf((log) => {
-      return `${log.timestamp} [${this.label}] ${log.level.toUpperCase()}: \t${log.message}`;
-    });
-
-    const alignedWithColorsAndTime = Winston.format.combine(
-      Winston.format.colorize(),
-      Winston.format.timestamp(),
-      Winston.format.printf((info) => {
-        const { timestamp, level, message, ...args } = info;
-
-        const ts = timestamp.slice(0, 19).replace('T', ' ');
-        const obj = Object.keys(args).length ? JSON.stringify(args, null, 2) : '';
-        return `${ts} [${this.label}]\t ${level}:\t ${message} ${obj}`;
-      }),
-    );
-
-    this.logger = Winston.createLogger({
-      format: alignedWithColorsAndTime,
-      level: 'debug',
-      transports: [new Winston.transports.Console()],
-    });
   }
 
   /** Register a bot command.
@@ -158,7 +133,7 @@ abstract class BotClient {
    * @returns void
    */
   public logDebug(msg: string): void {
-    this.logger.debug(msg);
+    botLogger.debug(msg, this.label);
   }
 
   /** Logs an info message.
@@ -167,7 +142,7 @@ abstract class BotClient {
    * @returns void
    */
   public logInfo(msg: string): void {
-    this.logger.info(msg);
+    botLogger.info(msg, this.label);
   }
 
   /** Logs a warning message.
@@ -176,7 +151,7 @@ abstract class BotClient {
    * @returns void
    */
   public logWarn(msg: string): void {
-    this.logger.warn(msg);
+    botLogger.warn(msg, this.label);
   }
 
   /** Logs an error message.
@@ -185,7 +160,7 @@ abstract class BotClient {
    * @returns void
    */
   public logError(msg: string): void {
-    this.logger.error(msg);
+    botLogger.error(msg, this.label);
   }
 }
 
