@@ -1,26 +1,5 @@
-import { BotClient } from './bot';
-import { BotChannel } from './channel';
-import { getBotConfig, getDataConfig } from './data';
-import { DiscordBot } from './discord_bot';
-import { Game } from './game';
-import { TelegramBot } from './telegram_bot';
-
-// Games
-const games: Game[] = [];
-getDataConfig().games.forEach((game: any) => {
-  games.push(new Game(game.name, game.aliases, game.label));
-});
-
-// Telegram Bot
-const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
-
-// Discord Bot
-const { prefix: discordPrefix, token: discordToken } = getBotConfig().discord;
-const discordBot = new DiscordBot(discordPrefix, discordToken);
-
-// All bots
-const bots = [ telegramBot , discordBot ];
+import { bots } from './bot';
+import { games } from './game';
 
 // Register commands
 bots.forEach((bot) => {

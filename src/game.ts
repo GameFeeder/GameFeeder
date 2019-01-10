@@ -1,3 +1,5 @@
+import { getDataConfig } from './data';
+
 /** A representation of a game. */
 class Game {
   /** The internal name of the game. */
@@ -37,4 +39,10 @@ class Game {
   }
 }
 
-export { Game };
+// All Games
+const games: Game[] = [];
+getDataConfig().games.forEach((game: any) => {
+  games.push(new Game(game.name, game.aliases, game.label));
+});
+
+export { Game, games };

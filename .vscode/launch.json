@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Bots",
-      "program": "${workspaceRoot}/src/main.ts",
+      "program": "${workspaceRoot}/src/_main.ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
       "outFiles": [ "${workspaceRoot}/src/dist/**/*.js" ]
