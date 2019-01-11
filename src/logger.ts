@@ -67,4 +67,4 @@ class Logger {
 // The logger we use
 const botLogger = new Logger();
 
-export { botLogger };
+export default botLogger;

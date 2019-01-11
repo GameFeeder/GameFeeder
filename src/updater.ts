@@ -1,5 +1,5 @@
 import RSS from 'rss-parser';
-import { botLogger } from './logger';
+import botLogger from './logger';
 
 class Updater {
   /** Determines if the auto updating is set to on or off. */
@@ -63,4 +63,4 @@ class Updater {
 // The updater used by our main method
 const updater = new Updater(30);
 
-export { updater };
+export default updater;

@@ -45,4 +45,5 @@ getDataConfig().games.forEach((game: any) => {
   games.push(new Game(game.name, game.aliases, game.label));
 });
 
+export default games;
 export { Game, games };

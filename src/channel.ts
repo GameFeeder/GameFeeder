@@ -1,5 +1,5 @@
 /** A representation of a bot's channel. */
-class BotChannel {
+export default class BotChannel {
   /** The unique ID of the channel. */
   public id: string;
   /** Creates a new BotChannel. */
@@ -21,5 +21,3 @@ class BotChannel {
     return this.id;
   }
 }
-
-export { BotChannel };
