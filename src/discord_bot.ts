@@ -3,7 +3,7 @@ import { BotClient } from './bot';
 import BotChannel from './channel';
 import BotNotification from './notification';
 
-export default class DiscordBot extends BotClient {
+class DiscordBot extends BotClient {
   private bot: DiscordAPI.Client;
   private token: string;
 
@@ -15,7 +15,7 @@ export default class DiscordBot extends BotClient {
     this.bot = new DiscordAPI.Client();
   }
 
-  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpExecArray) => void): void {
+  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpMatchArray) => void): void {
     this.bot.on('message', (message) => {
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
@@ -39,7 +39,7 @@ export default class DiscordBot extends BotClient {
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof message === 'string') {
       // Parse markdown
-      message = this.msgFromMarkdown(message, false);
+      message = this.msgFromMarkdown(message);
       const botChannels = this.bot.channels;
       const discordChannel = botChannels.get(channel.id);
 
@@ -66,24 +66,21 @@ export default class DiscordBot extends BotClient {
     }
   }
 
-  public msgFromMarkdown(markdown: string, isEmbed: boolean): string {
-    if (!isEmbed) {
-      // Short links are not supported outside of embeds
-      markdown = markdown.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
-    }
-
+  public msgFromMarkdown(markdown: string): string {
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
       // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
+      lineArray[i] = lineArray[i].replace(/^\s*\*\s*/, '- ');
     }
 
     let newMarkdown = '';
     for (const line of lineArray) {
-      newMarkdown += line + '\n';
+      newMarkdown += line;
     }
 
     return newMarkdown;
   }
 }
+
+export { DiscordBot };

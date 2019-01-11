@@ -1,9 +1,9 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
-import { BotChannel } from './channel';
-import { BotNotification } from './notification';
+import BotChannel from './channel';
+import BotNotification from './notification';
 
-class TelegramBot extends BotClient {
+export default class TelegramBot extends BotClient {
   private bot: TelegramAPI;
   private token: string;
 
@@ -64,5 +64,3 @@ class TelegramBot extends BotClient {
     return newMarkdown;
   }
 }
-
-export { TelegramBot };
