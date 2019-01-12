@@ -1,7 +1,7 @@
 import RSSParser from 'rss-parser';
 import { URL } from 'url';
 import { Game } from './game';
-import { BotNotification } from './notification';
+import BotNotification from './notification';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
 

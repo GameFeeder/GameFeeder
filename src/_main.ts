@@ -1,6 +1,6 @@
 import bots from './bots';
 import { games } from './game';
-import { updater } from './updater';
+import updater from './updater';
 
 // Register commands
 bots.forEach((bot) => {
