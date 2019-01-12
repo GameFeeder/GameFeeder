@@ -65,6 +65,16 @@ class BotNotification {
     this.timestamp = timestamp;
     this.footer = footer;
   }
+
+  public compare(b: BotNotification) {
+    if (this.timestamp < b.timestamp) {
+      return -1;
+    } else if (this.timestamp > b.timestamp) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }
 
 export { BotNotification };

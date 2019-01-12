@@ -1,5 +1,6 @@
-import { bots } from './bot';
+import bots from './bots';
 import { games } from './game';
+import { updater } from './updater';
 
 // Register commands
 bots.forEach((bot) => {
@@ -71,3 +72,6 @@ bots.forEach((bot) => {
     bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
   }
 });
+
+// Start updater
+updater.start();

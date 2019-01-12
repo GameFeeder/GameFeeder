@@ -1,6 +1,7 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
 import { BotChannel } from './channel';
+import { getBotConfig } from './data';
 import { BotNotification } from './notification';
 
 class TelegramBot extends BotClient {
@@ -65,4 +66,8 @@ class TelegramBot extends BotClient {
   }
 }
 
-export { TelegramBot };
+// Telegram Bot
+const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
+const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
+
+export { TelegramBot, telegramBot };

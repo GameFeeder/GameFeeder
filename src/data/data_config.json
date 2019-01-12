@@ -36,7 +36,10 @@
           ]
         },
         "blogs": [
-          "http://blog.dota2.com/feed/"
+          {
+            "url": "http://blog.dota2.com/feed/",
+            "label": "Dota 2"
+          }
         ]
       }
     }

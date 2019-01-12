@@ -1,17 +1,25 @@
-import RSS from 'rss-parser';
+import bots from './bots';
+import { games } from './game';
 import { botLogger } from './logger';
+import { BotNotification } from './notification';
+import RSS from './rss';
+
+const rss = new RSS();
 
 class Updater {
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
   /** The update interval in milliseconds */
   private updateDelayMs: number;
+  private lastUpdate: Date;
 
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(updateDelaySec: number) {
+  constructor(updateDelaySec: number, lastUpdate: Date) {
     this.setDelaySec(updateDelaySec);
+    this.lastUpdate = lastUpdate;
+    this.doUpdates = false;
   }
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
@@ -45,7 +53,19 @@ class Updater {
     this.doUpdates = false;
   }
   public update(): void {
-    // TODO
+    const notifications: BotNotification[] = [];
+    for (const game of games) {
+      notifications.concat(rss.getGameNotifications(game, this.lastUpdate, 3));
+    }
+    // Sort the notifications by their date, from old to new.
+    notifications.sort((a, b) => {
+      return a.compare(b);
+    });
+    for (const bot of bots) {
+      for (const notification of notifications) {
+        bot.sendMessageToGameSubs(notification.game, notification);
+      }
+    }
   }
   /** Updates in the specified time interval.
    * @returns {void}
@@ -61,6 +81,6 @@ class Updater {
 }
 
 // The updater used by our main method
-const updater = new Updater(30);
+const updater = new Updater(30, new Date('2019-01-10'));
 
 export { updater };

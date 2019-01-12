@@ -1,6 +1,7 @@
 import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
 import { BotChannel } from './channel';
+import { getBotConfig } from './data';
 import { BotNotification } from './notification';
 
 class DiscordBot extends BotClient {
@@ -88,4 +89,8 @@ class DiscordBot extends BotClient {
   }
 }
 
-export { DiscordBot };
+// Discord Bot
+const { prefix: discordPrefix, token: discordToken } = getBotConfig().discord;
+const discordBot = new DiscordBot(discordPrefix, discordToken);
+
+export { DiscordBot, discordBot };

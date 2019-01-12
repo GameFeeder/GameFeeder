@@ -1,8 +1,5 @@
-import Winston from 'winston';
-import { DiscordBot } from './bot_discord';
-import { TelegramBot } from './bot_telegram';
 import { BotChannel } from './channel';
-import { getBotConfig, getSubscribers, setSubscribers } from './data';
+import { getSubscribers, setSubscribers } from './data';
 import { Game } from './game';
 import { botLogger } from './logger';
 import { BotNotification } from './notification';
@@ -166,15 +163,4 @@ abstract class BotClient {
   }
 }
 
-// Telegram Bot
-const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
-
-// Discord Bot
-const { prefix: discordPrefix, token: discordToken } = getBotConfig().discord;
-const discordBot = new DiscordBot(discordPrefix, discordToken);
-
-// All BotClients
-const bots = [ telegramBot , discordBot ];
-
-export { BotClient, bots };
+export { BotClient };
