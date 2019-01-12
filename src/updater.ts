@@ -1,7 +1,7 @@
 import bots from './bots';
 import { games } from './game';
-import { botLogger } from './logger';
-import { BotNotification } from './notification';
+import botLogger from './logger';
+import BotNotification from './notification';
 import RSS from './rss';
 
 const rss = new RSS();
@@ -83,4 +83,4 @@ class Updater {
 // The updater used by our main method
 const updater = new Updater(30, new Date('2019-01-10'));
 
-export { updater };
+export default updater;

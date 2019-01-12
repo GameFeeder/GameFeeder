@@ -2,7 +2,7 @@ import { URL } from 'url';
 import { Game } from './game';
 
 /** A representation of a bot notification. */
-class BotNotification {
+export default class BotNotification {
   /** Simple text in the notification. */
   public text: string;
   /** The game the notification is for. */
@@ -76,5 +76,3 @@ class BotNotification {
     }
   }
 }
-
-export { BotNotification };

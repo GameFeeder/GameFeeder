@@ -67,4 +67,5 @@ for (const game of getDataConfig(). games) {
   games.push(new Game(game.name, game.aliases, game.label, providers));
 }
 
+export default games;
 export { Game, games };
