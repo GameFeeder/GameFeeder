@@ -19,6 +19,7 @@ export default class RSS {
 
     for (const provider of game.providers) {
       try {
+        // const feed = await this.parse.parseURL(provider.url);
         const feed = await this.parser.parseURL(provider.url);
 
         for (const item of feed.items) {
@@ -27,8 +28,8 @@ export default class RSS {
           let message = '';
           let author = '';
           const color = 'FFFFFF';
-          const thumbnail = new URL('');
-          const image = new URL('');
+          const thumbnail = '';
+          const image = '';
           const footer = '';
 
           if (provider instanceof RedditProvider) {
@@ -44,13 +45,13 @@ export default class RSS {
           const notification = new BotNotification(message, game, title, link, author, color,
             description, thumbnail, image, timestamp, footer);
 
-          if ((date && (notification.timestamp < date)) || (limit && (notifications.length >= limit))) {
+          if ((date && (notification.timestamp <= date)) || (limit && (notifications.length >= limit))) {
             break;
           }
           notifications.push(notification);
         }
       } catch (error) {
-        botLogger.debug(`Failed to parse URL: ${provider.url}\n${error}`, 'RSS');
+        botLogger.error(`Failed to parse URL: '${provider.url}'\n${error}`, 'RSS');
       }
     }
     // Sort the notifications by their date, from old to new.

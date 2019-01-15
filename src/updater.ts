@@ -53,17 +53,20 @@ class Updater {
     this.doUpdates = false;
   }
   public async update(): Promise<void> {
-    const notifications: BotNotification[] = [];
+    let notifications: BotNotification[] = [];
     for (const game of games) {
-      notifications.concat(await rss.getGameNotifications(game, this.lastUpdate, 3));
+      notifications = notifications.concat(await rss.getGameNotifications(game, this.lastUpdate, 3));
     }
-    // Sort the notifications by their date, from old to new.
-    notifications.sort((a, b) => {
-      return a.compare(b);
-    });
-    for (const bot of bots) {
-      for (const notification of notifications) {
-        bot.sendMessageToGameSubs(notification.game, notification);
+    if (notifications.length > 0) {
+      // Sort the notifications by their date, from old to new.
+      notifications.sort((a, b) => {
+        return a.compare(b);
+      });
+      this.lastUpdate = notifications[notifications.length - 1].timestamp;
+      for (const bot of bots) {
+        for (const notification of notifications) {
+          bot.sendMessageToGameSubs(notification.game, notification);
+        }
       }
     }
   }

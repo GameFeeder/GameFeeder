@@ -64,8 +64,28 @@ export default class DiscordBot extends BotClient {
         return false;
       }
     } else {
-      // TODO: Implement BotNotification handling
-      return false;
+      // Parse markdown
+      const text = `${this.msgFromMarkdown(message.text, false)}\n${message.link}`;
+      const botChannels = this.bot.channels;
+      const discordChannel = botChannels.get(channel.id);
+
+      if (!discordChannel) {
+        return false;
+      }
+
+      // Cast to the specific channel and send the message
+      if (discordChannel instanceof DMChannel) {
+        discordChannel.send(text);
+        return true;
+      } else if (discordChannel instanceof TextChannel) {
+        discordChannel.send(text);
+        return true;
+      } else if (discordChannel instanceof GroupDMChannel) {
+        discordChannel.send(text);
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

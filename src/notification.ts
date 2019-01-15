@@ -11,7 +11,7 @@ export default class BotNotification {
   /** The title of the notification. */
   public title: string;
   /** The link to the source of the notification. */
-  public link: URL;
+  public link: string;
   /** The author of the notification. */
   public author: string;
   /** The color of the notification. */
@@ -19,9 +19,9 @@ export default class BotNotification {
   /** The description of the notification. */
   public description: string;
   /** The (small) thumbnail of the notification. */
-  public thumbnail: URL;
+  public thumbnail: string;
   /** The (big) image of the notification. */
-  public image: URL;
+  public image: string;
   /** The timestamp of the notification. */
   public timestamp: Date;
   /** The footer of the notification. */
@@ -31,12 +31,12 @@ export default class BotNotification {
    * @param  {string} text - Simple text in the notification.
    * @param  {Game} game - The game the notification is for.
    * @param  {string} title - The title of the notification.
-   * @param  {URL} link - The link to the source of the notification.
+   * @param  {string} link - The link to the source of the notification.
    * @param  {string} author - The author of the notification.
    * @param  {string} color - The color of the notification.
    * @param  {string} description - The description of the notification.
-   * @param  {URL} thumbnail - he (small) thumbnail of the notification.
-   * @param  {URL} image - The (big) image of the notification.
+   * @param  {string} thumbnail - he (small) thumbnail of the notification.
+   * @param  {string} image - The (big) image of the notification.
    * @param  {Date} timestamp - The timestamp of the notification.
    * @param  {string} footer - The footer of the notification.
    */
@@ -44,12 +44,12 @@ export default class BotNotification {
     text: string,
     game: Game,
     title: string,
-    link: URL,
+    link: string,
     author: string,
     color: string,
     description: string,
-    thumbnail: URL,
-    image: URL,
+    thumbnail: string,
+    image: string,
     timestamp: Date,
     footer: string,
   ) {

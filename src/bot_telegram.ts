@@ -39,8 +39,8 @@ export default class TelegramBot extends BotClient {
       message = this.msgFromMarkdown(message);
       this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
     } else {
-      message.text = this.msgFromMarkdown(message.text);
-      this.bot.sendMessage(channel.id, message.text, { parse_mode: 'Markdown' });
+      const text = `${this.msgFromMarkdown(message.text)}\n[Link](${message.link})`;
+      this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown' });
     }
     return true;
   }

@@ -117,7 +117,13 @@ abstract class BotClient {
    * @returns void
    */
   public sendMessageToGameSubs(game: Game, message: string | BotNotification): void {
-    // TODO: Implement
+    const subscribers = getSubscribers()[this.name][game.name];
+
+    if (subscribers) {
+      for (const sub of subscribers) {
+        this.sendMessageToChannel(new BotChannel(sub), message);
+      }
+    }
   }
 
   /** Sends a message to all subscribers.

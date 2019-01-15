@@ -1,4 +1,3 @@
-import { URL } from 'url';
 import Provider from './provider';
 
 export default class BlogProvider extends Provider {
