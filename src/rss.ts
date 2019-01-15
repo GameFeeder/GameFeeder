@@ -1,6 +1,7 @@
 import RSSParser from 'rss-parser';
 import { URL } from 'url';
 import { Game } from './game';
+import botLogger from './logger';
 import BotNotification from './notification';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
@@ -13,39 +14,43 @@ export default class RSS {
     this.parser = new RSSParser();
   }
 
-  public getGameNotifications(game: Game, date?: Date, limit?: number): BotNotification[] {
+  public async getGameNotifications(game: Game, date?: Date, limit?: number): Promise<BotNotification[]> {
     const notifications: BotNotification[] = [];
 
     for (const provider of game.providers) {
-      const feed = this.parser.parseURL(provider.url);
+      try {
+        const feed = await this.parser.parseURL(provider.url);
 
-      for (const item of feed.items) {
-        const { title, link, contentSnippet: description } = item;
-        const timestamp = new Date(item.isoDate);
-        let message = '';
-        let author = '';
-        const color = 'FFFFFF';
-        const thumbnail = new URL('');
-        const image = new URL('');
-        const footer = '';
+        for (const item of feed.items) {
+          const { title, link, contentSnippet: description } = item;
+          const timestamp = new Date(item.isoDate);
+          let message = '';
+          let author = '';
+          const color = 'FFFFFF';
+          const thumbnail = new URL('');
+          const image = new URL('');
+          const footer = '';
 
-        if (provider instanceof RedditProvider) {
-          message = `New post by ${provider.username}!`;
-          author = provider.username;
-        } else if (provider instanceof BlogProvider) {
-          message = `New ${provider.label} blog post!`;
-          author = provider.label;
-        } else {
-          message = 'News!';
+          if (provider instanceof RedditProvider) {
+            message = `New post by ${provider.username}!`;
+            author = provider.username;
+          } else if (provider instanceof BlogProvider) {
+            message = `New ${provider.label} blog post!`;
+            author = provider.label;
+          } else {
+            message = 'News!';
+          }
+
+          const notification = new BotNotification(message, game, title, link, author, color,
+            description, thumbnail, image, timestamp, footer);
+
+          if ((date && (notification.timestamp < date)) || (limit && (notifications.length >= limit))) {
+            break;
+          }
+          notifications.push(notification);
         }
-
-        const notification = new BotNotification(message, game, title, link, author, color,
-          description, thumbnail, image, timestamp, footer);
-
-        if ((date && (notification.timestamp < date)) || (limit && (notifications.length >= limit))) {
-          break;
-        }
-        notifications.push(notification);
+      } catch (error) {
+        botLogger.debug(`Failed to parse URL: ${provider.url}\n${error}`, 'RSS');
       }
     }
     // Sort the notifications by their date, from old to new.

@@ -29,6 +29,7 @@ export default class DiscordBot extends BotClient {
   public async start(): Promise<boolean> {
     if (this.token) {
       this.bot.login(this.token);
+      this.isRunning = true;
       return true;
     } else {
       return false;
@@ -36,6 +37,7 @@ export default class DiscordBot extends BotClient {
   }
   public stop(): void {
     this.bot.destroy();
+    this.isRunning = false;
   }
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof message === 'string') {

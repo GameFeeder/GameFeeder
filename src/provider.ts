@@ -1,11 +1,9 @@
-import { URL } from 'url';
-
 export default class Provider {
-  public url: URL;
+  public url: string;
   public label: string;
 
-  constructor(url: URL, label: string) {
-    this.url = url;
+  constructor(url: string, label: string) {
+    this.url = `${url}.rss`;
     this.label = label;
   }
 }

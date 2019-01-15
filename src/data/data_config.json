@@ -37,7 +37,7 @@
         },
         "blogs": [
           {
-            "url": "http://blog.dota2.com/feed/",
+            "url": "https://blog.dota2.com/feed/",
             "label": "Dota 2"
           }
         ]

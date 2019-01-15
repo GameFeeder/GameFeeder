@@ -11,6 +11,8 @@ abstract class BotClient {
   public label: string;
   /** The prefix to use for commands. */
   public prefix: string;
+  /** Indicator if the bot is currently running or not. */
+  public isRunning: boolean;
 
   /** Creates a new BotClient.
    *
@@ -22,6 +24,7 @@ abstract class BotClient {
     this.name = name;
     this.label = label;
     this.prefix = prefix;
+    this.isRunning = false;
   }
 
   /** Register a bot command.

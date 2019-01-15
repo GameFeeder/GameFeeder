@@ -52,10 +52,10 @@ class Updater {
   public stop(): void {
     this.doUpdates = false;
   }
-  public update(): void {
+  public async update(): Promise<void> {
     const notifications: BotNotification[] = [];
     for (const game of games) {
-      notifications.concat(rss.getGameNotifications(game, this.lastUpdate, 3));
+      notifications.concat(await rss.getGameNotifications(game, this.lastUpdate, 3));
     }
     // Sort the notifications by their date, from old to new.
     notifications.sort((a, b) => {
@@ -73,7 +73,7 @@ class Updater {
   private async updateLoop(): Promise<void> {
     if (this.doUpdates) {
       // Update
-      this.update();
+      await this.update();
       // Update again after the delay
       setTimeout(() => { this.updateLoop(); }, this.updateDelayMs);
     }

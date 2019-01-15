@@ -24,6 +24,7 @@ export default class TelegramBot extends BotClient {
   public async start(): Promise<boolean> {
     if (this.token) {
       this.bot.startPolling({ restart: true });
+      this.isRunning = true;
       return true;
     } else {
       return false;
@@ -31,6 +32,7 @@ export default class TelegramBot extends BotClient {
   }
   public stop(): void {
     this.bot.stopPolling();
+    this.isRunning = false;
   }
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof (message) === 'string') {
