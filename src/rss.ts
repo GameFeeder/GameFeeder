@@ -27,8 +27,8 @@ export default class RSS {
           const timestamp = new Date(item.isoDate);
           let message = '';
           let author = '';
-          const color = 'FFFFFF';
-          const thumbnail = '';
+          const color = game.color;
+          const thumbnail = game.icon;
           const image = '';
           const footer = '';
 

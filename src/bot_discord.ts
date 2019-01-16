@@ -66,6 +66,8 @@ export default class DiscordBot extends BotClient {
     } else {
       // Parse markdown
       const text = `${this.msgFromMarkdown(message.text, false)}\n${message.link}`;
+      const embed = this.embedFromNotification(message);
+
       const botChannels = this.bot.channels;
       const discordChannel = botChannels.get(channel.id);
 
@@ -75,18 +77,49 @@ export default class DiscordBot extends BotClient {
 
       // Cast to the specific channel and send the message
       if (discordChannel instanceof DMChannel) {
-        discordChannel.send(text);
+        discordChannel.send({ embed });
         return true;
       } else if (discordChannel instanceof TextChannel) {
-        discordChannel.send(text);
+        discordChannel.send({ embed });
         return true;
       } else if (discordChannel instanceof GroupDMChannel) {
-        discordChannel.send(text);
+        discordChannel.send({ embed });
         return true;
       } else {
         return false;
       }
     }
+  }
+  public embedFromNotification(notification: BotNotification): DiscordAPI.RichEmbed {
+    const embed = new DiscordAPI.RichEmbed();
+    if (notification.title) {
+      embed.setTitle(notification.title);
+    }
+    if (notification.author) {
+      embed.setAuthor(notification.author);
+    }
+    if (notification.color) {
+      embed.setColor(notification.color);
+    }
+    if (notification.description) {
+      embed.setDescription(notification.description);
+    }
+    if (notification.footer) {
+      embed.setFooter(notification.footer);
+    }
+    if (notification.image) {
+      embed.setImage(notification.image);
+    }
+    if (notification.thumbnail) {
+      embed.setThumbnail(notification.thumbnail);
+    }
+    if (notification.timestamp) {
+      embed.setTimestamp(notification.timestamp);
+    }
+    if (notification.link) {
+      embed.setURL(notification.link);
+    }
+    return embed;
   }
 
   public msgFromMarkdown(markdown: string, isEmbed: boolean): string {

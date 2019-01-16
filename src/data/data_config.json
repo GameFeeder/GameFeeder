@@ -8,8 +8,11 @@
         "card game",
         "dcg"
       ],
+      "color": "#FFD700",
+      "icon": "https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png",
       "providers": {
         "reddit": {
+          "subreddit": "Artifact",
           "usernames": [
             "Magesunite",
             "SirBelvedere",
@@ -27,8 +30,11 @@
         "dota 2",
         "d2"
       ],
+      "color": "#CC0000",
+      "icon": "http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png",
       "providers": {
         "reddit": {
+          "subreddit": "DotA2",
           "usernames": [
             "Magesunite",
             "SirBelvedere",
