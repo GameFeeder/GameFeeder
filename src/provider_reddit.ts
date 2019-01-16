@@ -5,7 +5,7 @@ export default class RedditProvider extends Provider {
   public subreddit: string;
 
   constructor(username: string, subreddit: string) {
-    super(`https://www.reddit.com/user/${username}/posts/`, `/u/${username}`);
+    super(`https://www.reddit.com/user/${username}/submitted/`, `/u/${username}`);
     this.username = username;
     this.subreddit = subreddit;
   }

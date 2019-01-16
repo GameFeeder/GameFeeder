@@ -12,12 +12,14 @@ class Updater {
   /** The update interval in milliseconds */
   private updateDelayMs: number;
   private lastUpdate: Date;
+  private limit: number;
 
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(updateDelaySec: number, lastUpdate: Date) {
+  constructor(updateDelaySec: number, limit: number, lastUpdate: Date) {
     this.setDelaySec(updateDelaySec);
+    this.limit = limit;
     this.lastUpdate = lastUpdate;
     this.doUpdates = false;
   }
@@ -55,7 +57,7 @@ class Updater {
   public async update(): Promise<void> {
     let notifications: BotNotification[] = [];
     for (const game of games) {
-      notifications = notifications.concat(await rss.getGameNotifications(game, this.lastUpdate, 3));
+      notifications = notifications.concat(await rss.getGameNotifications(game, this.lastUpdate));
     }
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
@@ -84,6 +86,6 @@ class Updater {
 }
 
 // The updater used by our main method
-const updater = new Updater(30, new Date('2019-01-10'));
+const updater = new Updater(30, 3, new Date('2019-01-10'));
 
 export default updater;

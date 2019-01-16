@@ -15,9 +15,10 @@ export default class RSS {
   }
 
   public async getGameNotifications(game: Game, date?: Date, limit?: number): Promise<BotNotification[]> {
-    const notifications: BotNotification[] = [];
+    let notifications: BotNotification[] = [];
 
     for (const provider of game.providers) {
+      const providerNotifications: BotNotification[] = [];
       try {
         // const feed = await this.parse.parseURL(provider.url);
         const feed = await this.parser.parseURL(provider.url);
@@ -45,15 +46,18 @@ export default class RSS {
           const notification = new BotNotification(message, game, title, link, author, color,
             description, thumbnail, image, timestamp, footer);
 
-          if ((date && (notification.timestamp <= date)) || (limit && (notifications.length >= limit))) {
+          if ((date && (notification.timestamp <= date)) || (limit && (providerNotifications.length >= limit))) {
             break;
           }
-          notifications.push(notification);
+          providerNotifications.push(notification);
         }
       } catch (error) {
         botLogger.error(`Failed to parse URL: '${provider.url}'\n${error}`, 'RSS');
       }
+      // Add the notifications of this provider to all the notifications
+      notifications = notifications.concat(providerNotifications);
     }
+
     // Sort the notifications by their date, from old to new.
     notifications.sort((a, b) => {
       return a.compare(b);
