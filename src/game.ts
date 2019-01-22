@@ -60,13 +60,13 @@ for (const game of getDataConfig(). games) {
   // Reddit providers
   if (game.providers.reddit.usernames) {
     for (const redditUser of game.providers.reddit.usernames) {
-      providers.push(new RedditProvider(redditUser, game.providers.reddit.subreddit));
+      providers.push(new RedditProvider(redditUser, game.providers.reddit.subreddit, game));
     }
   }
   // Blog providers
   if (game.providers.blogs) {
     for (const blog of game.providers.blogs) {
-      providers.push(new BlogProvider(blog.url, blog.label));
+      providers.push(new BlogProvider(blog.url, blog.label, game));
     }
   }
 

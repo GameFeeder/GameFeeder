@@ -42,6 +42,7 @@
     "@types/node-telegram-bot-api": "^0.30.3",
     "@types/xml2js": "^0.4.3",
     "discord.js": "^11.4.2",
+    "feed-read": "^0.0.1",
     "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0",

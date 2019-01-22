@@ -57,14 +57,24 @@ class Updater {
   public async update(): Promise<void> {
     let notifications: BotNotification[] = [];
     for (const game of games) {
-      notifications = notifications.concat(await rss.getGameNotifications(game, this.lastUpdate));
+      let gameNotifications: BotNotification[] = [];
+      for (const provider of game.providers) {
+        gameNotifications = gameNotifications.concat(await provider.getNotifications(this.lastUpdate, this.limit));
+      }
+      // Keep the notification count for each game in the limit
+      if (this.limit > gameNotifications.length) {
+        gameNotifications = gameNotifications.slice(gameNotifications.length - this.limit);
+      }
+      notifications = notifications.concat(gameNotifications);
     }
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
       notifications.sort((a, b) => {
         return a.compare(b);
       });
+      // Update time
       this.lastUpdate = notifications[notifications.length - 1].timestamp;
+      // Notify users
       for (const bot of bots) {
         for (const notification of notifications) {
           bot.sendMessageToGameSubs(notification.game, notification);

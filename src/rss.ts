@@ -1,67 +1,39 @@
-import RSSParser from 'rss-parser';
-import { URL } from 'url';
+import { feed as feedReader } from 'feed-read';
 import { Game } from './game';
 import botLogger from './logger';
-import BotNotification from './notification';
-import BlogProvider from './provider_blog';
-import RedditProvider from './provider_reddit';
+import RSSItem from './rss_item';
 
 export default class RSS {
-  private parser: any;
-  private newEntries: object;
+  public static async getFeedItems(url: string, date?: Date, limit?: number): Promise<RSSItem[]> {
+    let feedItems: RSSItem[] = [];
 
-  constructor() {
-    this.parser = new RSSParser();
-  }
-
-  public async getGameNotifications(game: Game, date?: Date, limit?: number): Promise<BotNotification[]> {
-    let notifications: BotNotification[] = [];
-
-    for (const provider of game.providers) {
-      const providerNotifications: BotNotification[] = [];
-      try {
-        // const feed = await this.parse.parseURL(provider.url);
-        const feed = await this.parser.parseURL(provider.url);
-
-        for (const item of feed.items) {
-          const { title, link, contentSnippet: description } = item;
-          const timestamp = new Date(item.isoDate);
-          let message = '';
-          let author = '';
-          const color = game.color;
-          const thumbnail = game.icon;
-          const image = '';
-          const footer = '';
-
-          if (provider instanceof RedditProvider) {
-            message = `New post by ${provider.username}!`;
-            author = provider.username;
-          } else if (provider instanceof BlogProvider) {
-            message = `New ${provider.label} blog post!`;
-            author = provider.label;
-          } else {
-            message = 'News!';
-          }
-
-          const notification = new BotNotification(message, game, title, link, author, color,
-            description, thumbnail, image, timestamp, footer);
-
-          if ((date && (notification.timestamp <= date)) || (limit && (providerNotifications.length >= limit))) {
-            break;
-          }
-          providerNotifications.push(notification);
-        }
-      } catch (error) {
-        botLogger.error(`Failed to parse URL: '${provider.url}'\n${error}`, 'RSS');
+    feedReader(url, (err: any, items: Array<{title: string, author: string, link: string, content: string,
+      timestamp: Date, feed: {name: string, source: string, link: string}}>) => {
+      if (err) {
+        botLogger.error(err, 'RSS');
+        return;
       }
-      // Add the notifications of this provider to all the notifications
-      notifications = notifications.concat(providerNotifications);
-    }
+      for (const item of items) {
+        const { title, author, link, content, timestamp, feed } = item;
+        const rssItem = new RSSItem(title, author, link, content, timestamp, feed);
 
-    // Sort the notifications by their date, from old to new.
-    notifications.sort((a, b) => {
+        // Add the item if it is new enough
+        if ((date && (rssItem.timestamp > date))) {
+          feedItems.push(rssItem);
+        }
+      }
+    });
+
+    // Sort the items by date
+    feedItems.sort((a, b) => {
       return a.compare(b);
     });
-    return notifications;
+
+    // Only take the newest entries
+    if (limit && (feedItems.length > limit)) {
+      feedItems = feedItems.slice(feedItems.length - limit);
+    }
+
+    return feedItems;
   }
 }
