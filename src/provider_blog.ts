@@ -10,6 +10,7 @@ export default class BlogProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
+    return [];
     const feedItems = await RSS.getFeedItems(this.url, date, limit);
     const notifications: BotNotification[] = feedItems.map((feedItem) => {
         return new BotNotification('New blog post!', this.game, feedItem.title, feedItem.link, feedItem.author,

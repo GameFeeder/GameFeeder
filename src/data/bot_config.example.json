@@ -1,13 +1,21 @@
 {
-  "telegram": {
-    "autostart": true,
-    "prefix": "/",
-    "token": ""
+  "bots": {
+    "telegram": {
+      "autostart": true,
+      "prefix": "/",
+      "token": ""
+    },
+    
+    "discord": {
+      "autostart": true,
+      "prefix": "!",
+      "token": ""
+    }
   },
-  
-  "discord": {
-    "autostart": true,
-    "prefix": "!",
-    "token": ""
+  "reddit": {
+    "clientId": "",
+    "clientSecret": "",
+    "refreshToken": "",
+    "userAgent": ""
   }
 }

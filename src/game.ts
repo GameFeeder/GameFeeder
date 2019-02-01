@@ -59,9 +59,9 @@ for (const game of getDataConfig(). games) {
   const providers: Provider[] = [];
   // Reddit providers
   if (game.providers.reddit.usernames) {
-    for (const redditUser of game.providers.reddit.usernames) {
-      providers.push(new RedditProvider(redditUser, game.providers.reddit.subreddit, game));
-    }
+    const subreddit = game.providers.reddit.subreddit;
+    const usernames = game.providers.reddit.usernames;
+    providers.push(new RedditProvider(usernames, subreddit, game));
   }
   // Blog providers
   if (game.providers.blogs) {

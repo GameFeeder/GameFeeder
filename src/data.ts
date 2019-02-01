@@ -57,7 +57,13 @@ function getFilePath(file: string): string {
 
 /** @description Get the bot_config.json file as a JS object. */
 function getBotConfig(): any {
-  return readJSON(getFilePath('bot_config'));
+  const apiConfig: any = readJSON(getFilePath('bot_config'));
+  return apiConfig.bots;
+}
+
+function getRedditConfig(): any {
+  const apiConfig: any = readJSON(getFilePath('bot_config'));
+  return apiConfig.reddit;
 }
 
 /** @description Get the data_conig.json file as a JS object. */
@@ -73,4 +79,4 @@ function setSubscribers(subscribers: object): void {
   writeJSON(getFilePath('subscribers'), subscribers);
 }
 
-export { getBotConfig, getDataConfig, getSubscribers, setSubscribers };
+export { getBotConfig, getDataConfig, getRedditConfig, getSubscribers, setSubscribers };
