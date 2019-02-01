@@ -7,7 +7,7 @@
       "name": "Launch Bots",
       "program": "${workspaceRoot}/src/_main.ts",
       "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
+      "internalConsoleOptions": "neverOpen",
       "outFiles": [ "${workspaceRoot}/src/dist/**/*.js" ]
     },
     {

@@ -28,9 +28,9 @@ export default class RedditProvider extends Provider {
 
     for (const user of this.usernames) {
       // Get all new submissions in the given subreddit
-      const posts = await this.reddit
+      const posts = await (this.reddit
         .getUser(user)
-        .getSubmissions()
+        .getSubmissions())
         .filter((submission) => {
           const timestamp = new Date(submission.created_utc);
           return timestamp > date;
