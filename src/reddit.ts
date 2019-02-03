@@ -39,46 +39,46 @@ export default class Reddit {
     }
 
     for (const user of usernames) {
+
+      botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
+
       // Get all new submissions in the given subreddit
-      botLogger.debug('Getting posts...', 'Reddit');
       const allPosts = await reddit.
         getUser(user).
         getSubmissions();
 
-      botLogger.debug('Filtering posts...', 'Reddit');
-
-      botLogger.debug(`Type of posts: ${typeof allPosts}`, 'RedditProvider');
-
       const posts = allPosts.filter((submission) => {
-          const timestamp = new Date(submission.created_utc);
-          return timestamp > date;
+          const timestamp = new Date(submission.created_utc * 1000);
+          const isNew = timestamp > date;
+          const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
+          return isNew && isCorrectSub;
         });
-      botLogger.debug('Getting posts succesful.');
-
-      botLogger.debug(`Type of posts: ${typeof posts}`, 'RedditProvider');
 
       for (const post of posts) {
         // Convert the post into a notification
         const notification = new BotNotification(
-          `New post by ${user}!`,
           game,
+          `New post by ${user}!`,
           post.title,
           post.url,
-          `/u/${user}`,
-          '0xFFFFFF',
           post.selftext,
-          post.thumbnail,
+          new Date(post.created_utc * 1000),
+          null, // post.thumbnail,
           null,
-          new Date(post.created_utc),
-          '',
+          `/u/${user}`,
+          'https://www.redditstatic.com/new-icon.png',
         );
         notifications.push(notification);
       }
+      botLogger.debug('Completed.', 'Reddit');
     }
     // Limit the length
     if (limit && notifications.length > limit) {
-      notifications = notifications.slice(notifications.length - limit);
+      notifications = notifications.slice(0, limit);
     }
+
+    botLogger.debug(`Found ${notifications.length} posts.`, 'Reddit');
+
     return notifications;
   }
 }

@@ -3,6 +3,7 @@ import { Game } from './game';
 
 /** A representation of a bot notification. */
 export default class BotNotification {
+
   /** Simple text in the notification. */
   public text: string;
   /** The game the notification is for. */
@@ -14,6 +15,8 @@ export default class BotNotification {
   public link: string;
   /** The author of the notification. */
   public author: string;
+  /** The icon of the author of the notification */
+  public authorIcon: string;
   /** The color of the notification. */
   public color: string;
   /** The description of the notification. */
@@ -26,6 +29,8 @@ export default class BotNotification {
   public timestamp: Date;
   /** The footer of the notification. */
   public footer: string;
+  /** The icon of the footer of the notification. */
+  public footerIcon: string;
 
   /** Creates a new BotNotification.
    * @param  {string} text - Simple text in the notification.
@@ -41,29 +46,33 @@ export default class BotNotification {
    * @param  {string} footer - The footer of the notification.
    */
   constructor(
-    text: string,
     game: Game,
+    text: string,
     title: string,
     link: string,
-    author: string,
-    color: string,
     description: string,
+    timestamp: Date,
     thumbnail: string,
     image: string,
-    timestamp: Date,
-    footer: string,
+    author: string,
+    authorIcon: string,
+    footer?: string,
+    footerIcon?: string,
+    color?: string,
   ) {
-    this.text = text;
     this.game = game;
+    this.text = text;
     this.title = title;
     this.link = link;
-    this.author = author;
-    this.color = color;
     this.description = description;
+    this.timestamp = timestamp;
     this.thumbnail = thumbnail;
     this.image = image;
-    this.timestamp = timestamp;
-    this.footer = footer;
+    this.author = author;
+    this.authorIcon = authorIcon;
+    this.footer = footer ? footer : (game ? `New ${game.label} update!` : '');
+    this.footerIcon = footerIcon ? footerIcon : (game ? game.icon : '');
+    this.color = color ? color : (game ? game.color : '');
   }
 
   public compare(b: BotNotification) {

@@ -39,53 +39,20 @@ export default class DiscordBot extends BotClient {
     this.bot.destroy();
     this.isRunning = false;
   }
+
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof message === 'string') {
       // Parse markdown
       message = this.msgFromMarkdown(message, false);
-      const botChannels = this.bot.channels;
-      const discordChannel = botChannels.get(channel.id);
-
-      if (!discordChannel) {
-        return false;
-      }
-
-      // Cast to the specific channel and send the message
-      if (discordChannel instanceof DMChannel) {
-        discordChannel.send(message);
-        return true;
-      } else if (discordChannel instanceof TextChannel) {
-        discordChannel.send(message);
-        return true;
-      } else if (discordChannel instanceof GroupDMChannel) {
-        discordChannel.send(message);
-        return true;
-      } else {
-        return false;
-      }
+      return this.sendToChannel(channel, message);
     } else {
       // Parse markdown
       const text = `${this.msgFromMarkdown(message.text, false)}\n${message.link}`;
       const embed = this.embedFromNotification(message);
 
-      const botChannels = this.bot.channels;
-      const discordChannel = botChannels.get(channel.id);
-
-      if (!discordChannel) {
-        return false;
-      }
-
-      // Cast to the specific channel and send the message
-      if (discordChannel instanceof DMChannel) {
-        discordChannel.send({ embed });
-        return true;
-      } else if (discordChannel instanceof TextChannel) {
-        discordChannel.send({ embed });
-        return true;
-      } else if (discordChannel instanceof GroupDMChannel) {
-        discordChannel.send({ embed });
-        return true;
-      } else {
+      try {
+        return this.sendToChannel(channel, '', embed);
+      } catch (error) {
         return false;
       }
     }
@@ -96,21 +63,22 @@ export default class DiscordBot extends BotClient {
       embed.setTitle(notification.title);
     }
     if (notification.author) {
-      embed.setAuthor(notification.author);
+      embed.setAuthor(notification.author, notification.authorIcon);
     }
     if (notification.color) {
       embed.setColor(notification.color);
     }
     if (notification.description) {
-      embed.setDescription(notification.description);
+      embed.setDescription(notification.description.substring(0, 2048));
     }
     if (notification.footer) {
-      embed.setFooter(notification.footer);
+      embed.setFooter(notification.footer, notification.footerIcon);
     }
     if (notification.image) {
       embed.setImage(notification.image);
     }
     if (notification.thumbnail) {
+      this.logDebug(`ThumbnailUrl: '${notification.thumbnail}'`);
       embed.setThumbnail(notification.thumbnail);
     }
     if (notification.timestamp) {
@@ -141,6 +109,28 @@ export default class DiscordBot extends BotClient {
     }
 
     return newMarkdown;
+  }
+
+  private sendToChannel(channel: BotChannel, text: string, embed?: any): boolean {
+    const botChannels = this.bot.channels;
+    const discordChannel = botChannels.get(channel.id);
+
+    if (!discordChannel) {
+      return false;
+    }
+
+    if (discordChannel instanceof DMChannel) {
+      discordChannel.send(text, embed);
+      return true;
+    } else if (discordChannel instanceof TextChannel) {
+      discordChannel.send(text, embed);
+      return true;
+    } else if (discordChannel instanceof GroupDMChannel) {
+      discordChannel.send(text, embed);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

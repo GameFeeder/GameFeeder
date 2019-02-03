@@ -55,6 +55,8 @@ class Updater {
     this.doUpdates = false;
   }
   public async update(): Promise<void> {
+    botLogger.debug('Starting update cycle...', 'Updater');
+
     let notifications: BotNotification[] = [];
     for (const game of games) {
       let gameNotifications: BotNotification[] = [];
@@ -63,7 +65,7 @@ class Updater {
       }
       // Keep the notification count for each game in the limit
       if (this.limit > gameNotifications.length) {
-        gameNotifications = gameNotifications.slice(gameNotifications.length - this.limit);
+        gameNotifications = gameNotifications.slice(0, this.limit);
       }
       notifications = notifications.concat(gameNotifications);
     }
@@ -72,6 +74,9 @@ class Updater {
       notifications.sort((a, b) => {
         return a.compare(b);
       });
+
+      botLogger.debug(`Found ${notifications.length} posts. Notifying users...`, 'Updater');
+
       // Update time
       this.lastUpdate = notifications[notifications.length - 1].timestamp;
       // Notify users
