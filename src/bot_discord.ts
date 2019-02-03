@@ -47,7 +47,7 @@ export default class DiscordBot extends BotClient {
       return this.sendToChannel(channel, message);
     } else {
       // Parse markdown
-      const text = `${this.msgFromMarkdown(message.text, false)}\n${message.link}`;
+      const text = `${this.msgFromMarkdown(message.text, false)}\n${message.title.link}`;
       const embed = this.embedFromNotification(message);
 
       try {
@@ -59,33 +59,57 @@ export default class DiscordBot extends BotClient {
   }
   public embedFromNotification(notification: BotNotification): DiscordAPI.RichEmbed {
     const embed = new DiscordAPI.RichEmbed();
+    // Title
     if (notification.title) {
-      embed.setTitle(notification.title);
+      const titleMD = this.msgFromMarkdown(notification.title.text, true);
+      embed.setTitle(titleMD);
+      if (notification.title.link) {
+        embed.setURL(notification.title.link);
+      }
     }
+    // Author
     if (notification.author) {
-      embed.setAuthor(notification.author, notification.authorIcon);
+      const authorMD = this.msgFromMarkdown(notification.author.text, true);
+      if (notification.author.icon && notification.author.link) {
+        embed.setAuthor(authorMD, notification.author.icon, notification.author.link);
+      } else {
+        embed.setAuthor(authorMD);
+      }
     }
+    // Color
     if (notification.color) {
       embed.setColor(notification.color);
     }
+    // Description
     if (notification.description) {
-      embed.setDescription(notification.description.substring(0, 2048));
+      const descriptionMD = this.msgFromMarkdown(notification.description, true);
+      if (descriptionMD.length > 2048) {
+        embed.setDescription(descriptionMD.substring(0, 2048));
+      } else {
+        embed.setDescription(descriptionMD);
+      }
     }
+    // Footer
     if (notification.footer) {
-      embed.setFooter(notification.footer, notification.footerIcon);
+      const footerMD = this.msgFromMarkdown(notification.footer.text, true);
+      if (notification.footer.icon) {
+        embed.setFooter(footerMD, notification.footer.icon);
+      } else {
+        embed.setFooter(footerMD);
+      }
     }
+    // Image
     if (notification.image) {
       embed.setImage(notification.image);
     }
+    // Thumbnail
     if (notification.thumbnail) {
       this.logDebug(`ThumbnailUrl: '${notification.thumbnail}'`);
       embed.setThumbnail(notification.thumbnail);
     }
+    // Timestamp
     if (notification.timestamp) {
       embed.setTimestamp(notification.timestamp);
-    }
-    if (notification.link) {
-      embed.setURL(notification.link);
     }
     return embed;
   }
@@ -96,9 +120,16 @@ export default class DiscordBot extends BotClient {
       markdown = markdown.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
     }
 
+    // Compress multiple linebreaks
+    // markdown = markdown.replace(/\n+/, '\n');
+
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
+      // H1-3
+      lineArray[i] = lineArray[i].replace(/^\s*##?#?\s*(.*)/, '__**$1**__');
+      // H4-6
+      lineArray[i] = lineArray[i].replace(/^\s*#####?#?\s*(.*)/, '**$1**');
       // Lists
       lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
     }

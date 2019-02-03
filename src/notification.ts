@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { Game } from './game';
+import NotificationElement from './notification_element';
 
 /** A representation of a bot notification. */
 export default class BotNotification {
@@ -8,15 +9,10 @@ export default class BotNotification {
   public text: string;
   /** The game the notification is for. */
   public game: Game;
-
   /** The title of the notification. */
-  public title: string;
-  /** The link to the source of the notification. */
-  public link: string;
+  public title: NotificationElement;
   /** The author of the notification. */
-  public author: string;
-  /** The icon of the author of the notification */
-  public authorIcon: string;
+  public author: NotificationElement;
   /** The color of the notification. */
   public color: string;
   /** The description of the notification. */
@@ -28,50 +24,42 @@ export default class BotNotification {
   /** The timestamp of the notification. */
   public timestamp: Date;
   /** The footer of the notification. */
-  public footer: string;
-  /** The icon of the footer of the notification. */
-  public footerIcon: string;
+  public footer: NotificationElement;
 
   /** Creates a new BotNotification.
    * @param  {string} text - Simple text in the notification.
    * @param  {Game} game - The game the notification is for.
-   * @param  {string} title - The title of the notification.
-   * @param  {string} link - The link to the source of the notification.
-   * @param  {string} author - The author of the notification.
+   * @param  {NotificationElement} title - The title of the notification.
+   * @param  {NotificationElement} author - The author of the notification.
    * @param  {string} color - The color of the notification.
    * @param  {string} description - The description of the notification.
    * @param  {string} thumbnail - he (small) thumbnail of the notification.
    * @param  {string} image - The (big) image of the notification.
    * @param  {Date} timestamp - The timestamp of the notification.
-   * @param  {string} footer - The footer of the notification.
+   * @param  {NotificationElement} footer - The footer of the notification.
    */
   constructor(
     game: Game,
     text: string,
-    title: string,
-    link: string,
+    title: NotificationElement,
     description: string,
     timestamp: Date,
     thumbnail: string,
     image: string,
-    author: string,
-    authorIcon: string,
-    footer?: string,
-    footerIcon?: string,
+    author: NotificationElement,
+    footer?: NotificationElement,
     color?: string,
   ) {
     this.game = game;
     this.text = text;
     this.title = title;
-    this.link = link;
     this.description = description;
     this.timestamp = timestamp;
     this.thumbnail = thumbnail;
     this.image = image;
     this.author = author;
-    this.authorIcon = authorIcon;
-    this.footer = footer ? footer : (game ? `New ${game.label} update!` : '');
-    this.footerIcon = footerIcon ? footerIcon : (game ? game.icon : '');
+    this.footer =
+      footer ? footer : (game ? new NotificationElement(`New ${game.label} update!`, null, game.icon) : null);
     this.color = color ? color : (game ? game.color : '');
   }
 

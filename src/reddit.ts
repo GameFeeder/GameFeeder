@@ -3,6 +3,7 @@ import { getRedditConfig } from './data';
 import { Game } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
+import NotificationElement from './notification_element';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
@@ -59,14 +60,13 @@ export default class Reddit {
         const notification = new BotNotification(
           game,
           `New post by ${user}!`,
-          post.title,
-          post.url,
-          post.selftext,
+          new NotificationElement(`#${post.title}`, post.url),
+          this.mdFromReddit(post.selftext),
           new Date(post.created_utc * 1000),
           null, // post.thumbnail,
           null,
-          `/u/${user}`,
-          'https://www.redditstatic.com/new-icon.png',
+          new NotificationElement(`/u/${user}`, `https://www.reddit.com/user/${user}`,
+            'https://www.redditstatic.com/new-icon.png'),
         );
         notifications.push(notification);
       }
@@ -80,5 +80,14 @@ export default class Reddit {
     botLogger.debug(`Found ${notifications.length} posts.`, 'Reddit');
 
     return notifications;
+  }
+
+  private static mdFromReddit(text: string): string {
+    // User links
+    text = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
+    // Subreddit links
+    text = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
+
+    return text;
   }
 }
