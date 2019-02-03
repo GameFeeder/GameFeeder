@@ -8,8 +8,8 @@ export default class TelegramBot extends BotClient {
   private bot: TelegramAPI;
   private token: string;
 
-  constructor(prefix: string, token: string) {
-    super('telegram', 'Telegram', prefix);
+  constructor(prefix: string, token: string, autostart: boolean) {
+    super('telegram', 'Telegram', prefix, autostart);
 
     // Set up the bot
     this.token = token;
@@ -69,7 +69,7 @@ export default class TelegramBot extends BotClient {
 }
 
 // Telegram Bot
-const { prefix: telegramPrefix, token: telegramToken } = getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken);
+const { prefix: telegramPrefix, token: telegramToken, autostart: telegramAutostart } = getBotConfig().telegram;
+const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
 
 export { TelegramBot, telegramBot };

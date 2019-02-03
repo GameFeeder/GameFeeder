@@ -11,19 +11,23 @@ abstract class BotClient {
   public label: string;
   /** The prefix to use for commands. */
   public prefix: string;
-  /** Indicator if the bot is currently running or not. */
+  /** Indicator whether the bot is currently running. */
   public isRunning: boolean;
+  /** Indicates whether the bot should be started automatically. */
+  public autostart: boolean;
 
   /** Creates a new BotClient.
    *
    * @param  {string} name - The internal name of the bot.
    * @param  {string} label - The human-readable label of the bot.
    * @param  {string} prefix - The prefix to use for commands.
+   * @param {boolean} autostart - Indicates whether the bot should be started automatically.
    */
-  constructor(name: string, label: string, prefix: string) {
+  constructor(name: string, label: string, prefix: string, autostart: boolean) {
     this.name = name;
     this.label = label;
     this.prefix = prefix;
+    this.autostart = autostart;
     this.isRunning = false;
   }
 

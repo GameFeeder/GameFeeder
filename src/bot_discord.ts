@@ -8,8 +8,8 @@ export default class DiscordBot extends BotClient {
   private bot: DiscordAPI.Client;
   private token: string;
 
-  constructor(prefix: string, token: string) {
-    super('discord', 'Discord', prefix);
+  constructor(prefix: string, token: string, autostart: boolean) {
+    super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot
     this.token = token;
@@ -166,7 +166,7 @@ export default class DiscordBot extends BotClient {
 }
 
 // Discord Bot
-const { prefix: discordPrefix, token: discordToken } = getBotConfig().discord;
-const discordBot = new DiscordBot(discordPrefix, discordToken);
+const { prefix: discordPrefix, token: discordToken, discordAutostart } = getBotConfig().discord;
+const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
 
 export { DiscordBot, discordBot };
