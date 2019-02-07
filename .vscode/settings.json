@@ -1,6 +1,5 @@
 {
   "editor.tabSize": 2,
   "editor.wordWrap": "on",
-  "files.eol": "\n",
-  "typescript.surveys.enabled": false
+  "files.eol": "\n"
 }

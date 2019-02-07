@@ -1,7 +1,8 @@
 import { Game } from './game';
 import BotNotification from './notification';
+import NotificationElement from './notification_element';
 import Provider from './provider';
-import RSS from './rss';
+import { rss, RSS} from './rss';
 import RSSItem from './rss_item';
 
 export default class BlogProvider extends Provider {
@@ -10,14 +11,19 @@ export default class BlogProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
-    return [];
-    /*
-    const feedItems = await RSS.getFeedItems(this.url, date, limit);
+    const feedItems = await rss.getFeedItems(this.url, date, limit);
     const notifications: BotNotification[] = feedItems.map((feedItem) => {
-        return new BotNotification('New blog post!', this.game, feedItem.title, feedItem.link, feedItem.author,
-        '0xFFFFFF', feedItem.content, '', '', feedItem.timestamp, '');
+        return new BotNotification(
+          this.game,
+          `New post from the [${feedItem.feed.name}](${feedItem.feed.link})!`,
+          new NotificationElement(feedItem.title, feedItem.link),
+          feedItem.content,
+          feedItem.timestamp,
+          null,
+          null,
+          new NotificationElement(feedItem.author),
+        );
     });
     return notifications;
-    */
   }
 }

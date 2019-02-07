@@ -18,7 +18,8 @@
             "SirBelvedere",
             "wykrhm"
           ]
-        }
+        },
+        "blogs": []
       }
     },
     {
@@ -41,13 +42,48 @@
             "wykrhm"
           ]
         },
-        "blogs": [
-          {
-            "url": "https://blog.dota2.com/feed/",
-            "label": "Dota 2"
-          }
-        ]
+        "blogs": []
       }
-    }
+    },
+    {
+    "name": "tf2",
+      "label": "Team Fortress 2",
+      "aliases": [
+        "team fortress 2",
+        "team fortress",
+        "tf",
+        "tf2"
+      ],
+      "color": "#9A4713",
+      "icon": "http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png",
+      "providers": {
+        "reddit": {
+          "subreddit": "tf2",
+          "usernames": []
+        },
+        "blogs": []
+      }
+    },
+    {
+      "name": "csgo",
+        "label": "CS:GO",
+        "aliases": [
+          "counter strike",
+          "global offensive",
+          "csgo",
+          "cs:go"
+        ],
+        "color": "#000000",
+        "icon": "",
+        "providers": {
+          "reddit": {
+            "subreddit": "csgo",
+            "usernames": [
+              "wickedplayer494"
+            ]
+          },
+          "blogs": []
+        }
+      }
   ]
 }

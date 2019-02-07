@@ -4,7 +4,7 @@ import { Game } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 
-abstract class BotClient {
+export default abstract class BotClient {
   /** The internal name of the bot. */
   public name: string;
   /** The human-readable label of the bot. */
