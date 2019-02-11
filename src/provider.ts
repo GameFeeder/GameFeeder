@@ -7,7 +7,7 @@ export default abstract class Provider {
   public game: Game;
 
   constructor(url: string, label: string, game: Game) {
-    this.url = `${url}.rss`;
+    this.url = url;
     this.label = label;
     this.game = game;
   }

@@ -42,7 +42,12 @@
             "wykrhm"
           ]
         },
-        "blogs": []
+        "blogs": [
+          {
+            "label": "Dota 2 Blog",
+            "url": "http://blog.dota2.com/feed/"
+          }
+        ]
       }
     },
     {
@@ -82,7 +87,12 @@
               "wickedplayer494"
             ]
           },
-          "blogs": []
+          "blogs": [
+            {
+              "label": "CS:GO Blog",
+              "url": "https://blog.counter-strike.net/index.php/feed/"
+            }
+          ]
         }
       }
   ]
