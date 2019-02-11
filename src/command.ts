@@ -82,6 +82,7 @@ const commands = [
     'subscribe <game name>',
     'sub(scribe)?(?<alias>.*)',
     (bot, channel, match: any) => {
+
       bot.logDebug('Command: Subscribe.');
 
       let { alias } = match.groups;

@@ -1,6 +1,7 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
 import BotChannel from './channel';
+import Command from './command';
 import { getBotConfig } from './data';
 import BotNotification from './notification';
 
@@ -16,9 +17,10 @@ export default class TelegramBot extends BotClient {
     this.bot = new TelegramAPI(token, { polling: false });
   }
 
-  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpExecArray) => void): void {
+  public registerCommand(command: Command): void {
+    const reg = command.getRegExp(this);
     this.bot.onText(reg, (msg: TelegramAPI.Message, match: RegExpExecArray) => {
-      callback(new BotChannel(msg.chat.id.toString()), match);
+      command.callback(this, new BotChannel(msg.chat.id.toString()), match);
     });
   }
   public async start(): Promise<boolean> {

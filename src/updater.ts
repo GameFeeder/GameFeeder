@@ -23,6 +23,18 @@ class Updater {
     this.lastUpdate = lastUpdate;
     this.doUpdates = false;
   }
+  public debug(msg: string): void {
+    botLogger.debug(msg, 'Updater');
+  }
+  public info(msg: string): void {
+    botLogger.info(msg, 'Updater');
+  }
+  public warn(msg: string): void {
+    botLogger.warn(msg, 'Updater');
+  }
+  public error(msg: string): void {
+    botLogger.error(msg, 'Updater');
+  }
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
    */

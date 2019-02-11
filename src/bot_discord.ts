@@ -1,6 +1,7 @@
 import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
 import BotChannel from './channel';
+import Command from './command';
 import { getBotConfig } from './data';
 import BotNotification from './notification';
 
@@ -16,13 +17,14 @@ export default class DiscordBot extends BotClient {
     this.bot = new DiscordAPI.Client();
   }
 
-  public registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpExecArray) => void): void {
+  public registerCommand(command: Command): void {
+    const reg = command.getRegExp(this);
     this.bot.on('message', (message) => {
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
-        callback(new BotChannel(message.channel.id), regMatch);
+        command.callback(this, new BotChannel(message.channel.id), regMatch);
       }
     });
   }

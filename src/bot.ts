@@ -1,4 +1,5 @@
 import BotChannel from './channel';
+import Command from './command';
 import { getBotConfig, getSubscribers, setSubscribers } from './data';
 import { Game } from './game';
 import botLogger from './logger';
@@ -33,11 +34,10 @@ export default abstract class BotClient {
 
   /** Register a bot command.
    *
-   * @param  {RegExp} reg - The regular expression triggering the command.
-   * @param  {(channel:BotChannel,match:RegExpMatchArray)=>void} callback - The function handling the command.
+   * @param  {Command} command - The command to register.
    * @returns void
    */
-  public abstract registerCommand(reg: RegExp, callback: (channel: BotChannel, match: RegExpMatchArray) => void): void;
+  public abstract registerCommand(command: Command): void;
   /** Start the bot.
    *
    * @returns True, if the start was successful, else false.
