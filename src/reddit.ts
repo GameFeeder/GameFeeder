@@ -60,7 +60,7 @@ export default class Reddit {
         const notification = new BotNotification(
           game,
           `New post by ${user}!`,
-          new NotificationElement(`#${post.title}`, post.url),
+          new NotificationElement(post.title, post.url),
           this.mdFromReddit(post.selftext),
           new Date(post.created_utc * 1000),
           null, // post.thumbnail,

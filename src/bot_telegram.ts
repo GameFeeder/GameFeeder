@@ -41,8 +41,8 @@ export default class TelegramBot extends BotClient {
       message = this.msgFromMarkdown(message);
       this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
     } else {
-      const text = `${this.msgFromMarkdown(message.text)}\n[Link](${message.title.link})`;
-      this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown' });
+      const text = this.msgFromMarkdown(message.toMDString());
+      this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
     }
     return true;
   }
@@ -57,6 +57,8 @@ export default class TelegramBot extends BotClient {
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
+      // H1-6
+      lineArray[i] = lineArray[i].replace(/^\s*##?#?\s*(.*)/, '*$1*');
       // Lists
       lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
     }

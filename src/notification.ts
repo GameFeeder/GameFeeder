@@ -14,7 +14,7 @@ export default class BotNotification {
   /** The author of the notification. */
   public author: NotificationElement;
   /** The color of the notification. */
-  public color: string;
+  public color?: string;
   /** The description of the notification. */
   public description: string;
   /** The (small) thumbnail of the notification. */
@@ -24,7 +24,7 @@ export default class BotNotification {
   /** The timestamp of the notification. */
   public timestamp: Date;
   /** The footer of the notification. */
-  public footer: NotificationElement;
+  public footer?: NotificationElement;
 
   /** Creates a new BotNotification.
    * @param  {string} text - Simple text in the notification.
@@ -71,5 +71,12 @@ export default class BotNotification {
     } else {
       return 0;
     }
+  }
+
+  public toMDString(): string {
+    const authorText = this.author.link ? `[${this.author.text}](${this.author.link})` : this.author.text;
+    const titleText = this.title.link ? `[**${this.title.text}**](${this.title.link})` : this.title.text;
+
+    return `New **${this.game.label}** update by ${authorText}:\n\n${titleText}\n\n${this.description}`;
   }
 }

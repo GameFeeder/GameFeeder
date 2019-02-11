@@ -75,6 +75,19 @@ const commands = [
       bot.sendMessageToChannel(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
     },
   ),
+  // Games
+  new Command(
+    'Games',
+    'Display all available games.',
+    'games',
+    'games\s*$',
+    (bot, channel) => {
+      const gamesList = games.map((game) => `- ${game.label}`);
+      const gamesMD = `Available games:\n${gamesList.join('\n')}`;
+
+      bot.sendMessageToChannel(channel, gamesMD);
+    },
+  ),
   // Subscribe
   new Command(
     'Subscribe',

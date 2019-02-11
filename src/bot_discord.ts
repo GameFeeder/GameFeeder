@@ -63,7 +63,7 @@ export default class DiscordBot extends BotClient {
     const embed = new DiscordAPI.RichEmbed();
     // Title
     if (notification.title) {
-      const titleMD = this.msgFromMarkdown(notification.title.text, true);
+      const titleMD = this.msgFromMarkdown(`#${notification.title.text}`, true);
       embed.setTitle(titleMD);
       if (notification.title.link) {
         embed.setURL(notification.title.link);
