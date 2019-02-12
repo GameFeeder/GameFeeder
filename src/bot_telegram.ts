@@ -36,11 +36,11 @@ export default class TelegramBot extends BotClient {
     this.bot.stopPolling();
     this.isRunning = false;
   }
-  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
+  public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
     if (typeof (message) === 'string') {
       message = this.msgFromMarkdown(message);
       try {
-        this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
+        await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
       } catch (error) {
         this.logError(`Failed to send message to channel:\n${error}`);
       }
@@ -50,7 +50,7 @@ export default class TelegramBot extends BotClient {
         text = text.substring(0, 2048);
       }
       try {
-        this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
+        await this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
       } catch (error) {
         this.logError(`Failed to send notification to channel:\n${error}`);
       }

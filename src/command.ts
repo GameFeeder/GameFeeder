@@ -61,7 +61,7 @@ const commands = [
       const commandsMD = commandsList.join('\n');
       const helpMD = `You can use the following commands:\n${commandsMD}`;
 
-      bot.sendMessageToChannel(channel, helpMD);
+      bot.sendMessage(channel, helpMD);
     },
   ),
   // About
@@ -72,7 +72,7 @@ const commands = [
     '(about)|(info)\s*$',
     (bot, channel) => {
       const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
-      bot.sendMessageToChannel(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
+      bot.sendMessage(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
     },
   ),
   // Games
@@ -85,7 +85,7 @@ const commands = [
       const gamesList = games.map((game) => `- ${game.label}`);
       const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
-      bot.sendMessageToChannel(channel, gamesMD);
+      bot.sendMessage(channel, gamesMD);
     },
   ),
   // Subscribe
@@ -104,10 +104,10 @@ const commands = [
       for (const game of games) {
         if (game.hasAlias(alias)) {
           if (bot.addSubscriber(channel, game)) {
-            bot.sendMessageToChannel(channel,
+            bot.sendMessage(channel,
               `You are now subscribed to the **${game.label}** feed!`);
           } else {
-            bot.sendMessageToChannel(channel,
+            bot.sendMessage(channel,
               `You have already subscribed to the **${game.label}** feed!`);
           }
           break;
@@ -128,10 +128,10 @@ const commands = [
       for (const game of games) {
         if (game.hasAlias(alias)) {
           if (bot.removeSubscriber(channel, game)) {
-            bot.sendMessageToChannel(channel,
+            bot.sendMessage(channel,
               `You are now unsubscribed from the **${game.label}** feed!`);
           } else {
-            bot.sendMessageToChannel(channel,
+            bot.sendMessage(channel,
               `You have never subscribed to the **${game.label}** feed in the first place!`);
           }
           break;

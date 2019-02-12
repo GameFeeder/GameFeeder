@@ -42,18 +42,18 @@ export default class DiscordBot extends BotClient {
     this.isRunning = false;
   }
 
-  public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
+  public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
     if (typeof message === 'string') {
       // Parse markdown
       message = this.msgFromMarkdown(message, false);
-      return this.sendToChannel(channel, message);
+      return await this.sendToChannel(channel, message);
     } else {
       // Parse markdown
       const text = `${this.msgFromMarkdown(message.text, false)}\n${message.title.link}`;
       const embed = this.embedFromNotification(message);
 
       try {
-        return this.sendToChannel(channel, '', embed);
+        return await this.sendToChannel(channel, '', embed);
       } catch (error) {
         return false;
       }
@@ -147,7 +147,7 @@ export default class DiscordBot extends BotClient {
     return newMarkdown;
   }
 
-  private sendToChannel(channel: BotChannel, text: string, embed?: any): boolean {
+  private async sendToChannel(channel: BotChannel, text: string, embed?: any): Promise<boolean> {
     const botChannels = this.bot.channels;
     const discordChannel = botChannels.get(channel.id);
 

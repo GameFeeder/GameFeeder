@@ -112,7 +112,7 @@ export default abstract class BotClient {
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean;
+  public async abstract sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *
@@ -125,7 +125,7 @@ export default abstract class BotClient {
 
     if (subscribers) {
       for (const sub of subscribers) {
-        this.sendMessageToChannel(new BotChannel(sub), message);
+        this.sendMessage(new BotChannel(sub), message);
       }
     }
   }
