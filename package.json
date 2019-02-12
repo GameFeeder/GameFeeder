@@ -38,6 +38,7 @@
     "yarn": "^1.12.3"
   },
   "dependencies": {
+    "@types/escape-string-regexp": "^1.0.0",
     "@types/jsdom": "^12.2.1",
     "@types/node": "^10.12.18",
     "@types/node-telegram-bot-api": "^0.30.3",
@@ -45,6 +46,7 @@
     "@types/snoowrap": "^1.15.1",
     "@types/xml2js": "^0.4.3",
     "discord.js": "^11.4.2",
+    "escape-string-regexp": "^1.0.5",
     "feed-read": "^0.0.1",
     "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.30.0",

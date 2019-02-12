@@ -1,3 +1,4 @@
+import EscapeRegex from 'escape-string-regexp';
 import BotClient from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
@@ -196,6 +197,8 @@ const commands = [
         return;
       }
 
+      newPrefix = EscapeRegex(newPrefix);
+
       // Save locally
       channel.prefix = newPrefix;
 
@@ -214,7 +217,7 @@ const commands = [
 
           // Remove unneccessary entries
           if (sub.gameSubs.length === 0 && !sub.prefix) {
-            this.logDebug('Removing unnecessary channel entry...');
+            bot.logDebug('Removing unnecessary channel entry...');
             channels.splice(i, 1);
           } else {
             channels[i] = sub;
