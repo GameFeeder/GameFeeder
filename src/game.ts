@@ -37,6 +37,10 @@ class Game {
     // Ignore casing
     alias = alias.toLocaleLowerCase();
 
+    if (alias === 'all') {
+      return true;
+    }
+
     if (alias === this.name.toLocaleLowerCase() || alias === this.label.toLocaleLowerCase()) {
       return true;
     }

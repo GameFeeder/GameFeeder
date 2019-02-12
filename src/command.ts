@@ -115,6 +115,11 @@ const commands = [
       let { alias } = match.groups;
       alias = alias.trim();
 
+      if (!alias) {
+        bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
+        + `Try \`${bot.prefix}subscribe <game name>\`.`);
+      }
+
       for (const game of games) {
         if (game.hasAlias(alias)) {
           if (bot.addSubscriber(channel, game)) {
@@ -124,7 +129,6 @@ const commands = [
             bot.sendMessage(channel,
               `You have already subscribed to the **${game.label}** feed!`);
           }
-          break;
         }
       }
     },
@@ -149,6 +153,11 @@ const commands = [
       let { alias } = match.groups;
       alias = alias.trim();
 
+      if (!alias) {
+        bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
+        + `Try \`${bot.prefix}unsubscribe <game name>\`.`);
+      }
+
       for (const game of games) {
         if (game.hasAlias(alias)) {
           if (bot.removeSubscriber(channel, game)) {
@@ -158,7 +167,6 @@ const commands = [
             bot.sendMessage(channel,
               `You have never subscribed to the **${game.label}** feed in the first place!`);
           }
-          break;
         }
       }
     },
