@@ -3,7 +3,7 @@ import { BotClient } from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getBotConfig } from './data';
+import { getBotConfig, getSubscribers } from './data';
 import BotNotification from './notification';
 
 export default class DiscordBot extends BotClient {
@@ -36,15 +36,17 @@ export default class DiscordBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    const reg = command.getRegExp(this);
     this.bot.on('message', (message) => {
+      const channel = this.getChannelByID(message.channel.id);
+      const reg = command.getRegExp(channel);
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
+        // Call the callback function
         command.callback(
           this,
-          new BotChannel(message.channel.id),
+          channel,
           new BotUser(message.author.id),
           regMatch,
         );

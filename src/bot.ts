@@ -65,20 +65,36 @@ export default abstract class BotClient {
    */
   public addSubscriber(channel: BotChannel, game: Game): boolean {
     const subscribers = getSubscribers();
-    const gameSubs = subscribers[this.name][game.name];
+    const channels = subscribers[this.name];
 
-    // Check if channel is already subscribed to this client
-    for (const sub of gameSubs) {
-      if (channel.isEqual(sub)) {
-        return false;
+    // Check if the channel is already registered
+    for (let i = 0; i < channels.length; i++) {
+      const sub = channels[i];
+      if (channel.isEqual(sub.id)) {
+        // Check if the channel already subscribed to the game's feed
+        for (const gameName of sub.gameSubs) {
+          if (gameName === game.name) {
+            return false;
+          }
+        }
+        // Add the game to the subscriptions
+        sub.gameSubs.push(game.name);
+        channels[i] = sub;
+        // Save the changes
+        subscribers[this.name] = channels;
+        setSubscribers(subscribers);
+        return true;
       }
     }
-
-    // Save changes
-    gameSubs.push(channel.toJSON());
-    subscribers[this.name][game.name] = gameSubs;
+    // Add the new subscriber
+    channels.push({
+      gameSubs: [game.name],
+      id: channel.id,
+      prefix: '',
+    });
+    // Save the changes
+    subscribers[this.name] = channels;
     setSubscribers(subscribers);
-
     return true;
   }
 
@@ -90,28 +106,52 @@ export default abstract class BotClient {
    */
   public removeSubscriber(channel: BotChannel, game: Game): boolean {
     const subscribers = getSubscribers();
-    const gameSubs: string[] = subscribers[this.name][game.name];
+    const subs = subscribers[this.name];
 
-    // Check if channel is already subscribed to this client
-    let hasSubbed = false;
-    for (let i = 0; i < gameSubs.length; i++) {
-      if (channel.isEqual(gameSubs[i])) {
-        gameSubs.splice(i, 1);
-        this.logDebug(`Index ${i}, Subs: ${gameSubs}`);
-        hasSubbed = true;
+    // Check if the channel is already registered
+    for (let i = 0; i < subs.length; i++) {
+      const sub = subs[i];
+      if (channel.isEqual(sub.id)) {
+        // Unsubscribe
+        sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
+
+        // Remove unneccessary entries
+        if (sub.gameSubs.length === 0 && !sub.prefix) {
+          this.logDebug('Removing unnecessary channel entry...');
+          subs.splice(i, 1);
+        } else {
+          subs[i] = sub;
+        }
+
+        // Save the changes
+        subscribers[this.name] = subs;
+        setSubscribers(subscribers);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Gets a BotChannel by its ID.
+   *
+   * @param id - The ID of the channel.
+   * @returns The BotChannel with the specified ID.
+   */
+  public getChannelByID(id: string): BotChannel {
+    const channels = getSubscribers()[this.name];
+    const channel = new BotChannel(id, this);
+
+    // Check if the channel is already registered
+    for (const sub of channels) {
+      if (channel.isEqual(sub.id)) {
+        // Update properties
+        channel.gameSubs = sub.gameSubs;
+        channel.prefix = sub.prefix;
         break;
       }
     }
 
-    if (!hasSubbed) {
-      return false;
-    }
-
-    // Save changes
-    subscribers[this.name][game.name] = gameSubs;
-    setSubscribers(subscribers);
-
-    return true;
+    return channel;
   }
 
   /** Sends a message to a channel.
@@ -129,11 +169,13 @@ export default abstract class BotClient {
    * @returns void
    */
   public sendMessageToGameSubs(game: Game, message: string | BotNotification): void {
-    const subscribers = getSubscribers()[this.name][game.name];
+    const subscribers = getSubscribers()[this.name];
 
     if (subscribers) {
-      for (const sub of subscribers) {
-        this.sendMessage(new BotChannel(sub), message);
+      for (const channel of subscribers) {
+        if (channel.gameSubs && channel.gameSubs.includes(game.name)) {
+          this.sendMessage(new BotChannel(channel.id, channel.gameSubs, channel.prefix), message);
+        }
       }
     }
   }
@@ -144,7 +186,15 @@ export default abstract class BotClient {
    * @returns void
    */
   public sendMessageToAllSubs(message: string | BotNotification): void {
-    // TODO: Implement
+    const subscribers = getSubscribers()[this.name];
+
+    if (subscribers) {
+      for (const channel of subscribers) {
+        if (channel.gameSubs && channel.gameSubs.length !== 0) {
+          this.sendMessage(new BotChannel(channel.id, channel.gameSubs, channel.prefix), message);
+        }
+      }
+    }
   }
 
   /** Logs a debug message.

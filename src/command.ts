@@ -43,10 +43,10 @@ export default class Command {
 
   /** Gets the RegExp used to trigger the command
    *
-   * @param client - The BotClient to trigger the command on.
+   * @param client - The BotChannel to trigger the command on.
    */
-  public getRegExp(client: BotClient) {
-    const prefix = this.hasPrefix ? `^(${client.prefix}\s*)` : '';
+  public getRegExp(channel: BotChannel) {
+    const prefix = this.hasPrefix ? `^(${channel.getPrefix()}\s*)` : '';
 
     return new RegExp(prefix + this.trigger);
   }
@@ -62,7 +62,7 @@ const commands = [
     'help\s*$',
     (bot, channel) => {
       const commandsList = commands.map((command) => {
-        return `- \`${bot.prefix}${command.triggerLabel}\`: ${command.description}`;
+        return `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`;
       });
 
       const commandsMD = commandsList.join('\n');
@@ -117,7 +117,7 @@ const commands = [
 
       if (!alias) {
         bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
-        + `Try \`${bot.prefix}subscribe <game name>\`.`);
+        + `Try \`${channel.getPrefix()}subscribe <game name>\`.`);
       }
 
       for (const game of games) {

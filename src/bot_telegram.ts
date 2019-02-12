@@ -24,15 +24,22 @@ export default class TelegramBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    const reg = command.getRegExp(this);
-    this.bot.onText(reg, (msg: TelegramAPI.Message, match: RegExpExecArray) => {
-      command.callback(
-        this,
-        new BotChannel(msg.chat.id.toString()),
-        // FIX: Properly identify the user key
-        new BotUser(''),
-        match,
+    this.bot.onText(/.*/, (msg: TelegramAPI.Message) => {
+      const channel = this.getChannelByID(msg.chat.id.toString());
+      const reg = command.getRegExp(channel);
+      // Run regex on the msg
+      const regMatch = reg.exec(msg.text);
+      // If the regex matched, execute the handler function
+      if (regMatch) {
+        // Call the callback function
+        command.callback(
+          this,
+          channel,
+          // FIX: Properly identify the user key
+          new BotUser(''),
+          regMatch,
         );
+      }
     });
   }
   public async start(): Promise<boolean> {
@@ -49,7 +56,7 @@ export default class TelegramBot extends BotClient {
     this.isRunning = false;
   }
   public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
-    if (typeof (message) === 'string') {
+    if (typeof message === 'string') {
       message = this.msgFromMarkdown(message);
       try {
         await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
