@@ -2,11 +2,11 @@
   "name": "valvegamesannouncerbot",
   "version": "0.1.0",
   "description": "A notification bot for Dota 2 and Artifact.",
-  "main": "src/main.js",
+  "main": "src/main.ts",
   "scripts": {
     "test": "jest src",
     "lint-js": "eslint src/*.js --color",
-    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1",
+    "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
   },
   "repository": {
@@ -19,32 +19,43 @@
     "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
   },
   "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot#readme",
-  "engines" : { 
-    "node" : ">=10.14.2" 
+  "engines": {
+    "node": "^10.14.2"
   },
   "devDependencies": {
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^22.1.2",
+    "eslint-plugin-jsdoc": "^3.14.1",
     "eslint-plugin-prettier": "3.0.0",
     "husky": "^1.2.1",
+    "install-peerdeps": "^1.9.0",
     "jest": "^23.6.0",
-    "prettier": "1.15.3"
+    "prettier": "1.15.3",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "yarn": "^1.12.3"
   },
   "dependencies": {
+    "@types/jsdom": "^12.2.1",
+    "@types/node": "^10.12.18",
+    "@types/node-telegram-bot-api": "^0.30.3",
+    "@types/showdown": "^1.9.2",
+    "@types/snoowrap": "^1.15.1",
+    "@types/xml2js": "^0.4.3",
     "discord.js": "^11.4.2",
-    "eslint-plugin-jsdoc": "^3.14.1",
-    "implement-js": "0.0.26",
-    "install-peerdeps": "^1.9.0",
+    "feed-read": "^0.0.1",
+    "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.30.0",
     "rss-parser": "^3.6.0",
-    "yarn": "^1.12.3"
+    "snoowrap": "^1.15.2",
+    "turndown": "^5.0.3",
+    "winston": "^3.1.0"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint-js",
-      "pre-push": "yarn test"
+      "pre-commit": "yarn lint-ts"
     }
   }
 }
