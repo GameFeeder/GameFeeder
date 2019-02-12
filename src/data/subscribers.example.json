@@ -2,12 +2,14 @@
   "discord": {
     "dota": [],
     "artifact": [],
-    "csgo": []
+    "csgo": [],
+    "tf2": []
   },
 
   "telegram": {
     "dota": [],
     "artifact": [],
-    "csgo": []
+    "csgo": [],
+    "tf2": []
   }
 }

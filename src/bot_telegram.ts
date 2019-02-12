@@ -45,7 +45,10 @@ export default class TelegramBot extends BotClient {
         this.logError(`Failed to send message to channel:\n${error}`);
       }
     } else {
-      const text = this.msgFromMarkdown(message.toMDString());
+      let text = this.msgFromMarkdown(message.toMDString());
+      if (text.length > 2048) {
+        text = text.substring(0, 2048);
+      }
       try {
         this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
       } catch (error) {
