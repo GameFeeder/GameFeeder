@@ -1,6 +1,7 @@
 import BotClient from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
+import { getSubscribers, setSubscribers } from './data';
 import { games } from './game';
 
 export default class Command {
@@ -155,7 +156,7 @@ const commands = [
 
       if (!alias) {
         bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
-        + `Try \`${bot.prefix}unsubscribe <game name>\`.`);
+        + `Try \`${channel.getPrefix()}unsubscribe <game name>\`.`);
       }
 
       for (const game of games) {
@@ -169,6 +170,73 @@ const commands = [
           }
         }
       }
+    },
+  ),
+  new Command(
+    'Prefix',
+    'Change the bot\'s prefix used in this channel.',
+    'prefix',
+    'prefix(?<newPrefix>.*)$',
+    (bot, channel, user, match: any) => {
+      // The user must be an admin to change the channel's prefix.
+      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
+        bot.logDebug('Command: Prefix: Insufficient permissions.');
+        bot.sendMessage(channel, 'You need to be an admin on this server to change the bot\'s prefix!');
+        return;
+      } else {
+        bot.logDebug('Command: Prefix.');
+      }
+
+      let { newPrefix } = match.groups;
+      newPrefix = newPrefix.trim();
+
+      if (!newPrefix) {
+        bot.sendMessage(channel, 'You need to provide a new prefix that you want to use in this channel.\n'
+        + `Try \`${channel.getPrefix()}prefix <new prefix>\`.`);
+        return;
+      }
+
+      // Save locally
+      channel.prefix = newPrefix;
+
+      bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\``);
+
+      // Save in the JSON file
+      const subscribers = getSubscribers();
+      const channels = subscribers[bot.name];
+
+      // Check if the channel is already registered
+      for (let i = 0; i < channels.length; i++) {
+        const sub = channels[i];
+        if (channel.isEqual(sub.id)) {
+          // Update prefix
+          sub.prefix = newPrefix !== bot.prefix ? newPrefix : '';
+
+          // Remove unneccessary entries
+          if (sub.gameSubs.length === 0 && !sub.prefix) {
+            this.logDebug('Removing unnecessary channel entry...');
+            channels.splice(i, 1);
+          } else {
+            channels[i] = sub;
+          }
+
+          // Save changes
+          channels[i] = sub;
+          subscribers[this.name] = channels[i];
+          setSubscribers(subscribers);
+          return;
+        }
+      }
+      // Add channel with the new prefix
+      channels.push({
+        gameSubs: [],
+        id: channel.id,
+        prefix: newPrefix,
+      });
+      // Save the changes
+      subscribers[bot.name] = channels;
+      setSubscribers(subscribers);
+      return;
     },
   ),
 ];
