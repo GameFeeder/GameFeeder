@@ -7,5 +7,5 @@ jobs:
   include:
     - stage: lint
       script: yarn lint-ts
-    - stage: test
-      script: yarn test
+    # - stage: test
+    #  script: yarn test
