@@ -2,33 +2,40 @@
   "games": [
     {
       "name": "artifact",
-      "title": "Artifact",
+      "label": "Artifact",
       "aliases": [
         "artifact",
         "card game",
         "dcg"
       ],
+      "color": "#FFD700",
+      "icon": "https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png",
       "providers": {
         "reddit": {
+          "subreddit": "Artifact",
           "usernames": [
             "Magesunite",
             "SirBelvedere",
             "wykrhm"
           ]
-        }
+        },
+        "blogs": []
       }
     },
     {
       "name": "dota",
-      "title": "Dota 2",
+      "label": "Dota 2",
       "aliases": [
         "dota",
         "dota2",
         "dota 2",
         "d2"
       ],
+      "color": "#CC0000",
+      "icon": "http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png",
       "providers": {
         "reddit": {
+          "subreddit": "DotA2",
           "usernames": [
             "Magesunite",
             "SirBelvedere",
@@ -36,7 +43,60 @@
           ]
         },
         "blogs": [
-          "http://blog.dota2.com/feed/"
+          {
+            "label": "Dota 2 Blog",
+            "url": "http://blog.dota2.com/feed/"
+          }
+        ]
+      }
+    },
+    {
+      "name": "tf2",
+      "label": "Team Fortress 2",
+      "aliases": [
+        "team fortress 2",
+        "team fortress",
+        "tf",
+        "tf2"
+      ],
+      "color": "#9A4713",
+      "icon": "http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png",
+      "providers": {
+        "reddit": {
+          "subreddit": "tf2",
+          "usernames": []
+        },
+        "blogs": [
+          {
+            "label": "Team Fortress 2 Blog",
+            "url": "http://www.teamfortress.com/rss.xml"
+          }
+        ]
+      }
+    },
+    {
+      "name": "csgo",
+      "label": "CS:GO",
+      "aliases": [
+        "counter strike",
+        "global offensive",
+        "csgo",
+        "cs:go"
+      ],
+      "color": "#000000",
+      "icon": "",
+      "providers": {
+        "reddit": {
+          "subreddit": "csgo",
+          "usernames": [
+            "wickedplayer494"
+          ]
+        },
+        "blogs": [
+          {
+            "label": "CS:GO Blog",
+            "url": "https://blog.counter-strike.net/index.php/feed/"
+          }
         ]
       }
     }
