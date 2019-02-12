@@ -6,6 +6,6 @@ node_js:
 jobs:
   include:
     - stage: lint
-      script: yarn lint-js
+      script: yarn lint-ts
     - stage: test
       script: yarn test
