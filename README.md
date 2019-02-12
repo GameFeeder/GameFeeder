@@ -13,7 +13,7 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
     - [Commands](#commands)
   - [Miscellaneous](#miscellaneous)
     - [Privacy](#privacy)
-    - [Disclamer](#disclamer)
+    - [Disclaimer](#disclaimer)
 
 ## About this project
 
@@ -21,10 +21,14 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 
 So far, we are providing the following commands (with `/` as prefix):
 
-| Command                    | Summary                         |
-| -------------------------- | ------------------------------- |
-| `/subscribe <game name>`   | Subscribe to a game's feed.     |
-| `/unsubscribe <game name>` | Unsubscribe from a game's feed. |
+| Command                    | Summary                                |
+| -------------------------- | -------------------------------------- |
+| `/help`                    | Display all available commands.        |
+| `/about`                   | Display information about this bot.    |
+| `/games`                   | Display a list of all available games. |
+| `/subscribe <game name>`   | Subscribe to a game's feed.            |
+| `/unsubscribe <game name>` | Unsubscribe from a game's feed.        |
+|  |
 
 * The default prefix on Telegram is `/`.
 * The default prefix on Discord is `!`.
@@ -35,12 +39,12 @@ So far, we are providing the following commands (with `/` as prefix):
 
 ### Privacy
 
-When you subscribe to a game's feed, we are storing the ID of the chat you subscribed in on our server. This is nessecary to notify you on any updates.
+When you subscribe to a game's feed, we are storing the ID of the chat you subscribed in on our server (unencrypted and seperately for each game). This is nessecary to notify you on any updates.
 
 When you unsubscribe, the ID of that chat gets deleted again.
 
 
-### Disclamer
+### Disclaimer
 
 Please note that this project is not affiliated with *Valve Corporation*.
 

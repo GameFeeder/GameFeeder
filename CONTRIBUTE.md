@@ -21,6 +21,8 @@ Next you will need to create multiple API keys. First off navigate to `src/data/
 
 **Important**: Never share your API keys with anyone! `bot_config.json` should be in the `.gitignore`, but please double check that you are not pushing your keys to any repository.
 
+You will also have to copy & paste `subscribers.example.json` into `subscribers.json` and `updater_config.example.json` into `updater_config.json`.
+
 You can now use the following tutorials to get the keys you need. If you don't want to use one of the features, skip the step and leave the `token` field empty. This (should) just disable this API. For the bots, you can aditionally set `autostart` to `false`, if you only want to test out a certain bot.
 
 ### Discord Bot
