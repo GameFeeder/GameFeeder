@@ -197,12 +197,12 @@ const commands = [
         return;
       }
 
+      bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
+
       newPrefix = EscapeRegex(newPrefix);
 
       // Save locally
       channel.prefix = newPrefix;
-
-      bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\``);
 
       // Save in the JSON file
       const subscribers = getSubscribers();
@@ -222,10 +222,8 @@ const commands = [
           } else {
             channels[i] = sub;
           }
-
           // Save changes
-          channels[i] = sub;
-          subscribers[this.name] = channels[i];
+          subscribers[bot.name] = channels;
           setSubscribers(subscribers);
           return;
         }
