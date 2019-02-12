@@ -1,3 +1,4 @@
+import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import { getBotConfig, getSubscribers, setSubscribers } from './data';
@@ -48,6 +49,13 @@ export default abstract class BotClient {
    * @returns void
    */
   public abstract stop(): void;
+
+  /** Gets the permission of a user on a given channel.
+   *
+   * @param user - The user to get the permission of.
+   * @param channel - The channel to get the permission on.
+   */
+  public abstract getUserPermission(user: BotUser, channel: BotChannel): UserPermission;
 
   /** Add a channel supscription to a game.
    *
@@ -112,7 +120,7 @@ export default abstract class BotClient {
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public async abstract sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean>;
+  public abstract async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *

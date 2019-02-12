@@ -1,5 +1,6 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
+import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import { getBotConfig } from './data';
@@ -17,10 +18,21 @@ export default class TelegramBot extends BotClient {
     this.bot = new TelegramAPI(token, { polling: false });
   }
 
+  public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
+    // TODO: Properly identify a user's permission
+    return UserPermission.ADMIN;
+  }
+
   public registerCommand(command: Command): void {
     const reg = command.getRegExp(this);
     this.bot.onText(reg, (msg: TelegramAPI.Message, match: RegExpExecArray) => {
-      command.callback(this, new BotChannel(msg.chat.id.toString()), match);
+      command.callback(
+        this,
+        new BotChannel(msg.chat.id.toString()),
+        // FIX: Properly identify the user key
+        new BotUser(''),
+        match,
+        );
     });
   }
   public async start(): Promise<boolean> {
