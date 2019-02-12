@@ -50,6 +50,8 @@ function getFilePath(file: string): string {
       return `${basePath}/bot_config.json`;
     case 'data_config':
       return `${basePath}/data_config.json`;
+    case 'updater_config':
+      return `${basePath}/updater_config.json`;
     default:
       throw new SyntaxError('Unexpected file.');
   }
@@ -71,8 +73,12 @@ function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
 
-function setDataConfig(data: object): void {
-  writeJSON(getFilePath('data_config'), data);
+function getUpdaterConfig(): any {
+  return readJSON(getFilePath('updater_config'));
+}
+
+function setUpdaterConfig(data: object): void {
+  writeJSON(getFilePath('updaterConfig'), data);
 }
 
 function getSubscribers(): any {
@@ -83,4 +89,6 @@ function setSubscribers(subscribers: object): void {
   writeJSON(getFilePath('subscribers'), subscribers);
 }
 
-export { getBotConfig, getDataConfig, setDataConfig, getRedditConfig, getSubscribers, setSubscribers };
+export {
+  getBotConfig, getDataConfig, getUpdaterConfig, setUpdaterConfig, getRedditConfig, getSubscribers, setSubscribers,
+};

@@ -117,6 +117,9 @@ export default class DiscordBot extends BotClient {
   }
 
   public msgFromMarkdown(markdown: string, isEmbed: boolean): string {
+    if (!markdown) {
+      return '';
+    }
     if (!isEmbed) {
       // Short links are not supported outside of embeds
       markdown = markdown.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
@@ -168,7 +171,7 @@ export default class DiscordBot extends BotClient {
 }
 
 // Discord Bot
-const { prefix: discordPrefix, token: discordToken, discordAutostart } = getBotConfig().discord;
+const { prefix: discordPrefix, token: discordToken, autostart: discordAutostart } = getBotConfig().discord;
 const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
 
 export { DiscordBot, discordBot };

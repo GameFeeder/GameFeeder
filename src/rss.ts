@@ -1,5 +1,5 @@
 import RSSParser from 'rss-parser';
-import games, { Game } from './game';
+import TurndownService from 'turndown';
 import botLogger from './logger';
 import RSSItem from './rss_item';
 
@@ -16,12 +16,14 @@ export default class RSS {
     try {
       const feed = await this.parser.parseURL(url);
 
+      const converter = new TurndownService();
+
       for (const item of feed.items) {
         const rssItem = new RSSItem(
           item.title,
           item.creator,
           item.link,
-          item.content,
+          converter.turndown(item.content),
           new Date(item.isoDate),
           {
             link: feed,

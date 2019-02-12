@@ -39,15 +39,26 @@ export default class TelegramBot extends BotClient {
   public sendMessageToChannel(channel: BotChannel, message: string | BotNotification): boolean {
     if (typeof (message) === 'string') {
       message = this.msgFromMarkdown(message);
-      this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
+      try {
+        this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
+      } catch (error) {
+        this.logError(`Failed to send message to channel:\n${error}`);
+      }
     } else {
       const text = this.msgFromMarkdown(message.toMDString());
-      this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
+      try {
+        this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
+      } catch (error) {
+        this.logError(`Failed to send notification to channel:\n${error}`);
+      }
     }
     return true;
   }
 
   public msgFromMarkdown(markdown: string): string {
+    if (!markdown) {
+      return '';
+    }
     // Italic
     markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
     // Bold

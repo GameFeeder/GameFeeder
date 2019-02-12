@@ -1,5 +1,5 @@
 import bots from './bots';
-import { getDataConfig, setDataConfig } from './data';
+import { getUpdaterConfig, setUpdaterConfig } from './data';
 import { games } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
@@ -107,13 +107,13 @@ class Updater {
   public saveDate(date: Date): void {
     this.lastUpdate = date;
     if (this.autosave) {
-      const data = getDataConfig();
+      const data = getUpdaterConfig();
       data.updater.lastUpdate = date.toISOString();
-      setDataConfig(data);
+      setUpdaterConfig(data);
     }
   }
   public loadDate(): void {
-    this.lastUpdate = new Date(getDataConfig().updater.lastUpdate);
+    this.lastUpdate = new Date(getUpdaterConfig().updater.lastUpdate);
   }
   /** Updates in the specified time interval.
    * @returns {void}
@@ -128,7 +128,7 @@ class Updater {
   }
 }
 
-const updaterConfig = getDataConfig().updater;
+const updaterConfig = getUpdaterConfig().updater;
 
 // The updater used by our main method
 const updater = new Updater(

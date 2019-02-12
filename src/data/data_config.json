@@ -1,11 +1,4 @@
 {
-  "updater": {
-    "updateDelaySec": 10,
-    "limit": 3,
-    "lastUpdate": "2019-02-12T01:34:11.000Z",
-    "autostart": true,
-    "autosave": true
-  },
   "games": [
     {
       "name": "artifact",
@@ -73,7 +66,12 @@
           "subreddit": "tf2",
           "usernames": []
         },
-        "blogs": []
+        "blogs": [
+          {
+            "label": "Team Fortress 2 Blog",
+            "url": "http://www.teamfortress.com/rss.xml"
+          }
+        ]
       }
     },
     {

@@ -13,15 +13,17 @@ for (const command of commands) {
 botLogger.info('Registered commands.', 'Main');
 
 // Start bots
-bots.forEach((bot) => {
+for (const bot of bots) {
   if (bot.autostart) {
     if (bot.start()) {
       bot.logInfo('Started bot.');
     } else {
       bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
     }
+  } else {
+    bot.logDebug('Autostart disabled.');
   }
-});
+}
 
 // Start updater
 if (updater.autostart) {
