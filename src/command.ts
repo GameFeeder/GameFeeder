@@ -1,4 +1,5 @@
 import BotClient from './bot';
+import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import { games } from './game';
 
@@ -12,9 +13,11 @@ export default class Command {
   /** The RegExp string triggering the command. */
   public trigger: string;
   /** The callback function executing the command. */
-  public callback: (bot: BotClient, channel: BotChannel, match: RegExpMatchArray) => void;
+  public callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
+  /** The permission required to execute the command. */
+  public permission: UserPermission;
 
   /** Create a new command.
    *
@@ -23,15 +26,18 @@ export default class Command {
    * @param {string} triggerLabel - The label of the command trigger. Displayed in the help-command.
    * @param {string} trigger - The RegExp string triggering the command.
    * @param {Function} callback - The callback function executing the command.
+   * @param {UserPermission} permission - The permission required to execute the command.
    * @param {boolean} hasPrefix - Whether the command should use the bot prefix. Default is true.
    */
   constructor(label: string, description: string, triggerLabel: string, trigger: string,
-              callback: (bot: BotClient, channel: BotChannel, match: RegExpMatchArray) => void, hasPrefix?: boolean) {
+              callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void,
+              permission?: UserPermission, hasPrefix?: boolean) {
     this.label = label;
     this.description = description;
     this.triggerLabel = triggerLabel;
     this.trigger = trigger;
     this.callback = callback;
+    this.permission = permission != null ? permission : UserPermission.USER;
     this.hasPrefix = hasPrefix != null ? hasPrefix : true;
   }
 
@@ -46,6 +52,7 @@ export default class Command {
   }
 }
 
+/** The standard commands available on all bots. */
 const commands = [
   // Help
   new Command(
@@ -94,12 +101,24 @@ const commands = [
     'Subscribe to the given game\'s feed.',
     'subscribe <game name>',
     'sub(scribe)?(?<alias>.*)',
-    (bot, channel, match: any) => {
+    (bot, channel, user, match: any) => {
 
-      bot.logDebug('Command: Subscribe.');
+      // The user must be an admin to subscribe.
+      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
+        bot.logDebug('Command: Subscribe: Insufficient permissions.');
+        bot.sendMessage(channel, 'You need to be an admin on this server to subscribe to a feed!');
+        return;
+      } else {
+        bot.logDebug('Command: Subscribe.');
+      }
 
       let { alias } = match.groups;
       alias = alias.trim();
+
+      if (!alias) {
+        bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
+        + `Try \`${bot.prefix}subscribe <game name>\`.`);
+      }
 
       for (const game of games) {
         if (game.hasAlias(alias)) {
@@ -110,7 +129,6 @@ const commands = [
             bot.sendMessage(channel,
               `You have already subscribed to the **${game.label}** feed!`);
           }
-          break;
         }
       }
     },
@@ -121,9 +139,24 @@ const commands = [
     'Unsubscribe from the given game\'s feed',
     'unsubscribe <game name>',
     'unsub(scribe)?(?<alias>.*)',
-    (bot, channel, match: any) => {
+    (bot, channel, user, match: any) => {
+
+      // The user must be an admin to unsubscribe.
+      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
+        bot.logDebug('Command: Unsubscribe: Insufficient permissions.');
+        bot.sendMessage(channel, 'You need to be an admin on this server to unsubscribe from a feed!');
+        return;
+      } else {
+        bot.logDebug('Command: Unsubscribe.');
+      }
+
       let { alias } = match.groups;
       alias = alias.trim();
+
+      if (!alias) {
+        bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
+        + `Try \`${bot.prefix}unsubscribe <game name>\`.`);
+      }
 
       for (const game of games) {
         if (game.hasAlias(alias)) {
@@ -134,7 +167,6 @@ const commands = [
             bot.sendMessage(channel,
               `You have never subscribed to the **${game.label}** feed in the first place!`);
           }
-          break;
         }
       }
     },

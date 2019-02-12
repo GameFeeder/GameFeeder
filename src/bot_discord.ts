@@ -1,5 +1,6 @@
-import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel } from 'discord.js';
+import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel, User } from 'discord.js';
 import { BotClient } from './bot';
+import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import { getBotConfig } from './data';
@@ -17,6 +18,23 @@ export default class DiscordBot extends BotClient {
     this.bot = new DiscordAPI.Client();
   }
 
+  public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
+      return UserPermission.ADMIN;
+    } else if (discordChannel instanceof TextChannel) {
+      const discordUser = discordChannel.members.get(user.id);
+      if (discordUser.hasPermission(8)) {
+        return UserPermission.ADMIN;
+      } else {
+        return UserPermission.USER;
+      }
+    } else {
+      return UserPermission.USER;
+    }
+  }
+
   public registerCommand(command: Command): void {
     const reg = command.getRegExp(this);
     this.bot.on('message', (message) => {
@@ -24,7 +42,12 @@ export default class DiscordBot extends BotClient {
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
-        command.callback(this, new BotChannel(message.channel.id), regMatch);
+        command.callback(
+          this,
+          new BotChannel(message.channel.id),
+          new BotUser(message.author.id),
+          regMatch,
+        );
       }
     });
   }
