@@ -28,7 +28,6 @@ So far, we are providing the following commands (with `/` as prefix):
 | `/games`                   | Display a list of all available games. |
 | `/subscribe <game name>`   | Subscribe to a game's feed.            |
 | `/unsubscribe <game name>` | Unsubscribe from a game's feed.        |
-|  |
 
 * The default prefix on Telegram is `/`.
 * The default prefix on Discord is `!`.
