@@ -14,13 +14,17 @@ botLogger.info('Registered commands.', 'Main');
 
 // Start bots
 bots.forEach((bot) => {
-  if (bot.start()) {
-    bot.logInfo('Started bot.');
-  } else {
-    bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
+  if (bot.autostart) {
+    if (bot.start()) {
+      bot.logInfo('Started bot.');
+    } else {
+      bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
+    }
   }
 });
 
 // Start updater
-updater.start();
-updater.info('Started updater.');
+if (updater.autostart) {
+  updater.start();
+  updater.info('Started updater.');
+}

@@ -1,4 +1,11 @@
 {
+  "updater": {
+    "updateDelaySec": 10,
+    "limit": 3,
+    "lastUpdate": "2019-02-12T01:34:11.000Z",
+    "autostart": true,
+    "autosave": true
+  },
   "games": [
     {
       "name": "artifact",
@@ -51,7 +58,7 @@
       }
     },
     {
-    "name": "tf2",
+      "name": "tf2",
       "label": "Team Fortress 2",
       "aliases": [
         "team fortress 2",
@@ -71,29 +78,29 @@
     },
     {
       "name": "csgo",
-        "label": "CS:GO",
-        "aliases": [
-          "counter strike",
-          "global offensive",
-          "csgo",
-          "cs:go"
-        ],
-        "color": "#000000",
-        "icon": "",
-        "providers": {
-          "reddit": {
-            "subreddit": "csgo",
-            "usernames": [
-              "wickedplayer494"
-            ]
-          },
-          "blogs": [
-            {
-              "label": "CS:GO Blog",
-              "url": "https://blog.counter-strike.net/index.php/feed/"
-            }
+      "label": "CS:GO",
+      "aliases": [
+        "counter strike",
+        "global offensive",
+        "csgo",
+        "cs:go"
+      ],
+      "color": "#000000",
+      "icon": "",
+      "providers": {
+        "reddit": {
+          "subreddit": "csgo",
+          "usernames": [
+            "wickedplayer494"
           ]
-        }
+        },
+        "blogs": [
+          {
+            "label": "CS:GO Blog",
+            "url": "https://blog.counter-strike.net/index.php/feed/"
+          }
+        ]
       }
+    }
   ]
 }

@@ -1,4 +1,5 @@
 import bots from './bots';
+import { getDataConfig, setDataConfig } from './data';
 import { games } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
@@ -7,21 +8,25 @@ import RSS from './rss';
 const rss = new RSS();
 
 class Updater {
+  public autostart: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
   /** The update interval in milliseconds */
   private updateDelayMs: number;
   private lastUpdate: Date;
   private limit: number;
+  private autosave: boolean;
 
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(updateDelaySec: number, limit: number, lastUpdate: Date) {
+  constructor(updateDelaySec: number, limit: number, lastUpdate: Date, autostart: boolean, autosave: boolean) {
     this.setDelaySec(updateDelaySec);
     this.limit = limit;
     this.lastUpdate = lastUpdate;
     this.doUpdates = false;
+    this.autostart = autostart;
+    this.autosave = autosave;
   }
   public debug(msg: string): void {
     botLogger.debug(msg, 'Updater');
@@ -90,7 +95,7 @@ class Updater {
       botLogger.debug(`Found ${notifications.length} posts. Notifying users...`, 'Updater');
 
       // Update time
-      this.lastUpdate = notifications[notifications.length - 1].timestamp;
+      this.saveDate(notifications[notifications.length - 1].timestamp);
       // Notify users
       for (const bot of bots) {
         for (const notification of notifications) {
@@ -98,6 +103,17 @@ class Updater {
         }
       }
     }
+  }
+  public saveDate(date: Date): void {
+    this.lastUpdate = date;
+    if (this.autosave) {
+      const data = getDataConfig();
+      data.updater.lastUpdate = date.toISOString();
+      setDataConfig(data);
+    }
+  }
+  public loadDate(): void {
+    this.lastUpdate = new Date(getDataConfig().updater.lastUpdate);
   }
   /** Updates in the specified time interval.
    * @returns {void}
@@ -112,7 +128,15 @@ class Updater {
   }
 }
 
+const updaterConfig = getDataConfig().updater;
+
 // The updater used by our main method
-const updater = new Updater(30, 3, new Date('2019-01-10'));
+const updater = new Updater(
+  updaterConfig.updateDelaySec,
+  updaterConfig.limit,
+  new Date(updaterConfig.lastUpdate),
+  updaterConfig.autostart,
+  updaterConfig.autosave,
+);
 
 export default updater;

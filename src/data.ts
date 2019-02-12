@@ -71,6 +71,10 @@ function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
 
+function setDataConfig(data: object): void {
+  writeJSON(getFilePath('data_config'), data);
+}
+
 function getSubscribers(): any {
   return readJSON(getFilePath('subscribers'));
 }
@@ -79,4 +83,4 @@ function setSubscribers(subscribers: object): void {
   writeJSON(getFilePath('subscribers'), subscribers);
 }
 
-export { getBotConfig, getDataConfig, getRedditConfig, getSubscribers, setSubscribers };
+export { getBotConfig, getDataConfig, setDataConfig, getRedditConfig, getSubscribers, setSubscribers };
