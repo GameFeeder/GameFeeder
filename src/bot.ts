@@ -33,7 +33,13 @@ export default abstract class BotClient {
     this.isRunning = false;
   }
 
-  /** Register a bot command.
+  /** Gets the username of the bot.
+   *
+   * @return The username of the bot.
+   */
+  public abstract async getUserName(): Promise<string>;
+
+  /** Registers a bot command.
    *
    * @param  {Command} command - The command to register.
    * @returns void

@@ -18,15 +18,20 @@ export default class TelegramBot extends BotClient {
     this.bot = new TelegramAPI(token, { polling: false });
   }
 
+  public async getUserName(): Promise<string> {
+    const botUser = await this.bot.getMe();
+    return botUser.username;
+  }
+
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
     // TODO: Properly identify a user's permission
     return UserPermission.ADMIN;
   }
 
   public registerCommand(command: Command): void {
-    this.bot.onText(/.*/, (msg: TelegramAPI.Message) => {
+    this.bot.onText(/.*/, async (msg: TelegramAPI.Message) => {
       const channel = this.getChannelByID(msg.chat.id.toString());
-      const reg = command.getRegExp(channel);
+      const reg = await command.getRegExp(channel);
       // Run regex on the msg
       const regMatch = reg.exec(msg.text);
       // If the regex matched, execute the handler function

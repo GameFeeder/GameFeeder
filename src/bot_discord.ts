@@ -18,6 +18,13 @@ export default class DiscordBot extends BotClient {
     this.bot = new DiscordAPI.Client();
   }
 
+  public async getUserName(): Promise<string> {
+    if (!this.bot || !this.bot.user) {
+      return '?';
+    }
+    return this.bot.user.tag;
+  }
+
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
     const discordChannel = this.bot.channels.get(channel.id);
 
@@ -35,10 +42,10 @@ export default class DiscordBot extends BotClient {
     }
   }
 
-  public registerCommand(command: Command): void {
-    this.bot.on('message', (message) => {
+  public async registerCommand(command: Command): Promise<void> {
+    this.bot.on('message', async (message) => {
       const channel = this.getChannelByID(message.channel.id);
-      const reg = command.getRegExp(channel);
+      const reg = await command.getRegExp(channel);
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function

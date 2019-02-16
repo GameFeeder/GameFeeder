@@ -47,8 +47,12 @@ export default class Command {
    *
    * @param client - The BotChannel to trigger the command on.
    */
-  public getRegExp(channel: BotChannel) {
-    const prefix = this.hasPrefix ? `^(${channel.getPrefix()}\s*)` : '';
+  public async getRegExp(channel: BotChannel) {
+    const bot = channel.client;
+    const userTag = `\@${await bot.getUserName()}`;
+    const prefix = this.hasPrefix ?
+    `^((${userTag})|(${channel.getPrefix()})|((${bot.prefix})\s*(${userTag}))\s*)` :
+    '';
 
     return new RegExp(prefix + this.trigger);
   }
