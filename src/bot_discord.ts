@@ -22,7 +22,6 @@ export default class DiscordBot extends BotClient {
     if (!this.bot || !this.bot.user) {
       return '?';
     }
-    this.logDebug(`Usertag: ${this.bot.user.tag}`);
     return this.bot.user.tag;
   }
 
@@ -63,7 +62,7 @@ export default class DiscordBot extends BotClient {
   }
   public async start(): Promise<boolean> {
     if (this.token) {
-      this.bot.login(this.token);
+      await this.bot.login(this.token);
       this.isRunning = true;
       return true;
     } else {

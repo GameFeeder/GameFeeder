@@ -41,7 +41,7 @@ export default class Reddit {
 
     for (const user of usernames) {
 
-      botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
+      // botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
 
       // Get all new submissions in the given subreddit
       const allPosts = await reddit.
@@ -70,14 +70,16 @@ export default class Reddit {
         );
         notifications.push(notification);
       }
-      botLogger.debug('Completed.', 'Reddit');
     }
     // Limit the length
     if (limit && notifications.length > limit) {
       notifications = notifications.slice(0, limit);
     }
 
-    botLogger.debug(`Found ${notifications.length} posts.`, 'Reddit');
+    /*
+    botLogger.debug(`Found ${notifications.length} posts from ` +
+    `${usernames.map((user) => `/u/${user}`).join(', ')} in /r/${subreddit}.`, 'Reddit');
+    */
 
     return notifications;
   }

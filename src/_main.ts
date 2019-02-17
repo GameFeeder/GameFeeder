@@ -19,7 +19,7 @@ async function startBots() {
   // Start bots
   for (const bot of bots) {
     if (bot.autostart) {
-      if (bot.start()) {
+      if (await bot.start()) {
         const userName = await bot.getUserName();
         bot.logInfo(`Started bot as @${userName}`);
       } else {

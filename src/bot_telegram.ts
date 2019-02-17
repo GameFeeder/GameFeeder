@@ -49,7 +49,7 @@ export default class TelegramBot extends BotClient {
   }
   public async start(): Promise<boolean> {
     if (this.token) {
-      this.bot.startPolling({ restart: true });
+      await this.bot.startPolling({ restart: true });
       this.isRunning = true;
       return true;
     } else {
