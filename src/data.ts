@@ -53,7 +53,7 @@ function getFilePath(file: string): string {
     case 'updater_config':
       return `${basePath}/updater_config.json`;
     default:
-      throw new SyntaxError('Unexpected file.');
+      throw new SyntaxError(`Unexpected file: '${file}'.`);
   }
 }
 
@@ -78,7 +78,7 @@ function getUpdaterConfig(): any {
 }
 
 function setUpdaterConfig(data: object): void {
-  writeJSON(getFilePath('updaterConfig'), data);
+  writeJSON(getFilePath('updater_config'), data);
 }
 
 function getSubscribers(): any {
