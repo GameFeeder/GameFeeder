@@ -36,12 +36,12 @@ export default class TelegramBot extends BotClient {
       const regMatch = reg.exec(msg.text);
       // If the regex matched, execute the handler function
       if (regMatch) {
-        // Call the callback function
-        command.callback(
+        // Execute the command
+        command.execute(
           this,
           channel,
           // FIX: Properly identify the user key
-          new BotUser(''),
+          new BotUser(this, ''),
           regMatch,
         );
       }

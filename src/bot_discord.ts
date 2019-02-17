@@ -50,11 +50,11 @@ export default class DiscordBot extends BotClient {
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
-        // Call the callback function
-        command.callback(
+        // Execute the command
+        command.execute(
           this,
           channel,
-          new BotUser(message.author.id),
+          new BotUser(this, message.author.id),
           regMatch,
         );
       }

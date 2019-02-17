@@ -42,6 +42,28 @@ export default class Command {
     this.permission = permission != null ? permission : UserPermission.USER;
     this.hasPrefix = hasPrefix != null ? hasPrefix : true;
   }
+  /** Tries to execute the command on the given channel.
+   *
+   * @param bot - The BotClient to execute the command on.
+   * @param channel - The channel to execute the command on.
+   * @param user - The user trying to execute the command.
+   * @param match - The RegExp match of the command trigger.
+   */
+  public execute(bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray): boolean {
+    // Check if the user has the required permission to execute the command.
+    if (user.hasPermission(channel, this.permission)) {
+      bot.logDebug(`Command: ${this.label}`);
+      this.callback(bot, channel, user, match);
+      return true;
+    } else {
+      bot.logDebug(`Command: ${this.label}: Insufficient permissions.`);
+      bot.sendMessage(
+        channel,
+        `You need the permission ${this.permission.toString()} on this server to execute this command!`,
+      );
+      return false;
+    }
+  }
 
   /** Gets the RegExp used to trigger the command
    *
@@ -51,8 +73,8 @@ export default class Command {
     const bot = channel.client;
     const userTag = `\@${await bot.getUserName()}`;
     const prefix = this.hasPrefix ?
-    `^\\s*((${userTag})|(${channel.getPrefix()})|((${bot.prefix})\\s*(${userTag})))\\s*` :
-    '';
+      `^\\s*((${userTag})|(${EscapeRegex(channel.getPrefix())})|((${bot.prefix})\\s*(${userTag})))\\s*` :
+      '';
 
     return new RegExp(prefix + this.trigger);
   }
@@ -66,13 +88,13 @@ const commands = [
     'Display a list of all available commands.',
     'help',
     'help\\s*$',
-    (bot, channel) => {
-      const commandsList = commands.map((command) => {
-        return `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`;
-      });
+    (bot, channel, user) => {
+      const commandsList = commands
+        // Only show the commands the user has permission to execute.
+        .filter((command) => user.hasPermission(channel, command.permission))
+        .map((command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`);
 
-      const commandsMD = commandsList.join('\n');
-      const helpMD = `You can use the following commands:\n${commandsMD}`;
+      const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
 
       bot.sendMessage(channel, helpMD);
     },
@@ -108,22 +130,12 @@ const commands = [
     'subscribe <game name>',
     'sub(scribe)?(?<alias>.*)',
     (bot, channel, user, match: any) => {
-
-      // The user must be an admin to subscribe.
-      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
-        bot.logDebug('Command: Subscribe: Insufficient permissions.');
-        bot.sendMessage(channel, 'You need to be an admin on this server to subscribe to a feed!');
-        return;
-      } else {
-        bot.logDebug('Command: Subscribe.');
-      }
-
       let { alias } = match.groups;
       alias = alias.trim();
 
       if (!alias) {
         bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
-        + `Try \`${channel.getPrefix()}subscribe <game name>\`.`);
+          + `Try \`${channel.getPrefix()}subscribe <game name>\`.`);
       }
 
       for (const game of games) {
@@ -146,22 +158,12 @@ const commands = [
     'unsubscribe <game name>',
     'unsub(scribe)?(?<alias>.*)',
     (bot, channel, user, match: any) => {
-
-      // The user must be an admin to unsubscribe.
-      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
-        bot.logDebug('Command: Unsubscribe: Insufficient permissions.');
-        bot.sendMessage(channel, 'You need to be an admin on this server to unsubscribe from a feed!');
-        return;
-      } else {
-        bot.logDebug('Command: Unsubscribe.');
-      }
-
       let { alias } = match.groups;
       alias = alias.trim();
 
       if (!alias) {
         bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
-        + `Try \`${channel.getPrefix()}unsubscribe <game name>\`.`);
+          + `Try \`${channel.getPrefix()}unsubscribe <game name>\`.`);
       }
 
       for (const game of games) {
@@ -183,27 +185,16 @@ const commands = [
     'prefix',
     'prefix(?<newPrefix>.*)$',
     (bot, channel, user, match: any) => {
-      // The user must be an admin to change the channel's prefix.
-      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
-        bot.logDebug('Command: Prefix: Insufficient permissions.');
-        bot.sendMessage(channel, 'You need to be an admin on this server to change the bot\'s prefix!');
-        return;
-      } else {
-        bot.logDebug('Command: Prefix.');
-      }
-
       let { newPrefix } = match.groups;
       newPrefix = newPrefix.trim();
 
       if (!newPrefix) {
         bot.sendMessage(channel, 'You need to provide a new prefix that you want to use in this channel.\n'
-        + `Try \`${channel.getPrefix()}prefix <new prefix>\`.`);
+          + `Try \`${channel.getPrefix()}prefix <new prefix>\`.`);
         return;
       }
 
       bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
-
-      newPrefix = EscapeRegex(newPrefix);
 
       // Save locally
       channel.prefix = newPrefix;
