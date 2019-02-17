@@ -39,6 +39,12 @@ export default abstract class BotClient {
    */
   public abstract async getUserName(): Promise<string>;
 
+  /** Gets the usertag of the bot. Used as prefix.
+   *
+   * @return The usertag of the bot.
+   */
+  public abstract async getUserTag(): Promise<string>;
+
   /** Registers a bot command.
    *
    * @param  {Command} command - The command to register.

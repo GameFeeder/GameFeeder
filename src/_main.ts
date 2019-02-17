@@ -1,5 +1,5 @@
 import bots from './bots';
-import { commands } from './command';
+import commands from './commands';
 import botLogger from './logger';
 import updater from './updater';
 

@@ -23,6 +23,11 @@ export default class TelegramBot extends BotClient {
     return botUser.username;
   }
 
+  public async getUserTag(): Promise<string> {
+    const userName = await this.getUserName();
+    return `@${userName}`;
+  }
+
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
     // TODO: Properly identify a user's permission
     return UserPermission.ADMIN;

@@ -22,7 +22,14 @@ export default class DiscordBot extends BotClient {
     if (!this.bot || !this.bot.user) {
       return '?';
     }
-    return this.bot.user.tag;
+    return this.bot.user.username;
+  }
+
+  public async getUserTag(): Promise<string> {
+    if (!this.bot || !this.bot.user) {
+      return '?';
+    }
+    return `<@${this.bot.user.id}>`;
   }
 
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
