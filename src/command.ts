@@ -57,7 +57,7 @@ export default class Command {
       bot.logDebug(`Command: ${this.label}: Insufficient permissions.`);
       bot.sendMessage(
         channel,
-        `You need the permission ${this.permission.toString()} on this server to execute this command!`,
+        `You need the permission '${this.permission}' on this server to execute this command!`,
       );
       return false;
     }

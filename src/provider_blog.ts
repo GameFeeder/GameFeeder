@@ -2,8 +2,7 @@ import { Game } from './game';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import Provider from './provider';
-import { rss, RSS} from './rss';
-import RSSItem from './rss_item';
+import { rss } from './rss';
 
 export default class BlogProvider extends Provider {
   constructor(url: string, label: string, game: Game) {

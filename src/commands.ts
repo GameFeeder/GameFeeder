@@ -1,3 +1,4 @@
+import { UserPermission } from './bot_user';
 import Command from './command';
 import { getSubscribers, setSubscribers } from './data';
 import games from './game';
@@ -72,6 +73,7 @@ const commands = [
         }
       }
     },
+    UserPermission.ADMIN,
   ),
   // Unsubscribe
   new Command(
@@ -100,6 +102,7 @@ const commands = [
         }
       }
     },
+    UserPermission.ADMIN,
   ),
   // Prefix
   new Command(
@@ -168,6 +171,7 @@ const commands = [
       setSubscribers(subscribers);
       return;
     },
+    UserPermission.ADMIN,
   ),
 ];
 

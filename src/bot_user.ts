@@ -49,9 +49,9 @@ export default class BotUser {
 /** Determines the permission a user has on a channel. */
 export enum UserPermission {
   /** The user is just a normal user. */
-  USER,
+  USER = 'User',
   /** The user has admin priviliges. */
-  ADMIN,
+  ADMIN = 'Admin',
   /** The user is the owner of the bot. */
-  OWNER,
+  OWNER = 'Owner',
 }

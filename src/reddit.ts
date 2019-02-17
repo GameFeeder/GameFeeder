@@ -4,6 +4,7 @@ import { Game } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
+import { limitArray } from './util';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
@@ -72,9 +73,7 @@ export default class Reddit {
       }
     }
     // Limit the length
-    if (limit && notifications.length > limit) {
-      notifications = notifications.slice(0, limit);
-    }
+    notifications = limitArray(notifications, limit);
 
     /*
     botLogger.debug(`Found ${notifications.length} posts from ` +

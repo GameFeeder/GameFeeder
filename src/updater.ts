@@ -4,6 +4,7 @@ import { games } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 import RSS from './rss';
+import { limitArray } from './util';
 
 const rss = new RSS();
 
@@ -86,17 +87,20 @@ class Updater {
         gameNotifications = gameNotifications.concat(await provider.getNotifications(this.lastUpdate, this.limit));
       }
       if (gameNotifications.length > 0) {
-      // Keep the notification count for each game in the limit.
-      if (gameNotifications.length > this.limit) {
-        gameNotifications = gameNotifications.slice(0, this.limit);
-      }
+        // Sort the notifications
+        gameNotifications.sort((a, b) => {
+          return a.compare(b);
+        });
 
-      const gameEndTime = Date.now();
-      const gameTime = Math.abs(gameStartTime - gameEndTime);
-      this.debug(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+        // Keep the notification count for each game in the limit.
+        gameNotifications = limitArray(gameNotifications, this.limit);
 
-      // Add the game notifications to the total notifications.
-      notifications = notifications.concat(gameNotifications);
+        const gameEndTime = Date.now();
+        const gameTime = Math.abs(gameStartTime - gameEndTime);
+        this.debug(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+
+        // Add the game notifications to the total notifications.
+        notifications = notifications.concat(gameNotifications);
       }
     }
     if (notifications.length > 0) {

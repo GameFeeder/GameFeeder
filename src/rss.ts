@@ -2,6 +2,7 @@ import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
 import botLogger from './logger';
 import RSSItem from './rss_item';
+import { limitArray } from './util';
 
 export default class RSS {
   private parser: any;
@@ -42,9 +43,7 @@ export default class RSS {
       });
 
       // Only take the newest entries
-      if (limit && feedItems.length > limit) {
-        feedItems = feedItems.slice(0, limit);
-      }
+      feedItems = limitArray(feedItems, limit);
 
       return feedItems;
     } catch (error) {
