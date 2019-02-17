@@ -22,6 +22,7 @@ export default class DiscordBot extends BotClient {
     if (!this.bot || !this.bot.user) {
       return '?';
     }
+    this.logDebug(`Usertag: ${this.bot.user.tag}`);
     return this.bot.user.tag;
   }
 

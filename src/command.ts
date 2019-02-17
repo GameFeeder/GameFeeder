@@ -51,7 +51,7 @@ export default class Command {
     const bot = channel.client;
     const userTag = `\@${await bot.getUserName()}`;
     const prefix = this.hasPrefix ?
-    `^((${userTag})|(${channel.getPrefix()})|((${bot.prefix})\s*(${userTag}))\s*)` :
+    `^\\s*((${userTag})|(${channel.getPrefix()})|((${bot.prefix})\\s*(${userTag})))\\s*` :
     '';
 
     return new RegExp(prefix + this.trigger);
@@ -65,7 +65,7 @@ const commands = [
     'Help',
     'Display a list of all available commands.',
     'help',
-    'help\s*$',
+    'help\\s*$',
     (bot, channel) => {
       const commandsList = commands.map((command) => {
         return `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`;
@@ -82,7 +82,7 @@ const commands = [
     'About',
     'Display info about the bot.',
     'about',
-    '(about)|(info)\s*$',
+    '(about)|(info)\\s*$',
     (bot, channel) => {
       const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
       bot.sendMessage(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
@@ -93,7 +93,7 @@ const commands = [
     'Games',
     'Display all available games.',
     'games',
-    'games\s*$',
+    'games\\s*$',
     (bot, channel) => {
       const gamesList = games.map((game) => `- ${game.label}`);
       const gamesMD = `Available games:\n${gamesList.join('\n')}`;
