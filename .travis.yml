@@ -1,11 +1,13 @@
 language: node_js
 
 node_js:
-  - '10'
+  - '10.14.2'
 
 jobs:
   include:
     - stage: lint
       script: yarn lint-ts
+    - stage: build
+      script: yarn build
     # - stage: test
     #  script: yarn test

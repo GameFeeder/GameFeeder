@@ -2,15 +2,15 @@
 # valveAnnouncerBot
 # ------------------------------
 
-src/data/bot_config.json
-src/data/subscribers.json
-src/data/updater_config.json
+config/bot_config.json
+config/subscribers.json
+config/updater_config.json
 
 # ------------------------------
 # TypeScript
 # ------------------------------
 
-src/dist/*
+dist
 
 # ------------------------------
 # VS CODE

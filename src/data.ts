@@ -41,7 +41,7 @@ function writeJSON(path: string, obj: object): void {
  * @returns {string} The path of the file.
  */
 function getFilePath(file: string): string {
-  const basePath = 'src/data';
+  const basePath = 'config/';
 
   switch (file) {
     case 'subscribers':
