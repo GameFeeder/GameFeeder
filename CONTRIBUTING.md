@@ -17,7 +17,7 @@ This document will guide you through setting up the bot on your PC, editing the 
 
 To set up the bot locally on your machine, you will first need to fork and clone the project.
 
-Next you will need to create multiple API keys. First off navigate to `src/data/` and copy & paste `bot_config.example.json` into `bot_config.json`. You will need this file to store your API data.
+Next you will need to create multiple API keys. First off navigate to `config/` and copy & paste `bot_config.example.json` into `bot_config.json`. You will need this file to store your API data.
 
 **Important**: Never share your API keys with anyone! `bot_config.json` should be in the `.gitignore`, but please double check that you are not pushing your keys to any repository.
 
