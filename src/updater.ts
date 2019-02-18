@@ -4,6 +4,7 @@ import { games } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 import RSS from './rss';
+import { limitArray } from './util';
 
 const rss = new RSS();
 
@@ -71,20 +72,36 @@ class Updater {
   public stop(): void {
     this.doUpdates = false;
   }
+  /** Run an update cycle. */
   public async update(): Promise<void> {
-    botLogger.debug('Starting update cycle...', 'Updater');
+    this.debug('Starting update cycle...');
+
+    const startTime = Date.now();
 
     let notifications: BotNotification[] = [];
     for (const game of games) {
+      const gameStartTime = Date.now();
+
       let gameNotifications: BotNotification[] = [];
       for (const provider of game.providers) {
         gameNotifications = gameNotifications.concat(await provider.getNotifications(this.lastUpdate, this.limit));
       }
-      // Keep the notification count for each game in the limit
-      if (this.limit > gameNotifications.length) {
-        gameNotifications = gameNotifications.slice(0, this.limit);
+      if (gameNotifications.length > 0) {
+        // Sort the notifications
+        gameNotifications.sort((a, b) => {
+          return a.compare(b);
+        });
+
+        // Keep the notification count for each game in the limit.
+        gameNotifications = limitArray(gameNotifications, this.limit);
+
+        const gameEndTime = Date.now();
+        const gameTime = Math.abs(gameStartTime - gameEndTime);
+        this.debug(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+
+        // Add the game notifications to the total notifications.
+        notifications = notifications.concat(gameNotifications);
       }
-      notifications = notifications.concat(gameNotifications);
     }
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
@@ -92,16 +109,23 @@ class Updater {
         return a.compare(b);
       });
 
-      botLogger.debug(`Found ${notifications.length} posts. Notifying users...`, 'Updater');
+      const endPollTime = Date.now();
+      const pollTime = Math.abs(endPollTime - startTime);
+      this.debug(`Found ${notifications.length} posts in ${pollTime}ms. `
+      + `Notifying channels...`);
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);
+
       // Notify users
       for (const bot of bots) {
         for (const notification of notifications) {
           bot.sendMessageToGameSubs(notification.game, notification);
         }
       }
+      const endNotifyTime = Date.now();
+      const notifyTime = Math.abs(endNotifyTime - endPollTime);
+      this.debug(`Notified channels in ${notifyTime}ms.`);
     }
   }
   public saveDate(date: Date): void {

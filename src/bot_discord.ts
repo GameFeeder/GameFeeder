@@ -3,7 +3,7 @@ import { BotClient } from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getBotConfig } from './data';
+import { getBotConfig, getSubscribers } from './data';
 import BotNotification from './notification';
 
 export default class DiscordBot extends BotClient {
@@ -16,6 +16,20 @@ export default class DiscordBot extends BotClient {
     // Set up the bot
     this.token = token;
     this.bot = new DiscordAPI.Client();
+  }
+
+  public async getUserName(): Promise<string> {
+    if (!this.bot || !this.bot.user) {
+      return '?';
+    }
+    return this.bot.user.username;
+  }
+
+  public async getUserTag(): Promise<string> {
+    if (!this.bot || !this.bot.user) {
+      return '?';
+    }
+    return `<@${this.bot.user.id}>`;
   }
 
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
@@ -35,17 +49,19 @@ export default class DiscordBot extends BotClient {
     }
   }
 
-  public registerCommand(command: Command): void {
-    const reg = command.getRegExp(this);
-    this.bot.on('message', (message) => {
+  public async registerCommand(command: Command): Promise<void> {
+    this.bot.on('message', async (message) => {
+      const channel = this.getChannelByID(message.channel.id);
+      const reg = await command.getRegExp(channel);
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
       // If the regex matched, execute the handler function
       if (regMatch) {
-        command.callback(
+        // Execute the command
+        command.execute(
           this,
-          new BotChannel(message.channel.id),
-          new BotUser(message.author.id),
+          channel,
+          new BotUser(this, message.author.id),
           regMatch,
         );
       }
@@ -53,7 +69,7 @@ export default class DiscordBot extends BotClient {
   }
   public async start(): Promise<boolean> {
     if (this.token) {
-      this.bot.login(this.token);
+      await this.bot.login(this.token);
       this.isRunning = true;
       return true;
     } else {

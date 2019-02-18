@@ -1,7 +1,7 @@
+import EscapeRegex from 'escape-string-regexp';
 import BotClient from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
-import { games } from './game';
 
 export default class Command {
   /** The label of the command. */
@@ -40,137 +40,42 @@ export default class Command {
     this.permission = permission != null ? permission : UserPermission.USER;
     this.hasPrefix = hasPrefix != null ? hasPrefix : true;
   }
+  /** Tries to execute the command on the given channel.
+   *
+   * @param bot - The BotClient to execute the command on.
+   * @param channel - The channel to execute the command on.
+   * @param user - The user trying to execute the command.
+   * @param match - The RegExp match of the command trigger.
+   */
+  public execute(bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray): boolean {
+    // Check if the user has the required permission to execute the command.
+    if (user.hasPermission(channel, this.permission)) {
+      bot.logDebug(`Command: ${this.label}`);
+      this.callback(bot, channel, user, match);
+      return true;
+    } else {
+      bot.logDebug(`Command: ${this.label}: Insufficient permissions.`);
+      bot.sendMessage(
+        channel,
+        `You need the permission '${this.permission}' on this server to execute this command!`,
+      );
+      return false;
+    }
+  }
 
   /** Gets the RegExp used to trigger the command
    *
-   * @param client - The BotClient to trigger the command on.
+   * @param client - The BotChannel to trigger the command on.
    */
-  public getRegExp(client: BotClient) {
-    const prefix = this.hasPrefix ? `^(${client.prefix}\s*)` : '';
+  public async getRegExp(channel: BotChannel) {
+    const bot = channel.client;
+    const userTag = EscapeRegex(await bot.getUserTag());
+    const channelPrefix = EscapeRegex(channel.getPrefix());
+    const prefix = this.hasPrefix ?
+      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*` :
+      '';
 
-    return new RegExp(prefix + this.trigger);
+    const regexString = prefix + this.trigger;
+    return new RegExp(regexString);
   }
 }
-
-/** The standard commands available on all bots. */
-const commands = [
-  // Help
-  new Command(
-    'Help',
-    'Display a list of all available commands.',
-    'help',
-    'help\s*$',
-    (bot, channel) => {
-      const commandsList = commands.map((command) => {
-        return `- \`${bot.prefix}${command.triggerLabel}\`: ${command.description}`;
-      });
-
-      const commandsMD = commandsList.join('\n');
-      const helpMD = `You can use the following commands:\n${commandsMD}`;
-
-      bot.sendMessage(channel, helpMD);
-    },
-  ),
-  // About
-  new Command(
-    'About',
-    'Display info about the bot.',
-    'about',
-    '(about)|(info)\s*$',
-    (bot, channel) => {
-      const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
-      bot.sendMessage(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
-    },
-  ),
-  // Games
-  new Command(
-    'Games',
-    'Display all available games.',
-    'games',
-    'games\s*$',
-    (bot, channel) => {
-      const gamesList = games.map((game) => `- ${game.label}`);
-      const gamesMD = `Available games:\n${gamesList.join('\n')}`;
-
-      bot.sendMessage(channel, gamesMD);
-    },
-  ),
-  // Subscribe
-  new Command(
-    'Subscribe',
-    'Subscribe to the given game\'s feed.',
-    'subscribe <game name>',
-    'sub(scribe)?(?<alias>.*)',
-    (bot, channel, user, match: any) => {
-
-      // The user must be an admin to subscribe.
-      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
-        bot.logDebug('Command: Subscribe: Insufficient permissions.');
-        bot.sendMessage(channel, 'You need to be an admin on this server to subscribe to a feed!');
-        return;
-      } else {
-        bot.logDebug('Command: Subscribe.');
-      }
-
-      let { alias } = match.groups;
-      alias = alias.trim();
-
-      if (!alias) {
-        bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
-        + `Try \`${bot.prefix}subscribe <game name>\`.`);
-      }
-
-      for (const game of games) {
-        if (game.hasAlias(alias)) {
-          if (bot.addSubscriber(channel, game)) {
-            bot.sendMessage(channel,
-              `You are now subscribed to the **${game.label}** feed!`);
-          } else {
-            bot.sendMessage(channel,
-              `You have already subscribed to the **${game.label}** feed!`);
-          }
-        }
-      }
-    },
-  ),
-  // Unsubscribe
-  new Command(
-    'Unsubscribe',
-    'Unsubscribe from the given game\'s feed',
-    'unsubscribe <game name>',
-    'unsub(scribe)?(?<alias>.*)',
-    (bot, channel, user, match: any) => {
-
-      // The user must be an admin to unsubscribe.
-      if (bot.getUserPermission(user, channel) === UserPermission.USER) {
-        bot.logDebug('Command: Unsubscribe: Insufficient permissions.');
-        bot.sendMessage(channel, 'You need to be an admin on this server to unsubscribe from a feed!');
-        return;
-      } else {
-        bot.logDebug('Command: Unsubscribe.');
-      }
-
-      let { alias } = match.groups;
-      alias = alias.trim();
-
-      if (!alias) {
-        bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
-        + `Try \`${bot.prefix}unsubscribe <game name>\`.`);
-      }
-
-      for (const game of games) {
-        if (game.hasAlias(alias)) {
-          if (bot.removeSubscriber(channel, game)) {
-            bot.sendMessage(channel,
-              `You are now unsubscribed from the **${game.label}** feed!`);
-          } else {
-            bot.sendMessage(channel,
-              `You have never subscribed to the **${game.label}** feed in the first place!`);
-          }
-        }
-      }
-    },
-  ),
-];
-
-export { Command, commands };

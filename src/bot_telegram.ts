@@ -18,26 +18,43 @@ export default class TelegramBot extends BotClient {
     this.bot = new TelegramAPI(token, { polling: false });
   }
 
+  public async getUserName(): Promise<string> {
+    const botUser = await this.bot.getMe();
+    return botUser.username;
+  }
+
+  public async getUserTag(): Promise<string> {
+    const userName = await this.getUserName();
+    return `@${userName}`;
+  }
+
   public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
     // TODO: Properly identify a user's permission
     return UserPermission.ADMIN;
   }
 
   public registerCommand(command: Command): void {
-    const reg = command.getRegExp(this);
-    this.bot.onText(reg, (msg: TelegramAPI.Message, match: RegExpExecArray) => {
-      command.callback(
-        this,
-        new BotChannel(msg.chat.id.toString()),
-        // FIX: Properly identify the user key
-        new BotUser(''),
-        match,
+    this.bot.onText(/.*/, async (msg: TelegramAPI.Message) => {
+      const channel = this.getChannelByID(msg.chat.id.toString());
+      const reg = await command.getRegExp(channel);
+      // Run regex on the msg
+      const regMatch = reg.exec(msg.text);
+      // If the regex matched, execute the handler function
+      if (regMatch) {
+        // Execute the command
+        command.execute(
+          this,
+          channel,
+          // FIX: Properly identify the user key
+          new BotUser(this, ''),
+          regMatch,
         );
+      }
     });
   }
   public async start(): Promise<boolean> {
     if (this.token) {
-      this.bot.startPolling({ restart: true });
+      await this.bot.startPolling({ restart: true });
       this.isRunning = true;
       return true;
     } else {
@@ -49,7 +66,7 @@ export default class TelegramBot extends BotClient {
     this.isRunning = false;
   }
   public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
-    if (typeof (message) === 'string') {
+    if (typeof message === 'string') {
       message = this.msgFromMarkdown(message);
       try {
         await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
