@@ -5,14 +5,16 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "tsc --build",
-    "dev": "concurrently --kill-others \"tsc -w\" \"nodemon dist/_main.js\"",
+    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
     "deploy": "yarn clean && yarn install && yarn build && yarn start",
     "clean": "yarn reset && rm -rf node_modules/",
     "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
     "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "reset": "rm -rf dist",
+    "serve": "nodemon --watch dist dist/_main.js",
     "start": "node dist/_main.js",
-    "test": "jest tests"
+    "test": "jest tests",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
