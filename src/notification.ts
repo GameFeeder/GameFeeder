@@ -1,3 +1,4 @@
+import { URL } from 'url';
 import { Game } from './game';
 import NotificationElement from './notification_element';
 
@@ -63,7 +64,13 @@ export default class BotNotification {
   }
 
   public compare(b: BotNotification) {
-    return this.timestamp.valueOf() - b.timestamp.valueOf();
+    if (this.timestamp < b.timestamp) {
+      return -1;
+    } else if (this.timestamp > b.timestamp) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   public toMDString(): string {
