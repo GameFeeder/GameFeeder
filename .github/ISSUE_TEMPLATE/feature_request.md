@@ -7,6 +7,13 @@ assignees: ''
 
 ---
 
+**Is your feature request related to a client?**
+- [ ] Discord
+- [ ] Telegram
+
+**Is your feature request related to a game?**
+List an old game or describe a new game here.
+
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
