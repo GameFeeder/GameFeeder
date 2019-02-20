@@ -21,8 +21,8 @@ export default class BotUser {
    * @param channel - The channel to get the permissions on.
    * @returns The permission the user has on the given channel.
    */
-  public getPermission(channel: BotChannel): UserPermission {
-    return this.bot.getUserPermission(this, channel);
+  public async getPermission(channel: BotChannel): Promise<UserPermission> {
+    return await this.bot.getUserPermission(this, channel);
   }
   /** Determines whether the user has the given permission on the given channel.
    *
@@ -31,12 +31,12 @@ export default class BotUser {
    *
    * @returns True, if the user has the given permission on the given channel, else false.
    */
-  public hasPermission(channel: BotChannel, permission: UserPermission): boolean {
+  public async hasPermission(channel: BotChannel, permission: UserPermission): Promise<boolean> {
     switch (permission) {
       case UserPermission.OWNER:
-        return this.getPermission(channel) === UserPermission.OWNER;
+        return (await this.getPermission(channel)) === UserPermission.OWNER;
       case UserPermission.ADMIN:
-        return this.getPermission(channel) !== UserPermission.USER;
+        return (await this.getPermission(channel)) !== UserPermission.USER;
       case UserPermission.USER:
         return true;
       default:

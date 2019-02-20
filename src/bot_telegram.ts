@@ -28,8 +28,8 @@ export default class TelegramBot extends BotClient {
     return `@${userName}`;
   }
 
-  public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
-    // TODO: Properly identify a user's permission
+  public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
+    // TODO: Properly implement UserPermissions.
     return UserPermission.ADMIN;
   }
 
@@ -42,7 +42,7 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(
+        await command.execute(
           this,
           channel,
           // FIX: Properly identify the user key

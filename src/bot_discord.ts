@@ -32,7 +32,7 @@ export default class DiscordBot extends BotClient {
     return `<@${this.bot.user.id}>`;
   }
 
-  public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
+  public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
     const discordChannel = this.bot.channels.get(channel.id);
 
     if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
