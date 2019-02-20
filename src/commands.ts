@@ -1,7 +1,9 @@
 import { UserPermission } from './bot_user';
+import bots from './bots';
 import Command from './command';
 import { getSubscribers, setSubscribers } from './data';
 import games from './game';
+import { filterAsync } from './util';
 
 /** The standard commands available on all bots. */
 const commands = [
@@ -11,10 +13,11 @@ const commands = [
     'Display a list of all available commands.',
     'help',
     'help\\s*$',
-    (bot, channel, user) => {
-      const commandsList = commands
-        // Only show the commands the user has permission to execute.
-        .filter((command) => user.hasPermission(channel, command.permission))
+    async (bot, channel, user) => {
+      // Only show the commands the user has permission to execute.
+      const filteredCommands = await filterAsync(commands,
+        (async (command) => await user.hasPermission(channel, command.permission)));
+      const commandsList = filteredCommands
         .map((command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`);
 
       const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
@@ -172,6 +175,36 @@ const commands = [
       return;
     },
     UserPermission.ADMIN,
+  ),
+  new Command(
+    'Notify All',
+    'Notify all subscribed users',
+    'notifyAll <message>',
+    '(notifyAll)\\s*(?<message>.*)',
+    (bot, channel, user, match) => {
+      let { message } = match.groups;
+      message = message.trim();
+
+      // Check if the user has provided a message
+      if (!message) {
+        bot.sendMessage(
+          channel,
+          `You need to provide a message to send to everyone.`
+          + `Try ${channel.getPrefix}notifyAll <message>.`,
+        );
+        return;
+      }
+
+      // Send the provided message to all subs
+      for (const curBot of bots) {
+        curBot.sendMessageToAllSubs(message);
+      }
+      bot.sendMessage(
+        channel,
+        `Successfully notified all subs with:\n${message}`,
+      );
+    },
+    UserPermission.OWNER,
   ),
 ];
 

@@ -29,8 +29,29 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
-    // TODO: Properly implement UserPermissions.
-    return UserPermission.ADMIN;
+    // Check if user is owner
+    const ownerIds = (await this.getOwners()).map((owner) => owner.id);
+    if (ownerIds.includes(user.id)) {
+      return UserPermission.OWNER;
+    }
+    // Check if user has default admin rights
+    const chat = await this.bot.getChat(channel.id);
+    if (chat.all_members_are_administrators || (chat.type === 'private')) {
+      return UserPermission.ADMIN;
+    }
+    // Check if user is an admin on this channel
+    const chatAdmins = await this.bot.getChatAdministrators(channel.id);
+    const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
+    if (adminIds.includes(user.id)) {
+      return UserPermission.ADMIN;
+    }
+    // the user is just a regular user
+    return UserPermission.USER;
+  }
+
+  public async getOwners(): Promise<BotUser[]> {
+    const ownerIds: string[] = getBotConfig().telegram.owners;
+    return ownerIds.map((id) => new BotUser(this, id));
   }
 
   public registerCommand(command: Command): void {
@@ -46,7 +67,7 @@ export default class TelegramBot extends BotClient {
           this,
           channel,
           // FIX: Properly identify the user key
-          new BotUser(this, ''),
+          new BotUser(this, msg.from.id.toString()),
           regMatch,
         );
       }

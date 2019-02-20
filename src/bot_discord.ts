@@ -33,20 +33,30 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
-    const discordChannel = this.bot.channels.get(channel.id);
+    // Check if the user is one of the owners
+    const ownerIds = (await this.getOwners()).map((owner) => owner.id);
+    if (ownerIds.includes(user.id)) {
+      return UserPermission.OWNER;
+    }
 
+    const discordChannel = this.bot.channels.get(channel.id);
+    // Check if the user has default admin rights
     if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
       return UserPermission.ADMIN;
     } else if (discordChannel instanceof TextChannel) {
+      // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser.hasPermission(8)) {
         return UserPermission.ADMIN;
-      } else {
-        return UserPermission.USER;
       }
-    } else {
-      return UserPermission.USER;
     }
+    // The user is just a regular user
+    return UserPermission.USER;
+  }
+
+  public async getOwners(): Promise<BotUser[]> {
+    const ownerIds: string[] = getBotConfig().discord.owners;
+    return ownerIds.map((id) => new BotUser(this, id));
   }
 
   public async registerCommand(command: Command): Promise<void> {

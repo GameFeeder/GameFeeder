@@ -48,6 +48,7 @@ export default class Command {
    * @param match - The RegExp match of the command trigger.
    */
   public async execute(bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray): Promise<boolean> {
+    bot.logDebug(`ID: ${user.id}`);
     // Check if the user has the required permission to execute the command.
     if (await user.hasPermission(channel, this.permission)) {
       bot.logDebug(`Command: ${this.label}`);
