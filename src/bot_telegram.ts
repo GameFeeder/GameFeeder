@@ -28,9 +28,30 @@ export default class TelegramBot extends BotClient {
     return `@${userName}`;
   }
 
-  public getUserPermission(user: BotUser, channel: BotChannel): UserPermission {
-    // TODO: Properly identify a user's permission
-    return UserPermission.ADMIN;
+  public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
+    // Check if user is owner
+    const ownerIds = (await this.getOwners()).map((owner) => owner.id);
+    if (ownerIds.includes(user.id)) {
+      return UserPermission.OWNER;
+    }
+    // Check if user has default admin rights
+    const chat = await this.bot.getChat(channel.id);
+    if (chat.all_members_are_administrators || (chat.type === 'private')) {
+      return UserPermission.ADMIN;
+    }
+    // Check if user is an admin on this channel
+    const chatAdmins = await this.bot.getChatAdministrators(channel.id);
+    const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
+    if (adminIds.includes(user.id)) {
+      return UserPermission.ADMIN;
+    }
+    // the user is just a regular user
+    return UserPermission.USER;
+  }
+
+  public async getOwners(): Promise<BotUser[]> {
+    const ownerIds: string[] = getBotConfig().telegram.owners;
+    return ownerIds.map((id) => new BotUser(this, id));
   }
 
   public registerCommand(command: Command): void {
@@ -42,11 +63,11 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(
+        await command.execute(
           this,
           channel,
           // FIX: Properly identify the user key
-          new BotUser(this, ''),
+          new BotUser(this, msg.from.id.toString()),
           regMatch,
         );
       }

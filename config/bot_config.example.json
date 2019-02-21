@@ -3,13 +3,15 @@
     "telegram": {
       "autostart": true,
       "prefix": "/",
-      "token": ""
+      "token": "",
+      "owners": []
     },
     
     "discord": {
       "autostart": true,
       "prefix": "!",
-      "token": ""
+      "token": "",
+      "owners": []
     }
   },
   "reddit": {

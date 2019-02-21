@@ -67,7 +67,13 @@ export default abstract class BotClient {
    * @param user - The user to get the permission of.
    * @param channel - The channel to get the permission on.
    */
-  public abstract getUserPermission(user: BotUser, channel: BotChannel): UserPermission;
+  public abstract async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission>;
+
+  /** Gets a list of the owners of the bot.
+   *
+   * @returns An array filled with the owner BotUsers of the bot.
+   */
+  public abstract async getOwners(): Promise<BotUser[]>;
 
   /** Add a channel supscription to a game.
    *
