@@ -1,7 +1,10 @@
 import { UserPermission } from './bot_user';
+import bots from './bots';
 import Command from './command';
 import { getSubscribers, setSubscribers } from './data';
 import games from './game';
+import botLogger from './logger';
+import { filterAsync } from './util';
 
 /** The standard commands available on all bots. */
 const commands = [
@@ -11,10 +14,11 @@ const commands = [
     'Display a list of all available commands.',
     'help',
     'help\\s*$',
-    (bot, channel, user) => {
-      const commandsList = commands
-        // Only show the commands the user has permission to execute.
-        .filter((command) => user.hasPermission(channel, command.permission))
+    async (bot, channel, user) => {
+      // Only show the commands the user has permission to execute.
+      const filteredCommands = await filterAsync(commands,
+        (async (command) => await user.hasPermission(channel, command.permission)));
+      const commandsList = filteredCommands
         .map((command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`);
 
       const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
@@ -172,6 +176,93 @@ const commands = [
       return;
     },
     UserPermission.ADMIN,
+  ),
+  // Notify All
+  new Command(
+    'Notify All',
+    'Notify all subscribed users.',
+    'notifyAll <message>',
+    '(notifyAll)\\s*(?<message>.*)',
+    (bot, channel, user, match) => {
+      let { message } = match.groups;
+      message = message.trim();
+
+      // Check if the user has provided a message
+      if (!message) {
+        bot.sendMessage(
+          channel,
+          `You need to provide a message to send to everyone.\n`
+          + `Try \`${channel.getPrefix()}notifyAll <message>\`.`,
+        );
+        return;
+      }
+
+      bot.sendMessage(
+        channel,
+        `Notifying all subs with:\n"${message}"`,
+      );
+
+      // Send the provided message to all subs
+      for (const curBot of bots) {
+        curBot.sendMessageToAllSubs(message);
+      }
+    },
+    UserPermission.OWNER,
+  ),
+  // Notify Game Subs
+  new Command(
+    'Notify Game Subs',
+    'Notify all subs of a game.',
+    'notifyGameSubs (<game name>) <message>',
+    '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<message>.*)\\s*$',
+    (bot, channel, user, match) => {
+      let { alias, message } = match.groups;
+      alias = alias.trim();
+      message = message.trim();
+
+      // Check if the user has provided a message
+      if (!message) {
+        bot.sendMessage(
+          channel,
+          `You need to provide a message to send to everyone.\n`
+          + `Try \`${channel.getPrefix()}notifyGameSubs (<game name>) <message>\`.`,
+        );
+        return;
+      }
+      // Check if the user has provided a game
+      if (!alias) {
+        bot.sendMessage(
+          channel,
+          `You need to provide a game to notify the subs of.\n`
+          + `Try \`${channel.getPrefix()}notifyGameSubs (<game name>) <message>\`.`,
+        );
+        return;
+      }
+
+      // Try to find the game
+      for (const game of games) {
+        if (game.hasAlias(alias)) {
+          bot.sendMessage(
+            channel,
+            `Notifying the subs of **${game.label}** with:\n"${message}"`,
+          );
+          // Notify the game's subs
+          for (const curBot of bots) {
+            curBot.sendMessageToGameSubs(game, message);
+          }
+
+          return;
+        }
+      }
+
+      // We didn't find the specified game
+      bot.sendMessage(
+        channel,
+        `I didn't find a game with the alias ${alias}.\n`
+        + `Use \`${channel.getPrefix()}games\` to view a list of all available games.`,
+      );
+    },
+    UserPermission.OWNER,
   ),
 ];
 
