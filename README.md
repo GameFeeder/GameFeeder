@@ -23,16 +23,17 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 
 So far, we are providing the following commands (with `/` as prefix):
 
-| Command                    | Permission | Summary                                         |
-| -------------------------- | ---------- | ----------------------------------------------- |
-| `/help`                    | User       | Display all available commands.                 |
-| `/about`                   | User       | Display information about this bot.             |
-| `/games`                   | User       | Display a list of all available games.          |
-| `/subscribe <game name>`   | Admin      | Subscribe to a game's feed.                     |
-| `/unsubscribe <game name>` | Admin      | Unsubscribe from a game's feed.                 |
-| `/prefix <new prefix>`     | Admin      | Change the prefix the bot uses on this channel. |
-| `/notifyAll <message>` | Owner | Send a message to all subscribers. |
-| `/notifyGameSubs (<game name>) <message>` | Owner | Send a message to all subscribers of a game. |
+| Command                                   | Permission | Summary                                         |
+| ----------------------------------------- | ---------- | ----------------------------------------------- |
+| `/help`                                   | User       | Display all available commands.                 |
+| `/about`                                  | User       | Display information about this bot.             |
+| `/games`                                  | User       | Display a list of all available games.          |
+| `/subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
+| `/unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
+| `/prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
+| `/notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
+| `/notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
+| `/stats`                                  | Owner      | Display statistics about the bot.               |
 
 * The default prefix on Telegram is `/`.
 * The default prefix on Discord is `!`.
