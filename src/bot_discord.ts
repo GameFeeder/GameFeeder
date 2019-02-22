@@ -32,6 +32,20 @@ export default class DiscordBot extends BotClient {
     return `<@${this.bot.user.id}>`;
   }
 
+  public async getChannelUserCount(channel: BotChannel): Promise<number> {
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    if (discordChannel instanceof DMChannel) {
+      return 1;
+    } else if (discordChannel instanceof TextChannel) {
+      return discordChannel.members.size - 1;
+    } else if (discordChannel instanceof GroupDMChannel) {
+      return discordChannel.recipients.size - 1;
+    } else {
+      return 0;
+    }
+  }
+
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
     // Check if the user is one of the owners
     const ownerIds = (await this.getOwners()).map((owner) => owner.id);

@@ -49,4 +49,12 @@ export default class BotChannel {
       return this.client.prefix;
     }
   }
+
+  /** Gets the number of users in this channel
+   *
+   * @returns The number of users in this channel
+   */
+  public async getUserCount(): Promise<number> {
+    return await this.client.getChannelUserCount(this);
+  }
 }
