@@ -4,6 +4,7 @@ import { Game } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
+import RedditUserProvider from './reddit_user';
 import { limitArray } from './util';
 
 let reddit: Snoowrap;
@@ -27,12 +28,12 @@ export default class Reddit {
     isInit = true;
   }
 
-  public static async getNotifications(subreddit: string, usernames: string[], game: Game,
+  public static async getNotifications(subreddit: string, users: RedditUserProvider[], game: Game,
                                        date?: Date, limit?: number): Promise<BotNotification[]> {
-    return this.getNotificationsFromSnoowrap(subreddit, usernames, game, date, limit);
+    return await this.getNotificationsFromSnoowrap(subreddit, users, game, date, limit);
   }
 
-  public static async getNotificationsFromSnoowrap(subreddit: string, usernames: string[], game: Game,
+  public static async getNotificationsFromSnoowrap(subreddit: string, users: RedditUserProvider[], game: Game,
                                                    date?: Date, limit?: number): Promise<BotNotification[]> {
     let notifications: BotNotification[] = [];
 
@@ -40,33 +41,34 @@ export default class Reddit {
       return notifications;
     }
 
-    for (const user of usernames) {
+    for (const user of users) {
 
       // botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
 
       // Get all new submissions in the given subreddit
       const allPosts = await reddit.
-        getUser(user).
+        getUser(user.name).
         getSubmissions();
 
       const posts = allPosts.filter((submission) => {
           const timestamp = new Date(submission.created_utc * 1000);
           const isNew = timestamp > date;
           const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
-          return isNew && isCorrectSub;
+          const isValidTitle = user.titleFilter.test(submission.title);
+          return isNew && isCorrectSub &&  isValidTitle;
         });
 
       for (const post of posts) {
         // Convert the post into a notification
         const notification = new BotNotification(
           game,
-          `New post by ${user}!`,
+          `New post by ${user.name}!`,
           new NotificationElement(post.title, post.url),
           this.mdFromReddit(post.selftext),
           new Date(post.created_utc * 1000),
           null, // post.thumbnail,
           null,
-          new NotificationElement(`/u/${user}`, `https://www.reddit.com/user/${user}`,
+          new NotificationElement(`/u/${user.name}`, `https://www.reddit.com/user/${user.name}`,
             'https://www.redditstatic.com/new-icon.png'),
         );
         notifications.push(notification);

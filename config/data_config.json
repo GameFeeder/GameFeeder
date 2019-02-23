@@ -13,10 +13,19 @@
       "providers": {
         "reddit": {
           "subreddit": "Artifact",
-          "usernames": [
-            "Magesunite",
-            "SirBelvedere",
-            "wykrhm"
+          "users": [
+            {
+              "name": "Magesunite",
+              "filter": "Artifact Update"
+            },
+            {
+              "name": "SirBelvedere",
+              "filter": "Artifact Update"
+            },
+            {
+              "name": "wykrhm",
+              "filter": ".*"
+            }
           ]
         },
         "blogs": []
@@ -36,10 +45,19 @@
       "providers": {
         "reddit": {
           "subreddit": "DotA2",
-          "usernames": [
-            "Magesunite",
-            "SirBelvedere",
-            "wykrhm"
+          "users": [
+            {
+              "name": "Magesunite",
+              "titleFilter": "Dota 2 Update"
+            },
+            {
+              "name": "SirBelvedere",
+              "titleFilter": "Dota 2 Update"
+            },
+            {
+              "name": "wykrhm",
+              "titleFilter": ".*"
+            }
           ]
         },
         "blogs": [
@@ -64,7 +82,7 @@
       "providers": {
         "reddit": {
           "subreddit": "tf2",
-          "usernames": []
+          "users": []
         },
         "blogs": [
           {
@@ -88,8 +106,11 @@
       "providers": {
         "reddit": {
           "subreddit": "csgo",
-          "usernames": [
-            "wickedplayer494"
+          "users": [
+            {
+              "name": "wickedplayer494",
+              "titleFilter": "Counter-Strike: Global Offensive update"
+            }
           ]
         },
         "blogs": [
