@@ -2,7 +2,7 @@ import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import { getBotConfig, getSubscribers, setSubscribers } from './data';
-import { Game } from './game';
+import games, { Game } from './game';
 import botLogger from './logger';
 import BotNotification from './notification';
 
@@ -148,6 +148,24 @@ export default abstract class BotClient {
       }
     }
     return false;
+  }
+
+  /** Get the number of users in a given channel.
+   *
+   * @param channel - The channel to count the users in.
+   * @returns The number of users in the given channel.
+   */
+  public abstract async getChannelUserCount(channel: BotChannel): Promise<number>;
+
+  /** Get the channels subscribed on this bot client.
+   *
+   * @returns The channels subscribed to this bot client.
+   */
+  public getBotChannels(): BotChannel[] {
+    return getSubscribers()[this.name].map((jsonChannel: { id: string, gameSubs: string[], prefix: string }) => {
+      const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
+      return new BotChannel(jsonChannel.id, this, subs, jsonChannel.prefix);
+    });
   }
 
   /** Gets a BotChannel by its ID.

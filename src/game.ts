@@ -5,6 +5,21 @@ import RedditProvider from './provider_reddit';
 
 /** A representation of a game. */
 class Game {
+
+  /** Gets a game by its name.
+   *
+   * @param name - The name of the game.
+   * @returns The game with this name.
+   */
+  public static getGameByName(name: string): Game {
+    for (const game of games) {
+      if (game.name === name) {
+        return game;
+      }
+    }
+    return null;
+  }
+
   /** The internal name of the game. */
   public name: string;
   /** The aliases the game uses. */
