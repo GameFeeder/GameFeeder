@@ -4,7 +4,7 @@ import Command from './command';
 import { getSubscribers, setSubscribers } from './data';
 import games from './game';
 import botLogger from './logger';
-import { filterAsync } from './util';
+import { filterAsync, mapAsync } from './util';
 
 /** The standard commands available on all bots. */
 const commands = [
@@ -261,6 +261,41 @@ const commands = [
         `I didn't find a game with the alias ${alias}.\n`
         + `Use \`${channel.getPrefix()}games\` to view a list of all available games.`,
       );
+    },
+    UserPermission.OWNER,
+  ),
+  // Stats
+  new Command(
+    'Stats',
+    'Display statistics about the bot.',
+    'stats',
+    'stat(istic)?s?',
+    async (bot, channel, user) => {
+      const botStatStrings: string[] = [];
+
+      let totalUserCount = 0;
+      let totalChannelCount = 0;
+
+      for (const curBot of bots) {
+        const botChannels = curBot.getBotChannels();
+        const channelCount = botChannels.length;
+        const userCounts = await mapAsync(botChannels, async (botChannel) => await botChannel.getUserCount());
+        const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+
+        totalUserCount += userCount;
+        totalChannelCount += channelCount;
+
+        const userString = userCount > 1 ? 'users' : 'user';
+        const channelString = channelCount > 1 ? 'channels' : 'channel';
+        botStatStrings.push(`- **${curBot.label}**: ${userCount} ${userString} in ${channelCount} ${channelString}.`);
+      }
+
+      const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
+      const totalChannelStr = totalChannelCount > 1 ? 'channels' : 'channel';
+      const statString = `**Total**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n`
+        + botStatStrings.join('\n');
+
+      bot.sendMessage(channel, statString);
     },
     UserPermission.OWNER,
   ),

@@ -49,6 +49,11 @@ export default class TelegramBot extends BotClient {
     return UserPermission.USER;
   }
 
+  public async getChannelUserCount(channel: BotChannel): Promise<number> {
+    // Get the count and subscract the bot itself
+    return (await this.bot.getChatMembersCount(channel.id) - 1);
+  }
+
   public async getOwners(): Promise<BotUser[]> {
     const ownerIds: string[] = getBotConfig().telegram.owners;
     return ownerIds.map((id) => new BotUser(this, id));
