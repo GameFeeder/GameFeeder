@@ -60,6 +60,29 @@ const aboutCmd = new Command(
   },
 );
 
+// Settings
+const settingsCmd = new Command(
+  'Settings',
+  'Display an overview of the settings you can configure for the bot.',
+  'settings',
+  '(settings)|(options)|(config)',
+  (bot, channel) => {
+    botLogger.debug(`GameSubs: ${channel.gameSubs}`);
+    const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
+      `> You are currently subscribed to the following games:\n`
+      + `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
+      '> You are currently not subscribed to any games.';
+
+    bot.sendMessage(
+      channel,
+      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses on this channel.\n`
+      + `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
+      + `You can use \`${subCmd.getTriggerLabel(channel)}\` and \`${unsubCmd.getTriggerLabel(channel)}\` `
+      + `to change the games you are subscribed to.\n` + gameStr,
+    );
+  },
+);
+
 // Games
 const gamesCmd = new Command(
   'Games',
@@ -340,6 +363,7 @@ const commands = [
   // User Cmds
   startCmd,
   helpCmd,
+  settingsCmd,
   aboutCmd,
   gamesCmd,
   // Admin Cmds

@@ -84,6 +84,7 @@ export default class DiscordBot extends BotClient {
   public async registerCommand(command: Command): Promise<void> {
     this.bot.on('message', async (message) => {
       const channel = this.getChannelByID(message.channel.id);
+      this.logDebug(`Game Subs: ${channel.gameSubs}`);
       const reg = await command.getRegExp(channel);
       // Run regex on the msg
       const regMatch = reg.exec(message.toString());
