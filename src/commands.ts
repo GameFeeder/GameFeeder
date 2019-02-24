@@ -6,9 +6,26 @@ import games from './game';
 import botLogger from './logger';
 import { filterAsync, mapAsync } from './util';
 
+const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
+
+// Start
+const startCmd = new Command(
+  'Start',
+  'Get started with the valveGamesAnnouncerBot.',
+  'start',
+  'start',
+  (bot, channel, user) => {
+    bot.sendMessage(
+      channel,
+      `Welcome to the **valveGamesAnnouncerBot**!\n`
+      + `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n`
+      + `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+    );
+  },
+);
+
 // Help
-const helpCmd =
-new Command(
+const helpCmd = new Command(
   'Help',
   'Display a list of all available commands.',
   'help',
@@ -33,7 +50,6 @@ const aboutCmd = new Command(
   'about',
   '(about)|(info)\\s*$',
   (bot, channel) => {
-    const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
     bot.sendMessage(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
   },
 );
@@ -310,6 +326,7 @@ const statsCmd = new Command(
 /** The standard commands available on all bots. */
 const commands = [
   // User Cmds
+  startCmd,
   helpCmd,
   aboutCmd,
   gamesCmd,
