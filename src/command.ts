@@ -48,7 +48,6 @@ export default class Command {
    * @param match - The RegExp match of the command trigger.
    */
   public async execute(bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray): Promise<boolean> {
-    bot.logDebug(`ID: ${user.id}`);
     // Check if the user has the required permission to execute the command.
     if (await user.hasPermission(channel, this.permission)) {
       bot.logDebug(`Command: ${this.label}`);
@@ -78,5 +77,15 @@ export default class Command {
 
     const regexString = prefix + this.trigger;
     return new RegExp(regexString);
+  }
+
+  /** Gets the complete trigger label in the given channel, e.g. '/subscribe'
+   *
+   * @param channel - The channel to get the trigger label in.
+   * @returns The complete trigger label, e.g. '/subscribe'
+   */
+  public getTriggerLabel(channel: BotChannel): string {
+    const prefixString = this.hasPrefix ? channel.getPrefix() : '';
+    return prefixString + this.triggerLabel;
   }
 }
