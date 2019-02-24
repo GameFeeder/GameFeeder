@@ -2,6 +2,7 @@ import { getDataConfig } from './data';
 import Provider from './provider';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
+import RedditUserProvider from './reddit_user';
 
 /** A representation of a game. */
 class Game {
@@ -77,10 +78,11 @@ for (const game of getDataConfig(). games) {
   // Add providers
   const providers: Provider[] = [];
   // Reddit providers
-  if (game.providers.reddit.usernames) {
+  if (game.providers.reddit.users) {
     const subreddit = game.providers.reddit.subreddit;
-    const usernames = game.providers.reddit.usernames;
-    providers.push(new RedditProvider(usernames, subreddit, game));
+    const users: Array<{ name: string, titleFilter: string }> = game.providers.reddit.users;
+    const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.titleFilter));
+    providers.push(new RedditProvider(redditUsers, subreddit, game));
   }
   // Blog providers
   if (game.providers.blogs) {
