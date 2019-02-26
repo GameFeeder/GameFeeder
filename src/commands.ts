@@ -3,7 +3,7 @@ import bots from './bots';
 import Command from './command';
 import { getSubscribers, setSubscribers } from './data';
 import games from './game';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 import { filterAsync, mapAsync } from './util';
 
 const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
@@ -17,9 +17,9 @@ const startCmd = new Command(
   (bot, channel, user) => {
     bot.sendMessage(
       channel,
-      `Welcome to the **valveGamesAnnouncerBot**!\n`
-      + `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n`
-      + `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+      `Welcome to the **valveGamesAnnouncerBot**!\n
+        Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n
+        View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
   },
 );
@@ -32,10 +32,13 @@ const helpCmd = new Command(
   'help\\s*$',
   async (bot, channel, user) => {
     // Only show the commands the user has permission to execute.
-    const filteredCommands = await filterAsync(commands,
-      (async (command) => await user.hasPermission(channel, command.permission)));
-    const commandsList = filteredCommands
-      .map((command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`);
+    const filteredCommands = await filterAsync(
+      commands,
+      async (command) => await user.hasPermission(channel, command.permission),
+    );
+    const commandsList = filteredCommands.map(
+      (command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`,
+    );
 
     const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
 
@@ -50,7 +53,10 @@ const aboutCmd = new Command(
   'about',
   '(about)|(info)\\s*$',
   (bot, channel) => {
-    bot.sendMessage(channel, `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`);
+    bot.sendMessage(
+      channel,
+      `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`,
+    );
   },
 );
 
@@ -71,7 +77,7 @@ const gamesCmd = new Command(
 // Subscribe
 const subCmd = new Command(
   'Subscribe',
-  'Subscribe to the given game\'s feed.',
+  `Subscribe to the given game's feed.`,
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
   (bot, channel, user, match: any) => {
@@ -79,18 +85,19 @@ const subCmd = new Command(
     alias = alias ? alias.trim() : '';
 
     if (!alias) {
-      bot.sendMessage(channel, 'You need to provide the name of the game you want to subscribe to.\n'
-        + `Try \`${subCmd.getTriggerLabel(channel)}\`.`);
+      bot.sendMessage(
+        channel,
+        `You need to provide the name of the game you want to subscribe to.\n
+        Try \`${subCmd.getTriggerLabel(channel)}\`.`,
+      );
     }
 
     for (const game of games) {
       if (game.hasAlias(alias)) {
         if (bot.addSubscriber(channel, game)) {
-          bot.sendMessage(channel,
-            `You are now subscribed to the **${game.label}** feed!`);
+          bot.sendMessage(channel, `You are now subscribed to the **${game.label}** feed!`);
         } else {
-          bot.sendMessage(channel,
-            `You have already subscribed to the **${game.label}** feed!`);
+          bot.sendMessage(channel, `You have already subscribed to the **${game.label}** feed!`);
         }
       }
     }
@@ -101,7 +108,7 @@ const subCmd = new Command(
 // Unsubscribe
 const unsubCmd = new Command(
   'Unsubscribe',
-  'Unsubscribe from the given game\'s feed',
+  `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
   'unsub(scribe)?(?<alias>.*)',
   (bot, channel, user, match: any) => {
@@ -109,18 +116,22 @@ const unsubCmd = new Command(
     alias = alias ? alias.trim() : '';
 
     if (!alias) {
-      bot.sendMessage(channel, 'You need to provide the name of the game you want to unsubscribe from.\n'
-        + `Try \`${unsubCmd.getTriggerLabel(channel)}\`.`);
+      bot.sendMessage(
+        channel,
+        `You need to provide the name of the game you want to unsubscribe from.\n
+          Try ${unsubCmd.getTriggerLabel(channel)}.`,
+      );
     }
 
     for (const game of games) {
       if (game.hasAlias(alias)) {
         if (bot.removeSubscriber(channel, game)) {
-          bot.sendMessage(channel,
-            `You are now unsubscribed from the **${game.label}** feed!`);
+          bot.sendMessage(channel, `You are now unsubscribed from the **${game.label}** feed!`);
         } else {
-          bot.sendMessage(channel,
-            `You have never subscribed to the **${game.label}** feed in the first place!`);
+          bot.sendMessage(
+            channel,
+            `You have never subscribed to the **${game.label}** feed in the first place!`,
+          );
         }
       }
     }
@@ -131,7 +142,7 @@ const unsubCmd = new Command(
 // Prefix
 const prefixCmd = new Command(
   'Prefix',
-  'Change the bot\'s prefix used in this channel.',
+  `Change the bot's prefix used in this channel.`,
   'prefix',
   'prefix(?<newPrefix>.*)$',
   (bot, channel, user, match: any) => {
@@ -142,10 +153,10 @@ const prefixCmd = new Command(
     if (!newPrefix) {
       bot.sendMessage(
         channel,
-        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
-        + `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n`
-        + `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default `
-        + `(\`${bot.prefix}\`).`,
+        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n
+          Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n
+          Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default
+          (\`${bot.prefix}\`).`,
       );
       return;
     }
@@ -212,16 +223,13 @@ const notifyAllCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n`
-        + `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n
+        Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
 
-    bot.sendMessage(
-      channel,
-      `Notifying all subs with:\n"${message}"`,
-    );
+    bot.sendMessage(channel, `Notifying all subs with:\n"${message}"`);
 
     // Send the provided message to all subs
     for (const curBot of bots) {
@@ -246,8 +254,8 @@ const notifyGameSubsCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n`
-        + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n
+        Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -255,8 +263,8 @@ const notifyGameSubsCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide a game to notify the subs of.\n`
-        + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a game to notify the subs of.\n
+          Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -264,10 +272,7 @@ const notifyGameSubsCmd = new Command(
     // Try to find the game
     for (const game of games) {
       if (game.hasAlias(alias)) {
-        bot.sendMessage(
-          channel,
-          `Notifying the subs of **${game.label}** with:\n"${message}"`,
-        );
+        bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${message}"`);
         // Notify the game's subs
         for (const curBot of bots) {
           curBot.sendMessageToGameSubs(game, message);
@@ -280,8 +285,8 @@ const notifyGameSubsCmd = new Command(
     // We didn't find the specified game
     bot.sendMessage(
       channel,
-      `I didn't find a game with the alias ${alias}.\n`
-      + `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+      `I didn't find a game with the alias ${alias}.\n
+        Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
   UserPermission.OWNER,
@@ -302,7 +307,10 @@ const statsCmd = new Command(
     for (const curBot of bots) {
       const botChannels = curBot.getBotChannels();
       const channelCount = botChannels.length;
-      const userCounts = await mapAsync(botChannels, async (botChannel) => await botChannel.getUserCount());
+      const userCounts = await mapAsync(
+        botChannels,
+        async (botChannel) => await botChannel.getUserCount(),
+      );
       const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
 
       totalUserCount += userCount;
@@ -310,13 +318,17 @@ const statsCmd = new Command(
 
       const userString = userCount > 1 ? 'users' : 'user';
       const channelString = channelCount > 1 ? 'channels' : 'channel';
-      botStatStrings.push(`- **${curBot.label}**: ${userCount} ${userString} in ${channelCount} ${channelString}.`);
+      botStatStrings.push(
+        `- **${curBot.label}**: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+      );
     }
 
     const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
     const totalChannelStr = totalChannelCount > 1 ? 'channels' : 'channel';
-    const statString = `**Total**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n`
-      + botStatStrings.join('\n');
+    const statString =
+      // tslint:disable-next-line prefer-template
+      `**Total**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
+      botStatStrings.join('\n');
 
     bot.sendMessage(channel, statString);
   },

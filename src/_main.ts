@@ -1,6 +1,6 @@
+import botLogger from './bot_logger';
 import bots from './bots';
 import commands from './commands';
-import botLogger from './logger';
 import updater from './updater';
 
 /** Registers the bot commands. */

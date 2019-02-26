@@ -1,7 +1,7 @@
 import Snoowrap from 'snoowrap';
 import { getRedditConfig } from './data';
 import { Game } from './game';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
@@ -11,7 +11,6 @@ let reddit: Snoowrap;
 let isInit: boolean = false;
 
 export default class Reddit {
-
   public static init(): void {
     if (isInit) {
       return;
@@ -28,13 +27,23 @@ export default class Reddit {
     isInit = true;
   }
 
-  public static async getNotifications(subreddit: string, users: RedditUserProvider[], game: Game,
-                                       date?: Date, limit?: number): Promise<BotNotification[]> {
+  public static async getNotifications(
+    subreddit: string,
+    users: RedditUserProvider[],
+    game: Game,
+    date?: Date,
+    limit?: number,
+  ): Promise<BotNotification[]> {
     return await this.getNotificationsFromSnoowrap(subreddit, users, game, date, limit);
   }
 
-  public static async getNotificationsFromSnoowrap(subreddit: string, users: RedditUserProvider[], game: Game,
-                                                   date?: Date, limit?: number): Promise<BotNotification[]> {
+  public static async getNotificationsFromSnoowrap(
+    subreddit: string,
+    users: RedditUserProvider[],
+    game: Game,
+    date?: Date,
+    limit?: number,
+  ): Promise<BotNotification[]> {
     let notifications: BotNotification[] = [];
 
     if (!isInit) {
@@ -42,21 +51,18 @@ export default class Reddit {
     }
 
     for (const user of users) {
-
       // botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
 
       // Get all new submissions in the given subreddit
-      const allPosts = await reddit.
-        getUser(user.name).
-        getSubmissions();
+      const allPosts = await reddit.getUser(user.name).getSubmissions();
 
       const posts = allPosts.filter((submission) => {
-          const timestamp = new Date(submission.created_utc * 1000);
-          const isNew = timestamp > date;
-          const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
-          const isValidTitle = user.titleFilter.test(submission.title);
-          return isNew && isCorrectSub &&  isValidTitle;
-        });
+        const timestamp = new Date(submission.created_utc * 1000);
+        const isNew = timestamp > date;
+        const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
+        const isValidTitle = user.titleFilter.test(submission.title);
+        return isNew && isCorrectSub && isValidTitle;
+      });
 
       for (const post of posts) {
         // Convert the post into a notification
@@ -68,8 +74,11 @@ export default class Reddit {
           new Date(post.created_utc * 1000),
           null, // post.thumbnail,
           null,
-          new NotificationElement(`/u/${user.name}`, `https://www.reddit.com/user/${user.name}`,
-            'https://www.redditstatic.com/new-icon.png'),
+          new NotificationElement(
+            `/u/${user.name}`,
+            `https://www.reddit.com/user/${user.name}`,
+            'https://www.redditstatic.com/new-icon.png',
+          ),
         );
         notifications.push(notification);
       }
@@ -86,10 +95,11 @@ export default class Reddit {
   }
 
   private static mdFromReddit(text: string): string {
+    let fulltext = '';
     // User links
-    text = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
+    fulltext = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
     // Subreddit links
-    text = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
+    fulltext = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
 
     return text;
   }
