@@ -1,9 +1,9 @@
+import botLogger from './bot_logger';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getBotConfig, getSubscribers, setSubscribers } from './data';
-import games, { Game } from './game';
-import botLogger from './logger';
+import { getSubscribers, setSubscribers } from './data';
+import { Game } from './game';
 import BotNotification from './notification';
 
 export default abstract class BotClient {
@@ -67,7 +67,10 @@ export default abstract class BotClient {
    * @param user - The user to get the permission of.
    * @param channel - The channel to get the permission on.
    */
-  public abstract async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission>;
+  public abstract async getUserPermission(
+    user: BotUser,
+    channel: BotChannel,
+  ): Promise<UserPermission>;
 
   /** Gets a list of the owners of the bot.
    *
@@ -86,7 +89,7 @@ export default abstract class BotClient {
     const channels = subscribers[this.name];
 
     // Check if the channel is already registered
-    for (let i = 0; i < channels.length; i++) {
+    for (let i = 0; i < channels.length; i += 1) {
       const sub = channels[i];
       if (channel.isEqual(sub.id)) {
         // Check if the channel already subscribed to the game's feed
@@ -162,10 +165,12 @@ export default abstract class BotClient {
    * @returns The channels subscribed to this bot client.
    */
   public getBotChannels(): BotChannel[] {
-    return getSubscribers()[this.name].map((jsonChannel: { id: string, gameSubs: string[], prefix: string }) => {
-      const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-      return new BotChannel(jsonChannel.id, this, subs, jsonChannel.prefix);
-    });
+    return getSubscribers()[this.name].map(
+      (jsonChannel: { id: string; gameSubs: string[]; prefix: string }) => {
+        const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
+        return new BotChannel(jsonChannel.id, this, subs, jsonChannel.prefix);
+      },
+    );
   }
 
   /** Gets a BotChannel by its ID.
@@ -181,7 +186,7 @@ export default abstract class BotClient {
     for (const sub of channels) {
       if (channel.isEqual(sub.id)) {
         // Update properties
-        channel.gameSubs = sub.gameSubs;
+        channel.gameSubscribers = sub.gameSubs;
         channel.prefix = sub.prefix;
         break;
       }
@@ -196,7 +201,10 @@ export default abstract class BotClient {
    * @param  {string|BotNotification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean>;
+  public abstract async sendMessage(
+    channel: BotChannel,
+    message: string | BotNotification,
+  ): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *

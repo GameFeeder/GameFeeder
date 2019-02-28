@@ -15,7 +15,7 @@ class Logger {
 
         const ts = timestamp.slice(0, 19).replace('T', ' ');
         const obj = Object.keys(args).length ? JSON.stringify(args, null, 2) : '';
-        const printLabel = (label) ? ` [${label}]` : '';
+        const printLabel = label ? ` [${label}]` : '';
         return `${ts}${printLabel}\t ${level}:\t ${message} ${obj}`;
       }),
     );
@@ -29,38 +29,38 @@ class Logger {
   }
   /** Logs a debug message.
    *
-   * @param  {string} msg - The message to debug-log.
+   * @param  {string} message - The message to debug-log.
    * @returns void
    */
-  public debug(msg: string, label?: string | null): void {
-    this.logger.debug({ message: msg,  label });
+  public debug(message: string, label?: string | null): void {
+    this.logger.debug({ message, label });
   }
 
   /** Logs an info message.
    *
-   * @param  {string} msg - The message to info-log.
+   * @param  {string} message - The message to info-log.
    * @returns void
    */
-  public info(msg: string, label?: string | null): void {
-    this.logger.info({ message: msg,  label });
+  public info(message: string, label?: string | null): void {
+    this.logger.info({ message, label });
   }
 
   /** Logs a warning message.
    *
-   * @param  {string} msg - The message to warn-log.
+   * @param  {string} message - The message to warn-log.
    * @returns void
    */
-  public warn(msg: string, label?: string | null): void {
-    this.logger.warn({ message: msg,  label });
+  public warn(message: string, label?: string | null): void {
+    this.logger.warn({ message, label });
   }
 
   /** Logs an error message.
    *
-   * @param  {string} msg - The message to error-log.
+   * @param  {string} message - The message to error-log.
    * @returns void
    */
-  public error(msg: string, label?: string | null): void {
-    this.logger.error({ message: msg,  label });
+  public error(message: string, label?: string | null): void {
+    this.logger.error({ message, label });
   }
 }
 

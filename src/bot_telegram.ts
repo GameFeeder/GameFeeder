@@ -36,7 +36,7 @@ export default class TelegramBot extends BotClient {
     }
     // Check if user has default admin rights
     const chat = await this.bot.getChat(channel.id);
-    if (chat.all_members_are_administrators || (chat.type === 'private')) {
+    if (chat.all_members_are_administrators || chat.type === 'private') {
       return UserPermission.ADMIN;
     }
     // Check if user is an admin on this channel
@@ -51,7 +51,7 @@ export default class TelegramBot extends BotClient {
 
   public async getChannelUserCount(channel: BotChannel): Promise<number> {
     // Get the count and subscract the bot itself
-    return (await this.bot.getChatMembersCount(channel.id) - 1);
+    return (await this.bot.getChatMembersCount(channel.id)) - 1;
   }
 
   public async getOwners(): Promise<BotUser[]> {
@@ -83,15 +83,18 @@ export default class TelegramBot extends BotClient {
       await this.bot.startPolling({ restart: true });
       this.isRunning = true;
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
   public stop(): void {
     this.bot.stopPolling();
     this.isRunning = false;
   }
-  public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
+  public async sendMessage(
+    channel: BotChannel,
+    messageText: string | BotNotification,
+  ): Promise<boolean> {
+    let message = messageText;
     if (typeof message === 'string') {
       message = this.msgFromMarkdown(message);
       try {
@@ -105,7 +108,10 @@ export default class TelegramBot extends BotClient {
         text = text.substring(0, 2048);
       }
       try {
-        await this.bot.sendMessage(channel.id, text, { parse_mode: 'Markdown', disable_web_page_preview: true });
+        await this.bot.sendMessage(channel.id, text, {
+          disable_web_page_preview: true,
+          parse_mode: 'Markdown',
+        });
       } catch (error) {
         this.logError(`Failed to send notification to channel:\n${error}`);
       }
@@ -113,7 +119,8 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  public msgFromMarkdown(markdown: string): string {
+  public msgFromMarkdown(markdownText: string): string {
+    let markdown = markdownText;
     if (!markdown) {
       return '';
     }
@@ -134,7 +141,7 @@ export default class TelegramBot extends BotClient {
 
     let newMarkdown = '';
     for (const line of lineArray) {
-      newMarkdown += line + '\n';
+      newMarkdown += `${line}\n`;
     }
 
     return newMarkdown;
@@ -142,7 +149,11 @@ export default class TelegramBot extends BotClient {
 }
 
 // Telegram Bot
-const { prefix: telegramPrefix, token: telegramToken, autostart: telegramAutostart } = getBotConfig().telegram;
+const {
+  prefix: telegramPrefix,
+  token: telegramToken,
+  autostart: telegramAutostart,
+} = getBotConfig().telegram;
 const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
 
 export { TelegramBot, telegramBot };

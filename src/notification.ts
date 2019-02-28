@@ -4,7 +4,6 @@ import NotificationElement from './notification_element';
 
 /** A representation of a bot notification. */
 export default class BotNotification {
-
   /** Simple text in the notification. */
   public text: string;
   /** The game the notification is for. */
@@ -58,25 +57,34 @@ export default class BotNotification {
     this.thumbnail = thumbnail;
     this.image = image;
     this.author = author;
-    this.footer =
-      footer ? footer : (game ? new NotificationElement(`New ${game.label} update!`, null, game.icon) : null);
-    this.color = color ? color : (game ? game.color : '');
+    this.footer = footer
+      ? footer
+      : game
+      ? new NotificationElement(`New ${game.label} update!`, null, game.icon)
+      : null;
+    this.color = color ? color : game ? game.color : '';
   }
 
   public compare(b: BotNotification) {
     if (this.timestamp < b.timestamp) {
       return -1;
-    } else if (this.timestamp > b.timestamp) {
-      return 1;
-    } else {
-      return 0;
     }
+    if (this.timestamp > b.timestamp) {
+      return 1;
+    }
+    return 0;
   }
 
   public toMDString(): string {
-    const authorText = this.author.link ? `[${this.author.text}](${this.author.link})` : this.author.text;
-    const titleText = this.title.link ? `[**${this.title.text}**](${this.title.link})` : this.title.text;
+    const authorText = this.author.link
+      ? `[${this.author.text}](${this.author.link})`
+      : this.author.text;
+    const titleText = this.title.link
+      ? `[**${this.title.text}**](${this.title.link})`
+      : this.title.text;
 
-    return `New **${this.game.label}** update by ${authorText}:\n\n${titleText}\n\n${this.description}`;
+    return `New **${this.game.label}** update by ${authorText}:\n\n${titleText}\n\n${
+      this.description
+    }`;
   }
 }

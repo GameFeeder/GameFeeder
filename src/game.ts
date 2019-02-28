@@ -6,7 +6,6 @@ import RedditUserProvider from './reddit_user';
 
 /** A representation of a game. */
 class Game {
-
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
@@ -40,7 +39,14 @@ class Game {
    * @param  {string[]} aliases - The aliases the game uses.
    * @param  {string} label - The human-formatted label of the game.
    */
-  constructor(name: string, aliases: string[], label: string, color: string, icon: string, providers: Provider[]) {
+  constructor(
+    name: string,
+    aliases: string[],
+    label: string,
+    color: string,
+    icon: string,
+    providers: Provider[],
+  ) {
     this.name = name;
     this.aliases = aliases;
     this.label = label;
@@ -49,9 +55,9 @@ class Game {
     this.providers = providers;
   }
 
-  public hasAlias(alias: string) {
+  public hasAlias(aliasText: string) {
     // Ignore casing
-    alias = alias.toLocaleLowerCase();
+    const alias = aliasText.toLocaleLowerCase();
 
     if (alias === 'all') {
       return true;
@@ -74,13 +80,14 @@ class Game {
 // All Games
 const games: Game[] = [];
 
-for (const game of getDataConfig(). games) {
+for (const game of getDataConfig().games) {
   // Add providers
   const providers: Provider[] = [];
   // Reddit providers
   if (game.providers.reddit.users) {
     const subreddit = game.providers.reddit.subreddit;
-    const users: Array<{ name: string, titleFilter: string }> = game.providers.reddit.users;
+    // tslint:disable-next-line prefer-array-literal
+    const users: Array<{ name: string; titleFilter: string }> = game.providers.reddit.users;
     const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.titleFilter));
     providers.push(new RedditProvider(redditUsers, subreddit, game));
   }

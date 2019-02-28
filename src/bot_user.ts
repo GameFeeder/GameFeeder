@@ -1,6 +1,6 @@
 import BotClient from './bot';
 import BotChannel from './channel';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 
 /** Represents a user of a bot. */
 export default class BotUser {

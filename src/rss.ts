@@ -1,6 +1,6 @@
 import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 import RSSItem from './rss_item';
 import { limitArray } from './util';
 
