@@ -13,7 +13,12 @@ export default class Command {
   /** The RegExp string triggering the command. */
   public trigger: string;
   /** The callback function executing the command. */
-  public callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void;
+  public callback: (
+    bot: BotClient,
+    channel: BotChannel,
+    user: BotUser,
+    match: RegExpMatchArray,
+  ) => void;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
   /** The permission required to execute the command. */
@@ -29,9 +34,15 @@ export default class Command {
    * @param {UserPermission} permission - The permission required to execute the command.
    * @param {boolean} hasPrefix - Whether the command should use the bot prefix. Default is true.
    */
-  constructor(label: string, description: string, triggerLabel: string, trigger: string,
-              callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void,
-              permission?: UserPermission, hasPrefix?: boolean) {
+  constructor(
+    label: string,
+    description: string,
+    triggerLabel: string,
+    trigger: string,
+    callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void,
+    permission?: UserPermission,
+    hasPrefix?: boolean,
+  ) {
     this.label = label;
     this.description = description;
     this.triggerLabel = triggerLabel;
@@ -47,20 +58,24 @@ export default class Command {
    * @param user - The user trying to execute the command.
    * @param match - The RegExp match of the command trigger.
    */
-  public async execute(bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray): Promise<boolean> {
+  public async execute(
+    bot: BotClient,
+    channel: BotChannel,
+    user: BotUser,
+    match: RegExpMatchArray,
+  ): Promise<boolean> {
     // Check if the user has the required permission to execute the command.
     if (await user.hasPermission(channel, this.permission)) {
       bot.logDebug(`Command: ${this.label}`);
       this.callback(bot, channel, user, match);
       return true;
-    } else {
-      bot.logDebug(`Command: ${this.label}: Insufficient permissions.`);
-      bot.sendMessage(
-        channel,
-        `You need the permission '${this.permission}' on this server to execute this command!`,
-      );
-      return false;
     }
+    bot.logDebug(`Command: ${this.label}: Insufficient permissions.`);
+    bot.sendMessage(
+      channel,
+      `You need the permission '${this.permission}' on this server to execute this command!`,
+    );
+    return false;
   }
 
   /** Gets the RegExp used to trigger the command
@@ -71,9 +86,11 @@ export default class Command {
     const bot = channel.client;
     const userTag = EscapeRegex(await bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.getPrefix());
-    const prefix = this.hasPrefix ?
-      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*` :
-      '';
+    const prefix = this.hasPrefix
+      ? `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${
+          bot.prefix
+        })\\s*(${userTag})))\\s*`
+      : '';
 
     const regexString = prefix + this.trigger;
     return new RegExp(regexString);

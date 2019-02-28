@@ -8,14 +8,14 @@ export default class BotChannel {
   /** The BotClient this channel is used in. */
   public client: BotClient;
   /** The games this channel is subscribed to. */
-  public gameSubs: Game[];
+  public gameSubscribers: Game[];
   /** The prefix the channel uses. */
   public prefix: string;
   /** Creates a new BotChannel. */
   constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
     this.client = client;
-    gameSubs = gameSubs ? gameSubs : [];
+    this.gameSubscribers = gameSubs ? gameSubs : [];
     this.prefix = prefix != null ? prefix : '';
   }
   /** Compares the channel to another channel.
@@ -24,7 +24,7 @@ export default class BotChannel {
    * @returns {boolean} True, if the channels are equal, else false.
    */
   public isEqual(other: BotChannel | string): boolean {
-    if (typeof(other) === 'string') {
+    if (typeof other === 'string') {
       return this.id === other;
     }
     return this.id === other.id;
@@ -33,7 +33,7 @@ export default class BotChannel {
     return `{
       "id": "${this.id}",
       "gameSubs": [
-        ${this.gameSubs.map((game) => game.name).join(', ')}
+        ${this.gameSubscribers.map((game) => game.name).join(', ')}
       ],
       "prefix": "${this.prefix}"
     }`;
@@ -45,9 +45,8 @@ export default class BotChannel {
   public getPrefix(): string {
     if (this.prefix) {
       return this.prefix;
-    } else {
-      return this.client.prefix;
     }
+    return this.client.prefix;
   }
 
   /** Gets the number of users in this channel

@@ -90,5 +90,11 @@ function setSubscribers(subscribers: object): void {
 }
 
 export {
-  getBotConfig, getDataConfig, getUpdaterConfig, setUpdaterConfig, getRedditConfig, getSubscribers, setSubscribers,
+  getBotConfig,
+  getDataConfig,
+  getUpdaterConfig,
+  setUpdaterConfig,
+  getRedditConfig,
+  getSubscribers,
+  setSubscribers,
 };

@@ -1,4 +1,10 @@
-import DiscordAPI, { DMChannel, GroupDMChannel, TextBasedChannel, TextChannel, User } from 'discord.js';
+import DiscordAPI, {
+  DMChannel,
+  GroupDMChannel,
+  TextBasedChannel,
+  TextChannel,
+  User,
+} from 'discord.js';
 import { BotClient } from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
@@ -37,13 +43,14 @@ export default class DiscordBot extends BotClient {
 
     if (discordChannel instanceof DMChannel) {
       return 1;
-    } else if (discordChannel instanceof TextChannel) {
-      return discordChannel.members.size - 1;
-    } else if (discordChannel instanceof GroupDMChannel) {
-      return discordChannel.recipients.size - 1;
-    } else {
-      return 0;
     }
+    if (discordChannel instanceof TextChannel) {
+      return discordChannel.members.size - 1;
+    }
+    if (discordChannel instanceof GroupDMChannel) {
+      return discordChannel.recipients.size - 1;
+    }
+    return 0;
   }
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
@@ -57,7 +64,8 @@ export default class DiscordBot extends BotClient {
     // Check if the user has default admin rights
     if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
       return UserPermission.ADMIN;
-    } else if (discordChannel instanceof TextChannel) {
+    }
+    if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser.hasPermission(8)) {
@@ -82,12 +90,7 @@ export default class DiscordBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(
-          this,
-          channel,
-          new BotUser(this, message.author.id),
-          regMatch,
-        );
+        command.execute(this, channel, new BotUser(this, message.author.id), regMatch);
       }
     });
   }
@@ -96,30 +99,31 @@ export default class DiscordBot extends BotClient {
       await this.bot.login(this.token);
       this.isRunning = true;
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
   public stop(): void {
     this.bot.destroy();
     this.isRunning = false;
   }
 
-  public async sendMessage(channel: BotChannel, message: string | BotNotification): Promise<boolean> {
+  public async sendMessage(
+    channel: BotChannel,
+    message: string | BotNotification,
+  ): Promise<boolean> {
     if (typeof message === 'string') {
       // Parse markdown
-      message = this.msgFromMarkdown(message, false);
-      return await this.sendToChannel(channel, message);
-    } else {
-      // Parse markdown
-      const text = `${this.msgFromMarkdown(message.text, false)}\n${message.title.link}`;
-      const embed = this.embedFromNotification(message);
+      const messageText = this.msgFromMarkdown(message, false);
+      return await this.sendToChannel(channel, messageText);
+    }
+    // Parse markdown
+    const embed = this.embedFromNotification(message);
 
-      try {
-        return await this.sendToChannel(channel, '', embed);
-      } catch (error) {
-        return false;
-      }
+    try {
+      return await this.sendToChannel(channel, '', embed);
+    } catch (error) {
+      return false;
     }
   }
   public embedFromNotification(notification: BotNotification): DiscordAPI.RichEmbed {
@@ -179,13 +183,14 @@ export default class DiscordBot extends BotClient {
     return embed;
   }
 
-  public msgFromMarkdown(markdown: string, isEmbed: boolean): string {
-    if (!markdown) {
+  public msgFromMarkdown(text: string, isEmbed: boolean): string {
+    if (!text) {
       return '';
     }
+    let markdown = text;
     if (!isEmbed) {
       // Short links are not supported outside of embeds
-      markdown = markdown.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
+      markdown = text.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
     }
 
     // Compress multiple linebreaks
@@ -204,7 +209,7 @@ export default class DiscordBot extends BotClient {
 
     let newMarkdown = '';
     for (const line of lineArray) {
-      newMarkdown += line + '\n';
+      newMarkdown += `${line}\n`;
     }
 
     return newMarkdown;
@@ -221,20 +226,25 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof DMChannel) {
       discordChannel.send(text, embed);
       return true;
-    } else if (discordChannel instanceof TextChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    } else if (discordChannel instanceof GroupDMChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    } else {
-      return false;
     }
+    if (discordChannel instanceof TextChannel) {
+      discordChannel.send(text, embed);
+      return true;
+    }
+    if (discordChannel instanceof GroupDMChannel) {
+      discordChannel.send(text, embed);
+      return true;
+    }
+    return false;
   }
 }
 
 // Discord Bot
-const { prefix: discordPrefix, token: discordToken, autostart: discordAutostart } = getBotConfig().discord;
+const {
+  prefix: discordPrefix,
+  token: discordToken,
+  autostart: discordAutostart,
+} = getBotConfig().discord;
 const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
 
 export { DiscordBot, discordBot };

@@ -1,7 +1,8 @@
 import Snoowrap from 'snoowrap';
+
+import botLogger from './bot_logger';
 import { getRedditConfig } from './data';
 import { Game } from './game';
-import botLogger from './logger';
 import BotNotification from './notification';
 import Provider from './provider';
 import Reddit from './reddit';

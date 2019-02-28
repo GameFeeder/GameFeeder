@@ -1,7 +1,7 @@
 import bots from './bots';
 import { getUpdaterConfig, setUpdaterConfig } from './data';
 import { games } from './game';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 import BotNotification from './notification';
 import RSS from './rss';
 import { limitArray } from './util';
@@ -21,7 +21,13 @@ class Updater {
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(updateDelaySec: number, limit: number, lastUpdate: Date, autostart: boolean, autosave: boolean) {
+  constructor(
+    updateDelaySec: number,
+    limit: number,
+    lastUpdate: Date,
+    autostart: boolean,
+    autosave: boolean,
+  ) {
     this.setDelaySec(updateDelaySec);
     this.limit = limit;
     this.lastUpdate = lastUpdate;
@@ -84,7 +90,9 @@ class Updater {
 
       let gameNotifications: BotNotification[] = [];
       for (const provider of game.providers) {
-        gameNotifications = gameNotifications.concat(await provider.getNotifications(this.lastUpdate, this.limit));
+        gameNotifications = gameNotifications.concat(
+          await provider.getNotifications(this.lastUpdate, this.limit),
+        );
       }
       if (gameNotifications.length > 0) {
         // Sort the notifications
@@ -111,8 +119,9 @@ class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      this.debug(`Found ${notifications.length} posts in ${pollTime}ms. `
-      + `Notifying channels...`);
+      this.debug(
+        `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
+      );
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);
@@ -147,7 +156,9 @@ class Updater {
       // Update
       await this.update();
       // Update again after the delay
-      setTimeout(() => { this.updateLoop(); }, this.updateDelayMs);
+      setTimeout(() => {
+        this.updateLoop();
+      }, this.updateDelayMs);
     }
   }
 }

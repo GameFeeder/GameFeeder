@@ -2,15 +2,15 @@
   "name": "valvegamesannouncerbot",
   "version": "0.1.0",
   "description": "A notification bot for Dota 2 and Artifact.",
-  "main": "src/main.ts",
+  "main": "src/_main.ts",
   "scripts": {
     "build": "tsc --build",
     "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
     "deploy": "yarn clean && yarn install && yarn build && yarn start",
-    "clean": "yarn reset && rm -rf node_modules/",
+    "clean": "yarn demolish && rm -rf node_modules/",
     "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
-    "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
-    "reset": "rm -rf dist",
+    "lint": "tslint --config tslint.json --format stylish --project tsconfig.json 'src/**/*.ts'",
+    "demolish": "rm -rf dist",
     "serve": "nodemon --watch dist dist/_main.js",
     "start": "node dist/_main.js",
     "test": "jest tests",
@@ -32,18 +32,13 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
-    "eslint": "^5.10.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^22.1.2",
-    "eslint-plugin-jsdoc": "^3.14.1",
-    "eslint-plugin-prettier": "3.0.0",
     "husky": "^1.2.1",
     "install-peerdeps": "^1.9.0",
     "jest": "^23.6.0",
     "nodemon": "^1.18.10",
     "prettier": "1.15.3",
     "tslint": "^5.12.0",
+    "tslint-config-airbnb": "^5.11.1",
     "typescript": "^3.2.2",
     "yarn": "^1.12.3"
   },
@@ -67,7 +62,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint-ts"
+      "pre-commit": "yarn lint"
     }
   }
 }
