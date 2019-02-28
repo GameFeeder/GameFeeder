@@ -1,5 +1,6 @@
 import BotClient from './bot';
 import { Game } from './game';
+import botLogger from './bot_logger';
 
 /** A representation of a bot's channel. */
 export default class BotChannel {

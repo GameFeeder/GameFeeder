@@ -67,7 +67,6 @@ const settingsCmd = new Command(
   'settings',
   '(settings)|(options)|(config)',
   (bot, channel) => {
-    botLogger.debug(`GameSubs: ${channel.gameSubs}`);
     const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
       `> You are currently subscribed to the following games:\n`
       + `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
