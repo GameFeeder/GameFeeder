@@ -9,14 +9,14 @@ export default class BotChannel {
   /** The BotClient this channel is used in. */
   public client: BotClient;
   /** The games this channel is subscribed to. */
-  public gameSubscribers: Game[];
+  public gameSubs: Game[];
   /** The prefix the channel uses. */
   public prefix: string;
   /** Creates a new BotChannel. */
   constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
     this.client = client;
-    this.gameSubscribers = gameSubs ? gameSubs : [];
+    this.gameSubs = gameSubs ? gameSubs : [];
     this.prefix = prefix != null ? prefix : '';
   }
   /** Compares the channel to another channel.
@@ -34,7 +34,7 @@ export default class BotChannel {
     return `{
       "id": "${this.id}",
       "gameSubs": [
-        ${this.gameSubscribers.map((game) => game.name).join(', ')}
+        ${this.gameSubs.map((game) => game.name).join(', ')}
       ],
       "prefix": "${this.prefix}"
     }`;

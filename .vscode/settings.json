@@ -1,5 +1,13 @@
 {
   "editor.tabSize": 2,
   "editor.wordWrap": "on",
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "cSpell.words": [
+    "reddit",
+    "subreddit",
+    "sub",
+    "unsub",
+    "usertag",
+    "unsubscription"
+  ]
 }

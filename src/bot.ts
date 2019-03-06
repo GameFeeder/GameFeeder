@@ -78,7 +78,7 @@ export default abstract class BotClient {
    */
   public abstract async getOwners(): Promise<BotUser[]>;
 
-  /** Add a channel supscription to a game.
+  /** Add a channel subscription to a game.
    *
    * @param  {BotChannel} channel - The channel to subscribe to the game.
    * @param  {Game} game - The game to subscribe to.
@@ -136,7 +136,7 @@ export default abstract class BotClient {
         // Unsubscribe
         sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 
-        // Remove unneccessary entries
+        // Remove unnecessary entries
         if (sub.gameSubs.length === 0 && !sub.prefix) {
           this.logDebug('Removing unnecessary channel entry...');
           subs.splice(i, 1);
@@ -186,7 +186,7 @@ export default abstract class BotClient {
     for (const sub of channels) {
       if (channel.isEqual(sub.id)) {
         // Update properties
-        channel.gameSubscribers = sub.gameSubs;
+        channel.gameSubs = sub.gameSubs;
         channel.prefix = sub.prefix;
         break;
       }

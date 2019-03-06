@@ -68,16 +68,20 @@ const settingsCmd = new Command(
   '(settings)|(options)|(config)',
   (bot, channel) => {
     const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
-      `> You are currently subscribed to the following games:\n`
-      + `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
+      `> You are currently subscribed to the following games:
+      ${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
       '> You are currently not subscribed to any games.';
 
     bot.sendMessage(
       channel,
-      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses on this channel.\n`
-      + `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
-      + `You can use \`${subCmd.getTriggerLabel(channel)}\` and \`${unsubCmd.getTriggerLabel(channel)}\` `
-      + `to change the games you are subscribed to.\n` + gameStr,
+      // tslint:disable-next-line:prefer-template
+      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses `
+      + `on this channel.
+      > The prefix currently used on this channel is \`${channel.getPrefix()}\`.
+      You can use \`${subCmd.getTriggerLabel(channel)}\` and `
+      + `\`${unsubCmd.getTriggerLabel(channel)}\` `
+      + `to change the games you are subscribed to.
+      ${gameStr}`,
     );
   },
 );
@@ -359,17 +363,17 @@ const statsCmd = new Command(
 
 /** The standard commands available on all bots. */
 const commands = [
-  // User Cmds
+  // User commands
   startCmd,
   helpCmd,
   settingsCmd,
   aboutCmd,
   gamesCmd,
-  // Admin Cmds
+  // Admin commands
   subCmd,
   unsubCmd,
   prefixCmd,
-  // Owner Cmds
+  // Owner commands
   notifyAllCmd,
   notifyGameSubsCmd,
 ];

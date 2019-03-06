@@ -1,5 +1,5 @@
 import { getDataConfig } from './data';
-import botLogger from './logger';
+import botLogger from './bot_logger';
 import Provider from './provider';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
