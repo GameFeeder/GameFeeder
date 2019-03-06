@@ -17,9 +17,9 @@ const startCmd = new Command(
   (bot, channel, user) => {
     bot.sendMessage(
       channel,
-      `Welcome to the **valveGamesAnnouncerBot**!\n
-        Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n
-        View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+      `Welcome to the **valveGamesAnnouncerBot**!\n`
+      + `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n`
+      + `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
   },
 );
@@ -68,20 +68,19 @@ const settingsCmd = new Command(
   '(settings)|(options)|(config)',
   (bot, channel) => {
     const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
-      `> You are currently subscribed to the following games:
-      ${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
+      `> You are currently subscribed to the following games:\n`
+      + `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
       '> You are currently not subscribed to any games.';
 
     bot.sendMessage(
       channel,
       // tslint:disable-next-line:prefer-template
       `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses `
-      + `on this channel.
-      > The prefix currently used on this channel is \`${channel.getPrefix()}\`.
-      You can use \`${subCmd.getTriggerLabel(channel)}\` and `
-      + `\`${unsubCmd.getTriggerLabel(channel)}\` `
-      + `to change the games you are subscribed to.
-      ${gameStr}`,
+      + `on this channel.\n`
+      + `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
+      + `You can use \`${subCmd.getTriggerLabel(channel)}\` and `
+      + `\`${unsubCmd.getTriggerLabel(channel)}\` to change the games you are subscribed to.\n`
+      + gameStr,
     );
   },
 );
@@ -113,8 +112,8 @@ const subCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide the name of the game you want to subscribe to.\n
-        Try \`${subCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide the name of the game you want to subscribe to.\n`
+        + `Try \`${subCmd.getTriggerLabel(channel)}\`.`,
       );
     }
 
@@ -144,8 +143,8 @@ const unsubCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide the name of the game you want to unsubscribe from.\n
-          Try ${unsubCmd.getTriggerLabel(channel)}.`,
+        `You need to provide the name of the game you want to unsubscribe from.\n`
+        + `Try ${unsubCmd.getTriggerLabel(channel)}.`,
       );
     }
 
@@ -179,10 +178,10 @@ const prefixCmd = new Command(
     if (!newPrefix) {
       bot.sendMessage(
         channel,
-        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n
-          Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n
-          Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default
-          (\`${bot.prefix}\`).`,
+        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
+        + `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n`
+        + `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default`
+        + `(\`${bot.prefix}\`).`,
       );
       return;
     }
@@ -249,8 +248,8 @@ const notifyAllCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n
-        Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n`
+        + `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -280,8 +279,8 @@ const notifyGameSubsCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n
-        Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n`
+        + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -289,8 +288,8 @@ const notifyGameSubsCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide a game to notify the subs of.\n
-          Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a game to notify the subs of.\n`
+          + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -311,8 +310,8 @@ const notifyGameSubsCmd = new Command(
     // We didn't find the specified game
     bot.sendMessage(
       channel,
-      `I didn't find a game with the alias ${alias}.\n
-        Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+      `I didn't find a game with the alias ${alias}.\n`
+      + `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
   UserPermission.OWNER,
@@ -352,7 +351,6 @@ const statsCmd = new Command(
     const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
     const totalChannelStr = totalChannelCount > 1 ? 'channels' : 'channel';
     const statString =
-      // tslint:disable-next-line prefer-template
       `**Total**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 

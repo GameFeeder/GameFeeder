@@ -22,7 +22,7 @@ function writeFile(path: string, content: string): void {
  *
  * @param {string} path - The file path to the JSON file.
  */
-function readJSON(path: string): object {
+function readJSON(path: string): any {
   return JSON.parse(readFile(path));
 }
 
@@ -73,19 +73,41 @@ function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
 
-function getUpdaterConfig(): any {
+export type updater_config = {
+  updater: {
+    updateDelaySec: number,
+    limit: number,
+    lastUpdate: string,
+    autostart: boolean,
+    autosave: boolean,
+  },
+};
+
+function getUpdaterConfig(): updater_config {
   return readJSON(getFilePath('updater_config'));
 }
 
-function setUpdaterConfig(data: object): void {
+function setUpdaterConfig(data: updater_config): void {
   writeJSON(getFilePath('updater_config'), data);
 }
 
-function getSubscribers(): any {
+export type subscriber = {
+  gameSubs: string[],
+  id: string,
+  prefix: string,
+};
+
+export type subscribers = {
+  [index: string]: subscriber[],
+  discord: subscriber[],
+  telegram: subscriber[],
+};
+
+function getSubscribers(): subscribers {
   return readJSON(getFilePath('subscribers'));
 }
 
-function setSubscribers(subscribers: object): void {
+function setSubscribers(subscribers: subscribers): void {
   writeJSON(getFilePath('subscribers'), subscribers);
 }
 

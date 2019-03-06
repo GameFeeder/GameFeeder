@@ -3,11 +3,13 @@
   "editor.wordWrap": "on",
   "files.eol": "\n",
   "cSpell.words": [
+    "csgo",
+    "dota",
     "reddit",
-    "subreddit",
     "sub",
+    "subreddit",
     "unsub",
-    "usertag",
-    "unsubscription"
+    "unsubscription",
+    "usertag"
   ]
 }
