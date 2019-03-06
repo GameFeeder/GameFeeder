@@ -65,7 +65,7 @@ const settingsCmd = new Command(
   'Settings',
   'Display an overview of the settings you can configure for the bot.',
   'settings',
-  '(settings)|(options)|(config)',
+  '(settings)|(options)|(config)\\s*$',
   (bot, channel) => {
     const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
       `> You are currently subscribed to the following games:\n`
@@ -74,7 +74,6 @@ const settingsCmd = new Command(
 
     bot.sendMessage(
       channel,
-      // tslint:disable-next-line:prefer-template
       `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses `
       + `on this channel.\n`
       + `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
