@@ -2,7 +2,7 @@ import botLogger from './bot_logger';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getSubscribers, setSubscribers } from './data';
+import { getSubscribers, setSubscribers, subscriber } from './data';
 import { Game } from './game';
 import BotNotification from './notification';
 
@@ -78,7 +78,7 @@ export default abstract class BotClient {
    */
   public abstract async getOwners(): Promise<BotUser[]>;
 
-  /** Add a channel supscription to a game.
+  /** Add a channel subscription to a game.
    *
    * @param  {BotChannel} channel - The channel to subscribe to the game.
    * @param  {Game} game - The game to subscribe to.
@@ -136,7 +136,7 @@ export default abstract class BotClient {
         // Unsubscribe
         sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 
-        // Remove unneccessary entries
+        // Remove unnecessary entries
         if (sub.gameSubs.length === 0 && !sub.prefix) {
           this.logDebug('Removing unnecessary channel entry...');
           subs.splice(i, 1);
@@ -186,7 +186,9 @@ export default abstract class BotClient {
     for (const sub of channels) {
       if (channel.isEqual(sub.id)) {
         // Update properties
-        channel.gameSubscribers = sub.gameSubs;
+        channel.gameSubs = sub.gameSubs.map((gameName) => {
+          return Game.getGameByName(gameName);
+        });
         channel.prefix = sub.prefix;
         break;
       }
@@ -218,7 +220,8 @@ export default abstract class BotClient {
     if (subscribers) {
       for (const channel of subscribers) {
         if (channel.gameSubs && channel.gameSubs.includes(game.name)) {
-          this.sendMessage(new BotChannel(channel.id, channel.gameSubs, channel.prefix), message);
+          const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
+          this.sendMessage(new BotChannel(channel.id, this, gameSubs, channel.prefix), message);
         }
       }
     }
@@ -235,7 +238,8 @@ export default abstract class BotClient {
     if (subscribers) {
       for (const channel of subscribers) {
         if (channel.gameSubs && channel.gameSubs.length !== 0) {
-          this.sendMessage(new BotChannel(channel.id, channel.gameSubs, channel.prefix), message);
+          const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
+          this.sendMessage(new BotChannel(channel.id, this, gameSubs, channel.prefix), message);
         }
       }
     }
