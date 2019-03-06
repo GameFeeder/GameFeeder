@@ -208,7 +208,7 @@ const prefixCmd = new Command(
         // Update prefix
         sub.prefix = newPrefix !== bot.prefix ? newPrefix : '';
 
-        // Remove unneccessary entries
+        // Remove unnecessary entries
         if (sub.gameSubs.length === 0 && !sub.prefix) {
           bot.logDebug('Removing unnecessary channel entry...');
           channels.splice(i, 1);

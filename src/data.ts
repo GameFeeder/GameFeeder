@@ -68,7 +68,7 @@ function getRedditConfig(): any {
   return apiConfig.reddit;
 }
 
-/** @description Get the data_conig.json file as a JS object. */
+/** @description Get the data_config.json file as a JS object. */
 function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
