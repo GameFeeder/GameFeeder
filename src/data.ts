@@ -57,18 +57,61 @@ function getFilePath(file: string): string {
   }
 }
 
-/** @description Get the bot_config.json file as a JS object. */
-function getBotConfig(): any {
-  const apiConfig: any = readJSON(getFilePath('bot_config'));
+/** The configuration settings for a bot. */
+export type bot_config = {
+  /** Determines whether the bot starts automatically at the launch of the program.  */
+  autostart: boolean,
+  /** The default prefix the bot is using. */
+  prefix: string,
+  /** The token used to log into the bot. */
+  token: string,
+  /** The list of ID's representing the bot's owners. */
+  owners: string[],
+};
+
+/** The configuration settings for the bots. */
+export type bots_config = {
+  /** Access the bot_config of the bot with the given name. */
+  [ botName: string ]: bot_config,
+  /** The bot_config of the Discord bot. */
+  discord: bot_config,
+  /** The bot_config of the Telegram bot. */
+  telegram: bot_config,
+};
+
+/** The configuration settings for the reddit client. */
+export type reddit_config = {
+  /** The client id used by the reddit client. */
+  clientId: string,
+  /** The client secret used by the reddit client. */
+  clientSecret: string,
+  /** The refresh token used by the reddit client. */
+  refreshToken: string,
+  /** The user agent used by the reddit client. */
+  userAgent: string,
+};
+
+/** The configuration settings for the used APIs. */
+export type api_config = {
+  /** The configuration settings for the bots. */
+  bots: bots_config,
+  /** The configuration settings for the reddit client. */
+  reddit: reddit_config,
+}
+
+/** Get the bot_config.json file as a JS object. */
+function getBotConfig(): bots_config {
+  const apiConfig: api_config = readJSON(getFilePath('bot_config'));
   return apiConfig.bots;
 }
 
-function getRedditConfig(): any {
-  const apiConfig: any = readJSON(getFilePath('bot_config'));
+/** Get the Reddit configuration settings. */
+function getRedditConfig(): reddit_config {
+  const apiConfig: api_config = readJSON(getFilePath('bot_config'));
   return apiConfig.reddit;
 }
 
-/** @description Get the data_config.json file as a JS object. */
+/** Get the data_config.json file as a JS object. */
 function getDataConfig(): any {
   return readJSON(getFilePath('data_config'));
 }
