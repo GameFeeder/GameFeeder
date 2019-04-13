@@ -121,6 +121,7 @@ export type updater_config = {
     updateDelaySec: number,
     limit: number,
     lastUpdate: string,
+    lastDotaPatch: string,
     autostart: boolean,
     autosave: boolean,
   },

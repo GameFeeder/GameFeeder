@@ -4,6 +4,7 @@ import Provider from './provider';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
 import RedditUserProvider from './reddit_user';
+import DotaProvider from './provider_dota';
 
 /** A representation of a game. */
 class Game {
@@ -98,9 +99,11 @@ for (const game of getDataConfig().games) {
       providers.push(new BlogProvider(blog.url, blog.label, game));
     }
   }
-
   games.push(new Game(game.name, game.aliases, game.label, game.color, game.icon, providers));
 }
+
+// Unique providers
+Game.getGameByName('dota').providers.push(new DotaProvider());
 
 export default games;
 export { Game, games };
