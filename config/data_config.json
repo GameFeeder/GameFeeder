@@ -102,7 +102,7 @@
         "cs:go"
       ],
       "color": "#000000",
-      "icon": "",
+      "icon": "http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png",
       "providers": {
         "reddit": {
           "subreddit": "csgo",
