@@ -97,7 +97,7 @@ export type api_config = {
   bots: bots_config,
   /** The configuration settings for the reddit client. */
   reddit: reddit_config,
-}
+};
 
 /** Get the bot_config.json file as a JS object. */
 function getBotConfig(): bots_config {
