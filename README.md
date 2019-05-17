@@ -1,9 +1,11 @@
+[![Build Status](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot.svg?branch=develop)](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot)
+
 # valveGamesAnnouncerBot
 
 A notification bot for Valve's games.
 Available on Telegram and Discord soon<sup>TM</sup>.
 
-A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot/blob/development/updater.py) by /u/karaflix, supporting multiple clients and games.
+A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
 
 ---
 ## Index
@@ -13,32 +15,35 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
     - [Commands](#commands)
       - [Permissions](#permissions)
     - [Games](#games)
+    - [Contributing](#contributing)
   - [Miscellaneous](#miscellaneous)
     - [Privacy](#privacy)
+    - [License](#license)
     - [Disclaimer](#disclaimer)
 
 ## About this project
 
 ### Commands
 
-So far, we are providing the following commands (with `/` as prefix):
+So far, we are providing the following commands:
 
-| Command                                   | Permission | Summary                                         |
-| ----------------------------------------- | ---------- | ----------------------------------------------- |
-| `/help`                                   | User       | Display all available commands.                 |
-| `/about`                                  | User       | Display information about this bot.             |
-| `/games`                                  | User       | Display a list of all available games.          |
-| `/subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
-| `/unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
-| `/prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
-| `/notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
-| `/notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
-| `/stats`                                  | Owner      | Display statistics about the bot.               |
+- The default prefix on Telegram is `/`.
+- The default prefix on Discord is `!`.
 
-* The default prefix on Telegram is `/`.
-* The default prefix on Discord is `!`.
+| Command                                  | Permission | Summary                                         |
+| ---------------------------------------- | ---------- | ----------------------------------------------- |
+| `help`                                   | User       | Display all available commands.                 |
+| `about`                                  | User       | Display information about this bot.             |
+| `games`                                  | User       | Display a list of all available games.          |
+| `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
+| `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
+| `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
+| `notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
+| `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
+| `stats`                                  | Owner      | Display statistics about the bot.               |
 
 #### Permissions
+
 - **User**: Any user can execute this command
 - **Admin**: Only admins on this server can execute this command
 - **Owner**: Only the owner of the bot can execute this command
@@ -58,6 +63,9 @@ So far, we are supporting the following games:
 - Team Fortress 2
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
 
+### Contributing
+
+We are thankful for your help! Please refer to the [contributing guidelines](CONTRIBUTE.md).
 
 ---
 
@@ -69,9 +77,12 @@ As long as you have subscriptions active or a custom prefix defined, we are stor
 
 You can remove it again by unsubscribing from every feed and resetting the prefix.
 
+### License
+
+We are providing the bot under the GPL-3.0 License. Read more [here](LICENSE).
 
 ### Disclaimer
 
-Please note that this project is not affiliated with *Valve Corporation*.
+Please note that this project is not affiliated with Valve Corporation.
 
-**Artifact**, **Dota 2**, **CS:GO** and **Team Fortress 2** are registered trademarks of *Valve Corporation*.
+**Artifact**, **Dota 2**, **CS:GO** and **Team Fortress 2** are registered trademarks of Valve Corporation.
