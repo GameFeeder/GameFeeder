@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot.svg?branch=develop)](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot)
 
-# valveGamesAnnouncerBot
+# valveGamesAnnouncerBot <!-- omit in toc -->
 
 A notification bot for Valve's games.
 Available on Telegram and Discord soon<sup>TM</sup>.
@@ -8,18 +8,16 @@ Available on Telegram and Discord soon<sup>TM</sup>.
 A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
 
 ---
-## Index
-- [valveGamesAnnouncerBot](#valvegamesannouncerbot)
-  - [Index](#index)
-  - [About this project](#about-this-project)
-    - [Commands](#commands)
-      - [Permissions](#permissions)
-    - [Games](#games)
-    - [Contributing](#contributing)
-  - [Miscellaneous](#miscellaneous)
-    - [Privacy](#privacy)
-    - [License](#license)
-    - [Disclaimer](#disclaimer)
+## Index <!-- omit in toc -->
+- [About this project](#about-this-project)
+  - [Commands](#commands)
+    - [Permissions](#permissions)
+  - [Games](#games)
+  - [Contributing](#contributing)
+- [Miscellaneous](#miscellaneous)
+  - [Privacy](#privacy)
+  - [License](#license)
+  - [Disclaimer](#disclaimer)
 
 ## About this project
 
