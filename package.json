@@ -6,11 +6,10 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
-    "deploy": "yarn clean && yarn install && yarn build",
-    "clean": "yarn demolish && rm -rf node_modules/",
+    "deploy": "yarn demolish && yarn install && yarn build",
     "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
     "lint": "tslint --config tslint.json --format stylish --project tsconfig.json 'src/**/*.ts'",
-    "demolish": "rm -rf dist",
+    "demolish": "rimraf dist",
     "serve": "nodemon --watch dist dist/_main.js",
     "start": "node dist/_main.js",
     "test": "jest tests",
