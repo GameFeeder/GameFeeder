@@ -116,14 +116,20 @@ const subCmd = new Command(
       );
     }
 
+    let noGamesFound = true;
     for (const game of games) {
       if (game.hasAlias(alias)) {
+        noGamesFound = false;
         if (bot.addSubscriber(channel, game)) {
           bot.sendMessage(channel, `You are now subscribed to the **${game.label}** feed!`);
         } else {
           bot.sendMessage(channel, `You have already subscribed to the **${game.label}** feed!`);
         }
       }
+    }
+    if (noGamesFound) {
+      // tslint:disable-next-line: max-line-length
+      bot.sendMessage(channel, `No games matching ${alias} were found. Use /games to get a list of available games.`);
     }
   },
   UserPermission.ADMIN,

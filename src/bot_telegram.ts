@@ -19,31 +19,43 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getUserName(): Promise<string> {
-    const botUser = await this.bot.getMe();
-    return botUser.username;
+    try {
+      const botUser = await this.bot.getMe();
+      return botUser.username;
+    } catch (error) {
+      this.logError(`Failed to get user name:\n${error}`);
+    }
   }
 
   public async getUserTag(): Promise<string> {
-    const userName = await this.getUserName();
-    return `@${userName}`;
+    try {
+      const userName = await this.getUserName();
+      return `@${userName}`;
+    } catch (error) {
+      this.logError(`Failed to get user tag:\n${error}`);
+    }
   }
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
-    // Check if user is owner
-    const ownerIds = (await this.getOwners()).map((owner) => owner.id);
-    if (ownerIds.includes(user.id)) {
-      return UserPermission.OWNER;
-    }
-    // Check if user has default admin rights
-    const chat = await this.bot.getChat(channel.id);
-    if (chat.all_members_are_administrators || chat.type === 'private') {
-      return UserPermission.ADMIN;
-    }
-    // Check if user is an admin on this channel
-    const chatAdmins = await this.bot.getChatAdministrators(channel.id);
-    const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
-    if (adminIds.includes(user.id)) {
-      return UserPermission.ADMIN;
+    try {
+      // Check if user is owner
+      const ownerIds = (await this.getOwners()).map((owner) => owner.id);
+      if (ownerIds.includes(user.id)) {
+        return UserPermission.OWNER;
+      }
+      // Check if user has default admin rights
+      const chat = await this.bot.getChat(channel.id);
+      if (chat.all_members_are_administrators || chat.type === 'private') {
+        return UserPermission.ADMIN;
+      }
+      // Check if user is an admin on this channel
+      const chatAdmins = await this.bot.getChatAdministrators(channel.id) || [];
+      const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
+      if (adminIds.includes(user.id)) {
+        return UserPermission.ADMIN;
+      }
+    } catch (error) {
+      this.logError(`Failed to get chat admins:\n${error}`);
     }
     // the user is just a regular user
     return UserPermission.USER;
@@ -51,38 +63,50 @@ export default class TelegramBot extends BotClient {
 
   public async getChannelUserCount(channel: BotChannel): Promise<number> {
     // Get the count and subscract the bot itself
-    return (await this.bot.getChatMembersCount(channel.id)) - 1;
+    try {
+      return (await this.bot.getChatMembersCount(channel.id)) - 1;
+    } catch (error) {
+      this.logError(`Failed to get chat member count for channel ${channel}:\n${error}`);
+    }
   }
 
   public async getOwners(): Promise<BotUser[]> {
-    const ownerIds: string[] = getBotConfig().telegram.owners;
+    const ownerIds: string[] = getBotConfig().telegram.owners || [];
     return ownerIds.map((id) => new BotUser(this, id));
   }
 
   public registerCommand(command: Command): void {
     this.bot.onText(/.*/, async (msg: TelegramAPI.Message) => {
-      const channel = this.getChannelByID(msg.chat.id.toString());
-      const reg = await command.getRegExp(channel);
-      // Run regex on the msg
-      const regMatch = reg.exec(msg.text);
-      // If the regex matched, execute the handler function
-      if (regMatch) {
-        // Execute the command
-        await command.execute(
-          this,
-          channel,
-          // FIX: Properly identify the user key
-          new BotUser(this, msg.from.id.toString()),
-          regMatch,
-        );
+      try {
+        const channel = this.getChannelByID(msg.chat.id.toString());
+        const reg = await command.getRegExp(channel);
+        // Run regex on the msg
+        const regMatch = reg.exec(msg.text);
+        // If the regex matched, execute the handler function
+        if (regMatch) {
+          // Execute the command
+          await command.execute(
+            this,
+            channel,
+            // FIX: Properly identify the user key
+            new BotUser(this, msg.from.id.toString()),
+            regMatch,
+          );
+        }
+      } catch (error) {
+        this.logError(`Failed to get register command ${command}:\n${error}`);
       }
     });
   }
   public async start(): Promise<boolean> {
-    if (this.token) {
-      await this.bot.startPolling({ restart: true });
-      this.isRunning = true;
-      return true;
+    try {
+      if (this.token) {
+        await this.bot.startPolling({ restart: true });
+        this.isRunning = true;
+        return true;
+      }
+    } catch (error) {
+      this.logError(`Failed to start bot:\n${error}`);
     }
     return false;
   }
@@ -113,7 +137,7 @@ export default class TelegramBot extends BotClient {
           parse_mode: 'Markdown',
         });
       } catch (error) {
-        this.logError(`Failed to send notification to channel:\n${error}`);
+        this.logError(`Failed to send notification to channel ${channel.id}:\n${error}`);
       }
     }
     return true;

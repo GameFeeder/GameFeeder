@@ -7,6 +7,7 @@ import RSS from './rss';
 import { limitArray } from './util';
 
 const rss = new RSS();
+const loggerTag = 'Updater';
 
 class Updater {
   public autostart: boolean;
@@ -36,16 +37,16 @@ class Updater {
     this.autosave = autosave;
   }
   public debug(msg: string): void {
-    botLogger.debug(msg, 'Updater');
+    botLogger.debug(msg, loggerTag);
   }
   public info(msg: string): void {
-    botLogger.info(msg, 'Updater');
+    botLogger.info(msg, loggerTag);
   }
   public warn(msg: string): void {
-    botLogger.warn(msg, 'Updater');
+    botLogger.warn(msg, loggerTag);
   }
   public error(msg: string): void {
-    botLogger.error(msg, 'Updater');
+    botLogger.error(msg, loggerTag);
   }
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
@@ -105,7 +106,7 @@ class Updater {
 
         const gameEndTime = Date.now();
         const gameTime = Math.abs(gameStartTime - gameEndTime);
-        this.debug(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+        this.info(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
 
         // Add the game notifications to the total notifications.
         notifications = notifications.concat(gameNotifications);
@@ -119,7 +120,7 @@ class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      this.debug(
+      this.info(
         `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
       );
 
@@ -134,7 +135,7 @@ class Updater {
       }
       const endNotifyTime = Date.now();
       const notifyTime = Math.abs(endNotifyTime - endPollTime);
-      this.debug(`Notified channels in ${notifyTime}ms.`);
+      this.info(`Notified channels in ${notifyTime}ms.`);
     }
   }
   public saveDate(date: Date): void {
@@ -152,13 +153,17 @@ class Updater {
    * @returns {void}
    */
   private async updateLoop(): Promise<void> {
-    if (this.doUpdates) {
-      // Update
-      await this.update();
-      // Update again after the delay
-      setTimeout(() => {
-        this.updateLoop();
-      }, this.updateDelayMs);
+    try {
+      if (this.doUpdates) {
+        // Update
+        await this.update();
+        // Update again after the delay
+        setTimeout(() => {
+          this.updateLoop();
+        }, this.updateDelayMs);
+      }
+    } catch (error) {
+      this.error(`Update loop failed:\n${error}`);
     }
   }
 }
