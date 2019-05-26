@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
-    "deploy": "yarn demolish && yarn install && yarn build",
+    "deploy": "yarn install && yarn demolish && yarn build",
     "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
     "lint": "tslint --config tslint.json --format stylish --project tsconfig.json 'src/**/*.ts'",
     "demolish": "rimraf dist",
