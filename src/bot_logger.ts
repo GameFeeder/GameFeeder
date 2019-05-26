@@ -23,7 +23,7 @@ class Logger {
     // Create logger
     this.logger = Winston.createLogger({
       format: this.format,
-      level: 'debug',
+      level: process.env.LOG_LEVEL || 'debug',
       transports: [new Winston.transports.Console()],
     });
   }
