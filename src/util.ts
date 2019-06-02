@@ -1,15 +1,3 @@
-/** Limits an array to a given length.
- *
- * @param array - The array to limit.
- * @param limit - The maximum length the array can have.
- */
-export function limitArray(array: any[], limit?: number): any[] {
-  if (limit && array.length > limit) {
-    return array.slice(array.length - limit, array.length);
-  }
-  return array;
-}
-
 /** Applies a function on every array element.
  *
  * @param array - The array to apply the function to.
