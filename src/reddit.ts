@@ -54,15 +54,21 @@ export default class Reddit {
     for (const user of users) {
       // Get all new submissions in the given subreddit
       try {
-        botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
+        botLogger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`, 'Reddit');
         const allPosts = await reddit.getUser(user.name).getSubmissions();
+        botLogger.debug(`Post Count: ${allPosts.length}`);
         const posts = allPosts.filter((submission) => {
           const timestamp = new Date(submission.created_utc * 1000);
           const isNew = timestamp > date;
           const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
           const isValidTitle = user.titleFilter.test(submission.title);
+          botLogger.debug(
+            `isNew: ${isNew}, isCorrectSub: ${isCorrectSub}, isValidTitle: ${isValidTitle}`,
+          );
           return isNew && isCorrectSub && isValidTitle;
         });
+
+        botLogger.debug(`Post count: ${posts.length}`);
 
         for (const post of posts) {
           // Convert the post into a notification
@@ -86,8 +92,13 @@ export default class Reddit {
         botLogger.error(`Failed to get notifications from Reddit:\n${error}`, loggerTag);
       }
     }
+
+    botLogger.debug(`Notification count: ${notifications.length}`);
+
     // Limit the length
     notifications = limitArray(notifications, limit);
+
+    botLogger.debug(`Notification count (limited): ${notifications.length}`);
 
     /*
     botLogger.debug(`Found ${notifications.length} posts from ` +
