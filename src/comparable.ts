@@ -1,10 +1,10 @@
-export default interface Comparable<T> {
+export default interface Comparable<T extends Comparable<T>> {
   /** Compares this element to another and returns the sorting order. */
-  compareTo(other: Comparable<T>): number;
+  compareTo(other: T): -1 | 0 | 1;
 }
 
 /** Sorts an array of comparable values. */
-export function sort<T>(array: Comparable<T>[]): Comparable<T>[] {
+export function sort<T extends Comparable<T>>(array: T[]): T[] {
   return array.sort((a, b) => a.compareTo(b));
 }
 
@@ -25,13 +25,13 @@ export function limitEnd<T>(array: T[], limit?: number): T[] {
 }
 
 /** Sorts and limits the array, returning the first elements. */
-export function sortLimitStart<T>(array: Comparable<T>[]): Comparable<T>[] {
+export function sortLimitStart<T extends Comparable<T>>(array: T[]): T[] {
   const sortedArray = sort<T>(array);
-  return limitStart<Comparable<T>>(sortedArray);
+  return limitStart(sortedArray);
 }
 
 /** Sorts and limits the array, returning the last elements. */
-export function sortLimitEnd<T>(array: Comparable<T>[]): Comparable<T>[] {
+export function sortLimitEnd<T extends Comparable<T>>(array: T[]): T[] {
   const sortedArray = sort<T>(array);
-  return limitEnd<Comparable<T>>(sortedArray);
+  return limitEnd(sortedArray);
 }
