@@ -5,7 +5,7 @@ import botLogger from './bot_logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
-import { limitArray } from './util';
+import { sortLimitEnd } from './comparable';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
@@ -54,7 +54,7 @@ export default class Reddit {
     for (const user of users) {
       // Get all new submissions in the given subreddit
       try {
-        botLogger.debug(`Getting posts from /u/${user} on /r/${subreddit}...`, 'Reddit');
+        botLogger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`, 'Reddit');
         const allPosts = await reddit.getUser(user.name).getSubmissions();
         const posts = allPosts.filter((submission) => {
           const timestamp = new Date(submission.created_utc * 1000);
@@ -86,8 +86,9 @@ export default class Reddit {
         botLogger.error(`Failed to get notifications from Reddit:\n${error}`, loggerTag);
       }
     }
+
     // Limit the length
-    notifications = limitArray(notifications, limit);
+    notifications = sortLimitEnd(notifications, limit);
 
     /*
     botLogger.debug(`Found ${notifications.length} posts from ` +

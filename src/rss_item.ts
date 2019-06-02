@@ -1,4 +1,6 @@
-export default class RSSItem {
+import Comparable from './comparable';
+
+export default class RSSItem implements Comparable<RSSItem> {
   public title: string;
   public author: string;
   public link: string;
@@ -22,11 +24,11 @@ export default class RSSItem {
     this.feed = feed;
   }
 
-  public compare(b: RSSItem) {
-    if (this.timestamp < b.timestamp) {
+  public compareTo(other: RSSItem) {
+    if (this.timestamp < other.timestamp) {
       return -1;
     }
-    if (this.timestamp > b.timestamp) {
+    if (this.timestamp > other.timestamp) {
       return 1;
     }
     return 0;

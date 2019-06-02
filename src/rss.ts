@@ -2,7 +2,7 @@ import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
 import botLogger from './bot_logger';
 import RSSItem from './rss_item';
-import { limitArray } from './util';
+import { sortLimitEnd } from './comparable';
 
 export default class RSS {
   private parser: any;
@@ -37,13 +37,8 @@ export default class RSS {
         }
       }
 
-      // Sort the items by date
-      feedItems.sort((a, b) => {
-        return a.compare(b);
-      });
-
-      // Only take the newest entries
-      feedItems = limitArray(feedItems, limit);
+      // Only take the newest feedItems
+      feedItems = sortLimitEnd(feedItems, limit);
 
       return feedItems;
     } catch (error) {

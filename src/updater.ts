@@ -4,7 +4,7 @@ import { games } from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import RSS from './rss';
-import { limitArray } from './util';
+import { sort, sortLimitEnd } from './comparable';
 
 const rss = new RSS();
 const loggerTag = 'Updater';
@@ -96,13 +96,8 @@ class Updater {
         );
       }
       if (gameNotifications.length > 0) {
-        // Sort the notifications
-        gameNotifications.sort((a, b) => {
-          return a.compare(b);
-        });
-
-        // Keep the notification count for each game in the limit.
-        gameNotifications = limitArray(gameNotifications, this.limit);
+        // Only take the newest notifications
+        gameNotifications = sortLimitEnd(gameNotifications, this.limit);
 
         const gameEndTime = Date.now();
         const gameTime = Math.abs(gameStartTime - gameEndTime);
@@ -114,9 +109,7 @@ class Updater {
     }
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
-      notifications.sort((a, b) => {
-        return a.compare(b);
-      });
+      notifications = sort(notifications);
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
