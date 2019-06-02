@@ -25,13 +25,13 @@ export function limitEnd<T>(array: T[], limit?: number): T[] {
 }
 
 /** Sorts and limits the array, returning the first elements. */
-export function sortLimitStart<T extends Comparable<T>>(array: T[]): T[] {
+export function sortLimitStart<T extends Comparable<T>>(array: T[], limit?: number): T[] {
   const sortedArray = sort<T>(array);
-  return limitStart(sortedArray);
+  return limitStart(sortedArray, limit);
 }
 
 /** Sorts and limits the array, returning the last elements. */
-export function sortLimitEnd<T extends Comparable<T>>(array: T[]): T[] {
+export function sortLimitEnd<T extends Comparable<T>>(array: T[], limit?: number): T[] {
   const sortedArray = sort<T>(array);
-  return limitEnd(sortedArray);
+  return limitEnd(sortedArray, limit);
 }

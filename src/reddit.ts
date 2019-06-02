@@ -6,6 +6,7 @@ import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
 import { limitArray } from './util';
+import { sortLimitEnd } from './comparable';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
@@ -96,7 +97,7 @@ export default class Reddit {
     botLogger.debug(`Notification count: ${notifications.length}`);
 
     // Limit the length
-    notifications = limitArray(notifications, limit);
+    notifications = sortLimitEnd(notifications, limit);
 
     botLogger.debug(`Notification count (limited): ${notifications.length}`);
 
