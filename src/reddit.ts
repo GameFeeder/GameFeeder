@@ -5,7 +5,6 @@ import botLogger from './bot_logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
-import { limitArray } from './util';
 import { sortLimitEnd } from './comparable';
 
 let reddit: Snoowrap;
@@ -57,19 +56,13 @@ export default class Reddit {
       try {
         botLogger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`, 'Reddit');
         const allPosts = await reddit.getUser(user.name).getSubmissions();
-        botLogger.debug(`Post Count: ${allPosts.length}`);
         const posts = allPosts.filter((submission) => {
           const timestamp = new Date(submission.created_utc * 1000);
           const isNew = timestamp > date;
           const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
           const isValidTitle = user.titleFilter.test(submission.title);
-          botLogger.debug(
-            `isNew: ${isNew}, isCorrectSub: ${isCorrectSub}, isValidTitle: ${isValidTitle}`,
-          );
           return isNew && isCorrectSub && isValidTitle;
         });
-
-        botLogger.debug(`Post count: ${posts.length}`);
 
         for (const post of posts) {
           // Convert the post into a notification
@@ -94,12 +87,8 @@ export default class Reddit {
       }
     }
 
-    botLogger.debug(`Notification count: ${notifications.length}`);
-
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);
-
-    botLogger.debug(`Notification count (limited): ${notifications.length}`);
 
     /*
     botLogger.debug(`Found ${notifications.length} posts from ` +
