@@ -245,7 +245,7 @@ const notifyAllCmd = new Command(
   'Notify all subscribed users.',
   'notifyAll <message>',
   '(notifyAll(Subs)?)\\s*(?<message>.*)',
-  (bot, channel, user, match) => {
+  (bot, channel, user, match: any) => {
     let { message } = match.groups;
     message = message ? message.trim() : '';
 
@@ -275,7 +275,7 @@ const notifyGameSubsCmd = new Command(
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
   '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<message>.*)\\s*$',
-  (bot, channel, user, match) => {
+  (bot, channel, user, match: any) => {
     let { alias, message } = match.groups;
     alias = alias ? alias.trim() : '';
     message = message ? message.trim() : '';
