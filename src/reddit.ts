@@ -83,7 +83,7 @@ export default class Reddit {
           notifications.push(notification);
         }
       } catch (error) {
-        botLogger.error(`Failed to get notifications from Reddit:\n${error}`, loggerTag);
+        botLogger.error(`Failed to get notification from Reddit:\n${error}`, loggerTag);
       }
     }
 
