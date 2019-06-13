@@ -194,7 +194,7 @@ export default class DiscordBot extends BotClient {
     }
 
     // Compress multiple linebreaks
-    // markdown = markdown.replace(/\n+/, '\n');
+    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
     // Image Links
     markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
