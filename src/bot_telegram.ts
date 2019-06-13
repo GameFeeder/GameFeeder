@@ -148,6 +148,11 @@ export default class TelegramBot extends BotClient {
     if (!markdown) {
       return '';
     }
+    // Image Links
+    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
+    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
+    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
+    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
     // Italic
     markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
     // Bold
