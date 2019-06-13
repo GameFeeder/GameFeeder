@@ -120,6 +120,32 @@
           }
         ]
       }
+    },
+    {
+      "name": "steam",
+      "label": "Steam",
+      "aliases": [
+        "steam"
+      ],
+      "color": "#0B5A8E",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+      "providers": {
+        "reddit": {
+          "subreddit": "Steam",
+          "users": [
+            {
+              "name": "wickedplayer494",
+              "titleFilter": "update"
+            }
+          ]
+        },
+        "blogs": [
+          {
+            "label": "Steam Blog",
+            "url": "https://steamcommunity.com/games/593110/rss/"
+          }
+        ]
+      }
     }
   ]
 }
