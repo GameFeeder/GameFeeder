@@ -49,7 +49,7 @@ export default class TelegramBot extends BotClient {
         return UserPermission.ADMIN;
       }
       // Check if user is an admin on this channel
-      const chatAdmins = await this.bot.getChatAdministrators(channel.id) || [];
+      const chatAdmins = (await this.bot.getChatAdministrators(channel.id)) || [];
       const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
       if (adminIds.includes(user.id)) {
         return UserPermission.ADMIN;
@@ -154,13 +154,29 @@ export default class TelegramBot extends BotClient {
     // Image Links
     markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
     markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
-    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
-    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
+    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image]($1)');
+    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1]($2)');
     // Italic
     markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
     // Bold
     markdown = markdown.replace(/__(.+)__/g, '*$1*');
     markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
+    // Formatting with Links
+    markdown = markdown.replace(/\*(.*)[ \t]*\[(.*)\]\((.*)\)[ \t]*(.*)\*/g, '*$1* [$2]($3) *$4*');
+    markdown = markdown.replace(
+      /__(.*)[ \t]*\[(.*)\]\((.*)\)[ \t]*(.*)__/g,
+      '__$1__ [$2]($3) __$4__',
+    );
+
+    markdown = markdown.replace(/\[\*(.*)\*\]\((.*)\)/g, '[$1]($2)');
+    markdown = markdown.replace(/\[__(.*)__\]\((.*)\)/g, '[$1]($2)');
+
+    markdown = markdown.replace(/\*\[(.*)\]\((.*)\)\*/g, '[$1]($2)');
+    markdown = markdown.replace(/__\[(.*)\]\((.*)\)__/g, '[$1]($2)');
+
+    // Remove empty formatting rules
+    markdown = markdown.replace(/\*\*/g, '');
+    markdown = markdown.replace(/____/g, '');
 
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
