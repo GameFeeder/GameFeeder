@@ -98,6 +98,7 @@ export default class TelegramBot extends BotClient {
       }
     });
   }
+
   public async start(): Promise<boolean> {
     try {
       if (this.token) {
@@ -110,10 +111,12 @@ export default class TelegramBot extends BotClient {
     }
     return false;
   }
+
   public stop(): void {
     this.bot.stopPolling();
     this.isRunning = false;
   }
+
   public async sendMessage(
     channel: BotChannel,
     messageText: string | BotNotification,
@@ -148,6 +151,11 @@ export default class TelegramBot extends BotClient {
     if (!markdown) {
       return '';
     }
+    // Image Links
+    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
+    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
+    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
+    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
     // Italic
     markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
     // Bold

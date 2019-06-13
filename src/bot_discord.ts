@@ -196,6 +196,12 @@ export default class DiscordBot extends BotClient {
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
+    // Image Links
+    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
+    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
+    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
+    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
+
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
