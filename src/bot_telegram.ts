@@ -98,6 +98,7 @@ export default class TelegramBot extends BotClient {
       }
     });
   }
+
   public async start(): Promise<boolean> {
     try {
       if (this.token) {
@@ -110,10 +111,12 @@ export default class TelegramBot extends BotClient {
     }
     return false;
   }
+
   public stop(): void {
     this.bot.stopPolling();
     this.isRunning = false;
   }
+
   public async sendMessage(
     channel: BotChannel,
     messageText: string | BotNotification,
