@@ -194,7 +194,7 @@ export default class DiscordBot extends BotClient {
     }
 
     // Compress multiple linebreaks
-    // markdown = markdown.replace(/\n+/, '\n');
+    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
     // Linewise formatting
     const lineArray = markdown.split('\n');
