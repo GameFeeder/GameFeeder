@@ -25,8 +25,11 @@ export default class DotaProvider extends Provider {
       newPatches.push(patchList[i]);
     }
 
-    lastPatch = newPatches[0];
-    this.setLastPatch(lastPatch);
+    // Update the last patch version
+    if (newPatches.length > 0) {
+      lastPatch = newPatches[0];
+      this.setLastPatch(lastPatch);
+    }
 
     const notifications = newPatches.map((value) => {
       return new BotNotification(
