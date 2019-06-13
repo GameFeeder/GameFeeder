@@ -77,15 +77,20 @@ export default class BotNotification implements Comparable<BotNotification> {
   }
 
   public toMDString(): string {
-    const authorText = this.author.link
-      ? `[${this.author.text}](${this.author.link})`
-      : this.author.text;
     const titleText = this.title.link
       ? `[**${this.title.text}**](${this.title.link})`
       : this.title.text;
 
-    return `New **${this.game.label}** update by ${authorText}:\n\n${titleText}\n\n${
-      this.description
-    }`;
+    if (this.author.text) {
+      const authorText = this.author.link
+        ? `[${this.author.text}](${this.author.link})`
+        : this.author.text;
+
+      return `New **${this.game.label}** update by ${authorText}:\n\n${titleText}\n\n${
+        this.description
+      }`;
+    }
+
+    return `New **${this.game.label}** update:\n\n${titleText}\n\n${this.description}`;
   }
 }
