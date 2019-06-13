@@ -178,6 +178,9 @@ export default class TelegramBot extends BotClient {
     markdown = markdown.replace(/\*\*/g, '');
     markdown = markdown.replace(/____/g, '');
 
+    // Compress multiple linebreaks
+    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
+
     // Linewise formatting
     const lineArray = markdown.split('\n');
     for (let i = 0; i < lineArray.length; i++) {
