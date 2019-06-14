@@ -3,7 +3,7 @@ import { BotClient } from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getBotConfig } from './data';
+import ConfigManager from './config_manager';
 import BotNotification from './notification';
 
 export default class TelegramBot extends BotClient {
@@ -71,7 +71,7 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getOwners(): Promise<BotUser[]> {
-    const ownerIds: string[] = getBotConfig().telegram.owners || [];
+    const ownerIds: string[] = ConfigManager.getBotConfig().telegram.owners || [];
     return ownerIds.map((id) => new BotUser(this, id));
   }
 
@@ -204,7 +204,7 @@ const {
   prefix: telegramPrefix,
   token: telegramToken,
   autostart: telegramAutostart,
-} = getBotConfig().telegram;
+} = ConfigManager.getBotConfig().telegram;
 const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
 
 export { TelegramBot, telegramBot };
