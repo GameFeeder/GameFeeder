@@ -198,6 +198,8 @@ export default class ConfigManager {
     return JSON.parse(this.readExampleFile(file));
   }
 
+  // Config getters and setters
+
   /** Gets the API config object. */
   public static getAPIConfig(): api_config {
     return this.parseFile(CONFIG.API);
@@ -252,5 +254,32 @@ export default class ConfigManager {
   /** Sets the updater config object. */
   public static setUpdaterConfig(config: updater_config): void {
     this.writeObject(CONFIG.UPDATER, config);
+  }
+
+  // Example getters
+
+  /** Gets the api config example object. */
+  public static getAPIConfigExample(): api_config {
+    return this.parseExampleFile(CONFIG.API);
+  }
+
+  /** Gets the bot config example object. */
+  public static getBotConfigExample(): bot_config {
+    return this.getAPIConfigExample().bots;
+  }
+
+  /** Gets the reddit config example object. */
+  public static getRedditConfigExample(): reddit_config {
+    return this.getAPIConfigExample().reddit;
+  }
+
+  /** Gets the game config example object. */
+  public static getGameConfigExample(): game_settings[] {
+    return this.parseExampleFile(CONFIG.GAME);
+  }
+
+  /** Gets the updater config example object. */
+  public static getUpdaterConfigExample(): updater_config {
+    return this.parseExampleFile(CONFIG.UPDATER);
   }
 }
