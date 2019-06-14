@@ -128,7 +128,7 @@
         "steam"
       ],
       "color": "#0B5A8E",
-      "icon": "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+      "icon": "https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg",
       "providers": {
         "reddit": {
           "subreddit": "Steam",
@@ -145,6 +145,29 @@
             "url": "https://steamcommunity.com/games/593110/rss/"
           }
         ]
+      }
+    },
+    {
+      "name": "underlords",
+      "label": "Dota Underlords",
+      "aliases": [
+        "underlords",
+        "dota underlords",
+        "du"
+      ],
+      "color": "#FFFFFF",
+      "icon": "https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png",
+      "providers": {
+        "reddit": {
+          "subreddit": "underlords",
+          "users": [
+            {
+              "name": "wykrhm",
+              "titleFilter": ""
+            }
+          ]
+        },
+        "blogs": []
       }
     }
   ]
