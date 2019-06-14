@@ -94,6 +94,9 @@ export type game_settings = {
   };
 };
 
+/** The config of the games. */
+export type game_config = game_settings[];
+
 /** The config of the updater. */
 export type updater_config = {
   /** The delay in seconds between each update. */
@@ -237,12 +240,12 @@ export default class ConfigManager {
   }
 
   /** Gets the game config object. */
-  public static getGameConfig(): game_settings[] {
+  public static getGameConfig(): game_config {
     return this.parseFile(CONFIG.GAME).games;
   }
 
   /** Sets the game config object. */
-  public static setGameConfig(config: game_settings[]): void {
+  public static setGameConfig(config: game_config): void {
     this.writeObject(CONFIG.GAME, { games: config });
   }
 
@@ -274,7 +277,7 @@ export default class ConfigManager {
   }
 
   /** Gets the game config example object. */
-  public static getGameConfigExample(): game_settings[] {
+  public static getGameConfigExample(): game_config {
     return this.parseExampleFile(CONFIG.GAME);
   }
 
