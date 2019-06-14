@@ -2,9 +2,11 @@
 # valveAnnouncerBot
 # ------------------------------
 
-config/bot_config.json
-config/subscribers.json
-config/updater_config.json
+config/*
+!config/*example.json
+
+data/*
+!data/*example.json
 
 # ------------------------------
 # TypeScript
