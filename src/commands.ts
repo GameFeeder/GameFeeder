@@ -1,7 +1,7 @@
 import { UserPermission } from './bot_user';
 import bots from './bots';
 import Command from './command';
-import { getSubscribers, setSubscribers } from './data';
+import DataManager from './data_manager';
 import games from './game';
 import botLogger from './bot_logger';
 import { filterAsync, mapAsync } from './util';
@@ -202,7 +202,7 @@ const prefixCmd = new Command(
     channel.prefix = newPrefix;
 
     // Save in the JSON file
-    const subscribers = getSubscribers();
+    const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[bot.name];
 
     // Check if the channel is already registered
@@ -221,7 +221,7 @@ const prefixCmd = new Command(
         }
         // Save changes
         subscribers[bot.name] = channels;
-        setSubscribers(subscribers);
+        DataManager.setSubscriberData(subscribers);
         return;
       }
     }
@@ -233,7 +233,7 @@ const prefixCmd = new Command(
     });
     // Save the changes
     subscribers[bot.name] = channels;
-    setSubscribers(subscribers);
+    DataManager.setSubscriberData(subscribers);
     return;
   },
   UserPermission.ADMIN,

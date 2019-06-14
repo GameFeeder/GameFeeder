@@ -1,10 +1,6 @@
 {
-  "updater": {
-    "updateDelaySec": 10,
-    "limit": 3,
-    "lastUpdate": "2019-01-10",
-    "lastDotaPatch": "7.21",
-    "autostart": true,
-    "autosave": true
-  }
+  "updateDelaySec": 10,
+  "limit": 3,
+  "autostart": true,
+  "autosave": true
 }  

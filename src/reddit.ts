@@ -1,5 +1,5 @@
 import Snoowrap from 'snoowrap';
-import { getRedditConfig } from './data';
+import ConfigManager from './config_manager';
 import { Game } from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
@@ -17,7 +17,7 @@ export default class Reddit {
       return;
     }
     botLogger.debug('Initializing Reddit API...', 'Reddit');
-    const { clientId, clientSecret, refreshToken, userAgent } = getRedditConfig();
+    const { clientId, clientSecret, refreshToken, userAgent } = ConfigManager.getRedditConfig();
     reddit = new Snoowrap({
       clientId,
       clientSecret,

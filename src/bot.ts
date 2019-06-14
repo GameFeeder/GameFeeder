@@ -2,7 +2,7 @@ import botLogger from './bot_logger';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getSubscribers, setSubscribers, subscriber } from './data';
+import DataManager from './data_manager';
 import { Game } from './game';
 import BotNotification from './notification';
 
@@ -85,7 +85,7 @@ export default abstract class BotClient {
    * @returns True, if the subscription was successful, else false.
    */
   public addSubscriber(channel: BotChannel, game: Game): boolean {
-    const subscribers = getSubscribers();
+    const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.name];
 
     // Check if the channel is already registered
@@ -103,7 +103,7 @@ export default abstract class BotClient {
         channels[i] = sub;
         // Save the changes
         subscribers[this.name] = channels;
-        setSubscribers(subscribers);
+        DataManager.setSubscriberData(subscribers);
         return true;
       }
     }
@@ -115,7 +115,7 @@ export default abstract class BotClient {
     });
     // Save the changes
     subscribers[this.name] = channels;
-    setSubscribers(subscribers);
+    DataManager.setSubscriberData(subscribers);
     return true;
   }
 
@@ -126,7 +126,7 @@ export default abstract class BotClient {
    * @returns True, if the unsubscription was successful, else false.
    */
   public removeSubscriber(channel: BotChannel, game: Game): boolean {
-    const subscribers = getSubscribers();
+    const subscribers = DataManager.getSubscriberData();
     const subs = subscribers[this.name];
 
     // Check if the channel is already registered
@@ -146,7 +146,7 @@ export default abstract class BotClient {
 
         // Save the changes
         subscribers[this.name] = subs;
-        setSubscribers(subscribers);
+        DataManager.setSubscriberData(subscribers);
         return true;
       }
     }
@@ -165,7 +165,7 @@ export default abstract class BotClient {
    * @returns The channels subscribed to this bot client.
    */
   public getBotChannels(): BotChannel[] {
-    return getSubscribers()[this.name].map(
+    return DataManager.getSubscriberData()[this.name].map(
       (jsonChannel: { id: string; gameSubs: string[]; prefix: string }) => {
         const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
         return new BotChannel(jsonChannel.id, this, subs, jsonChannel.prefix);
@@ -179,7 +179,7 @@ export default abstract class BotClient {
    * @returns The BotChannel with the specified ID.
    */
   public getChannelByID(id: string): BotChannel {
-    const channels = getSubscribers()[this.name];
+    const channels = DataManager.getSubscriberData()[this.name];
     const channel = new BotChannel(id, this);
 
     // Check if the channel is already registered
@@ -215,7 +215,7 @@ export default abstract class BotClient {
    * @returns void
    */
   public sendMessageToGameSubs(game: Game, message: string | BotNotification): void {
-    const subscribers = getSubscribers()[this.name];
+    const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {
       for (const channel of subscribers) {
@@ -233,7 +233,7 @@ export default abstract class BotClient {
    * @returns void
    */
   public sendMessageToAllSubs(message: string | BotNotification): void {
-    const subscribers = getSubscribers()[this.name];
+    const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {
       for (const channel of subscribers) {
