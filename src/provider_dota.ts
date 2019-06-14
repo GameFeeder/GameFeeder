@@ -16,13 +16,12 @@ export default class DotaProvider extends Provider {
     const pageDoc = await this.getPatchPage();
     const patchList = await this.getPatchList(pageDoc);
     const updater = getUpdaterConfig().updater;
-    botLogger.debug(`Updater: '${JSON.stringify(updater)}'`);
     let lastPatch = updater.lastDotaPatch;
-    botLogger.debug(`LastPatch: '${lastPatch}'`);
     const newPatches = [];
 
-    for (let i = 0; (i < patchList.length) && (patchList[i] !== lastPatch); i++) {
-      newPatches.push(patchList[i]);
+    // Discard the old patches
+    for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
+      newPatches.unshift(patchList[i]);
     }
 
     // Update the last patch version
@@ -31,19 +30,17 @@ export default class DotaProvider extends Provider {
       this.setLastPatch(lastPatch);
     }
 
+    // Convert the patches to notifications
     const notifications = newPatches.map((value) => {
       return new BotNotification(
         this.game,
         'New gameplay update!',
-        new NotificationElement(
-          `Gameplay patch ${value}`,
-          `http://www.dota2.com/patches/${value}`,
-        ),
+        new NotificationElement(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`),
         `Gameplay patch ${value}`,
-         new Date(),
-         '',
-         '',
-         new NotificationElement('Dota 2'),
+        new Date(),
+        '',
+        '',
+        new NotificationElement('Dota 2'),
       );
     });
 
@@ -56,11 +53,12 @@ export default class DotaProvider extends Provider {
     setUpdaterConfig(updaterConfig);
   }
 
+  /** Gets a list of the patch names available. */
   public async getPatchList(pageDoc: CheerioStatic): Promise<string[]> {
     const patchList: string[] = [];
     const $ = pageDoc;
-    botLogger.info(`Latest patch number: ${$('.PatchTitle').text()}`);
-    $('#PatchSelector option').each(function () {
+
+    $('#PatchSelector option').each(function() {
       const option = $(this).val();
       // botLogger.info(option);
       if (option !== 'Select an Update...') {
