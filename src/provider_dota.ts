@@ -25,12 +25,12 @@ export default class DotaProvider extends Provider {
 
     // Discard the old patches
     for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
-      newPatches.unshift(patchList[i]);
+      newPatches.push(patchList[i]);
     }
 
     // Update the last patch version
     if (newPatches.length > 0) {
-      lastPatch = newPatches[newPatches.length - 1];
+      lastPatch = newPatches[0];
       this.setLastPatch(lastPatch);
     }
 
