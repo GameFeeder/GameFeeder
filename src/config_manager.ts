@@ -194,7 +194,7 @@ export default class ConfigManager {
    *
    * @param file - The file to parse the example of.
    */
-  public static parseExampleFile(file: CONFIG): any {
+  private static parseExampleFile(file: CONFIG): any {
     return JSON.parse(this.readExampleFile(file));
   }
 

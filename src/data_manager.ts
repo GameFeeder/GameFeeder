@@ -116,9 +116,11 @@ export default class DataManager {
    *
    * @param file - The file to parse the example of.
    */
-  public static parseExampleFile(file: DATA): any {
+  private static parseExampleFile(file: DATA): any {
     return JSON.parse(this.readExampleFile(file));
   }
+
+  // Data getters and setters
 
   /** Gets the subscriber data as an object. */
   public static getSubscriberData(): subscriber_data {
@@ -138,5 +140,17 @@ export default class DataManager {
   /** Sets the updater data. */
   public static setUpdaterData(data: updater_data): void {
     this.writeObject(DATA.UPDATER, data);
+  }
+
+  // Example getters
+
+  /** Gets the subscriber example data object. */
+  public static getSubscriberDataExample(): subscriber_data {
+    return this.parseExampleFile(DATA.SUBS);
+  }
+
+  /** Gets the updater example data object. */
+  public static getUpdaterDataExample(): updater_data {
+    return this.parseExampleFile(DATA.UPDATER);
   }
 }
