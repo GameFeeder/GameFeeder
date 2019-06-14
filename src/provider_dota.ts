@@ -58,7 +58,7 @@ export default class DotaProvider extends Provider {
     const patchList: string[] = [];
     const $ = pageDoc;
 
-    $('#PatchSelector option').each(function() {
+    $('#PatchSelector option').each(function () {
       const option = $(this).val();
       // botLogger.info(option);
       if (option !== 'Select an Update...') {
