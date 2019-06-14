@@ -7,7 +7,7 @@ import RedditUserProvider from './reddit_user';
 import DotaProvider from './provider_dota';
 
 /** A representation of a game. */
-class Game {
+export class Game {
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
@@ -117,4 +117,4 @@ for (const gameSettings of ConfigManager.getGameConfig()) {
 Game.getGameByName('dota').providers.push(new DotaProvider());
 
 export default games;
-export { Game, games };
+export { games };

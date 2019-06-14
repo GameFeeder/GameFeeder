@@ -1,7 +1,7 @@
 import Provider from './provider';
 import { Game } from './game';
 import BotNotification from './notification';
-import { getUpdaterConfig, setUpdaterConfig } from './data';
+import DataManager from './data_manager';
 import NotificationElement from './notification_element';
 import botLogger from './bot_logger';
 import request from 'request-promise-native';
@@ -15,7 +15,7 @@ export default class DotaProvider extends Provider {
   public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
     const pageDoc = await this.getPatchPage();
     const patchList = await this.getPatchList(pageDoc);
-    const updater = getUpdaterConfig().updater;
+    const updater = DataManager.getUpdaterData();
     let lastPatch = updater.lastDotaPatch;
     const newPatches = [];
 
@@ -26,7 +26,7 @@ export default class DotaProvider extends Provider {
 
     // Update the last patch version
     if (newPatches.length > 0) {
-      lastPatch = newPatches[0];
+      lastPatch = newPatches[newPatches.length - 1];
       this.setLastPatch(lastPatch);
     }
 
@@ -48,9 +48,9 @@ export default class DotaProvider extends Provider {
   }
 
   private setLastPatch(lastPatch: string): void {
-    const updaterConfig = getUpdaterConfig();
-    updaterConfig.updater.lastDotaPatch = lastPatch;
-    setUpdaterConfig(updaterConfig);
+    const updaterConfig = DataManager.getUpdaterData();
+    updaterConfig.lastDotaPatch = lastPatch;
+    DataManager.setUpdaterData(updaterConfig);
   }
 
   /** Gets a list of the patch names available. */
