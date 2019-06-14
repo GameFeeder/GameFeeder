@@ -9,7 +9,7 @@ import { BotClient } from './bot';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
-import { getBotConfig, getSubscribers } from './data';
+import ConfigManager from './config_manager';
 import BotNotification from './notification';
 
 export default class DiscordBot extends BotClient {
@@ -77,7 +77,7 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getOwners(): Promise<BotUser[]> {
-    const ownerIds: string[] = getBotConfig().discord.owners;
+    const ownerIds: string[] = ConfigManager.getBotConfig().discord.owners;
     return ownerIds.map((id) => new BotUser(this, id));
   }
 
@@ -250,7 +250,7 @@ const {
   prefix: discordPrefix,
   token: discordToken,
   autostart: discordAutostart,
-} = getBotConfig().discord;
+} = ConfigManager.getBotConfig().discord;
 const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
 
 export { DiscordBot, discordBot };

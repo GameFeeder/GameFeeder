@@ -1,12 +1,12 @@
 import bots from './bots';
-import { getUpdaterConfig, setUpdaterConfig } from './data';
+import DataManager from './data_manager';
+import ConfigManager from './config_manager';
 import { games } from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import RSS from './rss';
 import { sort, sortLimitEnd } from './comparable';
 
-const rss = new RSS();
 const loggerTag = 'Updater';
 
 class Updater {
@@ -22,19 +22,16 @@ class Updater {
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(
-    updateDelaySec: number,
-    limit: number,
-    lastUpdate: Date,
-    autostart: boolean,
-    autosave: boolean,
-  ) {
-    this.setDelaySec(updateDelaySec);
-    this.limit = limit;
-    this.lastUpdate = lastUpdate;
+  constructor() {
+    const updaterConfig = ConfigManager.getUpdaterConfig();
+    const updaterData = DataManager.getUpdaterData();
+
+    this.setDelaySec(updaterConfig.updateDelaySec);
+    this.limit = updaterConfig.limit;
+    this.lastUpdate = updaterData.lastUpdate ? new Date(updaterData.lastUpdate) : new Date();
     this.doUpdates = false;
-    this.autostart = autostart;
-    this.autosave = autosave;
+    this.autostart = updaterConfig.autostart;
+    this.autosave = updaterConfig.autosave;
   }
   public debug(msg: string): void {
     botLogger.debug(msg, loggerTag);
@@ -113,9 +110,7 @@ class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      this.info(
-        `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
-      );
+      this.info(`Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`);
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);
@@ -134,13 +129,13 @@ class Updater {
   public saveDate(date: Date): void {
     this.lastUpdate = date;
     if (this.autosave) {
-      const data = getUpdaterConfig();
-      data.updater.lastUpdate = date.toISOString();
-      setUpdaterConfig(data);
+      const data = DataManager.getUpdaterData();
+      data.lastUpdate = date.toISOString();
+      DataManager.setUpdaterData(data);
     }
   }
   public loadDate(): void {
-    this.lastUpdate = new Date(getUpdaterConfig().updater.lastUpdate);
+    this.lastUpdate = new Date(DataManager.getUpdaterData().lastUpdate);
   }
   /** Updates in the specified time interval.
    * @returns {void}
@@ -161,15 +156,7 @@ class Updater {
   }
 }
 
-const updaterConfig = getUpdaterConfig().updater;
-
 // The updater used by our main method
-const updater = new Updater(
-  updaterConfig.updateDelaySec,
-  updaterConfig.limit,
-  new Date(updaterConfig.lastUpdate),
-  updaterConfig.autostart,
-  updaterConfig.autosave,
-);
+const updater = new Updater();
 
 export default updater;
