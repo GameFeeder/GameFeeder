@@ -2,21 +2,25 @@ import Provider from './provider';
 import { Game } from './game';
 import BotNotification from './notification';
 import DataManager from './data_manager';
+import ConfigManager from './config_manager';
 import NotificationElement from './notification_element';
 import botLogger from './bot_logger';
 import request from 'request-promise-native';
 import cheerio from 'cheerio';
 
 export default class DotaProvider extends Provider {
+  public lastPatch: string;
+
   constructor() {
     super(`http://www.dota2.com/patches/`, `Gameplay Patch`, Game.getGameByName('dota'));
+
+    this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
     const pageDoc = await this.getPatchPage();
     const patchList = await this.getPatchList(pageDoc);
-    const updater = DataManager.getUpdaterData();
-    let lastPatch = updater.lastDotaPatch;
+    let lastPatch = this.lastPatch;
     const newPatches = [];
 
     // Discard the old patches
@@ -47,10 +51,17 @@ export default class DotaProvider extends Provider {
     return notifications;
   }
 
+  /** Updates the last patch. */
   private setLastPatch(lastPatch: string): void {
-    const updaterConfig = DataManager.getUpdaterData();
-    updaterConfig.lastDotaPatch = lastPatch;
-    DataManager.setUpdaterData(updaterConfig);
+    this.lastPatch = lastPatch;
+
+    // If enabled, save the date in the data file.
+    const updaterConfig = ConfigManager.getUpdaterConfig();
+    if (updaterConfig.autosave) {
+      const updaterData = DataManager.getUpdaterData();
+      updaterData.lastDotaPatch = lastPatch;
+      DataManager.setUpdaterData(updaterData);
+    }
   }
 
   /** Gets a list of the patch names available. */
@@ -68,6 +79,7 @@ export default class DotaProvider extends Provider {
     return patchList;
   }
 
+  /** Gets the content of the patch page. */
   public async getPatchPage(): Promise<CheerioStatic> {
     const options = {
       uri: 'http://www.dota2.com/patches/',
