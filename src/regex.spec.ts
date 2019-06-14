@@ -12,9 +12,15 @@ describe('MarkdownRegex', () => {
   });
 
   test('bold', () => {
-    testRegExp(MDRegex.image, '**bold sample text**', ['bold sample text']);
+    testRegExp(MDRegex.bold, '**bold sample text**', ['**bold sample text**', 'bold sample text']);
 
-    testRegExp(MDRegex.image, '__bold sample text__', ['bold sample text']);
+    testRegExp(MDRegex.bold, '__bold sample text__', ['__bold sample text__', 'bold sample text']);
+  });
+
+  test('italic', () => {
+    testRegExp(MDRegex.italic, '*italic sample text*', ['italic sample text']);
+
+    testRegExp(MDRegex.italic, '_italic sample text_', ['italic sample text']);
   });
 });
 
@@ -32,15 +38,15 @@ function testRegExp(regExp: RegExp, testStr: string, results: string[]) {
     return;
   }
 
-  expect(match == null).toBeFalsy;
-
-  if (match == null) {
+  if (!match) {
+    fail();
     return;
   }
 
   expect(match.length - 1).toEqual(results.length);
 
   for (let i = 0; i < results.length; i++) {
+    console.debug(`${results[i]}`);
     expect(match[i + 1]).toEqual(results[i]);
   }
 }
