@@ -3,6 +3,9 @@ import bots from './bots';
 import commands from './commands';
 import updater from './updater';
 
+// Fix for https://github.com/yagop/node-telegram-bot-api/issues/319
+require('node-telegram-bot-api');
+
 /** Registers the bot commands. */
 async function registerCommands() {
   for (const command of commands) {
