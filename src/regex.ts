@@ -1,58 +1,76 @@
-export const any = '(.*)';
-export const some = '(.+)';
-export const link = `\\[${any}\\]\\(${any}\\)`;
+export const any = '.*';
+export const some = '.+';
+export const link = `\\[(${any})\\]\\((${any})\\)`;
 export const image = `!${link}`;
 
-export const boldAsterix = `\\*\\*${some}\\*\\*`;
-export const boldUnderscore = `__${some}__`;
-export const bold = `(${boldAsterix})|(${boldUnderscore})`;
+export const boldAsterix = `\\*\\*(${some})\\*\\*`;
+export const boldUnderscore = `__(${some})__`;
+export const bold = `(?:${boldAsterix})|(?:${boldUnderscore})`;
 
-export const italicAsterix = `\\*${some}\\*`;
-export const italicUnderscore = `_${some}_`;
-export const italic = `(${italicAsterix})|(${italicUnderscore})`;
+export const italicAsterix = `\\*(${some})\\*`;
+export const italicUnderscore = `_(${some})_`;
+export const italic = `(?:${italicAsterix})|(?:${italicUnderscore})`;
 
 export default class MDRegex {
 
   // Links
 
   /** Matches a markdown link.
-   * - Group 1: Link label
-   * - Group 2: Link URL
+   * - Group 0: The whole markdown link
+   * - Group 1: The link label
+   * - Group 2: The link URL
    */
   public static link = new RegExp(link);
   /** Matches a markdown image.
-   * - Group 1: Image label
-   * - Group 2: Image URL
+   * - Group 0: The whole markdown image
+   * - Group 1: The image label
+   * - Group 2: The image URL
    */
   public static image = new RegExp(image);
 
   // Bold
 
   /** Matches bold text sourrounded by asterixes.
-   * - Group 1: Bold text
+   * - Group 0: The whole bold markdown
+   * - Group 1: The bold text
    */
   public static boldAsterix = new RegExp(boldAsterix);
   /** Matches bold text sourrounded by underscores.
-   * - Group 1: Bold text
+   * - Group 0: The whole bold markdown
+   * - Group 1: The bold text
    */
   public static boldUnderscore = new RegExp(boldUnderscore);
   /** Matches bold text.
-   * - Group 1: Bold text
+   * - Group 0: The whole bold markdown
+   *
+   * If it's asterix markdown:
+   * - Group 1: The bold text
+   *
+   * If it's underscore markdown:
+   * - Group 2: The bold text
    */
   public static bold = new RegExp(bold);
 
   // Italic
 
   /** Matches italic text sourrounded by asterixes.
+   * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
   public static italicAsterix = new RegExp(italicAsterix);
   /** Matches  text sourrounded by underscores.
+   * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
   public static italicUnderscore = new RegExp(italicUnderscore);
   /** Matches italic text.
-   * - Group 1: italic text
+   * - Group 0: The whole italic markdown
+   *
+   * If it's asterix markdown:
+   * - Group 1: The italic text
+   *
+   * If it's underscore markdown:
+   * - Group 2: The italic text
    */
   public static italic = new RegExp(italic);
 }
