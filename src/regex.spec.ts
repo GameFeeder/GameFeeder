@@ -19,26 +19,61 @@ describe('MarkdownRegex', () => {
     testRegExp(MDRegex.image, '[TestLink](https://test.url)', []);
   });
 
-  test('bold', () => {
-    testRegExp(MDRegex.boldAsterix, '**bold sample text**', [
-      '**bold sample text**',
-      'bold sample text',
-    ]);
-    testRegExp(MDRegex.boldUnderscore, '__bold sample text__', [
-      '__bold sample text__',
-      'bold sample text',
-    ]);
+  describe('bold', () => {
+    it('asterix', () => {
+      testRegExp(MDRegex.boldAsterix, '**bold sample text**', [
+        '**bold sample text**',
+        'bold sample text',
+      ]);
+    });
+    it('underscore', () => {
+      testRegExp(MDRegex.boldUnderscore, '__bold sample text__', [
+        '__bold sample text__',
+        'bold sample text',
+      ]);
+    });
+    it('combined', () => {
+      testRegExp(MDRegex.bold, '**bold sample text**', [
+        '**bold sample text**',
+        'bold sample text',
+        undefined,
+      ]);
+      testRegExp(MDRegex.bold, '__bold sample text__', [
+        '__bold sample text__',
+        undefined,
+        'bold sample text',
+      ]);
+    });
   });
 
-  test('italic', () => {
-    testRegExp(MDRegex.italicAsterix, '*italic sample text*', [
-      '*italic sample text*',
-      'italic sample text',
-    ]);
-    testRegExp(MDRegex.italicUnderscore, '_italic sample text_', [
-      '_italic sample text_',
-      'italic sample text',
-    ]);
+  describe('italic', () => {
+    it('asterix', () => {
+      testRegExp(MDRegex.italicAsterix, '*italic sample text*', [
+        '*italic sample text*',
+        'italic sample text',
+      ]);
+    });
+
+    it('underscore', () => {
+      testRegExp(MDRegex.italicUnderscore, '_italic sample text_', [
+        '_italic sample text_',
+        'italic sample text',
+      ]);
+    });
+
+    it('combined', () => {
+      testRegExp(MDRegex.italic, '*italic sample text*', [
+        '*italic sample text*',
+        'italic sample text',
+        undefined,
+      ]);
+
+      testRegExp(MDRegex.italic, '_italic sample text_', [
+        '_italic sample text_',
+        undefined,
+        'italic sample text',
+      ]);
+    });
   });
 });
 
