@@ -12,7 +12,6 @@ export const italicUnderscore = `_(${some})_`;
 export const italic = `(?:${italicAsterix})|(?:${italicUnderscore})`;
 
 export default class MDRegex {
-
   // Links
 
   /** Matches a markdown link.
@@ -73,4 +72,62 @@ export default class MDRegex {
    * - Group 2: The italic text
    */
   public static italic = new RegExp(italic);
+
+  // Functions
+
+  /** Replaces links in the markdown text with the given function.
+   *
+   * @param text - The text to replace links in.
+   * @param replaceFn - The function to replace the links with.
+   */
+  public static replaceLink(
+    text: string,
+    replaceFn: (match: string, label: string, url: string) => string,
+  ): string {
+    return text.replace(MDRegex.link, (match, label, url) => {
+      return replaceFn(match, label, url);
+    });
+  }
+
+  /** Replaces images in the markdown text with the given function.
+   *
+   * @param text - The text to replace links in.
+   * @param replaceFn - The function to replace the links with.
+   */
+  public static replaceImage(
+    text: string,
+    replaceFn: (match: string, label: string, url: string) => string,
+  ): string {
+    return text.replace(MDRegex.image, (match, label, url) => {
+      return replaceFn(match, label, url);
+    });
+  }
+
+  /** Replaces bold text in the markdown text with the given function.
+   *
+   * @param text - The text to replace bold text in.
+   * @param replaceFn - The function to replace the bold text with.
+   */
+  public static replaceBold(
+    text: string,
+    replaceFn: (match: string, boldText: string) => string,
+  ): string {
+    return text.replace(MDRegex.bold, (match, boldText1, boldText2) => {
+      return replaceFn(match, boldText1 || boldText2);
+    });
+  }
+
+  /** Replaces italic text in the markdown text with the given function.
+   *
+   * @param text - The text to replace.
+   * @param replaceFn - The function to replace the text with.
+   */
+  public static replaceItalic(
+    text: string,
+    replaceFn: (match: string, italicText: string) => string,
+  ): string {
+    return text.replace(MDRegex.italic, (match, italicText1, italicText2) => {
+      return replaceFn(match, italicText1 || italicText2);
+    });
+  }
 }
