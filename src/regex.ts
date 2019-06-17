@@ -49,7 +49,7 @@ export default class MDRegex {
    * If it's underscore markdown:
    * - Group 2: The bold text
    */
-  public static bold = new RegExp(bold, 'g');
+  public static bold = new RegExp(bold);
 
   // Italic
 
@@ -72,5 +72,5 @@ export default class MDRegex {
    * If it's underscore markdown:
    * - Group 2: The italic text
    */
-  public static italic = new RegExp(italic, 'g');
+  public static italic = new RegExp(italic);
 }
