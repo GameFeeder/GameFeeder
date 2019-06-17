@@ -20,13 +20,13 @@ export default class MDRegex {
    * - Group 1: The link label
    * - Group 2: The link URL
    */
-  public static link = new RegExp(link);
+  public static link = new RegExp(link, 'g');
   /** Matches a markdown image.
    * - Group 0: The whole markdown image
    * - Group 1: The image label
    * - Group 2: The image URL
    */
-  public static image = new RegExp(image);
+  public static image = new RegExp(image, 'g');
 
   // Bold
 
@@ -34,12 +34,12 @@ export default class MDRegex {
    * - Group 0: The whole bold markdown
    * - Group 1: The bold text
    */
-  public static boldAsterix = new RegExp(boldAsterix);
+  public static boldAsterix = new RegExp(boldAsterix, 'g');
   /** Matches bold text sourrounded by underscores.
    * - Group 0: The whole bold markdown
    * - Group 1: The bold text
    */
-  public static boldUnderscore = new RegExp(boldUnderscore);
+  public static boldUnderscore = new RegExp(boldUnderscore, 'g');
   /** Matches bold text.
    * - Group 0: The whole bold markdown
    *
@@ -49,7 +49,7 @@ export default class MDRegex {
    * If it's underscore markdown:
    * - Group 2: The bold text
    */
-  public static bold = new RegExp(bold);
+  public static bold = new RegExp(bold, 'g');
 
   // Italic
 
@@ -57,12 +57,12 @@ export default class MDRegex {
    * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
-  public static italicAsterix = new RegExp(italicAsterix);
+  public static italicAsterix = new RegExp(italicAsterix, 'g');
   /** Matches  text sourrounded by underscores.
    * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
-  public static italicUnderscore = new RegExp(italicUnderscore);
+  public static italicUnderscore = new RegExp(italicUnderscore, 'g');
   /** Matches italic text.
    * - Group 0: The whole italic markdown
    *
@@ -72,5 +72,5 @@ export default class MDRegex {
    * If it's underscore markdown:
    * - Group 2: The italic text
    */
-  public static italic = new RegExp(italic);
+  public static italic = new RegExp(italic, 'g');
 }
