@@ -1,5 +1,5 @@
-export const any = '.*';
-export const some = '.+';
+export const any = '.*?';
+export const some = '.+?';
 export const link = `\\[(${any})\\]\\((${any})\\)`;
 export const image = `!${link}`;
 
