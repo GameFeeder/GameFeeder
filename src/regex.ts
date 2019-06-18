@@ -3,13 +3,13 @@ export const some = '.+?';
 export const link = `\\[(${any})\\]\\((${any})\\)`;
 export const image = `!${link}`;
 
-export const boldAsterix = `\\*\\*(${some})\\*\\*`;
+export const boldAsterisk = `\\*\\*(${some})\\*\\*`;
 export const boldUnderscore = `__(${some})__`;
-export const bold = `(?:${boldAsterix})|(?:${boldUnderscore})`;
+export const bold = `(?:${boldAsterisk})|(?:${boldUnderscore})`;
 
-export const italicAsterix = `\\*(${some})\\*`;
+export const italicAsterisk = `\\*(${some})\\*`;
 export const italicUnderscore = `_(${some})_`;
-export const italic = `(?:${italicAsterix})|(?:${italicUnderscore})`;
+export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 
 export default class MDRegex {
   // Links
@@ -29,11 +29,11 @@ export default class MDRegex {
 
   // Bold
 
-  /** Matches bold text sourrounded by asterixes.
+  /** Matches bold text sourrounded by asterisks.
    * - Group 0: The whole bold markdown
    * - Group 1: The bold text
    */
-  public static boldAsterix = new RegExp(boldAsterix, 'g');
+  public static boldAsterisk = new RegExp(boldAsterisk, 'g');
   /** Matches bold text sourrounded by underscores.
    * - Group 0: The whole bold markdown
    * - Group 1: The bold text
@@ -52,11 +52,11 @@ export default class MDRegex {
 
   // Italic
 
-  /** Matches italic text sourrounded by asterixes.
+  /** Matches italic text sourrounded by asterisks.
    * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
-  public static italicAsterix = new RegExp(italicAsterix, 'g');
+  public static italicAsterisk = new RegExp(italicAsterisk, 'g');
   /** Matches  text sourrounded by underscores.
    * - Group 0: The whole italic markdown
    * - Group 1: Italic text
@@ -112,9 +112,13 @@ export default class MDRegex {
     text: string,
     replaceFn: (match: string, boldText: string) => string,
   ): string {
-    return text.replace(MDRegex.bold, (match, boldText1, boldText2) => {
-      return replaceFn(match, boldText1 || boldText2);
+    let newText = text.replace(MDRegex.boldAsterisk, (match, boldText) => {
+      return replaceFn(match, boldText);
     });
+    newText = text.replace(MDRegex.boldUnderscore, (match, boldText) => {
+      return replaceFn(match, boldText);
+    });
+    return newText;
   }
 
   /** Replaces italic text in the markdown text with the given function.
@@ -126,8 +130,12 @@ export default class MDRegex {
     text: string,
     replaceFn: (match: string, italicText: string) => string,
   ): string {
-    return text.replace(MDRegex.italic, (match, italicText1, italicText2) => {
+    let newText = text.replace(MDRegex.italicAsterisk, (match, italicText1, italicText2) => {
       return replaceFn(match, italicText1 || italicText2);
     });
+    newText = text.replace(MDRegex.italicUnderscore, (match, italicText1, italicText2) => {
+      return replaceFn(match, italicText1 || italicText2);
+    });
+    return newText;
   }
 }
