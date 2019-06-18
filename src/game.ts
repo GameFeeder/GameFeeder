@@ -1,12 +1,13 @@
-import { getDataConfig } from './data';
+import ConfigManager, { reddit_user } from './config_manager';
 import botLogger from './bot_logger';
 import Provider from './provider';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
 import RedditUserProvider from './reddit_user';
+import DotaProvider from './provider_dota';
 
 /** A representation of a game. */
-class Game {
+export class Game {
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
@@ -81,26 +82,39 @@ class Game {
 // All Games
 const games: Game[] = [];
 
-for (const game of getDataConfig().games) {
+for (const gameSettings of ConfigManager.getGameConfig()) {
+  const game = new Game(
+    gameSettings.name,
+    gameSettings.aliases,
+    gameSettings.label,
+    gameSettings.color,
+    gameSettings.icon,
+    null,
+  );
+
   // Add providers
   const providers: Provider[] = [];
   // Reddit providers
-  if (game.providers.reddit.users) {
-    const subreddit = game.providers.reddit.subreddit;
+  if (gameSettings.providers.reddit.users) {
+    const subreddit = gameSettings.providers.reddit.subreddit;
     // tslint:disable-next-line prefer-array-literal
-    const users: Array<{ name: string; titleFilter: string }> = game.providers.reddit.users;
-    const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.titleFilter));
+    const users: reddit_user[] = gameSettings.providers.reddit.users;
+    const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.filter));
     providers.push(new RedditProvider(redditUsers, subreddit, game));
   }
   // Blog providers
-  if (game.providers.blogs) {
-    for (const blog of game.providers.blogs) {
+  if (gameSettings.providers.blogs) {
+    for (const blog of gameSettings.providers.blogs) {
       providers.push(new BlogProvider(blog.url, blog.label, game));
     }
   }
+  game.providers = providers;
 
-  games.push(new Game(game.name, game.aliases, game.label, game.color, game.icon, providers));
+  games.push(game);
 }
 
+// Unique providers
+Game.getGameByName('dota').providers.push(new DotaProvider());
+
 export default games;
-export { Game, games };
+export { games };
