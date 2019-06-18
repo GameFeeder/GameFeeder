@@ -4,9 +4,10 @@ import Provider from './provider';
 import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
 import RedditUserProvider from './reddit_user';
+import DotaProvider from './provider_dota';
 
 /** A representation of a game. */
-class Game {
+export class Game {
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
@@ -112,5 +113,8 @@ for (const gameSettings of ConfigManager.getGameConfig()) {
   games.push(game);
 }
 
+// Unique providers
+Game.getGameByName('dota').providers.push(new DotaProvider());
+
 export default games;
-export { Game, games };
+export { games };
