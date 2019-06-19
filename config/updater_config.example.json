@@ -1,0 +1,6 @@
+{
+  "updateDelaySec": 10,
+  "limit": 3,
+  "autostart": true,
+  "autosave": true
+}  
