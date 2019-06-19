@@ -2,12 +2,18 @@
   "name": "valvegamesannouncerbot",
   "version": "0.1.0",
   "description": "A notification bot for Dota 2 and Artifact.",
-  "main": "src/main.js",
+  "main": "src/_main.ts",
   "scripts": {
-    "test": "jest src",
-    "lint-js": "eslint src/*.js --color",
-    "lint-ts": "echo 'Error: tslint not implemented yet' && exit 1",
-    "coverage": "jest --collectCoverageFrom=src/**.js --coverage src"
+    "build": "tsc --build",
+    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
+    "deploy": "yarn install && yarn demolish && yarn build",
+    "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
+    "lint": "tslint --config tslint.json --format stylish --project tsconfig.json",
+    "demolish": "rimraf dist",
+    "serve": "nodemon --watch dist dist/_main.js",
+    "start": "node dist/_main.js",
+    "test": "jest --coverage",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -19,29 +25,51 @@
     "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
   },
   "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot#readme",
+  "engines": {
+    "node": "^10",
+    "yarn": "^1.16.0"
+  },
   "devDependencies": {
-    "eslint": "^5.10.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^22.1.2",
-    "eslint-plugin-prettier": "3.0.0",
-    "husky": "^1.2.1",
-    "jest": "^23.6.0",
-    "prettier": "1.15.3"
+    "concurrently": "4.1.0",
+    "husky": "2.3.0",
+    "install-peerdeps": "1.9.0",
+    "jest": "24.8.0",
+    "nodemon": "1.18.10",
+    "prettier": "1.15.3",
+    "ts-jest": "24.0.2",
+    "tslint": "5.12.0",
+    "tslint-config-airbnb": "5.11.1",
+    "typescript": "3.2.2"
   },
   "dependencies": {
-    "discord.js": "^11.4.2",
-    "eslint-plugin-jsdoc": "^3.14.1",
-    "implement-js": "0.0.26",
-    "install-peerdeps": "^1.9.0",
-    "node-telegram-bot-api": "^0.30.0",
-    "rss-parser": "^3.6.0",
-    "yarn": "^1.12.3"
+    "@types/cheerio": "0.22.11",
+    "@types/escape-string-regexp": "2.0.1",
+    "@types/jest": "24.0.13",
+    "@types/jsdom": "12.2.3",
+    "@types/node": "10.12.18",
+    "@types/node-telegram-bot-api": "0.30.3",
+    "@types/request-promise-native": "1.0.16",
+    "@types/showdown": "1.9.3",
+    "@types/snoowrap": "1.15.3",
+    "@types/xml2js": "0.4.3",
+    "cheerio": "1.0.0-rc.3",
+    "discord.js": "11.4.2",
+    "escape-string-regexp": "2.0.0",
+    "feed-read": "0.0.1",
+    "fs": "0.0.1-security",
+    "node-telegram-bot-api": "0.30.0",
+    "pm2": "3.5.0",
+    "request": "2.88.0",
+    "request-promise-native": "1.0.7",
+    "rss-parser": "3.6.0",
+    "snoowrap": "1.15.2",
+    "turndown": "5.0.3",
+    "winston": "3.1.0"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-js",
-      "pre-push": "npm run test"
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn build && yarn test"
     }
   }
 }

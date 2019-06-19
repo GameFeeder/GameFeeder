@@ -2,8 +2,17 @@
 # valveAnnouncerBot
 # ------------------------------
 
-src/data/bot_config.json
-src/data/subscribers.json
+config/*
+!config/*example.json
+
+data/*
+!data/*example.json
+
+# ------------------------------
+# TypeScript
+# ------------------------------
+
+dist
 
 # ------------------------------
 # VS CODE
@@ -14,7 +23,6 @@ src/data/subscribers.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
 
 # ------------------------------
 # NODE.JS

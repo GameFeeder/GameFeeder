@@ -1,0 +1,14 @@
+language: node_js
+
+node_js:
+  - '10.15.3'
+  
+before_install:
+  - npm install -g yarn@1.16.0
+
+cache: yarn
+
+script:
+  - yarn lint
+  - yarn build
+  - yarn test

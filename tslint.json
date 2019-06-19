@@ -1,0 +1,19 @@
+{
+  "defaultSeverity": "error",
+  "extends": "tslint-config-airbnb",
+  "jsRules": {},
+  "rules": {
+    "import-name": false,
+    "no-any": false,
+    "no-increment-decrement": false,
+    "quotemark": [true, "single"],
+    "ter-arrow-parens": "always",
+    "align": [true, "parameters", "statements", "members", "elements"],
+    "prefer-template": false
+  },
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/tslint-microsoft-contrib",
+    "tslint-consistent-codestyle"
+  ]
+}
