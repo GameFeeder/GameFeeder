@@ -87,7 +87,41 @@ describe('MarkdownRegex', () => {
     });
   });
 
-  describe('Functions', () => {});
+  describe('Replace functions', () => {
+    describe('Link', () => {
+      test('Simple', () => {
+        const testText = '[Label](https://link.com)';
+        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+          return `This is a link called '${label}' with the url '${url}'.`;
+        });
+        const expected = `This is a link called 'Label' with the url 'https://link.com'.`;
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('In text', () => {
+        const testText = 'Right here, we have a [Link](https://www.url.org) in a **Text**.';
+        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+          return `__${label}__ (${url})`;
+        });
+        const expected = `Right here, we have a __Link__ (https://www.url.org) in a **Text**.`;
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Multiple', () => {
+        const testText =
+          'We have a [Link1](url1) and another [Link2](url2) and even a third [Link3](url3).';
+        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+          return `${label}: ${url}`;
+        });
+        const expected =
+          `We have a Link1: url1 and another Link2: url2 and even a third Link3: url3.`;
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+  });
 });
 
 /** Tests the given regular expression
