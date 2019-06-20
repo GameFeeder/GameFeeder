@@ -121,6 +121,52 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
     });
+
+    describe('Image', () => {
+      test('Simple', () => {
+        const testText = '![Label](https://link.png)';
+        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+          return `This is an image called '${label}' with the url '${url}'.`;
+        });
+        const expected = `This is an image called 'Label' with the url 'https://link.png'.`;
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('In text', () => {
+        const testText = 'Right here, we have an ![Image](https://www.url.jpg) in a **Text**.';
+        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+          return `__${label}__ (${url})`;
+        });
+        const expected = `Right here, we have an __Image__ (https://www.url.jpg) in a **Text**.`;
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Multiple', () => {
+        const testText =
+          'We have an ![Image1](url1) and another ![Image2](url2) and a third ![Image3](url3).';
+        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+          return `${label}: ${url}`;
+        });
+        const expected =
+          `We have an Image1: url1 and another Image2: url2 and a third Image3: url3.`;
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('No link match', () => {
+        const testText =
+          'We have a [Link](www.url.com) right here.';
+        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+          return `${label}: ${url}`;
+        });
+        const expected =
+          `We have a [Link](www.url.com) right here.`;
+
+        expect(resultText).toEqual(expected);
+      });
+    });
   });
 });
 
