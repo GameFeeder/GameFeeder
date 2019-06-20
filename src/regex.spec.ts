@@ -2,22 +2,32 @@ import MDRegex from './regex';
 
 describe('Markdown regex', () => {
   describe('attributes', () => {
-    test('link', () => {
-      testRegExp(MDRegex.link, '[TestLink](https://test.url)', [
-        '[TestLink](https://test.url)',
-        'TestLink',
-        'https://test.url',
-      ]);
+    describe('link', () => {
+      test('single', () => {
+        testRegExp(MDRegex.link, '[TestLink](https://test.url)', [
+          '[TestLink](https://test.url)',
+          'TestLink',
+          'https://test.url',
+        ]);
+      });
+
+      test('not matching images', () => {
+        testRegExp(MDRegex.link, '![TestImage](https://test.png)', []);
+      });
     });
 
-    test('image', () => {
-      testRegExp(MDRegex.image, '![TestImage](https://test.url)', [
-        '![TestImage](https://test.url)',
-        'TestImage',
-        'https://test.url',
-      ]);
-      // We dont want normal links to match
-      testRegExp(MDRegex.image, '[TestLink](https://test.url)', []);
+    describe('image', () => {
+      test('single', () => {
+        testRegExp(MDRegex.image, '![TestImage](https://test.png)', [
+          '![TestImage](https://test.png)',
+          'TestImage',
+          'https://test.png',
+        ]);
+      });
+
+      test('not matching links', () => {
+        testRegExp(MDRegex.image, '[TestLink](https://test.url)', []);
+      });
     });
 
     describe('bold', () => {
@@ -121,6 +131,16 @@ describe('Markdown regex', () => {
 
         expect(resultText).toEqual(expected);
       });
+
+      test('not matching images', () => {
+        const testText = 'We have an ![Image](www.url.png) right here.';
+        const expected = 'We have an ![Image](www.url.png) right here.';
+        const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
+          return `${label}: ${url}`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
     });
 
     // IMAGE
@@ -148,23 +168,21 @@ describe('Markdown regex', () => {
       test('multiple', () => {
         const testText =
           'We have an ![Image1](url1) and another ![Image2](url2) and a third ![Image3](url3).';
+        const expected =
+          `We have an Image1: url1 and another Image2: url2 and a third Image3: url3.`;
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
-        const expected =
-          `We have an Image1: url1 and another Image2: url2 and a third Image3: url3.`;
 
         expect(resultText).toEqual(expected);
       });
 
       test('not matching links', () => {
-        const testText =
-          'We have a [Link](www.url.com) right here.';
+        const testText = 'We have a [Link](www.url.com) right here.';
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
-        const expected =
-          `We have a [Link](www.url.com) right here.`;
+        const expected = `We have a [Link](www.url.com) right here.`;
 
         expect(resultText).toEqual(expected);
       });

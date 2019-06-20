@@ -1,7 +1,8 @@
 export const any = '.*?';
 export const some = '.+?';
-export const link = `\\[(${any})\\]\\((${any})\\)`;
-export const image = `!${link}`;
+export const baseLink = `\\[(${any})\\]\\((${any})\\)`;
+export const link = `(?<!!)${baseLink}`;
+export const image = `!${baseLink}`;
 
 export const boldAsterisk = `\\*\\*(${some})\\*\\*`;
 export const boldUnderscore = `__(${some})__`;
