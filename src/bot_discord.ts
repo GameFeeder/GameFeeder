@@ -114,7 +114,7 @@ export default class DiscordBot extends BotClient {
   ): Promise<boolean> {
     if (typeof message === 'string') {
       // Parse markdown
-      const messageText = this.msgFromMarkdown(message, false);
+      const messageText = DiscordBot.msgFromMarkdown(message, false);
       return await this.sendToChannel(channel, messageText);
     }
     // Parse markdown
@@ -130,7 +130,7 @@ export default class DiscordBot extends BotClient {
     const embed = new DiscordAPI.RichEmbed();
     // Title
     if (notification.title) {
-      const titleMD = this.msgFromMarkdown(`#${notification.title.text}`, true);
+      const titleMD = DiscordBot.msgFromMarkdown(`#${notification.title.text}`, true);
       embed.setTitle(titleMD);
       if (notification.title.link) {
         embed.setURL(notification.title.link);
@@ -138,7 +138,7 @@ export default class DiscordBot extends BotClient {
     }
     // Author
     if (notification.author) {
-      const authorMD = this.msgFromMarkdown(notification.author.text, true);
+      const authorMD = DiscordBot.msgFromMarkdown(notification.author.text, true);
       if (notification.author.icon && notification.author.link) {
         embed.setAuthor(authorMD, notification.author.icon, notification.author.link);
       } else {
@@ -151,7 +151,7 @@ export default class DiscordBot extends BotClient {
     }
     // Description
     if (notification.description) {
-      const descriptionMD = this.msgFromMarkdown(notification.description, true);
+      const descriptionMD = DiscordBot.msgFromMarkdown(notification.description, true);
       if (descriptionMD.length > 2048) {
         embed.setDescription(descriptionMD.substring(0, 2048));
       } else {
@@ -160,7 +160,7 @@ export default class DiscordBot extends BotClient {
     }
     // Footer
     if (notification.footer) {
-      const footerMD = this.msgFromMarkdown(notification.footer.text, true);
+      const footerMD = DiscordBot.msgFromMarkdown(notification.footer.text, true);
       if (notification.footer.icon) {
         embed.setFooter(footerMD, notification.footer.icon);
       } else {
@@ -183,7 +183,7 @@ export default class DiscordBot extends BotClient {
     return embed;
   }
 
-  public msgFromMarkdown(text: string, isEmbed: boolean): string {
+  public static msgFromMarkdown(text: string, isEmbed: boolean): string {
     if (!text) {
       return '';
     }

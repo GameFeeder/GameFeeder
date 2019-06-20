@@ -123,14 +123,14 @@ export default class TelegramBot extends BotClient {
   ): Promise<boolean> {
     let message = messageText;
     if (typeof message === 'string') {
-      message = this.msgFromMarkdown(message);
+      message = TelegramBot.msgFromMarkdown(message);
       try {
         await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
       } catch (error) {
         this.logError(`Failed to send message to channel:\n${error}`);
       }
     } else {
-      let text = this.msgFromMarkdown(message.toMDString());
+      let text = TelegramBot.msgFromMarkdown(message.toMDString());
       if (text.length > 2048) {
         text = text.substring(0, 2048);
       }
@@ -146,7 +146,7 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  public msgFromMarkdown(markdownText: string): string {
+  public static msgFromMarkdown(markdownText: string): string {
     let markdown = markdownText;
     if (!markdown) {
       return '';
