@@ -130,11 +130,11 @@ export default class MDRegex {
     text: string,
     replaceFn: (match: string, italicText: string) => string,
   ): string {
-    let newText = text.replace(MDRegex.italicAsterisk, (match, italicText1, italicText2) => {
-      return replaceFn(match, italicText1 || italicText2);
+    let newText = text.replace(MDRegex.italicAsterisk, (match, italicText) => {
+      return replaceFn(match, italicText);
     });
-    newText = newText.replace(MDRegex.italicUnderscore, (match, italicText1, italicText2) => {
-      return replaceFn(match, italicText1 || italicText2);
+    newText = newText.replace(MDRegex.italicUnderscore, (match, italicText) => {
+      return replaceFn(match, italicText);
     });
     return newText;
   }
