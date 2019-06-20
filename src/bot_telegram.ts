@@ -158,7 +158,7 @@ export default class TelegramBot extends BotClient {
     markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1]($2)');
     // Italic
     markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
-    // Bold
+    // BoldD
     markdown = markdown.replace(/__(.+)__/g, '*$1*');
     markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
     // Formatting with Links
@@ -198,13 +198,3 @@ export default class TelegramBot extends BotClient {
     return newMarkdown;
   }
 }
-
-// Telegram Bot
-const {
-  prefix: telegramPrefix,
-  token: telegramToken,
-  autostart: telegramAutostart,
-} = ConfigManager.getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
-
-export { TelegramBot, telegramBot };

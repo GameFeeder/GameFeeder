@@ -244,13 +244,3 @@ export default class DiscordBot extends BotClient {
     return false;
   }
 }
-
-// Discord Bot
-const {
-  prefix: discordPrefix,
-  token: discordToken,
-  autostart: discordAutostart,
-} = ConfigManager.getBotConfig().discord;
-const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
-
-export { DiscordBot, discordBot };
