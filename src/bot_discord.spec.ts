@@ -2,6 +2,36 @@ import DiscordBot from './bot_discord';
 
 describe('Discord bot', () => {
   describe('message from markdown', () => {
+    // LINK
+    describe('link', () => {
+      test('single', () => {
+        const testText = '[label](https://url.com)';
+        const expectedNoEmbed = 'label (https://url.com)';
+        const expectedEmbed = '[label](https://url.com)';
+
+        const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+        const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+        expect(testNoEmbed).toEqual(expectedNoEmbed);
+        expect(testEmbed).toEqual(expectedEmbed);
+      });
+    });
+
+    // IMAGE
+    describe('image', () => {
+      test('single', () => {
+        const testText = '![label](https://url.png)';
+        const expectedNoEmbed = 'label (https://url.png)';
+        const expectedEmbed = '[label](https://url.png)';
+
+        const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+        const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+        expect(testNoEmbed).toEqual(expectedNoEmbed);
+        expect(testEmbed).toEqual(expectedEmbed);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {

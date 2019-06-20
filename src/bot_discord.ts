@@ -189,10 +189,6 @@ export default class DiscordBot extends BotClient {
       return '';
     }
     let markdown = text;
-    if (!isEmbed) {
-      // Short links are not supported outside of embeds
-      markdown = text.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
-    }
 
     // Bold
     markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
@@ -207,11 +203,33 @@ export default class DiscordBot extends BotClient {
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
-    // Image Links
-    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
-    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
-    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
-    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
+    // Links
+    markdown = MDRegex.replaceLink(markdown, (_, label, url) => {
+      if (!label) {
+        return url;
+      }
+
+      if (isEmbed) {
+        return `[${label}](${url})`;
+      }
+
+      return `${label} (${url})`;
+    });
+
+    // Images
+    markdown = MDRegex.replaceImage(markdown, (_, label, url) => {
+      const newLabel = label ? label : 'Image';
+
+      if (isEmbed) {
+        return `[${newLabel}](${url})`;
+      }
+
+      return `${newLabel} (${url})`;
+    });
+    // markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
+    // markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
+    // markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
+    // markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
 
     // Linewise formatting
     const lineArray = markdown.split('\n');
