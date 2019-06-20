@@ -1,7 +1,7 @@
 import MDRegex from './regex';
 
-describe('MarkdownRegex', () => {
-  describe('Attributes', () => {
+describe('Markdown regex', () => {
+  describe('attributes', () => {
     test('link', () => {
       testRegExp(MDRegex.link, '[TestLink](https://test.url)', [
         '[TestLink](https://test.url)',
@@ -21,20 +21,20 @@ describe('MarkdownRegex', () => {
     });
 
     describe('bold', () => {
-      test('asterisk', () => {
+      test('single with asterisks', () => {
         testRegExp(MDRegex.boldAsterisk, '**bold sample text**', [
           '**bold sample text**',
           'bold sample text',
         ]);
       });
-      test('underscore', () => {
+      test('single with underscores', () => {
         testRegExp(MDRegex.boldUnderscore, '__bold sample text__', [
           '__bold sample text__',
           'bold sample text',
         ]);
       });
       describe('combined', () => {
-        test('asterisk', () => {
+        test('single with asterisks', () => {
           testRegExp(MDRegex.bold, '**bold sample text**', [
             '**bold sample text**',
             'bold sample text',
@@ -42,7 +42,7 @@ describe('MarkdownRegex', () => {
           ]);
         });
 
-        test('underscore', () => {
+        test('single with underscores', () => {
           testRegExp(MDRegex.bold, '__bold sample text__', [
             '__bold sample text__',
             undefined,
@@ -53,14 +53,14 @@ describe('MarkdownRegex', () => {
     });
 
     describe('italic', () => {
-      test('asterisk', () => {
+      test('single with asterisks', () => {
         testRegExp(MDRegex.italicAsterisk, '*italic sample text*', [
           '*italic sample text*',
           'italic sample text',
         ]);
       });
 
-      test('underscore', () => {
+      test('single with underscores', () => {
         testRegExp(MDRegex.italicUnderscore, '_italic sample text_', [
           '_italic sample text_',
           'italic sample text',
@@ -68,7 +68,7 @@ describe('MarkdownRegex', () => {
       });
 
       describe('combined', () => {
-        test('asterisk', () => {
+        test('single with asterisks', () => {
           testRegExp(MDRegex.italic, '*italic sample text*', [
             '*italic sample text*',
             'italic sample text',
@@ -76,7 +76,7 @@ describe('MarkdownRegex', () => {
           ]);
         });
 
-        test('underscore', () => {
+        test('single with underscores', () => {
           testRegExp(MDRegex.italic, '_italic sample text_', [
             '_italic sample text_',
             undefined,
@@ -87,10 +87,10 @@ describe('MarkdownRegex', () => {
     });
   });
 
-  describe('Replace functions', () => {
+  describe('replace function', () => {
     // LINK
-    describe('Link', () => {
-      test('Simple', () => {
+    describe('link', () => {
+      test('simple', () => {
         const testText = '[Label](https://link.com)';
         const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `This is a link called '${label}' with the url '${url}'.`;
@@ -100,7 +100,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('In text', () => {
+      test('in text', () => {
         const testText = 'Right here, we have a [Link](https://www.url.org) in a **Text**.';
         const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `__${label}__ (${url})`;
@@ -110,7 +110,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple', () => {
+      test('multiple', () => {
         const testText =
           'We have a [Link1](url1) and another [Link2](url2) and even a third [Link3](url3).';
         const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
@@ -124,8 +124,8 @@ describe('MarkdownRegex', () => {
     });
 
     // IMAGE
-    describe('Image', () => {
-      test('Simple', () => {
+    describe('image', () => {
+      test('simple', () => {
         const testText = '![Label](https://link.png)';
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `This is an image called '${label}' with the url '${url}'.`;
@@ -135,7 +135,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('In text', () => {
+      test('in text', () => {
         const testText = 'Right here, we have an ![Image](https://www.url.jpg) in a **Text**.';
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `__${label}__ (${url})`;
@@ -145,7 +145,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple', () => {
+      test('multiple', () => {
         const testText =
           'We have an ![Image1](url1) and another ![Image2](url2) and a third ![Image3](url3).';
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
@@ -157,7 +157,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('No link match', () => {
+      test('not matching links', () => {
         const testText =
           'We have a [Link](www.url.com) right here.';
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
@@ -171,8 +171,8 @@ describe('MarkdownRegex', () => {
     });
 
     // BOLD
-    describe('Bold', () => {
-      test('Simple asterisk', () => {
+    describe('bold', () => {
+      test('single with asterisks', () => {
         const testText = '**Bold Text**';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `_${boldText}_`;
@@ -182,7 +182,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple asterisk', () => {
+      test('multiple with asterisks', () => {
         const testText = 'We have a **bold text1** and another **bold text2**';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `_${boldText}_`;
@@ -192,7 +192,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Simple underscore', () => {
+      test('single with underscores', () => {
         const testText = '__Bold Text__';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `*${boldText}*`;
@@ -202,7 +202,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple underscore', () => {
+      test('multiple with underscores', () => {
         const testText = 'We have a __bold text1__ and another __bold text2__';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `*${boldText}*`;
@@ -212,7 +212,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Asterisk and underscore', () => {
+      test('single with asterisk and underscores', () => {
         const testText = '**Asterisk** and __Underscore__';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `~${boldText}~`;
@@ -222,7 +222,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple asterisk and underscore', () => {
+      test('multiple with asterisks and underscores', () => {
         const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
         const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
           return `~${boldText}~`;
@@ -234,8 +234,8 @@ describe('MarkdownRegex', () => {
     });
 
     // ITALIC
-    describe('Italic', () => {
-      test('Simple asterisk', () => {
+    describe('italic', () => {
+      test('single with asterisks', () => {
         const testText = '*Italic Text*';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `_${italicText}_`;
@@ -245,7 +245,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple asterisk', () => {
+      test('multiple with asterisks', () => {
         const testText = 'We have an *italic text1* and another *italic text2*';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `_${italicText}_`;
@@ -255,7 +255,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Simple underscore', () => {
+      test('single with underscores', () => {
         const testText = '_Italic Text_';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `*${italicText}*`;
@@ -265,7 +265,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple underscore', () => {
+      test('multiple with underscores', () => {
         const testText = 'We have an _italic text1_ and another _italic text2_';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `*${italicText}*`;
@@ -275,7 +275,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Asterisk and underscore', () => {
+      test('single with asterisks and underscores', () => {
         const testText = '*Asterisk* and _Underscore_';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
@@ -285,7 +285,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('Multiple asterisk and underscore', () => {
+      test('multiple with asterisks and underscores', () => {
         const testText = '*asterisk1* and _underscore1_ and *asterisk2* and _underscore2_';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
@@ -295,7 +295,7 @@ describe('MarkdownRegex', () => {
         expect(resultText).toEqual(expected);
       });
 
-      test('No bold destruction', () => {
+      test('not matching bold formatting', () => {
         const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;

@@ -1,10 +1,10 @@
 import DiscordBot from './bot_discord';
 
-describe('DiscordBot', () => {
-  describe('msgFromMarkdown', () => {
+describe('Discord bot', () => {
+  describe('message from markdown', () => {
     // BOLD
-    describe('Bold', () => {
-      test('Simple Asterisk', () => {
+    describe('bold', () => {
+      test('single with asterisks', () => {
         const testText = '**Bold Text**';
         const expected = '**Bold Text**';
 
@@ -15,7 +15,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple Asterisk', () => {
+      test('multiple with asterisks', () => {
         const testText = 'A **bold text1** and another **bold text2**.';
         const expected = 'A **bold text1** and another **bold text2**.';
 
@@ -26,7 +26,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Simple Underscore', () => {
+      test('single with underscores', () => {
         const testText = '__Bold Text__';
         const expected = '**Bold Text**';
 
@@ -37,7 +37,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple Underscore', () => {
+      test('multiple with underscores', () => {
         const testText = 'A __bold text1__ and another __bold text2__.';
         const expected = 'A **bold text1** and another **bold text2**.';
 
@@ -48,7 +48,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple combined', () => {
+      test('multiple with asterisks and underscores', () => {
         const testText = '__underscore1__ and **asterisk1** and __underscore2__ and **asterisk2**.';
         const expected = '**underscore1** and **asterisk1** and **underscore2** and **asterisk2**.';
 
@@ -61,8 +61,8 @@ describe('DiscordBot', () => {
     });
 
     // ITALIC
-    describe('Italic', () => {
-      test('Simple Asterisk', () => {
+    describe('italic', () => {
+      test('single with asterisks', () => {
         const testText = '*Italic Text*';
         const expected = '_Italic Text_';
 
@@ -73,7 +73,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple Asterisk', () => {
+      test('multiple with asterisks', () => {
         const testText = 'A *italic text1* and another *italic text2*.';
         const expected = 'A _italic text1_ and another _italic text2_.';
 
@@ -84,7 +84,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Simple Underscore', () => {
+      test('single with underscores', () => {
         const testText = '_Bold Text_';
         const expected = '_Bold Text_';
 
@@ -95,7 +95,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple Underscore', () => {
+      test('multiple with underscores', () => {
         const testText = 'A _bold text1_ and another _bold text2_.';
         const expected = 'A _bold text1_ and another _bold text2_.';
 
@@ -106,7 +106,7 @@ describe('DiscordBot', () => {
         expect(testEmbed).toEqual(expected);
       });
 
-      test('Multiple combined', () => {
+      test('multiple with asterisks and underscores', () => {
         const testText = '_underscore1_ and *asterisk1* and _underscore2_ and *asterisk2*.';
         const expected = '_underscore1_ and _asterisk1_ and _underscore2_ and _asterisk2_.';
 
