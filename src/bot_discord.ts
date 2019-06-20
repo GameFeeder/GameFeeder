@@ -199,6 +199,11 @@ export default class DiscordBot extends BotClient {
       return `**${boldText}**`;
     });
 
+    // Italic
+    markdown = MDRegex.replaceItalic(markdown, (_, italicText) => {
+      return `_${italicText}_`;
+    });
+
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 

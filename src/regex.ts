@@ -7,8 +7,8 @@ export const boldAsterisk = `\\*\\*(${some})\\*\\*`;
 export const boldUnderscore = `__(${some})__`;
 export const bold = `(?:${boldAsterisk})|(?:${boldUnderscore})`;
 
-export const italicAsterisk = `\\*(${some})\\*`;
-export const italicUnderscore = `_(${some})_`;
+export const italicAsterisk = `(?<!\\*)\\*([^\\*]+)\\*(?!\\*)`;
+export const italicUnderscore = `(?<!_)_([^_]+)_(?!_)`;
 export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 
 export default class MDRegex {
