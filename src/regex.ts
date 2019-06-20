@@ -115,7 +115,7 @@ export default class MDRegex {
     let newText = text.replace(MDRegex.boldAsterisk, (match, boldText) => {
       return replaceFn(match, boldText);
     });
-    newText = text.replace(MDRegex.boldUnderscore, (match, boldText) => {
+    newText = newText.replace(MDRegex.boldUnderscore, (match, boldText) => {
       return replaceFn(match, boldText);
     });
     return newText;
@@ -133,7 +133,7 @@ export default class MDRegex {
     let newText = text.replace(MDRegex.italicAsterisk, (match, italicText1, italicText2) => {
       return replaceFn(match, italicText1 || italicText2);
     });
-    newText = text.replace(MDRegex.italicUnderscore, (match, italicText1, italicText2) => {
+    newText = newText.replace(MDRegex.italicUnderscore, (match, italicText1, italicText2) => {
       return replaceFn(match, italicText1 || italicText2);
     });
     return newText;

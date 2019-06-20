@@ -88,10 +88,11 @@ describe('MarkdownRegex', () => {
   });
 
   describe('Replace functions', () => {
+    // LINK
     describe('Link', () => {
       test('Simple', () => {
         const testText = '[Label](https://link.com)';
-        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `This is a link called '${label}' with the url '${url}'.`;
         });
         const expected = `This is a link called 'Label' with the url 'https://link.com'.`;
@@ -101,7 +102,7 @@ describe('MarkdownRegex', () => {
 
       test('In text', () => {
         const testText = 'Right here, we have a [Link](https://www.url.org) in a **Text**.';
-        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `__${label}__ (${url})`;
         });
         const expected = `Right here, we have a __Link__ (https://www.url.org) in a **Text**.`;
@@ -112,7 +113,7 @@ describe('MarkdownRegex', () => {
       test('Multiple', () => {
         const testText =
           'We have a [Link1](url1) and another [Link2](url2) and even a third [Link3](url3).';
-        const resultText = MDRegex.replaceLink(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
         const expected =
@@ -122,10 +123,11 @@ describe('MarkdownRegex', () => {
       });
     });
 
+    // IMAGE
     describe('Image', () => {
       test('Simple', () => {
         const testText = '![Label](https://link.png)';
-        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `This is an image called '${label}' with the url '${url}'.`;
         });
         const expected = `This is an image called 'Label' with the url 'https://link.png'.`;
@@ -135,7 +137,7 @@ describe('MarkdownRegex', () => {
 
       test('In text', () => {
         const testText = 'Right here, we have an ![Image](https://www.url.jpg) in a **Text**.';
-        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `__${label}__ (${url})`;
         });
         const expected = `Right here, we have an __Image__ (https://www.url.jpg) in a **Text**.`;
@@ -146,7 +148,7 @@ describe('MarkdownRegex', () => {
       test('Multiple', () => {
         const testText =
           'We have an ![Image1](url1) and another ![Image2](url2) and a third ![Image3](url3).';
-        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
         const expected =
@@ -158,11 +160,73 @@ describe('MarkdownRegex', () => {
       test('No link match', () => {
         const testText =
           'We have a [Link](www.url.com) right here.';
-        const resultText = MDRegex.replaceImage(testText, (match, label, url) => {
+        const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
         const expected =
           `We have a [Link](www.url.com) right here.`;
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    describe('Bold', () => {
+      test('Simple asterisk', () => {
+        const testText = '**Bold Text**';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `_${boldText}_`;
+        });
+        const expected = '_Bold Text_';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Multiple asterisk', () => {
+        const testText = 'We have a **bold text1** and another **bold text2**';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `_${boldText}_`;
+        });
+        const expected = 'We have a _bold text1_ and another _bold text2_';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Simple underscore', () => {
+        const testText = '__Bold Text__';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `*${boldText}*`;
+        });
+        const expected = '*Bold Text*';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Multiple underscore', () => {
+        const testText = 'We have a __bold text1__ and another __bold text2__';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `*${boldText}*`;
+        });
+        const expected = 'We have a *bold text1* and another *bold text2*';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Asterisk and underscore', () => {
+        const testText = '**Asterisk** and __Underscore__';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+        const expected = '~Asterisk~ and ~Underscore~';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('Multiple asterisk and underscore', () => {
+        const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+        const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
 
         expect(resultText).toEqual(expected);
       });
