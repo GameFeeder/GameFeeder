@@ -11,6 +11,7 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
+import MDRegex from './regex';
 
 export default class DiscordBot extends BotClient {
   private bot: DiscordAPI.Client;
@@ -193,6 +194,11 @@ export default class DiscordBot extends BotClient {
       markdown = text.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
     }
 
+    // Bold
+    markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
+      return `**${boldText}**`;
+    });
+
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
@@ -213,10 +219,7 @@ export default class DiscordBot extends BotClient {
       lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
     }
 
-    let newMarkdown = '';
-    for (const line of lineArray) {
-      newMarkdown += `${line}\n`;
-    }
+    const newMarkdown = lineArray.join('\n');
 
     return newMarkdown;
   }
