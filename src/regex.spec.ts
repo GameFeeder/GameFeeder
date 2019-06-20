@@ -21,7 +21,7 @@ describe('MarkdownRegex', () => {
     });
 
     describe('bold', () => {
-      test('asterix', () => {
+      test('asterisk', () => {
         testRegExp(MDRegex.boldAsterisk, '**bold sample text**', [
           '**bold sample text**',
           'bold sample text',
@@ -34,7 +34,7 @@ describe('MarkdownRegex', () => {
         ]);
       });
       describe('combined', () => {
-        test('asterix', () => {
+        test('asterisk', () => {
           testRegExp(MDRegex.bold, '**bold sample text**', [
             '**bold sample text**',
             'bold sample text',
@@ -53,7 +53,7 @@ describe('MarkdownRegex', () => {
     });
 
     describe('italic', () => {
-      test('asterix', () => {
+      test('asterisk', () => {
         testRegExp(MDRegex.italicAsterisk, '*italic sample text*', [
           '*italic sample text*',
           'italic sample text',
@@ -68,7 +68,7 @@ describe('MarkdownRegex', () => {
       });
 
       describe('combined', () => {
-        test('asterix', () => {
+        test('asterisk', () => {
           testRegExp(MDRegex.italic, '*italic sample text*', [
             '*italic sample text*',
             'italic sample text',
@@ -291,6 +291,16 @@ describe('MarkdownRegex', () => {
           return `~${italicText}~`;
         });
         const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('No bold destruction', () => {
+        const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+        const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
+          return `~${italicText}~`;
+        });
+        const expected = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
 
         expect(resultText).toEqual(expected);
       });
