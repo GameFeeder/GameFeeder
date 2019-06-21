@@ -3,8 +3,8 @@ export const some = '.+?';
 export const someNoAst = '[^\\*]+?';
 export const someNoUnd = '[^_]+?';
 export const someNoHash = '[^#]+?';
-export const anyWs = '\s*';
-export const someWs = '\s+';
+export const anyWs = '\\s*';
+export const someWs = '\\s+';
 
 export const baseLink = `\\[(${any})\\]\\((${any})\\)`;
 export const link = `(?<!!)${baseLink}`;
@@ -18,15 +18,16 @@ export const italicAsterisk = `(?<!\\*)\\*(${someNoAst})\\*(?!\\*)`;
 export const italicUnderscore = `(?<!_)_(${someNoUnd})_(?!_)`;
 export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 
-export const list = `^${anyWs}[-\\*]${someWs}(${any})(?:${anyWs})$`;
+export const list = `^${anyWs}[-\\*]${someWs}(${any})${anyWs}$`;
 
-export const h1 = `^#${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h2 = `^##${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h3 = `^###${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h4 = `^####${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h5 = `^#####${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h6 = `^######${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
-export const h7 = `^#######${anyWs}(${some})(?:${anyWs})$(?:#*)(?:${anyWs})$`;
+export const hBase = `${anyWs}(${some})${anyWs}#*${anyWs}`;
+export const hAny = `^(#{1,6})${hBase}$`;
+export const h1 = `^#${hBase}$`;
+export const h2 = `^##${hBase}$`;
+export const h3 = `^###${hBase}$`;
+export const h4 = `^####${hBase}$`;
+export const h5 = `^#####${hBase}$`;
+export const h6 = `^######${hBase}$`;
 
 export default class MDRegex {
   // Links
@@ -98,7 +99,13 @@ export default class MDRegex {
    */
   public static list = new RegExp(list, 'gm');
 
+  public static hAny = new RegExp(hAny, 'gm');
   public static h1 = new RegExp(h1, 'gm');
+  public static h2 = new RegExp(h2, 'gm');
+  public static h3 = new RegExp(h3, 'gm');
+  public static h4 = new RegExp(h4, 'gm');
+  public static h5 = new RegExp(h5, 'gm');
+  public static h6 = new RegExp(h6, 'gm');
 
   // Functions
 
@@ -164,5 +171,34 @@ export default class MDRegex {
       return replaceFn(match, italicText);
     });
     return newText;
+  }
+
+  /** Replaces markdown lists with the given function.
+   *
+   * @param text - The text to replace.
+   * @param replaceFn - The function to replace the text with.
+   */
+  public static replaceList(
+    text: string,
+    replaceFn: (match: string, listElement: string) => string,
+  ): string {
+    return text.replace(MDRegex.list, (match, listElement) => {
+      return replaceFn(match, listElement);
+    });
+  }
+
+  /** Replaces markdown headers with the given function.
+   *
+   * @param text - THe text to replace.
+   * @param replaceFn - The function to replace the text with.
+   */
+  public static replaceHeader(
+    text: string,
+    replaceFn: (match: string, headerText: string, level: number) => string,
+  ): string {
+    return text.replace(MDRegex.hAny, (match, hashes, headerText) => {
+      const level = hashes.length;
+      return replaceFn(match, headerText, level);
+    });
   }
 }

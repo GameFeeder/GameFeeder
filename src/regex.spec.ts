@@ -1,7 +1,11 @@
 import MDRegex from './regex';
 
 describe('Markdown regex', () => {
+  // ---
+  // ATTRIBUTES
+  // ---
   describe('attributes', () => {
+    // LINK
     describe('link', () => {
       test('single', () => {
         testRegExp(MDRegex.link, '[TestLink](https://test.url)', [
@@ -16,6 +20,7 @@ describe('Markdown regex', () => {
       });
     });
 
+    // IMAGE
     describe('image', () => {
       test('single', () => {
         testRegExp(MDRegex.image, '![TestImage](https://test.png)', [
@@ -30,6 +35,7 @@ describe('Markdown regex', () => {
       });
     });
 
+    // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {
         testRegExp(MDRegex.boldAsterisk, '**bold sample text**', [
@@ -62,6 +68,7 @@ describe('Markdown regex', () => {
       });
     });
 
+    // ITALIC
     describe('italic', () => {
       test('single with asterisks', () => {
         testRegExp(MDRegex.italicAsterisk, '*italic sample text*', [
@@ -95,8 +102,28 @@ describe('Markdown regex', () => {
         });
       });
     });
+
+    // LIST
+    describe('list', () => {
+      test('single with asterisk', () => {
+        testRegExp(MDRegex.list, '* List Element', [
+          '* List Element',
+          'List Element',
+        ]);
+      });
+
+      xtest('single with dash', () => {
+        testRegExp(MDRegex.list, '- List Element', [
+          '- List Element',
+          'List Element',
+        ]);
+      });
+    });
   });
 
+  // ---
+  // FUNCTIONS
+  // ---
   describe('replace function', () => {
     // LINK
     describe('link', () => {
@@ -319,6 +346,91 @@ describe('Markdown regex', () => {
           return `~${italicText}~`;
         });
         const expected = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    // LIST
+    describe('list', () => {
+      test('single with asterisk', () => {
+        const testText = '* List Element';
+        const expected = '- List Element';
+
+        const resultText = MDRegex.replaceList(testText, (_, listElement) => {
+          return `- ${listElement}`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('multiple with asterisks', () => {
+        const testText = '* List Element 1\n* List Element 2';
+        const expected = '- List Element 1\n- List Element 2';
+
+        const resultText = MDRegex.replaceList(testText, (_, listElement) => {
+          return `- ${listElement}`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('single with dash', () => {
+        const testText = '- List Element';
+        const expected = '* List Element';
+
+        const resultText = MDRegex.replaceList(testText, (_, listElement) => {
+          return `* ${listElement}`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('multiple with dashes', () => {
+        const testText = '- List Element 1\n- List Element 2';
+        const expected = '* List Element 1\n* List Element 2';
+
+        const resultText = MDRegex.replaceList(testText, (_, listElement) => {
+          return `* ${listElement}`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    describe('header', () => {
+      test('h1', () => {
+        const testText = '# Header';
+        const expected = '**Header**';
+
+        const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
+          expect(level).toEqual(1);
+          return `**${headerText}**`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('h6', () => {
+        const testText = '###### Header';
+        const expected = '**Header**';
+
+        const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
+          expect(level).toEqual(6);
+          return `**${headerText}**`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('h6 is max', () => {
+        const testText = '####### Header';
+        const expected = '**# Header**';
+
+        const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
+          expect(level).toEqual(6);
+          return `**${headerText}**`;
+        });
 
         expect(resultText).toEqual(expected);
       });
