@@ -232,6 +232,31 @@ describe('Markdown regex', () => {
       });
     });
 
+    // IMAGE LINK
+    describe('image link', () => {
+      test('with link', () => {
+        const testText = 'We have an ![[image link](www.url.com)](www.url.png) right here.';
+        const expected = `We have an [image link](www.url.png) ([Link](www.url.com)) right here.`;
+
+        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
+          return `[${label}](${imageUrl}) ([Link](${linkUrl}))`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('without link', () => {
+        const testText = 'We have an ![[image link](www.url.com)](www.url.png) right here.';
+        const expected = `We have an [image link](www.url.png) ([Link](www.url.com)) right here.`;
+
+        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
+          return `[${label}](${imageUrl}) ([Link](${linkUrl}))`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {
