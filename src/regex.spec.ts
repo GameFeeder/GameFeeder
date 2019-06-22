@@ -35,6 +35,29 @@ describe('Markdown regex', () => {
       });
     });
 
+    // IMAGE LINK
+    describe('image link', () => {
+      test('with link', () => {
+        testRegExp(MDRegex.imageLink, '![[TestLabel](https://url.com)](https://test.png)', [
+          '![[TestLabel](https://url.com)](https://test.png)',
+          'TestLabel',
+          'https://url.com',
+          undefined,
+          'https://test.png',
+        ]);
+      });
+
+      xtest('without link', () => {
+        testRegExp(MDRegex.imageLink, '![TestLabel](https://test.png)', [
+          '![TestLabel](https://test.png)',
+          undefined,
+          undefined,
+          'TestLabel',
+          'https://test.png',
+        ]);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {
@@ -553,7 +576,7 @@ function testRegExp(regExp: RegExp, testStr: string, results: string[]) {
   }
 
   if (!match) {
-    fail('No match');
+    fail(`Not matching '${testStr}'.`);
     return;
   }
 

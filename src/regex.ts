@@ -9,6 +9,8 @@ export const someWs = '\\s+';
 export const baseLink = `\\[(${any})\\]\\((${any})\\)`;
 export const link = `(?<!!)${baseLink}`;
 export const image = `!${baseLink}`;
+// export const imageLink = `!\\[(?:(?:\\[(.*?)\\]\\((.*?)\\))|(.*?))\\]\\((.*)\\)`;
+export const imageLink = `!\\[(?:(?:${baseLink})|(${any}))\\]\\((${any})\\)`;
 
 export const boldAsterisk = `\\*\\*(?!\\s)(${some})(?<!\\s)\\*\\*`;
 export const boldUnderscore = `__(?!\\s)(${some})(?<!\\s)__`;
@@ -44,6 +46,19 @@ export default class MDRegex {
    * - Group 2: The image URL
    */
   public static image = new RegExp(image, 'g');
+
+  /** Matches a markdown image with optional included link.
+   * - Group 0: The whole markdown image link
+   * - Group 4: The image link
+   *
+   * If there is a link:
+   * - Group 1: The link label
+   * - Group 2: The link url
+   *
+   * If there is no link:
+   * - Group 3: The image label
+   */
+  public static imageLink = new RegExp(imageLink, 'g');
 
   // Bold
 
@@ -134,6 +149,20 @@ export default class MDRegex {
   ): string {
     return text.replace(MDRegex.image, (match, label, url) => {
       return replaceFn(match, label, url);
+    });
+  }
+
+  /** Replaces image links in the markdown text with the given function.
+   *
+   * @param text - The text to replace image links in.
+   * @param replaceFn - The function to replace the links with.
+   */
+  public static replaceImageLink(
+    text: string,
+    replaceFn: (match: string, label: string, imageUrl: string, linkUrl: string) => string,
+  ): string {
+    return text.replace(MDRegex.imageLink, (match, linkLabel, linkUrl, imageLabel, imageUrl) => {
+      return replaceFn(match, linkLabel || imageLabel, imageUrl, linkUrl);
     });
   }
 
