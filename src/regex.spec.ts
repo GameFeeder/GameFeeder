@@ -106,17 +106,11 @@ describe('Markdown regex', () => {
     // LIST
     describe('list', () => {
       test('single with asterisk', () => {
-        testRegExp(MDRegex.list, '* List Element', [
-          '* List Element',
-          'List Element',
-        ]);
+        testRegExp(MDRegex.list, '* List Element', ['* List Element', 'List Element']);
       });
 
       xtest('single with dash', () => {
-        testRegExp(MDRegex.list, '- List Element', [
-          '- List Element',
-          'List Element',
-        ]);
+        testRegExp(MDRegex.list, '- List Element', ['- List Element', 'List Element']);
       });
     });
   });
@@ -331,96 +325,127 @@ describe('Markdown regex', () => {
 
         expect(resultText).toEqual(expected);
       });
+
+      test('not matching with adjacent spaces', () => {
+        const testText = '** Test **';
+        const expected = '** Test **';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
     });
 
     // ITALIC
     describe('italic', () => {
       test('single with asterisks', () => {
         const testText = '*Italic Text*';
+        const expected = '_Italic Text_';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `_${italicText}_`;
         });
-        const expected = '_Italic Text_';
 
         expect(resultText).toEqual(expected);
       });
 
       test('multiple with asterisks', () => {
         const testText = 'We have an *italic text1* and another *italic text2*';
+        const expected = 'We have an _italic text1_ and another _italic text2_';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `_${italicText}_`;
         });
-        const expected = 'We have an _italic text1_ and another _italic text2_';
 
         expect(resultText).toEqual(expected);
       });
 
       test('single with underscores', () => {
         const testText = '_Italic Text_';
+        const expected = '*Italic Text*';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `*${italicText}*`;
         });
-        const expected = '*Italic Text*';
 
         expect(resultText).toEqual(expected);
       });
 
       test('multiple with underscores', () => {
         const testText = 'We have an _italic text1_ and another _italic text2_';
+        const expected = 'We have an *italic text1* and another *italic text2*';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `*${italicText}*`;
         });
-        const expected = 'We have an *italic text1* and another *italic text2*';
 
         expect(resultText).toEqual(expected);
       });
 
       test('single with asterisks and underscores', () => {
         const testText = '*Asterisk* and _Underscore_';
+        const expected = '~Asterisk~ and ~Underscore~';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
         });
-        const expected = '~Asterisk~ and ~Underscore~';
 
         expect(resultText).toEqual(expected);
       });
 
       test('multiple with asterisks and underscores', () => {
         const testText = '*asterisk1* and _underscore1_ and *asterisk2* and _underscore2_';
+        const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
         });
-        const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
 
         expect(resultText).toEqual(expected);
       });
 
       test('not matching bold formatting', () => {
         const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+        const expected = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
         });
-        const expected = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
 
         expect(resultText).toEqual(expected);
       });
 
       test('not matching through linebreak with asterisks', () => {
         const testText = '*Test\nText*';
+        const expected = '*Test\nText*';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
         });
-        const expected = '*Test\nText*';
 
         expect(resultText).toEqual(expected);
       });
 
       test('not matching through linebreak with underscores', () => {
         const testText = '_Test\nText_';
+        const expected = '_Test\nText_';
+
         const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
           return `~${italicText}~`;
         });
-        const expected = '_Test\nText_';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching with adjacent spaces', () => {
+        const testText = '* Test *';
+        const expected = '* Test *';
+
+        const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
+          return `~${italicText}~`;
+        });
 
         expect(resultText).toEqual(expected);
       });

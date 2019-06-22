@@ -10,12 +10,12 @@ export const baseLink = `\\[(${any})\\]\\((${any})\\)`;
 export const link = `(?<!!)${baseLink}`;
 export const image = `!${baseLink}`;
 
-export const boldAsterisk = `\\*\\*(${some})\\*\\*`;
-export const boldUnderscore = `__(${some})__`;
+export const boldAsterisk = `\\*\\*(?!\\s)(${some})(?<!\\s)\\*\\*`;
+export const boldUnderscore = `__(?!\\s)(${some})(?<!\\s)__`;
 export const bold = `(?:${boldAsterisk})|(?:${boldUnderscore})`;
 
-export const italicAsterisk = `(?<!\\*)\\*(${someNoAstNoLB})\\*(?!\\*)`;
-export const italicUnderscore = `(?<!_)_(${someNoUndNoLB})_(?!_)`;
+export const italicAsterisk = `(?<!\\*)\\*(?!\\s)(${someNoAstNoLB})(?<!\\s)\\*(?!\\*)`;
+export const italicUnderscore = `(?<!_)_(?!\\s)(${someNoUndNoLB})(?<!\\s)_(?!_)`;
 export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 
 export const list = `^${anyWs}[-\\*]${someWs}(${any})${anyWs}$`;
