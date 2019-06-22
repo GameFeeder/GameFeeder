@@ -217,14 +217,21 @@ export default class DiscordBot extends BotClient {
     });
 
     // Images
-    markdown = MDRegex.replaceImage(markdown, (_, label, url) => {
+    markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
       const newLabel = label ? label : 'Image';
 
-      if (isEmbed) {
-        return `[${newLabel}](${url})`;
+      if (linkUrl) {
+        if (isEmbed) {
+          return `[${newLabel}](${imageUrl}) ([Link](${linkUrl}))`;
+        }
+        return `${newLabel} (${linkUrl})`;
       }
 
-      return `${newLabel} (${url})`;
+      if (isEmbed) {
+        return `[${newLabel}](${imageUrl})`;
+      }
+
+      return `${newLabel} (${imageUrl})`;
     });
 
     // Lists
