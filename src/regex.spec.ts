@@ -247,10 +247,10 @@ describe('Markdown regex', () => {
 
       test('without link', () => {
         const testText = 'We have an ![image](www.url.png) right here.';
-        const expected = `We have an [image link](www.url.png) ([Link](www.url.com)) right here.`;
+        const expected = `We have an [image](www.url.png) right here.`;
 
         const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
-          return `[${label}](${imageUrl}) ([Link](${linkUrl}))`;
+          return `[${label}](${imageUrl})`;
         });
 
         expect(resultText).toEqual(expected);
