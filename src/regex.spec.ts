@@ -246,7 +246,7 @@ describe('Markdown regex', () => {
       });
 
       test('without link', () => {
-        const testText = 'We have an ![[image link](www.url.com)](www.url.png) right here.';
+        const testText = 'We have an ![image](www.url.png) right here.';
         const expected = `We have an [image link](www.url.png) ([Link](www.url.com)) right here.`;
 
         const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
