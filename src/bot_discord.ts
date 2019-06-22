@@ -226,25 +226,24 @@ export default class DiscordBot extends BotClient {
 
       return `${newLabel} (${url})`;
     });
-    // markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
-    // markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
-    // markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
-    // markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
 
-    // Linewise formatting
-    const lineArray = markdown.split('\n');
-    for (let i = 0; i < lineArray.length; i++) {
+    // Lists
+    markdown = MDRegex.replaceList(markdown, (_, listElement) => {
+      return `- ${listElement}`;
+    });
+
+    // Headers
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
       // H1-3
-      lineArray[i] = lineArray[i].replace(/^\s*##?#?\s*(.*)/, '__**$1**__');
+      if (level <= 3) {
+        return `__**${headerText}**__`;
+      }
+
       // H4-6
-      lineArray[i] = lineArray[i].replace(/^\s*#####?#?\s*(.*)/, '**$1**');
-      // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
-    }
+      return `**${headerText}**`;
+    });
 
-    const newMarkdown = lineArray.join('\n');
-
-    return newMarkdown;
+    return markdown;
   }
 
   private async sendToChannel(channel: BotChannel, text: string, embed?: any): Promise<boolean> {

@@ -1,7 +1,7 @@
 export const any = '.*?';
 export const some = '.+?';
-export const someNoAst = '[^\\*]+?';
-export const someNoUnd = '[^_]+?';
+export const someNoAstNoLB = '[^\\*\\n]+?';
+export const someNoUndNoLB = '[^_\\n]+?';
 export const someNoHash = '[^#]+?';
 export const anyWs = '\\s*';
 export const someWs = '\\s+';
@@ -14,8 +14,8 @@ export const boldAsterisk = `\\*\\*(${some})\\*\\*`;
 export const boldUnderscore = `__(${some})__`;
 export const bold = `(?:${boldAsterisk})|(?:${boldUnderscore})`;
 
-export const italicAsterisk = `(?<!\\*)\\*(${someNoAst})\\*(?!\\*)`;
-export const italicUnderscore = `(?<!_)_(${someNoUnd})_(?!_)`;
+export const italicAsterisk = `(?<!\\*)\\*(${someNoAstNoLB})\\*(?!\\*)`;
+export const italicUnderscore = `(?<!_)_(${someNoUndNoLB})_(?!_)`;
 export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 
 export const list = `^${anyWs}[-\\*]${someWs}(${any})${anyWs}$`;

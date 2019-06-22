@@ -146,6 +146,64 @@ describe('Discord bot', () => {
         expect(testNoEmbed).toEqual(expected);
         expect(testEmbed).toEqual(expected);
       });
+
+      test('not matching single asterisk', () => {
+        const testText = 'Test*Text';
+        const expected = 'Test*Text';
+
+        const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+        const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+        expect(testNoEmbed).toEqual(expected);
+        expect(testEmbed).toEqual(expected);
+      });
+    });
+  });
+
+  // LIST
+  describe('list', () => {
+    test('single with asterisk', () => {
+      const testText = '* List element';
+      const expected = '- List element';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
+    });
+
+    test('multiple with asterisks', () => {
+      const testText = '* List element 1\n*  List element 2';
+      const expected = '- List element 1\n- List element 2';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
+    });
+
+    test('single with dash', () => {
+      const testText = '- List element';
+      const expected = '- List element';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
+    });
+
+    test('multiple with dashes', () => {
+      const testText = '- List element 1\n-  List element 2';
+      const expected = '- List element 1\n- List element 2';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
     });
   });
 });

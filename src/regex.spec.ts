@@ -276,6 +276,61 @@ describe('Markdown regex', () => {
 
         expect(resultText).toEqual(expected);
       });
+
+      test('multiple with asterisks and underscores', () => {
+        const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+        const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching single asterisks', () => {
+        const testText = 'Test**Text';
+        const expected = 'Test**Text';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching single underscores', () => {
+        const testText = 'Test__Text';
+        const expected = 'Test__Text';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching through linebreak with asterisks', () => {
+        const testText = '**Test\nText**';
+        const expected = '**Test\nText**';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching through linebreak with underscores', () => {
+        const testText = '__Test\nText__';
+        const expected = '__Test\nText__';
+
+        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
+          return `~${boldText}~`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
     });
 
     // ITALIC
@@ -346,6 +401,26 @@ describe('Markdown regex', () => {
           return `~${italicText}~`;
         });
         const expected = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching through linebreak with asterisks', () => {
+        const testText = '*Test\nText*';
+        const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
+          return `~${italicText}~`;
+        });
+        const expected = '*Test\nText*';
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('not matching through linebreak with underscores', () => {
+        const testText = '_Test\nText_';
+        const resultText = MDRegex.replaceItalic(testText, (_, italicText) => {
+          return `~${italicText}~`;
+        });
+        const expected = '_Test\nText_';
 
         expect(resultText).toEqual(expected);
       });
