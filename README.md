@@ -9,15 +9,15 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 
 ---
 ## Index <!-- omit in toc -->
-- [About this project](#about-this-project)
-  - [Commands](#commands)
-    - [Permissions](#permissions)
-  - [Games](#games)
-  - [Contributing](#contributing)
-- [Miscellaneous](#miscellaneous)
-  - [Privacy](#privacy)
-  - [License](#license)
-  - [Disclaimer](#disclaimer)
+- [About this project](#About-this-project)
+  - [Commands](#Commands)
+    - [Permissions](#Permissions)
+  - [Games](#Games)
+  - [Contributing](#Contributing)
+- [Miscellaneous](#Miscellaneous)
+  - [Privacy](#Privacy)
+  - [License](#License)
+  - [Disclaimer](#Disclaimer)
 
 ## About this project
 
@@ -58,8 +58,13 @@ So far, we are supporting the following games:
 - Dota 2
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
   - Posts on the [Dota 2 blog](http://blog.dota2.com/)
+- Steam
+  - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
+  - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
 - Team Fortress 2
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
+- Dota Underlords
+  - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
 
 ### Contributing
 
