@@ -15,7 +15,7 @@ export default class FileManager {
    * @param path - The path of the file directory.
    * @param fileName - The name of the file to read.
    */
-  private static readFile(path: string, fileName: string): string {
+  public static readFile(path: string, fileName: string): string {
     return FS.readFileSync(this.getFilePath(path, fileName), 'utf8');
   }
 
