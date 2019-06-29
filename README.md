@@ -9,15 +9,15 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 
 ---
 ## Index <!-- omit in toc -->
-- [About this project](#about-this-project)
-  - [Commands](#commands)
-    - [Permissions](#permissions)
-  - [Games](#games)
-  - [Contributing](#contributing)
-- [Miscellaneous](#miscellaneous)
-  - [Privacy](#privacy)
-  - [License](#license)
-  - [Disclaimer](#disclaimer)
+- [About this project](#About-this-project)
+  - [Commands](#Commands)
+    - [Permissions](#Permissions)
+  - [Games](#Games)
+  - [Contributing](#Contributing)
+- [Miscellaneous](#Miscellaneous)
+  - [Privacy](#Privacy)
+  - [License](#License)
+  - [Disclaimer](#Disclaimer)
 
 ## About this project
 
@@ -27,6 +27,7 @@ So far, we are providing the following commands:
 
 - The default prefix on Telegram is `/`.
 - The default prefix on Discord is `!`.
+- You can also use the bot's tag as prefix.
 
 | Command                                  | Permission | Summary                                         |
 | ---------------------------------------- | ---------- | ----------------------------------------------- |
@@ -50,16 +51,21 @@ So far, we are providing the following commands:
 
 So far, we are supporting the following games:
 
-- Artifact
+- <img src="https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png" align="left" height="17px"/> **Artifact**
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/Artifact](https://www.reddit.com/r/Artifact/)
-- CS:GO
+- <img src="http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png" align="left" height="17px"/> **CS:GO**
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
-- Dota 2
+- <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/> **Dota 2**
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
   - Posts on the [Dota 2 blog](http://blog.dota2.com/)
-- Team Fortress 2
+- <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/> **Steam**
+  - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
+  - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
+- <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png" align="left" height="17px"/> **Team Fortress 2**
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
+- <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" align="left" height="17px"/> **Dota Underlords**
+  - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
 
 ### Contributing
 
