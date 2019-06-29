@@ -1,4 +1,5 @@
 import FS from 'fs';
+import botLogger from './bot_logger';
 
 /** The available config files. */
 export enum CONFIG {
@@ -284,5 +285,21 @@ export default class ConfigManager {
   /** Gets the updater config example object. */
   public static getUpdaterConfigExample(): updater_config {
     return this.parseExampleFile(CONFIG.UPDATER);
+  }
+
+  public static initCheck(): void {
+    const files = FS.readdirSync(this.basePath);
+    const jsonRegex = /^(.*)\.json$/;
+    const exampleRegex = /^(.*)\.example\.json$/;
+    const exampleFiles = [];
+
+    for (const file of files) {
+      const match = exampleRegex.exec(file);
+      if (match) {
+        const fileName = match[1];
+        botLogger.debug(`fileName: ${fileName}`);
+        exampleFiles.push(fileName);
+      }
+    }
   }
 }

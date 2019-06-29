@@ -23,3 +23,17 @@ export async function filterAsync<T>(
   const filterMap = await mapAsync(array, callbackfn);
   return array.filter((value, index) => filterMap[index]);
 }
+
+/** Determines whether the given array contains the given element.
+ *
+ * @param array - The array to search the element in.
+ * @param element - The element to search in the array.
+ */
+export function contains<T>(array: T[], element: T) {
+  for (const item of array) {
+    if (item === element) {
+      return true;
+    }
+  }
+  return false;
+}
