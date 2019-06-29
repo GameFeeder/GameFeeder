@@ -3,7 +3,7 @@ import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import DataManager from './data_manager';
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 
 export default abstract class BotClient {

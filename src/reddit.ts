@@ -1,6 +1,6 @@
 import Snoowrap from 'snoowrap';
 import ConfigManager from './config_manager';
-import { Game } from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';

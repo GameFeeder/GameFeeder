@@ -1,7 +1,7 @@
 import bots from './bots';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
-import { games } from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import RSS from './rss';
@@ -83,7 +83,7 @@ class Updater {
     const startTime = Date.now();
 
     let notifications: BotNotification[] = [];
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       const gameStartTime = Date.now();
 
       let gameNotifications: BotNotification[] = [];

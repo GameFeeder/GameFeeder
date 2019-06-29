@@ -2,7 +2,7 @@ import { UserPermission } from './bot_user';
 import bots from './bots';
 import Command from './command';
 import DataManager from './data_manager';
-import games from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import { filterAsync, mapAsync } from './util';
 
@@ -91,7 +91,7 @@ const gamesCmd = new Command(
   'games',
   'games\\s*$',
   (bot, channel) => {
-    const gamesList = games.map((game) => `- ${game.label}`);
+    const gamesList = Game.getGames().map((game) => `- ${game.label}`);
     const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
     bot.sendMessage(channel, gamesMD);
@@ -117,7 +117,7 @@ const subCmd = new Command(
     }
 
     let noGamesFound = true;
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         noGamesFound = false;
         if (bot.addSubscriber(channel, game)) {
@@ -153,7 +153,7 @@ const unsubCmd = new Command(
       );
     }
 
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         if (bot.removeSubscriber(channel, game)) {
           bot.sendMessage(channel, `You are now unsubscribed from the **${game.label}** feed!`);
@@ -300,7 +300,7 @@ const notifyGameSubsCmd = new Command(
     }
 
     // Try to find the game
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${message}"`);
         // Notify the game's subs
