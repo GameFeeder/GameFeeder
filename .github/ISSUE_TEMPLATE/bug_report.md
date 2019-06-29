@@ -1,14 +1,14 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG] <Your title>"
+title: "<Your title>"
 labels: bug
 assignees: ''
 
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug is and on which client it occurs.
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -22,11 +22,3 @@ A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
-
-**Clients:**
-The clients affected by the bug:
- - [ ] Discord
- - [ ] Telegram
-
-**Additional context**
-Add any other context about the problem here.
