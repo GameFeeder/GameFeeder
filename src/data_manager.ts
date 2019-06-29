@@ -36,7 +36,8 @@ export type updater_data = {
 /** The class managing the data files. */
 export default class DataManager {
   /** The base path of the config files. */
-  private static basePath = 'data';
+  public static basePath = 'data/';
+  public static ext = '.json';
 
   /** The file name of the updater config. */
   private static updaterFileName = 'updater_data';
@@ -49,9 +50,9 @@ export default class DataManager {
   private static getFileName(file: DATA): string {
     switch (file) {
       case DATA.UPDATER:
-        return this.updaterFileName;
+        return this.updaterFileName + this.ext;
       case DATA.SUBS:
-        return this.subscriberFileName;
+        return this.subscriberFileName + this.ext;
       default:
         throw Error('Unknown config file.');
     }

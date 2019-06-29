@@ -112,7 +112,8 @@ export type updater_config = {
 /** The class that handles the config files. */
 export default class ConfigManager {
   /** The base path of the config files. */
-  private static basePath = 'config';
+  public static basePath = 'config/';
+  public static ext = '.json';
 
   /** The file name of the API config. */
   private static apiFileName = 'api_config';
@@ -128,11 +129,11 @@ export default class ConfigManager {
   private static getFileName(file: CONFIG): string {
     switch (file) {
       case CONFIG.API:
-        return this.apiFileName;
+        return this.apiFileName + this.ext;
       case CONFIG.GAME:
-        return this.gameFileName;
+        return this.gameFileName + this.ext;
       case CONFIG.UPDATER:
-        return this.updaterFileName;
+        return this.updaterFileName + this.ext;
       default:
         throw Error('Unknown config file.');
     }

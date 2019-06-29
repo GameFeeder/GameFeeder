@@ -2,6 +2,8 @@ import FS from 'fs';
 import { contains } from './util';
 import FileManager from './file_manager';
 import botLogger from './bot_logger';
+import ConfigManager from './config_manager';
+import DataManager from './data_manager';
 
 export default class InitManager {
   public static exampleExt = '.example.json';
@@ -11,7 +13,7 @@ export default class InitManager {
    *
    * @param fileName - The name of the example file to get the file name of.
    */
-  public static getExampleFile(fileName: string) {
+  public static getExampleFileName(fileName: string) {
     return fileName + this.exampleExt;
   }
 
@@ -19,7 +21,7 @@ export default class InitManager {
    *
    * @param fileName - The name of the user file to get the file name of.
    */
-  public static getUserFile(fileName: string) {
+  public static getUserFileName(fileName: string) {
     return fileName + this.userExt;
   }
 
@@ -129,8 +131,8 @@ export default class InitManager {
     const missingUserFiles = this.missingUserFiles(path);
 
     for (const file of missingUserFiles) {
-      const exampleFile = this.getExampleFile(file);
-      const userFile = this.getUserFile(file);
+      const exampleFile = this.getExampleFileName(file);
+      const userFile = this.getUserFileName(file);
 
       botLogger.warn(
         `Didn't find '${FileManager.getFilePath(
@@ -140,9 +142,27 @@ export default class InitManager {
       );
 
       const content = FileManager.readFile(path, exampleFile);
-      FileManager.writeFile(path, this.getUserFile(file), content);
+      FileManager.writeFile(path, this.getUserFileName(file), content);
     }
 
     return missingUserFiles;
+  }
+
+  /** Adds all missing config files. */
+  public static addMissingUserConfigs(): string[] {
+    const configPath = ConfigManager.basePath;
+    return this.addMissingUserFiles(configPath);
+  }
+
+  /** Adds all missing data files. */
+  public static addMissingUserDatas(): string[] {
+    const dataPath = DataManager.basePath;
+    return this.addMissingUserFiles(dataPath);
+  }
+
+  /** Initializes and validates all config and data files. */
+  public static initAll() {
+    this.addMissingUserConfigs();
+    this.addMissingUserDatas();
   }
 }

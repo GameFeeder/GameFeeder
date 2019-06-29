@@ -2,7 +2,7 @@ import botLogger from './bot_logger';
 import bots from './bots';
 import commands from './commands';
 import updater from './updater';
-import ConfigManager from './config_manager';
+import InitManager from './init_manager';
 
 /** Registers the bot commands. */
 async function registerCommands() {
@@ -42,6 +42,7 @@ async function startUpdater() {
 
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
+  InitManager.initAll();
   // await registerCommands();
   // await startBots();
   // await startUpdater();
