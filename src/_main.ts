@@ -42,7 +42,6 @@ async function startUpdater() {
 
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
-  ConfigManager.initCheck();
   // await registerCommands();
   // await startBots();
   // await startUpdater();
