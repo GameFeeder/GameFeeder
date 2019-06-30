@@ -37,3 +37,27 @@ export function contains<T>(array: T[], element: T) {
   }
   return false;
 }
+
+export class ObjUtil {
+  public static keys(object: any): string[] {
+    if (!(object instanceof Object)) {
+      return [];
+    }
+
+    return Object.keys(object);
+  }
+
+  public static getInnerObject(object: any, path?: string[]): any {
+    if (!path || path.length === 0) {
+      return object;
+    }
+
+    let targetObject = object;
+
+    for (const key of path) {
+      targetObject = targetObject[key];
+    }
+
+    return targetObject;
+  }
+}

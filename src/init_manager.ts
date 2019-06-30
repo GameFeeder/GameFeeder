@@ -1,5 +1,5 @@
 import FS from 'fs';
-import { contains } from './util';
+import { contains, ObjUtil } from './util';
 import FileManager from './file_manager';
 import botLogger from './bot_logger';
 import ConfigManager from './config_manager';
@@ -159,6 +159,46 @@ export default class InitManager {
   public static addMissingUserDatas(): string[] {
     const dataPath = DataManager.basePath;
     return this.addMissingUserFiles(dataPath);
+  }
+
+  public static checkForKey(object: any, keyPath: string[], key: string): boolean {
+    let target = object;
+
+    for (const path of keyPath) {
+      target = target[path];
+    }
+
+    return target[key];
+  }
+
+  public static getMissingKeys(
+    reference: any,
+    object: any,
+    path?: string[],
+  ): string[][] {
+    const refTarget = ObjUtil.getInnerObject(reference, path);
+    const objTarget = ObjUtil.getInnerObject(object, path);
+
+    const refKeys = ObjUtil.keys(refTarget);
+    botLogger.debug(`Ref: ${JSON.stringify(refTarget)}`);
+    const objKeys = ObjUtil.keys(objTarget);
+    botLogger.debug(`Obj: ${JSON.stringify(objTarget)}`);
+
+    let missing: string[][] = [];
+    const keyPath = path ? path : [];
+
+    for (const key of refKeys) {
+      if (key && contains(objKeys, key)) {
+        botLogger.debug('Contains');
+        const nextMissing = this.getMissingKeys(reference, object, keyPath.concat([key]));
+        missing = missing.concat(nextMissing);
+      } else {
+        botLogger.debug(' Not contains');
+        missing.push(keyPath.concat([key]));
+      }
+    }
+
+    return missing;
   }
 
   /** Initializes and validates all config and data files. */
