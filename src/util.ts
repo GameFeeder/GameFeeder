@@ -60,4 +60,20 @@ export class ObjUtil {
 
     return targetObject;
   }
+
+  public static addInnerObject(object: any, toAdd: any, path: string[]): any {
+    if (!path || path.length === 0) {
+      return toAdd;
+    }
+
+    let targetObject = object;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      targetObject = targetObject[path[i]];
+    }
+
+    targetObject[path[path.length - 1]] = toAdd;
+
+    return targetObject;
+  }
 }

@@ -171,18 +171,12 @@ export default class InitManager {
     return target[key];
   }
 
-  public static getMissingKeys(
-    reference: any,
-    object: any,
-    path?: string[],
-  ): string[][] {
+  public static getMissingKeys(reference: any, object: any, path?: string[]): string[][] {
     const refTarget = ObjUtil.getInnerObject(reference, path);
     const objTarget = ObjUtil.getInnerObject(object, path);
 
     const refKeys = ObjUtil.keys(refTarget);
-    botLogger.debug(`Ref: ${JSON.stringify(refTarget)}`);
     const objKeys = ObjUtil.keys(objTarget);
-    botLogger.debug(`Obj: ${JSON.stringify(objTarget)}`);
 
     let missing: string[][] = [];
     const keyPath = path ? path : [];
@@ -199,6 +193,31 @@ export default class InitManager {
     }
 
     return missing;
+  }
+
+  public static addMissingKeys(reference: any, object: any): any {
+    const missing = this.getMissingKeys(reference, object);
+    let newObj = object;
+
+    for (const path of missing) {
+      const refInner = ObjUtil.getInnerObject(reference, path);
+      newObj = ObjUtil.addInnerObject(newObj, refInner, path);
+    }
+
+    return newObj;
+  }
+
+  public static addMissingUserKeys(path: string) {
+    const exampleFiles = this.getExampleFiles(path);
+
+    for (const file of exampleFiles) {
+      const expObj = FileManager.parseFile(path, this.getExampleFileName(file));
+      const userObj = FileManager.parseFile(path, this.getUserFileName(file));
+
+      const newUserObj = this.addMissingKeys(expObj, userObj);
+      botLogger.warn(`Found missing keys in '${this.getUserFileName(file)}, replacing by default.`);
+      FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
+    }
   }
 
   /** Initializes and validates all config and data files. */
