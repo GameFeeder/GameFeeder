@@ -1,4 +1,4 @@
-import bots from './bots';
+import getBots from './bots';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
 import Game from './game';
@@ -116,7 +116,7 @@ class Updater {
       this.saveDate(notifications[notifications.length - 1].timestamp);
 
       // Notify users
-      for (const bot of bots) {
+      for (const bot of getBots()) {
         for (const notification of notifications) {
           bot.sendMessageToGameSubs(notification.game, notification);
         }

@@ -1,5 +1,5 @@
 import { UserPermission } from './bot_user';
-import bots from './bots';
+import getBots from './bots';
 import Command from './command';
 import DataManager from './data_manager';
 import Game from './game';
@@ -262,7 +262,7 @@ const notifyAllCmd = new Command(
     bot.sendMessage(channel, `Notifying all subs with:\n"${message}"`);
 
     // Send the provided message to all subs
-    for (const curBot of bots) {
+    for (const curBot of getBots()) {
       curBot.sendMessageToAllSubs(message);
     }
   },
@@ -304,7 +304,7 @@ const notifyGameSubsCmd = new Command(
       if (game.hasAlias(alias)) {
         bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${message}"`);
         // Notify the game's subs
-        for (const curBot of bots) {
+        for (const curBot of getBots()) {
           curBot.sendMessageToGameSubs(game, message);
         }
 
@@ -334,7 +334,7 @@ const statsCmd = new Command(
     let totalUserCount = 0;
     let totalChannelCount = 0;
 
-    for (const curBot of bots) {
+    for (const curBot of getBots()) {
       const botChannels = curBot.getBotChannels();
       const channelCount = botChannels.length;
       const userCounts = await mapAsync(

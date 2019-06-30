@@ -1,6 +1,10 @@
-import { discordBot } from './bot_discord';
-import { telegramBot } from './bot_telegram';
+import DiscordBot from './bot_discord';
+import TelegramBot from './bot_telegram';
+import BotClient from './bot';
 
-const bots = [discordBot, telegramBot];
+export default function getBots(): BotClient[] {
+  const discordBot = DiscordBot.getBot();
+  const telegramBot = TelegramBot.getBot();
 
-export default bots;
+  return [discordBot, telegramBot];
+}

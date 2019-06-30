@@ -1,5 +1,5 @@
 import botLogger from './bot_logger';
-import bots from './bots';
+import getBots from './bots';
 import commands from './commands';
 import updater from './updater';
 import InitManager from './init_manager';
@@ -7,7 +7,7 @@ import InitManager from './init_manager';
 /** Registers the bot commands. */
 async function registerCommands() {
   for (const command of commands) {
-    for (const bot of bots) {
+    for (const bot of getBots()) {
       bot.registerCommand(command);
     }
     botLogger.debug(`Registered command: '${command.label}'.`, 'Main');
@@ -18,7 +18,7 @@ async function registerCommands() {
 /** Starts the bots. */
 async function startBots() {
   // Start bots
-  for (const bot of bots) {
+  for (const bot of getBots()) {
     if (bot.autostart) {
       if (await bot.start()) {
         const userName = await bot.getUserName();
