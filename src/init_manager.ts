@@ -98,7 +98,7 @@ export default class InitManager {
     const missingFiles = [];
 
     for (const file of exampleFiles) {
-      if (!this.checkForFile(path, this.getExampleFileName(file))) {
+      if (!this.checkForFile(path, this.getUserFileName(file))) {
         missingFiles.push(file);
       }
     }
@@ -115,7 +115,7 @@ export default class InitManager {
     const missingFiles = [];
 
     for (const file of userFiles) {
-      if (!this.checkForFile(path, this.getUserFileName(file))) {
+      if (!this.checkForFile(path, this.getExampleFileName(file))) {
         missingFiles.push(file);
       }
     }
