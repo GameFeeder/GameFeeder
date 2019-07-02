@@ -183,11 +183,9 @@ export default class InitManager {
 
     for (const key of refKeys) {
       if (key && contains(objKeys, key)) {
-        botLogger.debug('Contains');
         const nextMissing = this.getMissingKeys(reference, object, keyPath.concat([key]));
         missing = missing.concat(nextMissing);
       } else {
-        botLogger.debug(' Not contains');
         missing.push(keyPath.concat([key]));
       }
     }
@@ -195,7 +193,7 @@ export default class InitManager {
     return missing;
   }
 
-  public static addMissingKeys(reference: any, object: any): any {
+  public static addMissingKeys(reference: any, object: any): { object: any; keys: string[][] } {
     const missing = this.getMissingKeys(reference, object);
     let newObj = object;
 
@@ -204,7 +202,7 @@ export default class InitManager {
       newObj = ObjUtil.addInnerObject(newObj, refInner, path);
     }
 
-    return newObj;
+    return { object: newObj, keys: missing };
   }
 
   public static addMissingUserKeys(path: string) {
@@ -214,15 +212,35 @@ export default class InitManager {
       const expObj = FileManager.parseFile(path, this.getExampleFileName(file));
       const userObj = FileManager.parseFile(path, this.getUserFileName(file));
 
-      const newUserObj = this.addMissingKeys(expObj, userObj);
-      botLogger.warn(`Found missing keys in '${this.getUserFileName(file)}, replacing by default.`);
-      FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
+      const { object: newUserObj, keys: missingKeys } = this.addMissingKeys(expObj, userObj);
+      if (missingKeys.length > 0) {
+        botLogger.warn(
+          `Found missing keys in '${this.getUserFileName(
+            file,
+          )}, replacing by default.\n${JSON.stringify(missingKeys)}`,
+        );
+        FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
+      }
     }
+  }
+
+  public static addMissingUserConfigKeys() {
+    const configPath = ConfigManager.basePath;
+    return this.addMissingUserKeys(configPath);
+  }
+
+  public static addMissingUserDataKeys() {
+    const configPath = DataManager.basePath;
+    return this.addMissingUserKeys(configPath);
   }
 
   /** Initializes and validates all config and data files. */
   public static initAll() {
+    this.addMissingUserConfigKeys();
+    this.addMissingUserDataKeys();
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
+
+    botLogger.info('Finished initialization check.', 'InitManager');
   }
 }
