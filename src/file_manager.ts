@@ -45,6 +45,6 @@ export default class FileManager {
    * @param object - The object to write to the file.
    */
   public static writeObject(path: string, fileName: string, object: any): void {
-    return this.writeFile(path, fileName, JSON.stringify(object));
+    return this.writeFile(path, fileName, JSON.stringify(object, null, 2));
   }
 }
