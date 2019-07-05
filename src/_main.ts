@@ -1,7 +1,7 @@
 import botLogger from './bot_logger';
 import getBots from './bots';
 import commands from './commands';
-import updater from './updater';
+import Updater from './updater';
 import InitManager from './init_manager';
 
 /** Registers the bot commands. */
@@ -34,9 +34,9 @@ async function startBots() {
 
 /** Starts the updater. */
 async function startUpdater() {
-  if (updater.autostart) {
-    updater.start();
-    updater.info('Started updater.');
+  if (Updater.getUpdater().autostart) {
+    Updater.getUpdater().start();
+    Updater.getUpdater().info('Started updater.');
   }
 }
 

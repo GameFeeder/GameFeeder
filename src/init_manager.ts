@@ -4,6 +4,7 @@ import FileManager from './file_manager';
 import botLogger from './bot_logger';
 import ConfigManager from './config_manager';
 import DataManager from './data_manager';
+import { Util } from 'discord.js';
 
 export default class InitManager {
   public static exampleExt = '.example.json';
@@ -207,19 +208,22 @@ export default class InitManager {
 
   public static addMissingUserKeys(path: string) {
     const exampleFiles = this.getExampleFiles(path);
+    const userFiles = this.getUserFiles(path);
 
     for (const file of exampleFiles) {
-      const expObj = FileManager.parseFile(path, this.getExampleFileName(file));
-      const userObj = FileManager.parseFile(path, this.getUserFileName(file));
+      if (contains(userFiles, file)) {
+        const expObj = FileManager.parseFile(path, this.getExampleFileName(file));
+        const userObj = FileManager.parseFile(path, this.getUserFileName(file));
 
-      const { object: newUserObj, keys: missingKeys } = this.addMissingKeys(expObj, userObj);
-      if (missingKeys.length > 0) {
-        botLogger.warn(
-          `Found missing keys in '${this.getUserFileName(
-            file,
-          )}, replacing by default.\n${JSON.stringify(missingKeys)}`,
-        );
-        FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
+        const { object: newUserObj, keys: missingKeys } = this.addMissingKeys(expObj, userObj);
+        if (missingKeys.length > 0) {
+          botLogger.warn(
+            `Found missing keys in '${this.getUserFileName(
+              file,
+            )}, replacing by default.\n${JSON.stringify(missingKeys)}`,
+          );
+          FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
+        }
       }
     }
   }
