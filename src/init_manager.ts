@@ -200,7 +200,7 @@ export default class InitManager {
 
     for (const path of missing) {
       const refInner = ObjUtil.getInnerObject(reference, path);
-      newObj = ObjUtil.addInnerObject(newObj, refInner, path);
+      newObj = ObjUtil.setInnerObject(newObj, refInner, path);
     }
 
     return { object: newObj, keys: missing };

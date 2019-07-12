@@ -61,19 +61,26 @@ export class ObjUtil {
     return targetObject;
   }
 
-  public static addInnerObject(object: any, toAdd: any, path: string[]): any {
+  public static setInnerObject(object: any, toAdd: any, path: string[]): any {
+    return this.setInnerObjectHelper(object, toAdd, path);
+  }
+
+  private static setInnerObjectHelper(object: any, toAdd: any, path: string[]): any {
     if (!path || path.length === 0) {
       return toAdd;
     }
 
-    let targetObject = object;
-
-    for (let i = 0; i < path.length - 1; i++) {
-      targetObject = targetObject[path[i]];
+    if (path.length === 1) {
+      const newObject = object;
+      newObject[path[0]] = toAdd;
+      return newObject;
     }
 
-    targetObject[path[path.length - 1]] = toAdd;
+    const newPath = path;
+    const key = newPath.shift();
+    const newObject = object;
+    newObject[key] = this.setInnerObjectHelper(newObject[key], toAdd, newPath);
 
-    return targetObject;
+    return newObject;
   }
 }
