@@ -4,7 +4,6 @@ import BotClient from './bot';
 import botLogger from './bot_logger';
 
 export default function getBots(): BotClient[] {
-  botLogger.debug('GetBots');
   const discordBot = DiscordBot.getBot();
   const telegramBot = TelegramBot.getBot();
 

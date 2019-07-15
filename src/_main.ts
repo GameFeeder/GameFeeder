@@ -43,10 +43,9 @@ async function startUpdater() {
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
   InitManager.initAll();
-  while (true) {}
-  // await registerCommands();
-  // await startBots();
-  // await startUpdater();
+  await registerCommands();
+  await startBots();
+  await startUpdater();
 }
 
 start();
