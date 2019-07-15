@@ -36,7 +36,7 @@ describe('Init manager', () => {
       expect(resultMissing).toEqual(expectedMissing);
     });
 
-    xtest('inner', () => {
+    test('inner', () => {
       const reference = { a: 'A', b: { d: 'D', e: 'E' }, c: 'C' };
       const object = { a: 'A', b: { e: 'E' } };
       const expectedMissing = [['b', 'd'], ['c']];

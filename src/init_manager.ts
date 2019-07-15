@@ -10,6 +10,14 @@ export default class InitManager {
   public static exampleExt = '.example.json';
   public static userExt = '.json';
 
+  public static info(message: string): void {
+    botLogger.info(message, 'InitManager');
+  }
+
+  public static warn(message: string): void {
+    botLogger.warn(message, 'InitManager');
+  }
+
   /** Gets the full file name of the given example file.
    *
    * @param fileName - The name of the example file to get the file name of.
@@ -135,12 +143,11 @@ export default class InitManager {
       const exampleFile = this.getExampleFileName(file);
       const userFile = this.getUserFileName(file);
 
-      botLogger.warn(
+      this.warn(
         `Didn't find '${FileManager.getFilePath(
           path,
           userFile,
         )}'. Copying defaults from '${FileManager.getFilePath(path, exampleFile)}'.`,
-        'InitManager',
       );
 
       const content = FileManager.readFile(path, exampleFile);
@@ -217,10 +224,12 @@ export default class InitManager {
 
         const { object: newUserObj, keys: missingKeys } = this.addMissingKeys(expObj, userObj);
         if (missingKeys.length > 0) {
-          botLogger.warn(
+          const keyString = `    - ${missingKeys.map((path) => path.join(' > ')).join('\n    - ')}`;
+
+          this.warn(
             `Found missing keys in '${this.getUserFileName(
               file,
-            )}, replacing by default.\n${JSON.stringify(missingKeys)}`,
+            )}, replacing by default.\n${keyString}`,
           );
           FileManager.writeObject(path, this.getUserFileName(file), newUserObj);
         }
@@ -245,6 +254,6 @@ export default class InitManager {
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
 
-    botLogger.info('Finished initialization check.', 'InitManager');
+    this.info('Finished initialization check.');
   }
 }

@@ -76,7 +76,7 @@ export class ObjUtil {
       return newObject;
     }
 
-    const newPath = path;
+    const newPath = path.slice();
     const key = newPath.shift();
     const newObject = object;
     newObject[key] = this.setInnerObjectHelper(newObject[key], toAdd, newPath);
