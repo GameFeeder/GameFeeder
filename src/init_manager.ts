@@ -1,5 +1,5 @@
 import FS from 'fs';
-import { contains, ObjUtil } from './util';
+import { ObjUtil } from './util';
 import FileManager from './file_manager';
 import botLogger from './bot_logger';
 import ConfigManager from './config_manager';
@@ -95,7 +95,7 @@ export default class InitManager {
   public static checkForFile(path: string, fileName: string): boolean {
     const files = FS.readdirSync(path);
 
-    return contains(files, fileName);
+    return files.includes(fileName);
   }
 
   /** Returns the names of all missing user files.
@@ -190,7 +190,7 @@ export default class InitManager {
     const keyPath = path ? path : [];
 
     for (const key of refKeys) {
-      if (key && contains(objKeys, key)) {
+      if (key && objKeys.includes(key)) {
         const nextMissing = this.getMissingKeys(reference, object, keyPath.concat([key]));
         missing = missing.concat(nextMissing);
       } else {
@@ -218,7 +218,7 @@ export default class InitManager {
     const userFiles = this.getUserFiles(path);
 
     for (const file of exampleFiles) {
-      if (contains(userFiles, file)) {
+      if (userFiles.includes(file)) {
         const expObj = FileManager.parseFile(path, this.getExampleFileName(file));
         const userObj = FileManager.parseFile(path, this.getUserFileName(file));
 

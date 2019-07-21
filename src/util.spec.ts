@@ -1,4 +1,4 @@
-import { mapAsync, filterAsync, contains, ObjUtil } from './util';
+import { mapAsync, filterAsync, ObjUtil } from './util';
 
 describe('Util', () => {
   describe('map async', () => {
@@ -16,24 +16,6 @@ describe('Util', () => {
       const asyncFunction = async (el: number) => el > 2;
       const rr = await filterAsync(testArray, asyncFunction);
       expect(rr).toEqual([3]);
-    });
-  });
-
-  describe('contains', () => {
-    test('true', () => {
-      const testArray = [1, 2, 3, 4];
-      const testNumber = 3;
-      const actual = contains(testArray, testNumber);
-
-      expect(actual).toEqual(true);
-    });
-
-    test('false', () => {
-      const testArray = [1, 2, 3, 4];
-      const testNumber = 5;
-      const actual = contains(testArray, testNumber);
-
-      expect(actual).toEqual(false);
     });
   });
 
