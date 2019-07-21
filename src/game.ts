@@ -120,7 +120,15 @@ export default class Game {
       games.push(game);
     }
 
+    this.games = games;
+
     // Unique providers
-    Game.getGameByName('dota').providers.push(new DotaProvider());
+    for (const game of games) {
+      if (game.name === 'dota') {
+        game.providers.push(new DotaProvider());
+      }
+    }
+
+    return this.games;
   }
 }
