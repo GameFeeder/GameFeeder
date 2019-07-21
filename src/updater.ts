@@ -158,7 +158,11 @@ export default class Updater {
         }, this.updateDelayMs);
       }
     } catch (error) {
-      this.error(`Update loop failed:\n${error}`);
+      if (error instanceof Error) {
+        this.error(`Update loop failed:\n${error.name}: ${error.message}\n${error.stack}`);
+      } else {
+        this.error(`Update loop failed:\n${error}`);
+      }
     }
   }
 }
