@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /** Applies a function on every array element.
  *
  * @param array - The array to apply the function to.
@@ -34,6 +36,8 @@ export class ObjUtil {
   }
 
   public static getInnerObject(object: any, path?: string[]): any {
+    // return _.get(object, path);
+
     if (!path || path.length === 0) {
       return object;
     }
@@ -48,25 +52,6 @@ export class ObjUtil {
   }
 
   public static setInnerObject(object: any, toAdd: any, path: string[]): any {
-    return this.setInnerObjectHelper(object, toAdd, path);
-  }
-
-  private static setInnerObjectHelper(object: any, toAdd: any, path: string[]): any {
-    if (!path || path.length === 0) {
-      return toAdd;
-    }
-
-    if (path.length === 1) {
-      const newObject = object;
-      newObject[path[0]] = toAdd;
-      return newObject;
-    }
-
-    const newPath = path.slice();
-    const key = newPath.shift();
-    const newObject = object;
-    newObject[key] = this.setInnerObjectHelper(newObject[key], toAdd, newPath);
-
-    return newObject;
+    return _.set(object, path, toAdd);
   }
 }

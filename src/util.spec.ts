@@ -87,7 +87,7 @@ describe('Util', () => {
         expect(actual).toEqual(expected);
       });
 
-      test('empty path', () => {
+      xtest('empty path', () => {
         const object = { a: 'A', b: { c: 'C', d:'D', e: 'E' }, f: 'F' };
         const path: string[] = [];
         const toAdd = 'B';
