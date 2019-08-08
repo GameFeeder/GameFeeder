@@ -145,13 +145,16 @@ class Updater {
       if (this.doUpdates) {
         // Update
         await this.update();
+      }
+    } catch (error) {
+      this.error(`Update loop failed:\n${error}`);
+    } finally {
+      if (this.doUpdates) {
         // Update again after the delay
         setTimeout(() => {
           this.updateLoop();
         }, this.updateDelayMs);
       }
-    } catch (error) {
-      this.error(`Update loop failed:\n${error}`);
     }
   }
 }
