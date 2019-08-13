@@ -9,6 +9,7 @@ import { sortLimitEnd } from './comparable';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
+let isEnabled: boolean = true;
 const loggerTag = 'Reddit';
 
 export default class Reddit {
@@ -17,7 +18,31 @@ export default class Reddit {
       return;
     }
     botLogger.debug('Initializing Reddit API...', 'Reddit');
-    const { clientId, clientSecret, refreshToken, userAgent } = ConfigManager.getRedditConfig();
+    const redditConfig = ConfigManager.getRedditConfig();
+    const { clientId, clientSecret, refreshToken, userAgent } = redditConfig;
+
+    // Check for parameters
+    const missingParams = [];
+    if (!clientId) {
+      missingParams.push('clientId');
+    }
+    if (!clientSecret) {
+      missingParams.push('clientSecret');
+    }
+    if (!refreshToken) {
+      missingParams.push('refreshToken');
+    }
+    if (!userAgent) {
+      missingParams.push('userAgent');
+    }
+    if (missingParams.length > 0) {
+      botLogger.warn(`Missing parameters in 'api_config.json': ${missingParams.join(', ')}`
+        + `\n  Disabling reddit updates.`, 'Reddit');
+      isEnabled = false;
+      isInit = true;
+      return;
+    }
+
     reddit = new Snoowrap({
       clientId,
       clientSecret,
@@ -47,7 +72,7 @@ export default class Reddit {
   ): Promise<BotNotification[]> {
     let notifications: BotNotification[] = [];
 
-    if (!isInit) {
+    if (!isInit || !isEnabled) {
       return notifications;
     }
 
