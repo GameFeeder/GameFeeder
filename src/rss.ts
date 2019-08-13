@@ -18,22 +18,29 @@ export default class RSS {
       const feed = await this.parser.parseURL(url);
 
       const converter = new TurndownService();
-
       for (const item of feed.items) {
-        const rssItem = new RSSItem(
-          item.title,
-          item.creator,
-          item.link,
-          converter.turndown(item.content),
-          new Date(item.isoDate),
-          {
-            link: feed,
-            name: feed.title,
-            source: '',
-          },
-        );
-        if (!date || rssItem.timestamp > date) {
-          feedItems.push(rssItem);
+        const title = item.title;
+        const creator = item.creator || '';
+        const link = item.link || '';
+        const content = item.content;
+        const postDate = new Date(item.isoDate) || new Date();
+
+        if (title && content) {
+          const rssItem = new RSSItem(
+            title,
+            creator,
+            link,
+            converter.turndown(content),
+            postDate,
+            {
+              link: feed,
+              name: feed.title,
+              source: '',
+            },
+          );
+          if (!date || rssItem.timestamp > date) {
+            feedItems.push(rssItem);
+          }
         }
       }
 
