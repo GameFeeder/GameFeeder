@@ -26,6 +26,8 @@ class Logger {
       level: process.env.LOG_LEVEL || 'debug',
       transports: [new Winston.transports.Console()],
     });
+
+    this.logger.info(`Started logger with loglevel: ${this.logger.level}`, 'Logger');
   }
   /** Logs a debug message.
    *

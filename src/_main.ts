@@ -41,6 +41,8 @@ async function startUpdater() {
 
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
+  const modeName = process.env.NODE_ENV || 'unknown';
+  botLogger.info(`Starting main in ${modeName} mode`, 'Main');
   await registerCommands();
   await startBots();
   await startUpdater();
