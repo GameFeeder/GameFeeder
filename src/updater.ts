@@ -144,24 +144,30 @@ export default class Updater {
   public loadDate(): void {
     this.lastUpdate = new Date(DataManager.getUpdaterData().lastUpdate);
   }
+  public updateHealthcheck(): void {
+    const data = DataManager.getUpdaterData();
+    data.healthcheckTimestamp = new Date().toISOString();
+    DataManager.setUpdaterData(data);
+  }
   /** Updates in the specified time interval.
    * @returns {void}
    */
   private async updateLoop(): Promise<void> {
     try {
       if (this.doUpdates) {
-        // Update
+        // Run update cycle
         await this.update();
+        // Update the healthcheck timestamp
+        this.updateHealthcheck();
+      }
+    } catch (error) {
+      this.error(`Update loop failed:\n${error}`);
+    } finally {
+      if (this.doUpdates) {
         // Update again after the delay
         setTimeout(() => {
           this.updateLoop();
         }, this.updateDelayMs);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        this.error(`Update loop failed:\n${error.name}: ${error.message}\n${error.stack}`);
-      } else {
-        this.error(`Update loop failed:\n${error}`);
       }
     }
   }

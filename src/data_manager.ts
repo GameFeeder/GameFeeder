@@ -31,6 +31,8 @@ export type updater_data = {
   lastUpdate: string,
   /** The version string of the last dota patch. */
   lastDotaPatch: string,
+  /** Timestamp of the last update cycle run */
+  healthcheckTimestamp: string;
 };
 
 /** The class managing the data files. */
