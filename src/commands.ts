@@ -1,8 +1,8 @@
 import { UserPermission } from './bot_user';
-import bots from './bots';
+import getBots from './bots';
 import Command from './command';
 import DataManager from './data_manager';
-import games from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import { filterAsync, mapAsync } from './util';
 
@@ -91,7 +91,7 @@ const gamesCmd = new Command(
   'games',
   'games\\s*$',
   (bot, channel) => {
-    const gamesList = games.map((game) => `- ${game.label}`);
+    const gamesList = Game.getGames().map((game) => `- ${game.label}`);
     const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
     bot.sendMessage(channel, gamesMD);
@@ -117,7 +117,7 @@ const subCmd = new Command(
     }
 
     let noGamesFound = true;
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         noGamesFound = false;
         if (bot.addSubscriber(channel, game)) {
@@ -153,7 +153,7 @@ const unsubCmd = new Command(
       );
     }
 
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         if (bot.removeSubscriber(channel, game)) {
           bot.sendMessage(channel, `You are now unsubscribed from the **${game.label}** feed!`);
@@ -262,7 +262,7 @@ const notifyAllCmd = new Command(
     bot.sendMessage(channel, `Notifying all subs with:\n"${message}"`);
 
     // Send the provided message to all subs
-    for (const curBot of bots) {
+    for (const curBot of getBots()) {
       curBot.sendMessageToAllSubs(message);
     }
   },
@@ -300,11 +300,11 @@ const notifyGameSubsCmd = new Command(
     }
 
     // Try to find the game
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
         bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${message}"`);
         // Notify the game's subs
-        for (const curBot of bots) {
+        for (const curBot of getBots()) {
           curBot.sendMessageToGameSubs(game, message);
         }
 
@@ -334,7 +334,7 @@ const statsCmd = new Command(
     let totalUserCount = 0;
     let totalChannelCount = 0;
 
-    for (const curBot of bots) {
+    for (const curBot of getBots()) {
       const botChannels = curBot.getBotChannels();
       const channelCount = botChannels.length;
       const userCounts = await mapAsync(

@@ -1,7 +1,7 @@
-import bots from './bots';
+import getBots from './bots';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
-import { games } from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import RSS from './rss';
@@ -9,7 +9,8 @@ import { sort, sortLimitEnd } from './comparable';
 
 const loggerTag = 'Updater';
 
-class Updater {
+export default class Updater {
+  private static updater: Updater;
   public autostart: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
@@ -32,6 +33,12 @@ class Updater {
     this.doUpdates = false;
     this.autostart = updaterConfig.autostart;
     this.autosave = updaterConfig.autosave;
+  }
+  public static getUpdater(): Updater {
+    if (!this.updater) {
+      this.updater = new Updater();
+    }
+    return this.updater;
   }
   public debug(msg: string): void {
     botLogger.debug(msg, loggerTag);
@@ -83,7 +90,7 @@ class Updater {
     const startTime = Date.now();
 
     let notifications: BotNotification[] = [];
-    for (const game of games) {
+    for (const game of Game.getGames()) {
       const gameStartTime = Date.now();
 
       let gameNotifications: BotNotification[] = [];
@@ -116,7 +123,7 @@ class Updater {
       this.saveDate(notifications[notifications.length - 1].timestamp);
 
       // Notify users
-      for (const bot of bots) {
+      for (const bot of getBots()) {
         for (const notification of notifications) {
           bot.sendMessageToGameSubs(notification.game, notification);
         }
@@ -165,8 +172,3 @@ class Updater {
     }
   }
 }
-
-// The updater used by our main method
-const updater = new Updater();
-
-export default updater;
