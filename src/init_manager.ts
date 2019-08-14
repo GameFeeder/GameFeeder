@@ -4,7 +4,7 @@ import FileManager from './file_manager';
 import botLogger from './bot_logger';
 import ConfigManager from './config_manager';
 import DataManager from './data_manager';
-import { Util } from 'discord.js';
+import _ from 'lodash';
 
 export default class InitManager {
   public static exampleExt = '.example.json';
@@ -207,7 +207,7 @@ export default class InitManager {
 
     for (const path of missing) {
       const refInner = ObjUtil.getInnerObject(reference, path);
-      newObj = ObjUtil.setInnerObject(newObj, refInner, path);
+      newObj = _.set(newObj, path, refInner);
     }
 
     return { object: newObj, keys: missing };

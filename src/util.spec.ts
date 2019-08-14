@@ -65,37 +65,5 @@ describe('Util', () => {
         expect(actual).toEqual(expected);
       });
     });
-
-    describe('add inner object', () => {
-      test('simple object', () => {
-        const object = { a: 'A' };
-        const path = ['b'];
-        const toAdd = 'B';
-        const expected = { a: 'A', b: 'B' };
-        const actual = ObjUtil.setInnerObject(object, toAdd, path);
-
-        expect(actual).toEqual(expected);
-      });
-
-      test('deep object', () => {
-        const object = { a: 'A', b: { c: 'C', e: 'E' }, f: 'F' };
-        const path = ['b', 'd'];
-        const toAdd = 'D';
-        const expected = { a: 'A', b: { c: 'C', d:'D', e: 'E' }, f: 'F' };
-        const actual = ObjUtil.setInnerObject(object, toAdd, path);
-
-        expect(actual).toEqual(expected);
-      });
-
-      xtest('empty path', () => {
-        const object = { a: 'A', b: { c: 'C', d:'D', e: 'E' }, f: 'F' };
-        const path: string[] = [];
-        const toAdd = 'B';
-        const expected = 'B';
-        const actual = ObjUtil.setInnerObject(object, toAdd, path);
-
-        expect(actual).toEqual(expected);
-      });
-    });
   });
 });

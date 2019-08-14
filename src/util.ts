@@ -50,8 +50,4 @@ export class ObjUtil {
 
     return targetObject;
   }
-
-  public static setInnerObject(object: any, toAdd: any, path: string[]): any {
-    return _.set(object, path, toAdd);
-  }
 }
