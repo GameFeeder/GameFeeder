@@ -36,18 +36,10 @@ export class ObjUtil {
   }
 
   public static getInnerObject(object: any, path?: string[]): any {
-    // return _.get(object, path);
-
     if (!path || path.length === 0) {
       return object;
     }
 
-    let targetObject = object;
-
-    for (const key of path) {
-      targetObject = targetObject[key];
-    }
-
-    return targetObject;
+    return _.get(object, path);
   }
 }
