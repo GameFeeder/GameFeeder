@@ -1,5 +1,5 @@
 import { URL } from 'url';
-import { Game } from './game';
+import Game from './game';
 import NotificationElement from './notification_element';
 import Comparable from './comparable';
 

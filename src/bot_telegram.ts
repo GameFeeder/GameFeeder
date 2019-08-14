@@ -7,6 +7,7 @@ import ConfigManager from './config_manager';
 import BotNotification from './notification';
 
 export default class TelegramBot extends BotClient {
+  private static standardBot: TelegramBot;
   private bot: TelegramAPI;
   private token: string;
 
@@ -16,6 +17,22 @@ export default class TelegramBot extends BotClient {
     // Set up the bot
     this.token = token;
     this.bot = new TelegramAPI(token, { polling: false });
+  }
+
+  public static getBot(): TelegramBot {
+    if (this.standardBot) {
+      return this.standardBot;
+    }
+
+    // Telegram Bot
+    const {
+      prefix: telegramPrefix,
+      token: telegramToken,
+      autostart: telegramAutostart,
+    } = ConfigManager.getBotConfig().telegram;
+
+    this.standardBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
+    return this.standardBot;
   }
 
   public async getUserName(): Promise<string> {
@@ -198,13 +215,3 @@ export default class TelegramBot extends BotClient {
     return newMarkdown;
   }
 }
-
-// Telegram Bot
-const {
-  prefix: telegramPrefix,
-  token: telegramToken,
-  autostart: telegramAutostart,
-} = ConfigManager.getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
-
-export { TelegramBot, telegramBot };

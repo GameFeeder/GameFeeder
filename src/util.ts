@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /** Applies a function on every array element.
  *
  * @param array - The array to apply the function to.
@@ -22,4 +24,28 @@ export async function filterAsync<T>(
 ): Promise<T[]> {
   const filterMap = await mapAsync(array, callbackfn);
   return array.filter((value, index) => filterMap[index]);
+}
+
+export class ObjUtil {
+  public static keys(object: any): string[] {
+    if (!(object instanceof Object)) {
+      return [];
+    }
+
+    return Object.keys(object);
+  }
+
+  /** Gets the inner object at the given path, or the object if the path is empty.
+   *
+   * @param object - The object to get the inner object of.
+   * @param path - The path of the inner object.
+   */
+  public static getInnerObject(object: any, path?: string[]): any {
+    if (!path || path.length === 0) {
+      // _.get returns undefined in this case, so we needed a function for this
+      return object;
+    }
+
+    return _.get(object, path);
+  }
 }
