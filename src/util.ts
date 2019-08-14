@@ -35,8 +35,14 @@ export class ObjUtil {
     return Object.keys(object);
   }
 
+  /** Gets the inner object at the given path, or the object if the path is empty.
+   *
+   * @param object - The object to get the inner object of.
+   * @param path - The path of the inner object.
+   */
   public static getInnerObject(object: any, path?: string[]): any {
     if (!path || path.length === 0) {
+      // _.get returns undefined in this case, so we needed a function for this
       return object;
     }
 
