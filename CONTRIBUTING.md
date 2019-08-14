@@ -17,11 +17,10 @@ This document will guide you through setting up the bot on your PC, editing the 
 
 To set up the bot locally on your machine, you will first need to fork and clone the project.
 
-Next you will need to create multiple API keys. First off navigate to `config/` and copy & paste `bot_config.example.json` into `bot_config.json`. You will need this file to store your API data.
+Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `/data/` and `/config/`, to enable your personal configuration files.
+The bot should warn you that you have missing bot and reddit tokens.
 
-**Important**: Never share your API keys with anyone! `bot_config.json` should be in the `.gitignore`, but please double check that you are not pushing your keys to any repository.
-
-You will also have to copy & paste `subscribers.example.json` into `subscribers.json` and `updater_config.example.json` into `updater_config.json`.
+**Important**: Never share your API keys with anyone! Make sure to never add your api tokens and secrets to the example files, as they are uploaded to GitHub!
 
 You can now use the following tutorials to get the keys you need. If you don't want to use one of the features, skip the step and leave the `token` field empty. This (should) just disable this API. For the bots, you can aditionally set `autostart` to `false`, if you only want to test out a certain bot.
 

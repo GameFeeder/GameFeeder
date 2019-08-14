@@ -1,5 +1,5 @@
 import Provider from './provider';
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';

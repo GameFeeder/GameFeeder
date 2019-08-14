@@ -1,4 +1,4 @@
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 
 export default abstract class Provider {
