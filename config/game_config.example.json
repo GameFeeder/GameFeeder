@@ -60,12 +60,7 @@
             }
           ]
         },
-        "blogs": [
-          {
-            "label": "Dota 2 Blog",
-            "url": "http://blog.dota2.com/feed/"
-          }
-        ]
+        "blogs": []
       }
     },
     {
