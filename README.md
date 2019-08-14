@@ -9,15 +9,15 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 
 ---
 ## Index <!-- omit in toc -->
-- [About this project](#About-this-project)
-  - [Commands](#Commands)
-    - [Permissions](#Permissions)
-  - [Games](#Games)
-  - [Contributing](#Contributing)
-- [Miscellaneous](#Miscellaneous)
-  - [Privacy](#Privacy)
-  - [License](#License)
-  - [Disclaimer](#Disclaimer)
+- [About this project](#about-this-project)
+  - [Commands](#commands)
+    - [Permissions](#permissions)
+  - [Games](#games)
+  - [Contributing](#contributing)
+- [Miscellaneous](#miscellaneous)
+  - [Privacy](#privacy)
+  - [License](#license)
+  - [Disclaimer](#disclaimer)
 
 ## About this project
 
@@ -58,7 +58,6 @@ So far, we are supporting the following games:
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/> **Dota 2**
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
-  - Posts on the [Dota 2 blog](http://blog.dota2.com/)
 - <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/> **Steam**
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
