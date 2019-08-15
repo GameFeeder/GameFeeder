@@ -55,6 +55,12 @@ export default class TelegramBot extends BotClient {
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
     try {
+      // Channel messages don't have an author, we assigned the user id -1
+      // A bit hacky, but should work for now
+      if (user.id === '-1') {
+        // If you can write in a channel, you get admin permissions
+        return UserPermission.ADMIN;
+      }
       // Check if user is owner
       const ownerIds = (await this.getOwners()).map((owner) => owner.id);
       if (ownerIds.includes(user.id)) {
@@ -93,27 +99,33 @@ export default class TelegramBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    this.bot.onText(/.*/, async (msg: TelegramAPI.Message) => {
-      try {
-        const channel = this.getChannelByID(msg.chat.id.toString());
-        const reg = await command.getRegExp(channel);
-        // Run regex on the msg
-        const regMatch = reg.exec(msg.text);
-        // If the regex matched, execute the handler function
-        if (regMatch) {
-          // Execute the command
-          await command.execute(
-            this,
-            channel,
-            // FIX: Properly identify the user key
-            new BotUser(this, msg.from.id.toString()),
-            regMatch,
-          );
-        }
-      } catch (error) {
-        this.logError(`Failed to get register command ${command}:\n${error}`);
+    this.bot.on('message', async (msg: TelegramAPI.Message) => this.onMessage(msg, command));
+    this.bot.on('channel_post', async (msg: TelegramAPI.Message) => this.onMessage(msg, command));
+  }
+
+  /** Executes the given command if the message matches the regex. */
+  private async onMessage(msg: TelegramAPI.Message, command: Command): Promise<void> {
+    try {
+      const channel = this.getChannelByID(msg.chat.id.toString());
+      const reg = await command.getRegExp(channel);
+      // Run regex on the msg
+      const regMatch = reg.exec(msg.text);
+      // If the regex matched, execute the handler function
+      if (regMatch) {
+        // Channel messages don't have an author, so we have to work around that
+        const userID = msg.from ? msg.from.id.toString() : '-1';
+        // Execute the command
+        await command.execute(
+          this,
+          channel,
+          // FIX: Properly identify the user key
+          new BotUser(this, userID),
+          regMatch,
+        );
       }
-    });
+    } catch (error) {
+      this.logError(`Failed to execute command ${command.label}:\n${error}`);
+    }
   }
 
   public async start(): Promise<boolean> {
