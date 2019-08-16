@@ -1,5 +1,4 @@
 import FileManager from './file_manager';
-import { isMainThread } from 'worker_threads';
 
 export type project_info = {
   name: string,
@@ -15,7 +14,7 @@ export default class ProjectManager {
 
   /** Gets the info about this project. */
   public static getProjectInfo(): project_info {
-    return FileManager.parseFile('/', this.fileName);
+    return FileManager.parseFile('', this.fileName);
   }
 
   /** Gets the version number of this project. */

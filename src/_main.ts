@@ -3,6 +3,7 @@ import getBots from './bots';
 import commands from './commands';
 import Updater from './updater';
 import InitManager from './init_manager';
+import ProjectManager from './project_manager';
 
 /** Registers the bot commands. */
 async function registerCommands() {
@@ -43,7 +44,10 @@ async function startUpdater() {
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
   const modeName = process.env.NODE_ENV || 'unknown';
-  botLogger.info(`Starting main in ${modeName} mode`, 'Main');
+  botLogger.info(
+    `Starting main in ${modeName} mode, version ${ProjectManager.getVersionNumber()}.`,
+    'Main',
+  );
   InitManager.initAll();
   await registerCommands();
   await startBots();

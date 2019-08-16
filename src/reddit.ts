@@ -6,6 +6,7 @@ import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
 import { sortLimitEnd } from './comparable';
+import ProjectManager from './project_manager';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
