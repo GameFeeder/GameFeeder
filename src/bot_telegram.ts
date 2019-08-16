@@ -10,6 +10,7 @@ export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
   private bot: TelegramAPI;
   private token: string;
+  private channelAuthorID: string = '-322';
 
   constructor(prefix: string, token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
@@ -55,9 +56,9 @@ export default class TelegramBot extends BotClient {
 
   public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
     try {
-      // Channel messages don't have an author, we assigned the user id -1
+      // Channel messages don't have an author, we assigned the user id channelAuthorID
       // A bit hacky, but should work for now
-      if (user.id === '-1') {
+      if (user.id === this.channelAuthorID) {
         // If you can write in a channel, you get admin permissions
         return UserPermission.ADMIN;
       }
@@ -113,7 +114,7 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Channel messages don't have an author, so we have to work around that
-        const userID = msg.from ? msg.from.id.toString() : '-1';
+        const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
         // Execute the command
         await command.execute(
           this,
