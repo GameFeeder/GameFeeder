@@ -20,7 +20,7 @@ export default class Reddit {
     }
     botLogger.debug('Initializing Reddit API...', 'Reddit');
     const redditConfig = ConfigManager.getRedditConfig();
-    const { clientId, clientSecret, refreshToken, userAgent } = redditConfig;
+    const { clientId, clientSecret, refreshToken, userName } = redditConfig;
 
     // Check for parameters
     const missingParams = [];
@@ -33,8 +33,8 @@ export default class Reddit {
     if (!refreshToken) {
       missingParams.push('refreshToken');
     }
-    if (!userAgent) {
-      missingParams.push('userAgent');
+    if (!userName) {
+      missingParams.push('userName');
     }
     if (missingParams.length > 0) {
       botLogger.warn(`Missing parameters in 'api_config.json': ${missingParams.join(', ')}`
@@ -44,13 +44,16 @@ export default class Reddit {
       return;
     }
 
+    const userAgent = `discord/telegram | ${ProjectManager.getURL()} | `
+      + `v${ProjectManager.getVersionNumber()} | by /u/${userName}`;
+
     reddit = new Snoowrap({
       clientId,
       clientSecret,
       refreshToken,
       userAgent,
     });
-    botLogger.debug('Initialization successful.', 'Reddit');
+    botLogger.info(`Initialization successful with userAgent '${userAgent}'.`, 'Reddit');
     isInit = true;
   }
 
