@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
   },
-  "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot#readme",
+  "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot",
   "engines": {
     "node": "^10",
     "yarn": "^1.16.0"

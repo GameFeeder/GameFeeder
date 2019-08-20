@@ -44,7 +44,7 @@ export default class Reddit {
       return;
     }
 
-    const userAgent = `discord/telegram:${ProjectManager.getURL()}:`
+    const userAgent = `discord/telegram:${ProjectManager.getIdentifier()}:`
       + `v${ProjectManager.getVersionNumber()} (by /u/${userName})`;
 
     reddit = new Snoowrap({

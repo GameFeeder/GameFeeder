@@ -26,4 +26,10 @@ export default class ProjectManager {
   public static getURL(): string {
     return this.getProjectInfo().homepage;
   }
+
+  /** Gets the identifier of this project. */
+  public static getIdentifier(): string {
+    // Remove https prefix
+    return this.getURL().replace(/^https:\/\//, '');
+  }
 }
