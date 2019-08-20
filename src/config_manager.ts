@@ -45,8 +45,8 @@ export type reddit_config = {
   clientSecret: string;
   /** The refresh token used by the reddit client. */
   refreshToken: string;
-  /** The user agent used by the reddit client. */
-  userAgent: string;
+  /** The user name of the bot owner. */
+  userName: string;
 };
 
 /** A reddit user. */
