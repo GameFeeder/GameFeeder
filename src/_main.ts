@@ -43,9 +43,9 @@ async function startUpdater() {
 
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
-  const modeName = process.env.NODE_ENV || 'unknown';
   botLogger.info(
-    `Starting main in ${modeName} mode, version ${ProjectManager.getVersionNumber()}.`,
+    `Starting main in ${ProjectManager.getEnvironment()} mode,`
+    + ` v${ProjectManager.getVersionNumber()}.`,
     'Main',
   );
   InitManager.initAll();
