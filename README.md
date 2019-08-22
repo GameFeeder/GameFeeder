@@ -57,7 +57,7 @@ So far, we are supporting the following games:
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/> **Dota 2**
-  - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
+  - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/), [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
 - <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/> **Steam**
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)

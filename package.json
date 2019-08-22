@@ -1,6 +1,6 @@
 {
   "name": "valvegamesannouncerbot",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A notification bot for Dota 2 and Artifact.",
   "main": "src/_main.ts",
   "scripts": {
