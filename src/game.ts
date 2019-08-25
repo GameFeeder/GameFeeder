@@ -10,20 +10,6 @@ import DotaProvider from './provider_dota';
 export default class Game {
   private static games: Game[];
 
-  /** Gets a game by its name.
-   *
-   * @param name - The name of the game.
-   * @returns The game with this name.
-   */
-  public static getGameByName(name: string): Game {
-    for (const game of this.getGames()) {
-      if (game.name === name) {
-        return game;
-      }
-    }
-    return null;
-  }
-
   /** The internal name of the game. */
   public name: string;
   /** The aliases the game uses. */
@@ -80,6 +66,20 @@ export default class Game {
     return false;
   }
 
+  /** Gets a game by its name.
+   *
+   * @param name - The name of the game.
+   * @returns The game with this name.
+   */
+  public static getGameByName(name: string): Game {
+    for (const game of this.getGames()) {
+      if (game.name === name) {
+        return game;
+      }
+    }
+    return null;
+  }
+
   /** Returns the available games. */
   public static getGames(): Game[] {
     if (this.games) {
@@ -130,5 +130,14 @@ export default class Game {
     }
 
     return this.games;
+  }
+
+  /** Gets all the games with the given alias. */
+  public static getGamesByAlias(alias: string): Game[] {
+    const aliasGames = this.getGames().filter((game) => {
+      return game.hasAlias(alias);
+    });
+
+    return aliasGames;
   }
 }
