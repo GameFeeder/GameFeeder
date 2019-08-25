@@ -145,6 +145,12 @@ const subCmd = new Command(
       }
 
       bot.sendMessage(channel, message);
+    } else {
+      bot.sendMessage(
+        channel,
+        `I didn't find a game with the alias '${alias}'.\n` +
+          `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+      );
     }
   },
   UserPermission.ADMIN,
@@ -196,6 +202,12 @@ const unsubCmd = new Command(
       }
 
       bot.sendMessage(channel, message);
+    } else {
+      bot.sendMessage(
+        channel,
+        `I didn't find a game with the alias '${alias}'.\n` +
+          `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+      );
     }
   },
   UserPermission.ADMIN,
@@ -347,7 +359,7 @@ const notifyGameSubsCmd = new Command(
     // We didn't find the specified game
     bot.sendMessage(
       channel,
-      `I didn't find a game with the alias ${alias}.\n` +
+      `I didn't find a game with the alias '${alias}'.\n` +
         `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
