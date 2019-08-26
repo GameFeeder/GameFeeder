@@ -106,7 +106,7 @@ const subCmd = new Command(
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
   (bot, channel, user, match: any) => {
-    let { alias } = match.groups;
+    let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
 
     if (!alias) {
@@ -117,8 +117,14 @@ const subCmd = new Command(
       );
     }
 
+    const aliases = alias.split(', ');
+
     // The games matching the alias
-    const aliasGames = Game.getGamesByAlias(alias);
+    let aliasGames: Game[] = [];
+
+    for (alias of aliases) {
+      aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
+    }
 
     if (aliasGames.length > 0) {
       // The map of which game is a new sub
@@ -174,8 +180,14 @@ const unsubCmd = new Command(
       );
     }
 
+    const aliases = alias.split(', ');
+
     // The games matching the alias
-    const aliasGames = Game.getGamesByAlias(alias);
+    let aliasGames: Game[] = [];
+
+    for (alias of aliases) {
+      aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
+    }
 
     if (aliasGames.length > 0) {
       // The map of which game is a new sub
@@ -193,7 +205,7 @@ const unsubCmd = new Command(
         message += `You unsubscribed from ${naturalJoin(newUnsubs.map((game) => game.label))}.`;
 
         if (oldUnsubs.length > 0) {
-          message +=  `You have never subscribed to `
+          message +=  `\nYou have never subscribed to `
           + `${naturalJoin(oldUnsubs.map((game) => game.label))} in the first place!`;
         }
       } else {
