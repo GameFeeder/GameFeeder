@@ -133,21 +133,23 @@ const subCmd = new Command(
         return { game, isNew };
       });
 
-      const newSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
-      const oldSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+      const validSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+      const invalidSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
       let message = '';
 
-      if (newSubs.length > 0) {
-        message += `You are now subscribed to ${naturalJoin(newSubs.map((game) => game.label))}.`;
+      if (validSubs.length > 0) {
+        message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
 
-        if (oldSubs.length > 0) {
-          message += `\nYou have already subscribed to `
-            + `${naturalJoin(oldSubs.map((game) => game.label))}.`;
+        if (invalidSubs.length > 0) {
+          message +=
+            `\nYou have already subscribed to ` +
+            `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
         }
       } else {
-        message += `You have already subscribed to `
-        + `${naturalJoin(oldSubs.map((game) => game.label))}.`;
+        message +=
+          `You have already subscribed to ` +
+          `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
       }
 
       bot.sendMessage(channel, message);
@@ -196,21 +198,23 @@ const unsubCmd = new Command(
         return { game, isNew };
       });
 
-      const newUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
-      const oldUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+      const validUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+      const invalidUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
       let message = '';
 
-      if (newUnsubs.length > 0) {
-        message += `You unsubscribed from ${naturalJoin(newUnsubs.map((game) => game.label))}.`;
+      if (validUnsubs.length > 0) {
+        message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
 
-        if (oldUnsubs.length > 0) {
-          message +=  `\nYou have never subscribed to `
-          + `${naturalJoin(oldUnsubs.map((game) => game.label))} in the first place!`;
+        if (invalidUnsubs.length > 0) {
+          message +=
+            `\nYou have never subscribed to ` +
+            `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
         }
       } else {
-        message += `You have never subscribed to `
-        + `${naturalJoin(oldUnsubs.map((game) => game.label))} in the first place!`;
+        message +=
+          `You have never subscribed to ` +
+          `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
       }
 
       bot.sendMessage(channel, message);
