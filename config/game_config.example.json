@@ -52,11 +52,11 @@
             },
             {
               "name": "Magesunite",
-              "titleFilter": "Dota 2 Update"
+              "filter": "Dota 2 Update"
             },
             {
               "name": "SirBelvedere",
-              "titleFilter": "Dota 2 Update"
+              "filter": "Dota 2 Update"
             },
             {
               "name": "wickedplayer494",
@@ -64,7 +64,7 @@
             },
             {
               "name": "wykrhm",
-              "titleFilter": ".*"
+              "filter": ".*"
             }
           ]
         },
@@ -112,7 +112,7 @@
           "users": [
             {
               "name": "wickedplayer494",
-              "titleFilter": "Counter-Strike: Global Offensive update"
+              "filter": "Counter-Strike: Global Offensive update"
             }
           ]
         },
@@ -138,7 +138,7 @@
           "users": [
             {
               "name": "wickedplayer494",
-              "titleFilter": "update"
+              "filter": "update"
             }
           ]
         },
@@ -166,7 +166,7 @@
           "users": [
             {
               "name": "wykrhm",
-              "titleFilter": ""
+              "filter": ".*"
             }
           ]
         },
