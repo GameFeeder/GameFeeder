@@ -16,15 +16,15 @@
           "users": [
             {
               "name": "Magesunite",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "SirBelvedere",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "wykrhm",
-              "filter": ".*"
+              "titleFilter": ".*"
             }
           ]
         },
@@ -166,7 +166,7 @@
           "users": [
             {
               "name": "wykrhm",
-              "titleFilter": ""
+              "titleFilter": ".*"
             }
           ]
         },
