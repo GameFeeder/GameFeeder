@@ -48,7 +48,7 @@
           "users": [
             {
               "name": "Kappa_Man",
-              "titleFilter": "Dota 2 Update"
+              "filter": "Dota 2 Update"
             },
             {
               "name": "Magesunite",
@@ -60,7 +60,7 @@
             },
             {
               "name": "wickedplayer494",
-              "titleFilter": "Dota 2 update"
+              "filter": "Dota 2 update"
             },
             {
               "name": "wykrhm",
