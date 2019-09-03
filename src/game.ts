@@ -106,7 +106,9 @@ export default class Game {
         const subreddit = gameSettings.providers.reddit.subreddit;
         // tslint:disable-next-line prefer-array-literal
         const users: reddit_user[] = gameSettings.providers.reddit.users;
-        const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.filter));
+        const redditUsers = users.map(
+          (user) => new RedditUserProvider(user.name, user.titleFilter),
+        );
         providers.push(new RedditProvider(redditUsers, subreddit, game));
       }
       // Blog providers

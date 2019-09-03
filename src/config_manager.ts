@@ -54,7 +54,7 @@ export type reddit_user = {
   /** The name of the reddit user. */
   name: string;
   /** The regex to filter the post tiles by. */
-  filter: string;
+  titleFilter: string;
 };
 
 /** The reddit providers for a game. */
