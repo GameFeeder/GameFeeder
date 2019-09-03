@@ -16,15 +16,15 @@
           "users": [
             {
               "name": "Magesunite",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "SirBelvedere",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "wykrhm",
-              "filter": ".*"
+              "titleFilter": ".*"
             }
           ]
         },
@@ -48,23 +48,23 @@
           "users": [
             {
               "name": "Kappa_Man",
-              "filter": "Dota 2 Update"
+              "titleFilter": "Dota 2 Update"
             },
             {
               "name": "Magesunite",
-              "filter": "Dota 2 Update"
+              "titleFilter": "Dota 2 Update"
             },
             {
               "name": "SirBelvedere",
-              "filter": "Dota 2 Update"
+              "titleFilter": "Dota 2 Update"
             },
             {
               "name": "wickedplayer494",
-              "filter": "Dota 2 update"
+              "titleFilter": "Dota 2 update"
             },
             {
               "name": "wykrhm",
-              "filter": ".*"
+              "titleFilter": ".*"
             }
           ]
         },
@@ -112,7 +112,7 @@
           "users": [
             {
               "name": "wickedplayer494",
-              "filter": "Counter-Strike: Global Offensive update"
+              "titleFilter": "Counter-Strike: Global Offensive update"
             }
           ]
         },
@@ -138,7 +138,7 @@
           "users": [
             {
               "name": "wickedplayer494",
-              "filter": "update"
+              "titleFilter": "update"
             }
           ]
         },
@@ -166,7 +166,7 @@
           "users": [
             {
               "name": "wykrhm",
-              "filter": ".*"
+              "titleFilter": ".*"
             }
           ]
         },
