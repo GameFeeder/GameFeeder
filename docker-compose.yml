@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+  bot:
+    image: valvebot:2.0
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    restart: unless-stopped
