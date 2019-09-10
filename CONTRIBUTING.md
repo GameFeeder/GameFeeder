@@ -12,6 +12,7 @@ This document will guide you through setting up the bot on your PC, editing the 
     - [Discord Bot](#discord-bot)
     - [Telegram Bot](#telegram-bot)
     - [Reddit API](#reddit-api)
+    - [Docker containers](#docker-containers)
 
 ## Local setup
 
@@ -49,4 +50,16 @@ To do that,
   
   `<platform>:<app ID>:<version string> (by /u/<reddit username>)`.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object. 
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object.
+
+### Docker containers
+
+Included in the repo are 2 Dockerfiles:
+- /.devcontainer/Dockerfile
+- /Dockerfile
+
+The first is meant to be used as a dev container. Instead of having to install dependencies like node and typescript in your machine, you can use this docker container. VScode can also utilize this automatically. For more information check out the [official VSCode guide](https://code.visualstudio.com/docs/remote/containers) on developing inside a container.
+
+If you are using Windows, you can also leverage the WSL with no further configuration necessary. Just follow the steps described [here](https://code.visualstudio.com/docs/remote/wsl).
+
+Finally, the `Dockerfile` provided in the root folder along with the `docker-compose.yml` is meant to be used a simple lightweight way to deploy the bot in production mode. This is pending some improvements along with a public image repo which will be included in this document once set up.
