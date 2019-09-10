@@ -3,6 +3,26 @@ name: Node CI
 on: [push]
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Check for code style
+      run: |
+        yarn lint
+      env:
+        CI: true
+
   build:
 
     runs-on: ubuntu-latest
@@ -17,11 +37,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install, build, and test
+    - name: Run typescript compiler
       run: |
         yarn install
         yarn build
-        yarn test
       env:
         CI: true
 
@@ -39,7 +58,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: yarn install and test
+    - name: Run the tests
       run: |
         yarn install
         yarn test
