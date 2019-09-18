@@ -31,7 +31,7 @@ export const h4 = `^####${hBase}$`;
 export const h5 = `^#####${hBase}$`;
 export const h6 = `^######${hBase}$`;
 
-export const quote = `^>${anyWs}(.+)${anyWs}`;
+export const quote = `^>${anyWs}(${any})${anyWs}$`;
 
 export default class MDRegex {
   // Links
