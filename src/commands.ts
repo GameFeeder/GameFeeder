@@ -126,6 +126,9 @@ const subCmd = new Command(
       aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
     }
 
+    // Remove duplicates
+    aliasGames = [...new Set(aliasGames)];
+
     if (aliasGames.length > 0) {
       // The map of which game is a new sub
       const gameMap = aliasGames.map((game) => {
@@ -190,6 +193,9 @@ const unsubCmd = new Command(
     for (alias of aliases) {
       aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
     }
+
+    // Remove duplicates
+    aliasGames = [...new Set(aliasGames)];
 
     if (aliasGames.length > 0) {
       // The map of which game is a new sub
