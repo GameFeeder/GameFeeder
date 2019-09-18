@@ -5,6 +5,7 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
+import MDRegex, { bold } from './regex';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -176,55 +177,70 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  public static msgFromMarkdown(markdownText: string): string {
-    let markdown = markdownText;
-    if (!markdown) {
+  public static msgFromMarkdown(text: string): string {
+    if (!text) {
       return '';
     }
-    // Image Links
-    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
-    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
-    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image]($1)');
-    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1]($2)');
+    let markdown = text;
+
+    // Links
+    markdown = MDRegex.replaceLink(markdown, (_, label, url) => {
+      if (!label) {
+        return url;
+      }
+
+      // Remove nested formatting
+      let newLabel = MDRegex.replaceItalic(label, (_, italicText) => italicText);
+      newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
+
+      return `[${newLabel}](${url})`;
+    });
+
+    // Images
+    markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
+      let newLabel = label ? label : 'Image';
+      // Remove nested formatting
+      newLabel = MDRegex.replaceItalic(newLabel, (_, italicText) => italicText);
+      newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
+
+      if (linkUrl) {
+        return `[${newLabel}](${imageUrl}) ([Link](${linkUrl}))`;
+      }
+
+      return `[${newLabel}](${imageUrl})`;
+    });
+
     // Italic
-    markdown = markdown.replace(/\*(?!\*)(.+)(?!\*)\*/g, '_$1_');
-    // BoldD
-    markdown = markdown.replace(/__(.+)__/g, '*$1*');
-    markdown = markdown.replace(/\*\*(.+)\*\*/g, '*$1*');
-    // Formatting with Links
-    markdown = markdown.replace(/\*(.*)[ \t]*\[(.*)\]\((.*)\)[ \t]*(.*)\*/g, '*$1* [$2]($3) *$4*');
-    markdown = markdown.replace(
-      /__(.*)[ \t]*\[(.*)\]\((.*)\)[ \t]*(.*)__/g,
-      '__$1__ [$2]($3) __$4__',
-    );
+    markdown = MDRegex.replaceItalic(markdown, (_, italicText) => {
+      return `_${italicText}_`;
+    });
 
-    markdown = markdown.replace(/\[\*(.*)\*\]\((.*)\)/g, '[$1]($2)');
-    markdown = markdown.replace(/\[__(.*)__\]\((.*)\)/g, '[$1]($2)');
-
-    markdown = markdown.replace(/\*\[(.*)\]\((.*)\)\*/g, '[$1]($2)');
-    markdown = markdown.replace(/__\[(.*)\]\((.*)\)__/g, '[$1]($2)');
-
-    // Remove empty formatting rules
-    markdown = markdown.replace(/\*\*/g, '');
-    markdown = markdown.replace(/____/g, '');
+    // Bold
+    markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
+      return `*${boldText}*`;
+    });
 
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
-    // Linewise formatting
-    const lineArray = markdown.split('\n');
-    for (let i = 0; i < lineArray.length; i++) {
-      // H1-6
-      lineArray[i] = lineArray[i].replace(/^\s*##?#?\s*(.*)/, '*$1*');
-      // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
-    }
+    // Lists
+    markdown = MDRegex.replaceList(markdown, (_, listElement) => {
+      return `- ${listElement}`;
+    });
 
-    let newMarkdown = '';
-    for (const line of lineArray) {
-      newMarkdown += `${line}\n`;
-    }
+    // Headers
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
+      return `\n*${headerText}*`;
+    });
 
-    return newMarkdown;
+    // Blockquotes
+    markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
+      return `"${quoteText}"`;
+    });
+
+    // Compress multiple linebreaks
+    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
+
+    return markdown;
   }
 }
