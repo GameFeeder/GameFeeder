@@ -4,7 +4,7 @@ import Command from './command';
 import DataManager from './data_manager';
 import Game from './game';
 import botLogger from './bot_logger';
-import { filterAsync, mapAsync } from './util';
+import { filterAsync, mapAsync, naturalJoin } from './util';
 
 const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
 
@@ -17,9 +17,9 @@ const startCmd = new Command(
   (bot, channel, user) => {
     bot.sendMessage(
       channel,
-      `Welcome to the **valveGamesAnnouncerBot**!\n`
-      + `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n`
-      + `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+      `Welcome to the **valveGamesAnnouncerBot**!\n` +
+        `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n` +
+        `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
   },
 );
@@ -67,19 +67,20 @@ const settingsCmd = new Command(
   'settings',
   '(settings)|(options)|(config)\\s*$',
   (bot, channel) => {
-    const gameStr = (channel.gameSubs && (channel.gameSubs.length > 0)) ?
-      `> You are currently subscribed to the following games:\n`
-      + `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}` :
-      '> You are currently not subscribed to any games.';
+    const gameStr =
+      channel.gameSubs && channel.gameSubs.length > 0
+        ? `> You are currently subscribed to the following games:\n` +
+          `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
+        : '> You are currently not subscribed to any games.';
 
     bot.sendMessage(
       channel,
-      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses `
-      + `on this channel.\n`
-      + `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
-      + `You can use \`${subCmd.getTriggerLabel(channel)}\` and `
-      + `\`${unsubCmd.getTriggerLabel(channel)}\` to change the games you are subscribed to.\n`
-      + gameStr,
+      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses ` +
+        `on this channel.\n` +
+        `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
+        `You can use \`${subCmd.getTriggerLabel(channel)}\` and ` +
+        `\`${unsubCmd.getTriggerLabel(channel)}\` to change the games you are subscribed to.\n` +
+        gameStr,
     );
   },
 );
@@ -105,32 +106,67 @@ const subCmd = new Command(
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
   (bot, channel, user, match: any) => {
-    let { alias } = match.groups;
+    let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
 
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide the name of the game you want to subscribe to.\n`
-        + `Try \`${subCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide the name of the game you want to subscribe to.\n` +
+          `Try \`${subCmd.getTriggerLabel(channel)}\`.`,
       );
     }
 
-    let noGamesFound = true;
-    for (const game of Game.getGames()) {
-      if (game.hasAlias(alias)) {
-        noGamesFound = false;
-        if (bot.addSubscriber(channel, game)) {
-          bot.sendMessage(channel, `You are now subscribed to the **${game.label}** feed!`);
-        } else {
-          bot.sendMessage(channel, `You have already subscribed to the **${game.label}** feed!`);
-        }
+    const aliases = alias.split(', ');
+
+    // The games matching the alias
+    let aliasGames: Game[] = [];
+    let invalidAliases: string[] = [];
+
+    for (alias of aliases) {
+      const newGames = Game.getGamesByAlias(alias);
+
+      if (newGames.length === 0) {
+        // We don't recognize that alias
+        invalidAliases.push(alias);
+      } else {
+        aliasGames = aliasGames.concat(newGames);
       }
     }
-    if (noGamesFound) {
-      // tslint:disable-next-line: max-line-length
-      bot.sendMessage(channel, `No games matching ${alias} were found. Use /games to get a list of available games.`);
+
+    // Remove duplicates
+    aliasGames = [...new Set(aliasGames)];
+    invalidAliases = [...new Set(invalidAliases)];
+
+    // The map of which game is a new sub
+    const gameMap = aliasGames.map((game) => {
+      const isNew = bot.addSubscriber(channel, game);
+      return { game, isNew };
+    });
+
+    const validSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+    const invalidSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+
+    let message = '';
+
+    // Valid subscriptions
+    if (validSubs.length > 0) {
+      message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
     }
+    // Already subscribed
+    if (invalidSubs.length > 0) {
+      message +=
+        `\nYou have already subscribed to ` +
+        `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
+    }
+    // Unknown aliases
+    if (invalidAliases.length > 0) {
+      message +=
+        `\nWe don't know any game(s) with the alias(es) ` +
+        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+    }
+
+    bot.sendMessage(channel, message);
   },
   UserPermission.ADMIN,
 );
@@ -148,23 +184,61 @@ const unsubCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide the name of the game you want to unsubscribe from.\n`
-        + `Try ${unsubCmd.getTriggerLabel(channel)}.`,
+        `You need to provide the name of the game you want to unsubscribe from.\n` +
+          `Try ${unsubCmd.getTriggerLabel(channel)}.`,
       );
     }
 
-    for (const game of Game.getGames()) {
-      if (game.hasAlias(alias)) {
-        if (bot.removeSubscriber(channel, game)) {
-          bot.sendMessage(channel, `You are now unsubscribed from the **${game.label}** feed!`);
-        } else {
-          bot.sendMessage(
-            channel,
-            `You have never subscribed to the **${game.label}** feed in the first place!`,
-          );
-        }
+    const aliases = alias.split(', ');
+
+    // The games matching the alias
+    let aliasGames: Game[] = [];
+    let invalidAliases: string[] = [];
+
+    for (alias of aliases) {
+      const newGames = Game.getGamesByAlias(alias);
+
+      if (newGames.length === 0) {
+        // We don't recognize that alias
+        invalidAliases.push(alias);
+      } else {
+        aliasGames = aliasGames.concat(newGames);
       }
     }
+
+    // Remove duplicates
+    aliasGames = [...new Set(aliasGames)];
+    invalidAliases = [...new Set(invalidAliases)];
+
+    // The map of which game is a new sub
+    const gameMap = aliasGames.map((game) => {
+      const isNew = bot.removeSubscriber(channel, game);
+      return { game, isNew };
+    });
+
+    const validUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+    const invalidUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+
+    let message = '';
+
+    // Valid unsubscriptions
+    if (validUnsubs.length > 0) {
+      message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
+    }
+    // Already unsubscribed
+    if (invalidUnsubs.length > 0) {
+      message +=
+        `\nYou have never subscribed to ` +
+        `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
+    }
+    // Unknown aliases
+    if (invalidAliases.length > 0) {
+      message +=
+        `\nWe don't know any game(s) with the alias(es) ` +
+        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+    }
+
+    bot.sendMessage(channel, message);
   },
   UserPermission.ADMIN,
 );
@@ -183,10 +257,10 @@ const prefixCmd = new Command(
     if (!newPrefix) {
       bot.sendMessage(
         channel,
-        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n`
-        + `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n`
-        + `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default`
-        + `(\`${bot.prefix}\`).`,
+        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
+          `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n` +
+          `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default` +
+          `(\`${bot.prefix}\`).`,
       );
       return;
     }
@@ -253,8 +327,8 @@ const notifyAllCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n`
-        + `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n` +
+          `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -284,8 +358,8 @@ const notifyGameSubsCmd = new Command(
     if (!message) {
       bot.sendMessage(
         channel,
-        `You need to provide a message to send to everyone.\n`
-        + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a message to send to everyone.\n` +
+          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -293,8 +367,8 @@ const notifyGameSubsCmd = new Command(
     if (!alias) {
       bot.sendMessage(
         channel,
-        `You need to provide a game to notify the subs of.\n`
-          + `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+        `You need to provide a game to notify the subs of.\n` +
+          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
       );
       return;
     }
@@ -315,8 +389,8 @@ const notifyGameSubsCmd = new Command(
     // We didn't find the specified game
     bot.sendMessage(
       channel,
-      `I didn't find a game with the alias ${alias}.\n`
-      + `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+      `I didn't find a game with the alias '${alias}'.\n` +
+        `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
   UserPermission.OWNER,

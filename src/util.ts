@@ -26,6 +26,21 @@ export async function filterAsync<T>(
   return array.filter((value, index) => filterMap[index]);
 }
 
+/** Joins the array with the seperator, but 'and' for the last item.
+ *  E.g.: 'first, second and third'.
+ */
+export function naturalJoin(array: string[], seperator?: string): string {
+  if (!array || array.length === 0) {
+    return '';
+  }
+  if (array.length === 1) {
+    return array[0];
+  }
+  const sep = seperator || ', ';
+  return array.slice(0, array.length - 1).join(sep)
+    + ' and ' + array[array.length - 1];
+}
+
 export class ObjUtil {
   public static keys(object: any): string[] {
     if (!(object instanceof Object)) {
