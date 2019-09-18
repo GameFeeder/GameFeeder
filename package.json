@@ -1,7 +1,7 @@
 {
   "name": "valvegamesannouncerbot",
-  "version": "0.2.3",
-  "description": "A notification bot for Dota 2 and Artifact.",
+  "version": "0.2.4",
+  "description": "A notification bot for multiple Valve games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "scripts": {
     "build": "tsc --build",
