@@ -143,15 +143,10 @@ const subCmd = new Command(
 
       if (validSubs.length > 0) {
         message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
-
-        if (invalidSubs.length > 0) {
-          message +=
-            `\nYou have already subscribed to ` +
-            `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
-        }
-      } else {
+      }
+      if (invalidSubs.length > 0) {
         message +=
-          `You have already subscribed to ` +
+          `\nYou have already subscribed to ` +
           `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
       }
 
@@ -211,15 +206,10 @@ const unsubCmd = new Command(
 
       if (validUnsubs.length > 0) {
         message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
-
-        if (invalidUnsubs.length > 0) {
-          message +=
-            `\nYou have never subscribed to ` +
-            `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
-        }
-      } else {
+      }
+      if (invalidUnsubs.length > 0) {
         message +=
-          `You have never subscribed to ` +
+          `\nYou have never subscribed to ` +
           `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
       }
 
