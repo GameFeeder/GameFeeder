@@ -216,9 +216,6 @@ export default class DiscordBot extends BotClient {
       return `_${italicText}_`;
     });
 
-    // Compress multiple linebreaks
-    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
-
     // Links
     markdown = MDRegex.replaceLink(markdown, (_, label, url) => {
       if (!label) {
@@ -255,21 +252,24 @@ export default class DiscordBot extends BotClient {
       return `- ${listElement}`;
     });
 
-    // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
-      // H1-3
-      if (level <= 3) {
-        return `__**${headerText}**__`;
-      }
-
-      // H4-6
-      return `**${headerText}**`;
-    });
-
     // Blockquotes
     markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
       return `> ${quoteText}`;
     });
+
+    // Headers
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
+      // H1-3
+      if (level <= 3) {
+        return `\n__**${headerText}**__`;
+      }
+
+      // H4-6
+      return `\n**${headerText}**`;
+    });
+
+    // Compress multiple linebreaks
+    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
     return markdown;
   }

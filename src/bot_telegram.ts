@@ -220,22 +220,19 @@ export default class TelegramBot extends BotClient {
       return `*${boldText}*`;
     });
 
-    // Compress multiple linebreaks
-    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
-
     // Lists
     markdown = MDRegex.replaceList(markdown, (_, listElement) => {
       return `- ${listElement}`;
     });
 
-    // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
-      return `\n*${headerText}*`;
-    });
-
     // Blockquotes
     markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
       return `"${quoteText}"`;
+    });
+
+    // Headers
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
+      return `\n*${headerText}*`;
     });
 
     // Compress multiple linebreaks
