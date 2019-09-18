@@ -1,4 +1,4 @@
-import { mapAsync, filterAsync, ObjUtil } from './util';
+import { mapAsync, filterAsync, naturalJoin, ObjUtil } from './util';
 
 describe('Util', () => {
   describe('map async', () => {
@@ -16,6 +16,44 @@ describe('Util', () => {
       const asyncFunction = async (el: number) => el > 2;
       const rr = await filterAsync(testArray, asyncFunction);
       expect(rr).toEqual([3]);
+    });
+  });
+
+  describe('natural join', () => {
+    test('null', () => {
+      const testArray: string[] = null;
+      const result = naturalJoin(testArray);
+      expect(result).toEqual('');
+    });
+
+    test('empty', () => {
+      const testArray: string[] = [];
+      const result = naturalJoin(testArray);
+      expect(result).toEqual('');
+    });
+
+    test('1 item', () => {
+      const testArray: string[] = ['one'];
+      const result = naturalJoin(testArray);
+      expect(result).toEqual('one');
+    });
+
+    test('2 items', () => {
+      const testArray: string[] = ['one', 'two'];
+      const result = naturalJoin(testArray);
+      expect(result).toEqual('one and two');
+    });
+
+    test('3 items', () => {
+      const testArray: string[] = ['one', 'two', 'three'];
+      const result = naturalJoin(testArray);
+      expect(result).toEqual('one, two and three');
+    });
+
+    test('3 items with seperator', () => {
+      const testArray: string[] = ['one', 'two', 'three'];
+      const result = naturalJoin(testArray, '|');
+      expect(result).toEqual('one|two and three');
     });
   });
 
