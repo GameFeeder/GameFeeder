@@ -1,4 +1,4 @@
-import FS from 'fs';
+import FileManager from './file_manager';
 
 /** The available data files. */
 export enum DATA {
@@ -31,12 +31,15 @@ export type updater_data = {
   lastUpdate: string,
   /** The version string of the last dota patch. */
   lastDotaPatch: string,
+  /** Timestamp of the last update cycle run */
+  healthcheckTimestamp: string;
 };
 
 /** The class managing the data files. */
 export default class DataManager {
   /** The base path of the config files. */
-  private static basePath = 'data';
+  public static basePath = 'data/';
+  public static ext = '.json';
 
   /** The file name of the updater config. */
   private static updaterFileName = 'updater_data';
@@ -49,50 +52,12 @@ export default class DataManager {
   private static getFileName(file: DATA): string {
     switch (file) {
       case DATA.UPDATER:
-        return this.updaterFileName;
+        return this.updaterFileName + this.ext;
       case DATA.SUBS:
-        return this.subscriberFileName;
+        return this.subscriberFileName + this.ext;
       default:
         throw Error('Unknown config file.');
     }
-  }
-
-  /** Gets the relative path of the given file.
-   *
-   * @param file - The file to get the path of.
-   */
-  private static getFilePath(file: DATA): string {
-    const fileName = this.getFileName(file);
-    return `${this.basePath}/${fileName}.json`;
-  }
-
-  /** Gets the relative path of the example of the given file.
-   *
-   * @param file  - The file to get the example path of.
-   */
-  private static getExampleFilePath(file: DATA): string {
-    const fileName = this.getFileName(file);
-    return `${this.basePath}/${fileName}.example.json`;
-  }
-
-  /** Reads the given file.
-   *
-   * @param file - The file to read.
-   */
-  private static readFile(file: DATA): string {
-    return FS.readFileSync(this.getFilePath(file), 'utf8');
-  }
-
-  private static writeFile(file: DATA, content: string): void {
-    FS.writeFileSync(this.getFilePath(file), content);
-  }
-
-  /** Reads the example of the given file.
-   *
-   * @param file - The file to read the example of.
-   */
-  private static readExampleFile(file: DATA): string {
-    return FS.readFileSync(this.getExampleFilePath(file), 'utf8');
   }
 
   /** Parses the given file to a JSON object.
@@ -100,7 +65,7 @@ export default class DataManager {
    * @param file - The file to parse.
    */
   private static parseFile(file: DATA): any {
-    return JSON.parse(this.readFile(file));
+    return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
   /** Writes an object to the given file.
@@ -109,15 +74,7 @@ export default class DataManager {
    * @param object - The object to write to the file.
    */
   private static writeObject(file: DATA, object: any): void {
-    return this.writeFile(file, JSON.stringify(object));
-  }
-
-  /** Parses the example of the given file to a JSON object.
-   *
-   * @param file - The file to parse the example of.
-   */
-  private static parseExampleFile(file: DATA): any {
-    return JSON.parse(this.readExampleFile(file));
+    return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 
   // Data getters and setters
@@ -140,17 +97,5 @@ export default class DataManager {
   /** Sets the updater data. */
   public static setUpdaterData(data: updater_data): void {
     this.writeObject(DATA.UPDATER, data);
-  }
-
-  // Example getters
-
-  /** Gets the subscriber example data object. */
-  public static getSubscriberDataExample(): subscriber_data {
-    return this.parseExampleFile(DATA.SUBS);
-  }
-
-  /** Gets the updater example data object. */
-  public static getUpdaterDataExample(): updater_data {
-    return this.parseExampleFile(DATA.UPDATER);
   }
 }

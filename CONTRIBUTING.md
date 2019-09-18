@@ -12,16 +12,16 @@ This document will guide you through setting up the bot on your PC, editing the 
     - [Discord Bot](#discord-bot)
     - [Telegram Bot](#telegram-bot)
     - [Reddit API](#reddit-api)
+    - [Docker containers](#docker-containers)
 
 ## Local setup
 
 To set up the bot locally on your machine, you will first need to fork and clone the project.
 
-Next you will need to create multiple API keys. First off navigate to `config/` and copy & paste `bot_config.example.json` into `bot_config.json`. You will need this file to store your API data.
+Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `/data/` and `/config/`, to enable your personal configuration files.
+The bot should warn you that you have missing bot and reddit tokens.
 
-**Important**: Never share your API keys with anyone! `bot_config.json` should be in the `.gitignore`, but please double check that you are not pushing your keys to any repository.
-
-You will also have to copy & paste `subscribers.example.json` into `subscribers.json` and `updater_config.example.json` into `updater_config.json`.
+**Important**: Never share your API keys with anyone! Make sure to never add your api tokens and secrets to the example files, as they are uploaded to GitHub!
 
 You can now use the following tutorials to get the keys you need. If you don't want to use one of the features, skip the step and leave the `token` field empty. This (should) just disable this API. For the bots, you can aditionally set `autostart` to `false`, if you only want to test out a certain bot.
 
@@ -50,4 +50,16 @@ To do that,
   
   `<platform>:<app ID>:<version string> (by /u/<reddit username>)`.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object. 
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object.
+
+### Docker containers
+
+Included in the repo are 2 Dockerfiles:
+- /.devcontainer/Dockerfile
+- /Dockerfile
+
+The first is meant to be used as a dev container. Instead of having to install dependencies like node and typescript in your machine, you can use this docker container. VScode can also utilize this automatically. For more information check out the [official VSCode guide](https://code.visualstudio.com/docs/remote/containers) on developing inside a container.
+
+If you are using Windows, you can also leverage the WSL with no further configuration necessary. Just follow the steps described [here](https://code.visualstudio.com/docs/remote/wsl).
+
+Finally, the `Dockerfile` provided in the root folder along with the `docker-compose.yml` is meant to be used a simple lightweight way to deploy the bot in production mode. This is pending some improvements along with a public image repo which will be included in this document once set up.

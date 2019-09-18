@@ -14,6 +14,7 @@ import BotNotification from './notification';
 import MDRegex from './regex';
 
 export default class DiscordBot extends BotClient {
+  private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
   private token: string;
 
@@ -23,6 +24,21 @@ export default class DiscordBot extends BotClient {
     // Set up the bot
     this.token = token;
     this.bot = new DiscordAPI.Client();
+  }
+
+  public static getBot(): DiscordBot {
+    if (this.standardBot) {
+      return this.standardBot;
+    }
+    // Discord Bot
+    const {
+      prefix: discordPrefix,
+      token: discordToken,
+      autostart: discordAutostart,
+    } = ConfigManager.getBotConfig().discord;
+
+    this.standardBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
+    return this.standardBot;
   }
 
   public async getUserName(): Promise<string> {

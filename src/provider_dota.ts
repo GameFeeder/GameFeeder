@@ -1,5 +1,5 @@
 import Provider from './provider';
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
@@ -18,37 +18,48 @@ export default class DotaProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
-    const pageDoc = await this.getPatchPage();
-    const patchList = await this.getPatchList(pageDoc);
-    let lastPatch = this.lastPatch;
-    const newPatches = [];
+    let notifications: BotNotification[] = [];
+    try {
+      const pageDoc = await this.getPatchPage();
+      const patchList = await this.getPatchList(pageDoc);
+      let lastPatch = this.lastPatch;
+      const newPatches = [];
 
-    // Discard the old patches
-    for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
-      newPatches.push(patchList[i]);
-    }
+      // Discard the old patches
+      for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
+        newPatches.push(patchList[i]);
+      }
 
-    // Update the last patch version
-    if (newPatches.length > 0) {
-      lastPatch = newPatches[0];
-      this.setLastPatch(lastPatch);
-    }
+      // Update the last patch version
+      if (newPatches.length > 0) {
+        lastPatch = newPatches[0];
+        this.setLastPatch(lastPatch);
+      }
 
-    // Convert the patches to notifications
-    const notifications = newPatches.map((value) => {
-      return new BotNotification(
-        this.game,
-        'New gameplay update!',
-        new NotificationElement(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`),
-        `Gameplay patch ${value}`,
-        new Date(),
-        '',
-        '',
-        new NotificationElement('Dota 2'),
+      // Convert the patches to notifications
+      notifications = newPatches.map((value) => {
+        return new BotNotification(
+          this.game,
+          'New gameplay update!',
+          new NotificationElement(
+            `Gameplay patch ${value}`,
+            `http://www.dota2.com/patches/${value}`,
+          ),
+          `Gameplay patch ${value}`,
+          new Date(),
+          '',
+          '',
+          new NotificationElement('Dota 2'),
+        );
+      });
+    } catch (error) {
+      botLogger.error(
+        `Dota updates page parsing failed, error: ${error.substring(0, 120)}`,
+        'DotaProvider',
       );
-    });
-
-    return notifications;
+    } finally {
+      return notifications;
+    }
   }
 
   /** Updates the last patch. */

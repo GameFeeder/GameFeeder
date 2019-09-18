@@ -7,20 +7,8 @@ import RedditUserProvider from './reddit_user';
 import DotaProvider from './provider_dota';
 
 /** A representation of a game. */
-export class Game {
-  /** Gets a game by its name.
-   *
-   * @param name - The name of the game.
-   * @returns The game with this name.
-   */
-  public static getGameByName(name: string): Game {
-    for (const game of games) {
-      if (game.name === name) {
-        return game;
-      }
-    }
-    return null;
-  }
+export default class Game {
+  private static games: Game[];
 
   /** The internal name of the game. */
   public name: string;
@@ -77,44 +65,81 @@ export class Game {
 
     return false;
   }
-}
 
-// All Games
-const games: Game[] = [];
-
-for (const gameSettings of ConfigManager.getGameConfig()) {
-  const game = new Game(
-    gameSettings.name,
-    gameSettings.aliases,
-    gameSettings.label,
-    gameSettings.color,
-    gameSettings.icon,
-    null,
-  );
-
-  // Add providers
-  const providers: Provider[] = [];
-  // Reddit providers
-  if (gameSettings.providers.reddit.users) {
-    const subreddit = gameSettings.providers.reddit.subreddit;
-    // tslint:disable-next-line prefer-array-literal
-    const users: reddit_user[] = gameSettings.providers.reddit.users;
-    const redditUsers = users.map((user) => new RedditUserProvider(user.name, user.filter));
-    providers.push(new RedditProvider(redditUsers, subreddit, game));
-  }
-  // Blog providers
-  if (gameSettings.providers.blogs) {
-    for (const blog of gameSettings.providers.blogs) {
-      providers.push(new BlogProvider(blog.url, blog.label, game));
+  /** Gets a game by its name.
+   *
+   * @param name - The name of the game.
+   * @returns The game with this name.
+   */
+  public static getGameByName(name: string): Game {
+    for (const game of this.getGames()) {
+      if (game.name === name) {
+        return game;
+      }
     }
+    return null;
   }
-  game.providers = providers;
 
-  games.push(game);
+  /** Returns the available games. */
+  public static getGames(): Game[] {
+    if (this.games) {
+      return this.games;
+    }
+
+    // All Games
+    const games: Game[] = [];
+
+    for (const gameSettings of ConfigManager.getGameConfig()) {
+      const game = new Game(
+        gameSettings.name,
+        gameSettings.aliases,
+        gameSettings.label,
+        gameSettings.color,
+        gameSettings.icon,
+        null,
+      );
+
+      // Add providers
+      const providers: Provider[] = [];
+      // Reddit providers
+      if (gameSettings.providers.reddit.users) {
+        const subreddit = gameSettings.providers.reddit.subreddit;
+        // tslint:disable-next-line prefer-array-literal
+        const users: reddit_user[] = gameSettings.providers.reddit.users;
+        const redditUsers = users.map(
+          (user) => new RedditUserProvider(user.name, user.titleFilter),
+        );
+        providers.push(new RedditProvider(redditUsers, subreddit, game));
+      }
+      // Blog providers
+      if (gameSettings.providers.blogs) {
+        for (const blog of gameSettings.providers.blogs) {
+          providers.push(new BlogProvider(blog.url, blog.label, game));
+        }
+      }
+      game.providers = providers;
+
+      games.push(game);
+    }
+
+    this.games = games;
+
+    // Unique providers
+    for (const game of games) {
+      if (game.name === 'dota') {
+        game.providers.push(new DotaProvider());
+      }
+    }
+
+    return this.games;
+  }
+
+  /** Gets all the games with the given alias. */
+  public static getGamesByAlias(alias: string): Game[] {
+    const aliasGames = this.getGames().filter((game) => {
+      return game.hasAlias(alias);
+    });
+
+    return aliasGames;
+  }
 }
-
-// Unique providers
-Game.getGameByName('dota').providers.push(new DotaProvider());
-
-export default games;
-export { games };

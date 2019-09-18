@@ -16,15 +16,15 @@
           "users": [
             {
               "name": "Magesunite",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "SirBelvedere",
-              "filter": "Artifact Update"
+              "titleFilter": "Artifact Update"
             },
             {
               "name": "wykrhm",
-              "filter": ".*"
+              "titleFilter": ".*"
             }
           ]
         },
@@ -47,6 +47,10 @@
           "subreddit": "DotA2",
           "users": [
             {
+              "name": "Kappa_Man",
+              "titleFilter": "Dota 2 Update"
+            },
+            {
               "name": "Magesunite",
               "titleFilter": "Dota 2 Update"
             },
@@ -55,17 +59,16 @@
               "titleFilter": "Dota 2 Update"
             },
             {
+              "name": "wickedplayer494",
+              "titleFilter": "Dota 2 update"
+            },
+            {
               "name": "wykrhm",
               "titleFilter": ".*"
             }
           ]
         },
-        "blogs": [
-          {
-            "label": "Dota 2 Blog",
-            "url": "http://blog.dota2.com/feed/"
-          }
-        ]
+        "blogs": []
       }
     },
     {
@@ -163,7 +166,7 @@
           "users": [
             {
               "name": "wykrhm",
-              "titleFilter": ""
+              "titleFilter": ".*"
             }
           ]
         },

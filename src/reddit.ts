@@ -1,14 +1,16 @@
 import Snoowrap from 'snoowrap';
 import ConfigManager from './config_manager';
-import { Game } from './game';
+import Game from './game';
 import botLogger from './bot_logger';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import RedditUserProvider from './reddit_user';
 import { sortLimitEnd } from './comparable';
+import ProjectManager from './project_manager';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
+let isEnabled: boolean = true;
 const loggerTag = 'Reddit';
 
 export default class Reddit {
@@ -17,14 +19,42 @@ export default class Reddit {
       return;
     }
     botLogger.debug('Initializing Reddit API...', 'Reddit');
-    const { clientId, clientSecret, refreshToken, userAgent } = ConfigManager.getRedditConfig();
+    const redditConfig = ConfigManager.getRedditConfig();
+    const { clientId, clientSecret, refreshToken, userName } = redditConfig;
+
+    // Check for parameters
+    const missingParams = [];
+    if (!clientId) {
+      missingParams.push('clientId');
+    }
+    if (!clientSecret) {
+      missingParams.push('clientSecret');
+    }
+    if (!refreshToken) {
+      missingParams.push('refreshToken');
+    }
+    if (!userName) {
+      missingParams.push('userName');
+    }
+    if (missingParams.length > 0) {
+      botLogger.warn(`Missing parameters in 'api_config.json': ${missingParams.join(', ')}`
+        + `\n  Disabling reddit updates.`, 'Reddit');
+      isEnabled = false;
+      isInit = true;
+      return;
+    }
+
+    const userAgent = `discord/telegram(${ProjectManager.getEnvironment()}):`
+      + `${ProjectManager.getIdentifier()}:v${ProjectManager.getVersionNumber()}`
+      + ` (by /u/${userName})`;
+
     reddit = new Snoowrap({
       clientId,
       clientSecret,
       refreshToken,
       userAgent,
     });
-    botLogger.debug('Initialization successful.', 'Reddit');
+    botLogger.info(`Initialization successful with userAgent '${userAgent}'.`, 'Reddit');
     isInit = true;
   }
 
@@ -47,7 +77,7 @@ export default class Reddit {
   ): Promise<BotNotification[]> {
     let notifications: BotNotification[] = [];
 
-    if (!isInit) {
+    if (!isInit || !isEnabled) {
       return notifications;
     }
 

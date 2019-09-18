@@ -1,5 +1,5 @@
 import Snoowrap from 'snoowrap';
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 import Provider from './provider';
 import Reddit from './reddit';

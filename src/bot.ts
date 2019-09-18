@@ -3,8 +3,10 @@ import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import DataManager from './data_manager';
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
+import DiscordBot from './bot_discord';
+import TelegramBot from './bot_telegram';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */

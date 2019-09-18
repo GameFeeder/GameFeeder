@@ -1,4 +1,4 @@
-import { Game } from './game';
+import Game from './game';
 import BotNotification from './notification';
 import NotificationElement from './notification_element';
 import Provider from './provider';

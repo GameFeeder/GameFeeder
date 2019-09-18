@@ -1,4 +1,4 @@
-import FS from 'fs';
+import FileManager from './file_manager';
 
 /** The available config files. */
 export enum CONFIG {
@@ -45,8 +45,8 @@ export type reddit_config = {
   clientSecret: string;
   /** The refresh token used by the reddit client. */
   refreshToken: string;
-  /** The user agent used by the reddit client. */
-  userAgent: string;
+  /** The user name of the bot owner. */
+  userName: string;
 };
 
 /** A reddit user. */
@@ -54,7 +54,7 @@ export type reddit_user = {
   /** The name of the reddit user. */
   name: string;
   /** The regex to filter the post tiles by. */
-  filter: string;
+  titleFilter: string;
 };
 
 /** The reddit providers for a game. */
@@ -100,19 +100,20 @@ export type game_config = game_settings[];
 /** The config of the updater. */
 export type updater_config = {
   /** The delay in seconds between each update. */
-  updateDelaySec: number,
+  updateDelaySec: number;
   /** The maximum amount of notifications to send at once (e.g. after a restart). */
-  limit: number,
+  limit: number;
   /** Determines whether the updater should start automatically. */
-  autostart: boolean,
+  autostart: boolean;
   /** Determines whether the bot saves the update parameters (disable for testing). */
-  autosave: boolean,
+  autosave: boolean;
 };
 
 /** The class that handles the config files. */
 export default class ConfigManager {
   /** The base path of the config files. */
-  private static basePath = 'config';
+  public static basePath = 'config/';
+  public static ext = '.json';
 
   /** The file name of the API config. */
   private static apiFileName = 'api_config';
@@ -128,77 +129,31 @@ export default class ConfigManager {
   private static getFileName(file: CONFIG): string {
     switch (file) {
       case CONFIG.API:
-        return this.apiFileName;
+        return this.apiFileName + this.ext;
       case CONFIG.GAME:
-        return this.gameFileName;
+        return this.gameFileName + this.ext;
       case CONFIG.UPDATER:
-        return this.updaterFileName;
+        return this.updaterFileName + this.ext;
       default:
         throw Error('Unknown config file.');
     }
   }
 
-  /** Gets the relative path of the given file.
+  /** Parses the given config file.
    *
-   * @param file - The file to get the path of.
+   * @param file - The config file to parse.
    */
-  private static getFilePath(file: CONFIG): string {
-    const fileName = this.getFileName(file);
-    return `${this.basePath}/${fileName}.json`;
+  public static parseFile(file: CONFIG): any {
+    return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
-  /** Gets the relative path of the example of the given file.
+  /** Writes the given object to the given file.
    *
-   * @param file  - The file to get the example path of.
+   * @param file - THe config file to write to.
+   * @param object - The object to write.
    */
-  private static getExampleFilePath(file: CONFIG): string {
-    const fileName = this.getFileName(file);
-    return `${this.basePath}/${fileName}.example.json`;
-  }
-
-  /** Reads the given file.
-   *
-   * @param file - The file to read.
-   */
-  private static readFile(file: CONFIG): string {
-    return FS.readFileSync(this.getFilePath(file), 'utf8');
-  }
-
-  private static writeFile(file: CONFIG, content: string): void {
-    FS.writeFileSync(this.getFilePath(file), content);
-  }
-
-  /** Reads the example of the given file.
-   *
-   * @param file - The file to read the example of.
-   */
-  private static readExampleFile(file: CONFIG): string {
-    return FS.readFileSync(this.getExampleFilePath(file), 'utf8');
-  }
-
-  /** Parses the given file to a JSON object.
-   *
-   * @param file - The file to parse.
-   */
-  private static parseFile(file: CONFIG): any {
-    return JSON.parse(this.readFile(file));
-  }
-
-  /** Writes an object to the given file.
-   *
-   * @param file - The file to write to.
-   * @param object - The object to write to the file.
-   */
-  private static writeObject(file: CONFIG, object: any): void {
-    return this.writeFile(file, JSON.stringify(object));
-  }
-
-  /** Parses the example of the given file to a JSON object.
-   *
-   * @param file - The file to parse the example of.
-   */
-  private static parseExampleFile(file: CONFIG): any {
-    return JSON.parse(this.readExampleFile(file));
+  public static writeObject(file: CONFIG, object: any): any {
+    return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 
   // Config getters and setters
@@ -257,32 +212,5 @@ export default class ConfigManager {
   /** Sets the updater config object. */
   public static setUpdaterConfig(config: updater_config): void {
     this.writeObject(CONFIG.UPDATER, config);
-  }
-
-  // Example getters
-
-  /** Gets the api config example object. */
-  public static getAPIConfigExample(): api_config {
-    return this.parseExampleFile(CONFIG.API);
-  }
-
-  /** Gets the bot config example object. */
-  public static getBotConfigExample(): bot_config {
-    return this.getAPIConfigExample().bots;
-  }
-
-  /** Gets the reddit config example object. */
-  public static getRedditConfigExample(): reddit_config {
-    return this.getAPIConfigExample().reddit;
-  }
-
-  /** Gets the game config example object. */
-  public static getGameConfigExample(): game_config {
-    return this.parseExampleFile(CONFIG.GAME);
-  }
-
-  /** Gets the updater config example object. */
-  public static getUpdaterConfigExample(): updater_config {
-    return this.parseExampleFile(CONFIG.UPDATER);
   }
 }

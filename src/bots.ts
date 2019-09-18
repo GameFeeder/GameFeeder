@@ -1,24 +1,11 @@
 import DiscordBot from './bot_discord';
 import TelegramBot from './bot_telegram';
-import ConfigManager from './config_manager';
+import BotClient from './bot';
+import botLogger from './bot_logger';
 
-// Telegram Bot
-const {
-  prefix: telegramPrefix,
-  token: telegramToken,
-  autostart: telegramAutostart,
-} = ConfigManager.getBotConfig().telegram;
-const telegramBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
+export default function getBots(): BotClient[] {
+  const discordBot = DiscordBot.getBot();
+  const telegramBot = TelegramBot.getBot();
 
-// Discord Bot
-const {
-  prefix: discordPrefix,
-  token: discordToken,
-  autostart: discordAutostart,
-} = ConfigManager.getBotConfig().discord;
-const discordBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
-
-// Bots
-const bots = [discordBot, telegramBot];
-
-export default bots;
+  return [discordBot, telegramBot];
+}
