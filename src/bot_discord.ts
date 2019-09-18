@@ -266,6 +266,11 @@ export default class DiscordBot extends BotClient {
       return `**${headerText}**`;
     });
 
+    // Blockquotes
+    markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
+      return `> ${quoteText}`;
+    });
+
     return markdown;
   }
 

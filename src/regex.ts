@@ -31,6 +31,8 @@ export const h4 = `^####${hBase}$`;
 export const h5 = `^#####${hBase}$`;
 export const h6 = `^######${hBase}$`;
 
+export const quote = `^>${anyWs}(.+)${anyWs}`;
+
 export default class MDRegex {
   // Links
 
@@ -121,6 +123,8 @@ export default class MDRegex {
   public static h4 = new RegExp(h4, 'gm');
   public static h5 = new RegExp(h5, 'gm');
   public static h6 = new RegExp(h6, 'gm');
+
+  public static quote = new RegExp(quote, 'gm');
 
   // Functions
 
@@ -218,7 +222,7 @@ export default class MDRegex {
 
   /** Replaces markdown headers with the given function.
    *
-   * @param text - THe text to replace.
+   * @param text - The text to replace.
    * @param replaceFn - The function to replace the text with.
    */
   public static replaceHeader(
@@ -228,6 +232,20 @@ export default class MDRegex {
     return text.replace(MDRegex.hAny, (match, hashes, headerText) => {
       const level = hashes.length;
       return replaceFn(match, headerText, level);
+    });
+  }
+
+  /** Replaces markdown blockquotes with the given function.
+   *
+   * @param text - The text to replace.
+   * @param replaceFn - The function to replace the text with.
+   */
+  public static replaceQuote(
+    text: string,
+    replaceFn: (match: string, quoteText: string) => string,
+  ): string {
+    return text.replace(MDRegex.quote, (match, quoteText) => {
+      return replaceFn(match, quoteText);
     });
   }
 }

@@ -136,6 +136,17 @@ describe('Markdown regex', () => {
         testRegExp(MDRegex.list, '- List Element', ['- List Element', 'List Element']);
       });
     });
+
+    // QUOTE
+    describe('quote', () => {
+      test('with space', () => {
+        testRegExp(MDRegex.quote, '> Quote text', ['> Quote text', 'Quote text']);
+      });
+
+      xtest('without space', () => {
+        testRegExp(MDRegex.quote, '>Quote text', ['>Quote text', 'Quote text']);
+      });
+    });
   });
 
   // ---
@@ -546,6 +557,7 @@ describe('Markdown regex', () => {
       });
     });
 
+    // HEADER
     describe('header', () => {
       test('h1', () => {
         const testText = '# Header';
@@ -578,6 +590,31 @@ describe('Markdown regex', () => {
         const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
           expect(level).toEqual(6);
           return `**${headerText}**`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    // QUOTE
+    describe('Quote', () => {
+      test('with space', () => {
+        const testText = '> Quote text';
+        const expected = '"Quote text"';
+
+        const resultText = MDRegex.replaceQuote(testText, (_, quoteText) => {
+          return `"${quoteText}"`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('without space', () => {
+        const testText = '>Quote text';
+        const expected = '"Quote text"';
+
+        const resultText = MDRegex.replaceQuote(testText, (_, quoteText) => {
+          return `"${quoteText}"`;
         });
 
         expect(resultText).toEqual(expected);
