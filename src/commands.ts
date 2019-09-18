@@ -121,43 +121,52 @@ const subCmd = new Command(
 
     // The games matching the alias
     let aliasGames: Game[] = [];
+    let invalidAliases: string[] = [];
 
     for (alias of aliases) {
-      aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
+      const newGames = Game.getGamesByAlias(alias);
+
+      if (newGames.length === 0) {
+        // We don't recognize that alias
+        invalidAliases.push(alias);
+      } else {
+        aliasGames = aliasGames.concat(newGames);
+      }
     }
 
     // Remove duplicates
     aliasGames = [...new Set(aliasGames)];
+    invalidAliases = [...new Set(invalidAliases)];
 
-    if (aliasGames.length > 0) {
-      // The map of which game is a new sub
-      const gameMap = aliasGames.map((game) => {
-        const isNew = bot.addSubscriber(channel, game);
-        return { game, isNew };
-      });
+    // The map of which game is a new sub
+    const gameMap = aliasGames.map((game) => {
+      const isNew = bot.addSubscriber(channel, game);
+      return { game, isNew };
+    });
 
-      const validSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
-      const invalidSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+    const validSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+    const invalidSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
-      let message = '';
+    let message = '';
 
-      if (validSubs.length > 0) {
-        message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
-      }
-      if (invalidSubs.length > 0) {
-        message +=
-          `\nYou have already subscribed to ` +
-          `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
-      }
-
-      bot.sendMessage(channel, message);
-    } else {
-      bot.sendMessage(
-        channel,
-        `I didn't find a game with the alias '${alias}'.\n` +
-          `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
-      );
+    // Valid subscriptions
+    if (validSubs.length > 0) {
+      message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
     }
+    // Already subscribed
+    if (invalidSubs.length > 0) {
+      message +=
+        `\nYou have already subscribed to ` +
+        `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
+    }
+    // Unknown aliases
+    if (invalidAliases.length > 0) {
+      message +=
+        `\nWe don't know any game(s) with the alias(es) ` +
+        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+    }
+
+    bot.sendMessage(channel, message);
   },
   UserPermission.ADMIN,
 );
@@ -184,43 +193,52 @@ const unsubCmd = new Command(
 
     // The games matching the alias
     let aliasGames: Game[] = [];
+    let invalidAliases: string[] = [];
 
     for (alias of aliases) {
-      aliasGames = aliasGames.concat(Game.getGamesByAlias(alias));
+      const newGames = Game.getGamesByAlias(alias);
+
+      if (newGames.length === 0) {
+        // We don't recognize that alias
+        invalidAliases.push(alias);
+      } else {
+        aliasGames = aliasGames.concat(newGames);
+      }
     }
 
     // Remove duplicates
     aliasGames = [...new Set(aliasGames)];
+    invalidAliases = [...new Set(invalidAliases)];
 
-    if (aliasGames.length > 0) {
-      // The map of which game is a new sub
-      const gameMap = aliasGames.map((game) => {
-        const isNew = bot.removeSubscriber(channel, game);
-        return { game, isNew };
-      });
+    // The map of which game is a new sub
+    const gameMap = aliasGames.map((game) => {
+      const isNew = bot.removeSubscriber(channel, game);
+      return { game, isNew };
+    });
 
-      const validUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
-      const invalidUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
+    const validUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
+    const invalidUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
-      let message = '';
+    let message = '';
 
-      if (validUnsubs.length > 0) {
-        message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
-      }
-      if (invalidUnsubs.length > 0) {
-        message +=
-          `\nYou have never subscribed to ` +
-          `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
-      }
-
-      bot.sendMessage(channel, message);
-    } else {
-      bot.sendMessage(
-        channel,
-        `I didn't find a game with the alias '${alias}'.\n` +
-          `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
-      );
+    // Valid unsubscriptions
+    if (validUnsubs.length > 0) {
+      message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
     }
+    // Already unsubscribed
+    if (invalidUnsubs.length > 0) {
+      message +=
+        `\nYou have never subscribed to ` +
+        `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
+    }
+    // Unknown aliases
+    if (invalidAliases.length > 0) {
+      message +=
+        `\nWe don't know any game(s) with the alias(es) ` +
+        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+    }
+
+    bot.sendMessage(channel, message);
   },
   UserPermission.ADMIN,
 );
