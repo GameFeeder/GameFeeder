@@ -1,0 +1,20 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    # - name: Build the Docker image
+    #   run: docker build . --file Dockerfile --tag gamefeeder:latest
+    # - name: Tag the Docker image
+    #   run: docker tag gamefeeder:latest gamefeeder/gamefeeder:latest
+    - name: Publish the Docker image
+      uses: elgohr/Publish-Docker-Github-Action@1.12
+      with:
+        name: gamefeeder/gamefeeder
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        snapshot: true
