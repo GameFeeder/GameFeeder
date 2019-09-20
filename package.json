@@ -1,6 +1,6 @@
 {
   "name": "valvegamesannouncerbot",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "A notification bot for multiple Valve games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "scripts": {
@@ -51,6 +51,7 @@
     "@types/request-promise-native": "1.0.16",
     "@types/showdown": "1.9.3",
     "@types/xml2js": "0.4.5",
+    "@discordjs/uws": "10.149.0",
     "cheerio": "1.0.0-rc.3",
     "discord.js": "11.5.1",
     "escape-string-regexp": "2.0.0",
