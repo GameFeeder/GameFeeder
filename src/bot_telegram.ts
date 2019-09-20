@@ -187,7 +187,7 @@ export default class TelegramBot extends BotClient {
     markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
       let newLabel = label ? label : 'Link';
       // Remove nested formatting
-      newLabel = MDRegex.replaceItalic(label, (_, italicText) => italicText);
+      newLabel = MDRegex.replaceItalic(newLabel, (_, italicText) => italicText);
       newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
 
       if (imageUrl) {
