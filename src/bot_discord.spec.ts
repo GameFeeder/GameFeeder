@@ -115,8 +115,8 @@ describe('Discord bot', () => {
       });
 
       test('single with underscores', () => {
-        const testText = '_Bold Text_';
-        const expected = '_Bold Text_';
+        const testText = '_Italic Text_';
+        const expected = '_Italic Text_';
 
         const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
         const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
@@ -126,8 +126,8 @@ describe('Discord bot', () => {
       });
 
       test('multiple with underscores', () => {
-        const testText = 'A _bold text1_ and another _bold text2_.';
-        const expected = 'A _bold text1_ and another _bold text2_.';
+        const testText = 'A _italic text1_ and another _italic text2_.';
+        const expected = 'A _italic text1_ and another _italic text2_.';
 
         const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
         const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
