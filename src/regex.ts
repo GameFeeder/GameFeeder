@@ -20,8 +20,9 @@ export const link = `(?<!!)(?<!${bl})${baseLink}`;
 export const baseImage = `!${baseLink}`;
 export const image = `(?<!${bl})${baseImage}`;
 // export const imageLink = `!\\[(?:(?:\\[(.*?)\\]\\((.*?)\\))|(.*?))\\]\\((.*)\\)`;
-export const imageLink = `!${bl}(?:(?:${baseLink})|(${any}))${br}${pl}(${any})${pr}`;
-export const linkImage = `${bl}(?:(?:${baseImage})|(${any}))${br}${pl}(${any})${pr}`;
+export const imageLink = `(?<!${bl})!${bl}(?:(?:${baseLink})|(${any}))${br}${pl}(${any})${pr}`;
+// (?<!(?:!\\[))(?<!!)\\[(?:(?:!\\[(?!\\[)(.*?)\\]\\((.*?)\\))|(.*?))\\]\\((.*?)\\)
+export const linkImage = `(?<!(?:!${bl}))(?<!!)${bl}(?:(?:${baseImage})|(${any}))${br}${pl}(${any})${pr}`;
 
 export const boldAsterisk = `\\*\\*(?!\\s)(${some})(?<!\\s)\\*\\*`;
 export const boldUnderscore = `__(?!\\s)(${some})(?<!\\s)__`;
