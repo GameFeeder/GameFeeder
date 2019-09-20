@@ -18,6 +18,10 @@ describe('Markdown regex', () => {
       test('not matching images', () => {
         testRegExp(MDRegex.link, '![TestImage](https://test.png)', []);
       });
+
+      test('not matching image links', () => {
+        testRegExp(MDRegex.link, '![[TestImageLink](https://test.url)](https://test.png)', []);
+      });
     });
 
     // IMAGE
@@ -32,6 +36,10 @@ describe('Markdown regex', () => {
 
       test('not matching links', () => {
         testRegExp(MDRegex.image, '[TestLink](https://test.url)', []);
+      });
+
+      test('not matching image links', () => {
+        testRegExp(MDRegex.image, '![[TestImageLink](https://test.url)](https://test.png)', []);
       });
     });
 

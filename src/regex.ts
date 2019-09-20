@@ -6,11 +6,20 @@ export const someNoHash = '[^#]+?';
 export const anyWs = '\\s*';
 export const someWs = '\\s+';
 
-export const baseLink = `\\[(${any})\\]\\((${any})\\)`;
-export const link = `(?<!!)${baseLink}`;
+/** Parenthesis left  */
+export const pl = '\\(';
+/** Parenthesis right  */
+export const pr = '\\)';
+/** Square bracket left */
+export const bl = '\\[';
+/** Square bracket right */
+export const br = '\\]';
+
+export const baseLink = `${bl}(?!${bl})(${any})${br}${pl}(${any})${pr}`;
+export const link = `(?<!!)(?<!${bl})${baseLink}`;
 export const image = `!${baseLink}`;
 // export const imageLink = `!\\[(?:(?:\\[(.*?)\\]\\((.*?)\\))|(.*?))\\]\\((.*)\\)`;
-export const imageLink = `!\\[(?:(?:${baseLink})|(${any}))\\]\\((${any})\\)`;
+export const imageLink = `!${bl}(?:(?:${baseLink})|(${any}))${br}${pl}(${any})${pr}`;
 
 export const boldAsterisk = `\\*\\*(?!\\s)(${some})(?<!\\s)\\*\\*`;
 export const boldUnderscore = `__(?!\\s)(${some})(?<!\\s)__`;

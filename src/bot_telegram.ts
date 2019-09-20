@@ -204,7 +204,7 @@ export default class TelegramBot extends BotClient {
       newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
 
       if (linkUrl) {
-        return `[${newLabel}](${imageUrl}) ([Link](${linkUrl}))`;
+        return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
       }
 
       return `[${newLabel}](${imageUrl})`;

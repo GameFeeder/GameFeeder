@@ -27,6 +27,18 @@ describe('Telegram bot', () => {
       });
     });
 
+    // IMAGE LINK
+    describe('image link', () => {
+      test('single', () => {
+        const testText = '![[image link](www.url.com)](www.url.png)';
+        const expected = '[image link](www.url.png) ([link](www.url.com))';
+
+        const test = TelegramBot.msgFromMarkdown(testText);
+
+        expect(test).toEqual(expected);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {

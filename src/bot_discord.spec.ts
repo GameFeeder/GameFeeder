@@ -32,6 +32,21 @@ describe('Discord bot', () => {
       });
     });
 
+    // IMAGE LINK
+    describe('image link', () => {
+      test('single', () => {
+        const testText = '![[image link](www.url.com)](www.url.png)';
+        const expectedNoEmbed = 'image link (www.url.com)';
+        const expectedEmbed = '[image link](www.url.png) ([link](www.url.com))';
+
+        const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+        const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+        expect(testNoEmbed).toEqual(expectedNoEmbed);
+        expect(testEmbed).toEqual(expectedEmbed);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {

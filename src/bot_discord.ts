@@ -235,7 +235,7 @@ export default class DiscordBot extends BotClient {
 
       if (linkUrl) {
         if (isEmbed) {
-          return `[${newLabel}](${imageUrl}) ([Link](${linkUrl}))`;
+          return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
         }
         return `${newLabel} (${linkUrl})`;
       }
