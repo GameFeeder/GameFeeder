@@ -66,6 +66,29 @@ describe('Markdown regex', () => {
       });
     });
 
+    // LINK IMAGE
+    describe('link image', () => {
+      test('with image', () => {
+        testRegExp(MDRegex.linkImage, '[![TestLabel](https://test.png)](https://url.com)', [
+          '[![TestLabel](https://test.png)](https://url.com)',
+          'TestLabel',
+          'https://test.png',
+          undefined,
+          'https://url.com',
+        ]);
+      });
+
+      xtest('without image', () => {
+        testRegExp(MDRegex.imageLink, '[TestLabel](https://url.com)', [
+          '[TestLabel](https://url.com)',
+          undefined,
+          undefined,
+          'TestLabel',
+          'https://url.com',
+        ]);
+      });
+    });
+
     // BOLD
     describe('bold', () => {
       test('single with asterisks', () => {
@@ -270,6 +293,31 @@ describe('Markdown regex', () => {
 
         const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
           return `[${label}](${imageUrl})`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    // LINK IMAGE
+    describe('link image', () => {
+      test('with image', () => {
+        const testText = 'We have a [![link image](www.url.png)](www.url.com) right here.';
+        const expected = `We have a [link image](www.url.png) ([link](www.url.com)) right here.`;
+
+        const resultText = MDRegex.replaceLinkImage(testText, (_, label, linkUrl, imageUrl) => {
+          return `[${label}](${imageUrl}) ([link](${linkUrl}))`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('without image', () => {
+        const testText = 'We have a [link](www.url.com) right here.';
+        const expected = `We have a [link](www.url.com) right here.`;
+
+        const resultText = MDRegex.replaceImageLink(testText, (_, label, linkUrl, imageUrl) => {
+          return `[${label}](${linkUrl})`;
         });
 
         expect(resultText).toEqual(expected);
