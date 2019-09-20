@@ -184,16 +184,17 @@ export default class TelegramBot extends BotClient {
     let markdown = text;
 
     // Links
-    markdown = MDRegex.replaceLink(markdown, (_, label, url) => {
-      if (!label) {
-        return url;
-      }
-
+    markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
+      let newLabel = label ? label : 'Link';
       // Remove nested formatting
-      let newLabel = MDRegex.replaceItalic(label, (_, italicText) => italicText);
+      newLabel = MDRegex.replaceItalic(label, (_, italicText) => italicText);
       newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
 
-      return `[${newLabel}](${url})`;
+      if (imageUrl) {
+        return `[${newLabel}](${linkUrl}) ([image](${imageUrl}))`;
+      }
+
+      return `[${newLabel}](${linkUrl})`;
     });
 
     // Images
