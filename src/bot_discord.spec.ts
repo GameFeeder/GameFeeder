@@ -266,4 +266,29 @@ describe('Discord bot', () => {
       expect(testEmbed6).toEqual(expected);
     });
   });
+
+  // SEPERATOR
+  describe('seperator', () => {
+    test('with 3 dashes', () => {
+      const testText = '\n\n---\n\n';
+      const expected = '\n---\n';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
+    });
+
+    test('with 3 asterisks', () => {
+      const testText = '\n\n***\n\n';
+      const expected = '\n---\n';
+
+      const testNoEmbed = DiscordBot.msgFromMarkdown(testText, false);
+      const testEmbed = DiscordBot.msgFromMarkdown(testText, true);
+
+      expect(testNoEmbed).toEqual(expected);
+      expect(testEmbed).toEqual(expected);
+    });
+  });
 });

@@ -210,4 +210,25 @@ describe('Telegram bot', () => {
       expect(test6).toEqual(expected);
     });
   });
+
+  // SEPERATOR
+  describe('seperator', () => {
+    test('with 3 dashes', () => {
+      const testText = '\n\n---\n\n';
+      const expected = '\n--\n';
+
+      const test = TelegramBot.msgFromMarkdown(testText);
+
+      expect(test).toEqual(expected);
+    });
+
+    test('with 3 asterisks', () => {
+      const testText = '\n\n***\n\n';
+      const expected = '\n--\n';
+
+      const test = TelegramBot.msgFromMarkdown(testText);
+
+      expect(test).toEqual(expected);
+    });
+  });
 });
