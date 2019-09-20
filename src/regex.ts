@@ -45,6 +45,8 @@ export const h6 = `^######${hBase}$`;
 
 export const quote = `^>${anyWs}(${any})${anyWs}$`;
 
+export const seperator = `${anyWs}\n${anyWs}((?:-{3,})|(?:\\*{3,}))${anyWs}`;
+
 export default class MDRegex {
   // Links
 
@@ -150,6 +152,8 @@ export default class MDRegex {
   public static h6 = new RegExp(h6, 'gm');
 
   public static quote = new RegExp(quote, 'gm');
+
+  public static seperator = new RegExp(seperator, 'g');
 
   // Functions
 
@@ -276,8 +280,8 @@ export default class MDRegex {
 
   /** Replaces markdown blockquotes with the given function.
    *
-   * @param text - The text to replace.
-   * @param replaceFn - The function to replace the text with.
+   * @param text - The text to replace quotes in.
+   * @param replaceFn - The function to replace the quotes with.
    */
   public static replaceQuote(
     text: string,
@@ -285,6 +289,20 @@ export default class MDRegex {
   ): string {
     return text.replace(MDRegex.quote, (match, quoteText) => {
       return replaceFn(match, quoteText);
+    });
+  }
+
+  /** Replace markdown seperators with the given function
+   *
+   * @param text - The text to replace seperators in.
+   * @param replaceFn - The function to replace the seperators with.
+   */
+  public static replaceSeperator(
+    text: string,
+    replaceFn: (match: string, seperator: string) => string,
+  ): string {
+    return text.replace(MDRegex.seperator, (match, seperator) => {
+      return replaceFn(match, seperator);
     });
   }
 }

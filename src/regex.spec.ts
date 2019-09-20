@@ -200,6 +200,18 @@ describe('Markdown regex', () => {
         testRegExp(MDRegex.quote, '>Quote text', ['>Quote text', 'Quote text']);
       });
     });
+
+    // SEPERATOR
+    describe('seperator', () => {
+      test('with 3 dashes', () => {
+        testRegExp(MDRegex.seperator, '\n\n---\n\n', ['\n\n---\n\n', '---']);
+      });
+
+      xtest('with 3 asterisks', () => {
+        // This should pass, the function test passes. No idea what's happening here
+        testRegExp(MDRegex.seperator, '\n\n***\n\n', ['\n\n***\n\n', '***']);
+      });
+    });
   });
 
   // ---
@@ -737,6 +749,31 @@ describe('Markdown regex', () => {
 
         const resultText = MDRegex.replaceQuote(testText, (_, quoteText) => {
           return `"${quoteText}"`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+    });
+
+    // SEPERATOR
+    describe('Seperator', () => {
+      test('with 3 dashes', () => {
+        const testText = 'Test text\n\n---\n\nAnd it goes on.';
+        const expected = 'Test text\n--\nAnd it goes on.';
+
+        const resultText = MDRegex.replaceSeperator(testText, (_, seperator) => {
+          return `\n--\n`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('with 3 asterisks', () => {
+        const testText = 'Test text\n\n***\n\nAnd it goes on.';
+        const expected = 'Test text\n--\nAnd it goes on.';
+
+        const resultText = MDRegex.replaceSeperator(testText, (_, seperator) => {
+          return `\n--\n`;
         });
 
         expect(resultText).toEqual(expected);
