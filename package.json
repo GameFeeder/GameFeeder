@@ -1,7 +1,6 @@
 {
   "name": "valvegamesannouncerbot",
   "version": "0.3.0",
-  "version": "0.3.0",
   "description": "A notification bot for multiple Valve games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "scripts": {
