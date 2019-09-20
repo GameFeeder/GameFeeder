@@ -183,4 +183,31 @@ describe('Telegram bot', () => {
       expect(test).toEqual(expected);
     });
   });
+
+  // HEADER
+  describe('header', () => {
+    test('h1-6', () => {
+      const testText1 = '# Test';
+      const testText2 = '## Test';
+      const testText3 = '### Test';
+      const testText4 = '#### Test';
+      const testText5 = '##### Test';
+      const testText6 = '###### Test';
+      const expected = '\n*Test*';
+
+      const test1 = TelegramBot.msgFromMarkdown(testText1);
+      const test2 = TelegramBot.msgFromMarkdown(testText2);
+      const test3 = TelegramBot.msgFromMarkdown(testText3);
+      const test4 = TelegramBot.msgFromMarkdown(testText4);
+      const test5 = TelegramBot.msgFromMarkdown(testText5);
+      const test6 = TelegramBot.msgFromMarkdown(testText6);
+
+      expect(test1).toEqual(expected);
+      expect(test2).toEqual(expected);
+      expect(test3).toEqual(expected);
+      expect(test4).toEqual(expected);
+      expect(test5).toEqual(expected);
+      expect(test6).toEqual(expected);
+    });
+  });
 });
