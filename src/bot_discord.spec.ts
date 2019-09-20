@@ -221,4 +221,49 @@ describe('Discord bot', () => {
       expect(testEmbed).toEqual(expected);
     });
   });
+
+  // HEADER
+  describe('header', () => {
+    test('h1-3', () => {
+      const testText1 = '# Test';
+      const testText2 = '## Test';
+      const testText3 = '### Test';
+      const expected = '\n__**Test**__';
+
+      const testNoEmbed1 = DiscordBot.msgFromMarkdown(testText1, false);
+      const testEmbed1 = DiscordBot.msgFromMarkdown(testText1, true);
+      const testNoEmbed2 = DiscordBot.msgFromMarkdown(testText2, false);
+      const testEmbed2 = DiscordBot.msgFromMarkdown(testText2, true);
+      const testNoEmbed3 = DiscordBot.msgFromMarkdown(testText3, false);
+      const testEmbed3 = DiscordBot.msgFromMarkdown(testText3, true);
+
+      expect(testNoEmbed1).toEqual(expected);
+      expect(testEmbed1).toEqual(expected);
+      expect(testNoEmbed2).toEqual(expected);
+      expect(testEmbed2).toEqual(expected);
+      expect(testNoEmbed3).toEqual(expected);
+      expect(testEmbed3).toEqual(expected);
+    });
+
+    test('h4-6', () => {
+      const testText4 = '#### Test';
+      const testText5 = '##### Test';
+      const testText6 = '###### Test';
+      const expected = '\n**Test**';
+
+      const testNoEmbed4 = DiscordBot.msgFromMarkdown(testText4, false);
+      const testEmbed4 = DiscordBot.msgFromMarkdown(testText4, true);
+      const testNoEmbed5 = DiscordBot.msgFromMarkdown(testText5, false);
+      const testEmbed5 = DiscordBot.msgFromMarkdown(testText5, true);
+      const testNoEmbed6 = DiscordBot.msgFromMarkdown(testText6, false);
+      const testEmbed6 = DiscordBot.msgFromMarkdown(testText6, true);
+
+      expect(testNoEmbed4).toEqual(expected);
+      expect(testEmbed4).toEqual(expected);
+      expect(testNoEmbed5).toEqual(expected);
+      expect(testEmbed5).toEqual(expected);
+      expect(testNoEmbed6).toEqual(expected);
+      expect(testEmbed6).toEqual(expected);
+    });
+  });
 });
