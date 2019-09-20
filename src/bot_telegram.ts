@@ -5,7 +5,7 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
-import MDRegex, { bold } from './regex';
+import MDRegex, { bold, seperator } from './regex';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -234,6 +234,11 @@ export default class TelegramBot extends BotClient {
     // Headers
     markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
       return `\n*${headerText}*`;
+    });
+
+    // Seperators
+    markdown = MDRegex.replaceSeperator(markdown, (_, seperator) => {
+      return `\n--\n`;
     });
 
     // Compress multiple linebreaks

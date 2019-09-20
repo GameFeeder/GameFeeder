@@ -269,6 +269,11 @@ export default class DiscordBot extends BotClient {
       return `\n**${headerText}**`;
     });
 
+    // Seperators
+    markdown = MDRegex.replaceSeperator(markdown, (_, seperator) => {
+      return `\n---\n`;
+    });
+
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
