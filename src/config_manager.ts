@@ -73,6 +73,14 @@ export type blog_provider = {
   url: string;
 };
 
+/** A Telegram IV template. */
+export type telegramIVTemplate = {
+  /** The domain to apply the IV template to. */
+  domain: string;
+  /** The hash of the IV template to use on that domain. */
+  IVTemplateHash: string;
+};
+
 /** The settings of a game. */
 export type game_settings = {
   /** The internal name of the game. (Identification) */
@@ -92,6 +100,8 @@ export type game_settings = {
     /** The blog providers of the game. */
     blogs: blog_provider[];
   };
+  /** The Telegram IV templates of the game. */
+  telegramIVTemplates: telegramIVTemplate[];
 };
 
 /** The config of the games. */
