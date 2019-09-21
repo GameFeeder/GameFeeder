@@ -5,6 +5,7 @@ import BlogProvider from './provider_blog';
 import RedditProvider from './provider_reddit';
 import RedditUserProvider from './reddit_user';
 import DotaProvider from './provider_dota';
+import TelegramIVTemplate from './telegram_iv_template';
 
 /** A representation of a game. */
 export default class Game {
@@ -20,8 +21,10 @@ export default class Game {
   public color: string;
   /** The game icon. */
   public icon: string;
-
+  /** The game providers. */
   public providers: Provider[];
+  /** The Telegram IV templates. */
+  public telegramIVTemplates: TelegramIVTemplate[];
 
   /** Creates a new Game.
    *
@@ -36,6 +39,7 @@ export default class Game {
     color: string,
     icon: string,
     providers: Provider[],
+    telegramIVTemplates: TelegramIVTemplate[],
   ) {
     this.name = name;
     this.aliases = aliases;
@@ -43,6 +47,7 @@ export default class Game {
     this.color = color;
     this.icon = icon;
     this.providers = providers;
+    this.telegramIVTemplates = telegramIVTemplates;
   }
 
   public hasAlias(aliasText: string) {
@@ -90,6 +95,9 @@ export default class Game {
     const games: Game[] = [];
 
     for (const gameSettings of ConfigManager.getGameConfig()) {
+      const telegramIVtemplates = gameSettings.telegramIVTemplates.map((template) => {
+        return new TelegramIVTemplate(template.domain, template.IVTemplateHash);
+      });
       const game = new Game(
         gameSettings.name,
         gameSettings.aliases,
@@ -97,6 +105,7 @@ export default class Game {
         gameSettings.color,
         gameSettings.icon,
         null,
+        telegramIVtemplates,
       );
 
       // Add providers
