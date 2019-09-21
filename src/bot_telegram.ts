@@ -165,18 +165,19 @@ export default class TelegramBot extends BotClient {
 
       // Test for IV template matches
       for (const telegramIVtemplate of message.game.telegramIVTemplates) {
-        const templateTest = telegramIVtemplate.testUrl(link);
-        if (templateTest) {
-          const titleText = `[**${message.title.text}**](${link})`;
+        const templateLink = telegramIVtemplate.testUrl(link);
+        if (templateLink) {
+          const titleText = `[${message.title.text}](${templateLink})`;
+          const externalText = `([external link](${link}))`;
 
           if (message.author.text) {
             const authorText = message.author.link
               ? `[${message.author.text}](${message.author.link})`
               : message.author.text;
 
-            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}`;
+            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}\n${externalText}`;
           } else {
-            text = `New **${message.game.label}** update:\n\n${titleText}`;
+            text = `New **${message.game.label}** update:\n\n${titleText}\n${externalText}`;
           }
         }
       }
