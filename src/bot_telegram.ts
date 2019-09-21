@@ -227,6 +227,7 @@ export default class TelegramBot extends BotClient {
 
     return newMarkdown;
   }
+<<<<<<< HEAD
 
   /** Gets the instant view url from the url and the template hash.
    *
@@ -236,4 +237,6 @@ export default class TelegramBot extends BotClient {
   public getIVUrl(url: string, templateHash: string) {
     return `https://t.me/iv?url=${url}&rhash=${templateHash}`;
   }
+=======
+>>>>>>> master
 }
