@@ -163,8 +163,10 @@ export default class TelegramBot extends BotClient {
       const link = message.title.link;
       let text = '';
 
+      const templates = message.game.telegramIVTemplates || [];
+
       // Test for IV template matches
-      for (const telegramIVtemplate of message.game.telegramIVTemplates) {
+      for (const telegramIVtemplate of templates) {
         const templateLink = telegramIVtemplate.testUrl(link);
         if (templateLink) {
           const titleText = `[${message.title.text}](${templateLink})`;
