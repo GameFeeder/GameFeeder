@@ -31,7 +31,7 @@ export default class TelegramIVTemplate {
     if (url.includes(this.domain)) {
       return this.getIVUrl(url);
     }
-    return null;
+    return '';
   }
 
   /** Gets the IV URL if the template applies, otherwise the normal URL.
