@@ -5,6 +5,7 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
+import { template } from '@babel/core';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -162,13 +163,17 @@ export default class TelegramBot extends BotClient {
     } else {
       const link = message.title.link;
       let text = '';
+      let templateFound = false;
 
-      const templates = message.game.telegramIVTemplates || [];
+      const templates = message.game.telegramIVTemplates;
+      this.logDebug(`There are ${templates.length} templates for ${message.game.label}.`);
 
       // Test for IV template matches
       for (const telegramIVtemplate of templates) {
         const templateLink = telegramIVtemplate.testUrl(link);
         if (templateLink) {
+          this.logDebug(`IV template found for ${link}.`);
+          templateFound = true;
           const titleText = `[${message.title.text}](${templateLink})`;
           const externalText = `([external link](${link}))`;
 
@@ -185,7 +190,8 @@ export default class TelegramBot extends BotClient {
       }
 
       // Check if an IV template matched
-      if (!text) {
+      if (!templateFound) {
+        this.logDebug(`IV template NOT found for ${link}.`);
         // Convert to normal text
         text = this.msgFromMarkdown(message.toMDString());
       }
@@ -195,7 +201,7 @@ export default class TelegramBot extends BotClient {
       }
       try {
         await this.bot.sendMessage(channel.id, text, {
-          disable_web_page_preview: true,
+          disable_web_page_preview: !templateFound,
           parse_mode: 'Markdown',
         });
       } catch (error) {

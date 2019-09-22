@@ -42,6 +42,12 @@
       ],
       "color": "#CC0000",
       "icon": "http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png",
+      "telegramIVTemplates": [
+        {
+          "domain": "dota2.com",
+          "templateHash": "a8aa3892b2f818"
+        }
+      ],
       "providers": {
         "reddit": {
           "subreddit": "DotA2",
@@ -68,13 +74,7 @@
             }
           ]
         },
-        "blogs": [],
-        "telegramIVTemplates": [
-          {
-            "domain": "dota2.com",
-            "templateHash": "a8aa3892b2f818"
-          }
-        ]
+        "blogs": []
       }
     },
     {

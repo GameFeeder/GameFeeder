@@ -78,7 +78,7 @@ export type telegramIVTemplate = {
   /** The domain to apply the IV template to. */
   domain: string;
   /** The hash of the IV template to use on that domain. */
-  IVTemplateHash: string;
+  templateHash: string;
 };
 
 /** The settings of a game. */

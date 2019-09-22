@@ -97,8 +97,9 @@ export default class Game {
     for (const gameSettings of ConfigManager.getGameConfig()) {
       const templates = gameSettings.telegramIVTemplates || [];
       const telegramIVtemplates = templates.map((template) => {
-        return new TelegramIVTemplate(template.domain, template.IVTemplateHash);
+        return new TelegramIVTemplate(template.domain, template.templateHash);
       });
+
       const game = new Game(
         gameSettings.name,
         gameSettings.aliases,
