@@ -175,16 +175,15 @@ export default class TelegramBot extends BotClient {
           this.logDebug(`IV template found for ${link}.`);
           templateFound = true;
           const titleText = `[${message.title.text}](${templateLink})`;
-          const externalText = `([external link](${link}))`;
 
           if (message.author.text) {
             const authorText = message.author.link
               ? `[${message.author.text}](${message.author.link})`
               : message.author.text;
 
-            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}\n${externalText}`;
+            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}`;
           } else {
-            text = `New **${message.game.label}** update:\n\n${titleText}\n${externalText}`;
+            text = `New **${message.game.label}** update:\n\n${titleText}`;
           }
         }
       }
