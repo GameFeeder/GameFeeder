@@ -68,7 +68,13 @@
             }
           ]
         },
-        "blogs": []
+        "blogs": [],
+        "telegramIVTemplates": [
+          {
+            "domain": "dota2.com",
+            "templateHash": "a8aa3892b2f818"
+          }
+        ]
       }
     },
     {
