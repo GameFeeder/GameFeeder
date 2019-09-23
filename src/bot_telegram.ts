@@ -187,12 +187,14 @@ export default class TelegramBot extends BotClient {
         break;
       }
 
+      this.logDebug(`Template found: ${templateFound}.`);
+
       // Check if an IV template matched
       if (!templateFound) {
         // Convert to normal text
-        text = this.msgFromMarkdown(message.toMDString());
+        text = TelegramBot.msgFromMarkdown(message.toMDString());
       }
-      
+
       if (text.length > 2048) {
         text = text.substring(0, 2048);
       }
