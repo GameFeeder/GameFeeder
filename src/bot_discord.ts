@@ -11,6 +11,7 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
+import MDRegex from './regex';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -130,7 +131,7 @@ export default class DiscordBot extends BotClient {
   ): Promise<boolean> {
     if (typeof message === 'string') {
       // Parse markdown
-      const messageText = this.msgFromMarkdown(message, false);
+      const messageText = DiscordBot.msgFromMarkdown(message, false);
       return await this.sendToChannel(channel, messageText);
     }
     // Parse markdown
@@ -146,7 +147,7 @@ export default class DiscordBot extends BotClient {
     const embed = new DiscordAPI.RichEmbed();
     // Title
     if (notification.title) {
-      const titleMD = this.msgFromMarkdown(`#${notification.title.text}`, true);
+      const titleMD = DiscordBot.msgFromMarkdown(`#${notification.title.text}`, true);
       embed.setTitle(titleMD);
       if (notification.title.link) {
         embed.setURL(notification.title.link);
@@ -154,7 +155,7 @@ export default class DiscordBot extends BotClient {
     }
     // Author
     if (notification.author) {
-      const authorMD = this.msgFromMarkdown(notification.author.text, true);
+      const authorMD = DiscordBot.msgFromMarkdown(notification.author.text, true);
       if (notification.author.icon && notification.author.link) {
         embed.setAuthor(authorMD, notification.author.icon, notification.author.link);
       } else {
@@ -167,7 +168,7 @@ export default class DiscordBot extends BotClient {
     }
     // Description
     if (notification.description) {
-      const descriptionMD = this.msgFromMarkdown(notification.description, true);
+      const descriptionMD = DiscordBot.msgFromMarkdown(notification.description, true);
       if (descriptionMD.length > 2048) {
         embed.setDescription(descriptionMD.substring(0, 2048));
       } else {
@@ -176,7 +177,7 @@ export default class DiscordBot extends BotClient {
     }
     // Footer
     if (notification.footer) {
-      const footerMD = this.msgFromMarkdown(notification.footer.text, true);
+      const footerMD = DiscordBot.msgFromMarkdown(notification.footer.text, true);
       if (notification.footer.icon) {
         embed.setFooter(footerMD, notification.footer.icon);
       } else {
@@ -199,42 +200,84 @@ export default class DiscordBot extends BotClient {
     return embed;
   }
 
-  public msgFromMarkdown(text: string, isEmbed: boolean): string {
+  public static msgFromMarkdown(text: string, isEmbed: boolean): string {
     if (!text) {
       return '';
     }
     let markdown = text;
-    if (!isEmbed) {
-      // Short links are not supported outside of embeds
-      markdown = text.replace(/\[(.*)\]\((.*)\)/, '$1 ($2)');
-    }
+
+    // Bold
+    markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
+      return `**${boldText}**`;
+    });
+
+    // Italic
+    markdown = MDRegex.replaceItalic(markdown, (_, italicText) => {
+      return `_${italicText}_`;
+    });
+
+    // Links
+    markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
+      const newLabel = label ? label : 'Link';
+
+      if (isEmbed) {
+        if (imageUrl) {
+          return `[${newLabel}](${linkUrl}) ([image](${imageUrl}))`;
+        }
+        return `[${newLabel}](${linkUrl})`;
+      }
+
+      return `${newLabel} (${linkUrl})`;
+    });
+
+    // Images
+    markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
+      const newLabel = label ? label : 'Image';
+
+      if (linkUrl) {
+        if (isEmbed) {
+          return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
+        }
+        return `${newLabel} (${linkUrl})`;
+      }
+
+      if (isEmbed) {
+        return `[${newLabel}](${imageUrl})`;
+      }
+
+      return `${newLabel} (${imageUrl})`;
+    });
+
+    // Lists
+    markdown = MDRegex.replaceList(markdown, (_, listElement) => {
+      return `- ${listElement}`;
+    });
+
+    // Blockquotes
+    markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
+      return `> ${quoteText}`;
+    });
+
+    // Headers
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
+      // H1-3
+      if (level <= 3) {
+        return `\n__**${headerText}**__`;
+      }
+
+      // H4-6
+      return `\n**${headerText}**`;
+    });
+
+    // Seperators
+    markdown = MDRegex.replaceSeperator(markdown, (_, seperator) => {
+      return `\n---\n`;
+    });
 
     // Compress multiple linebreaks
     markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
 
-    // Image Links
-    markdown = markdown.replace(/\[\!\[\]\((.*)\)\]\((.*)\)/g, '[Image]($1) ([Link]($2))');
-    markdown = markdown.replace(/\[\!\[(.*)\]\((.*)\)\]\((.*)\)/g, '[$1]($2) ([Link]($3))');
-    markdown = markdown.replace(/\!\[\]\((.*)\)/g, '[Image] ($1)');
-    markdown = markdown.replace(/\!\[(.*)\]\((.*)\)/g, '[$1] ($2)');
-
-    // Linewise formatting
-    const lineArray = markdown.split('\n');
-    for (let i = 0; i < lineArray.length; i++) {
-      // H1-3
-      lineArray[i] = lineArray[i].replace(/^\s*##?#?\s*(.*)/, '__**$1**__');
-      // H4-6
-      lineArray[i] = lineArray[i].replace(/^\s*#####?#?\s*(.*)/, '**$1**');
-      // Lists
-      lineArray[i] = lineArray[i].replace(/^\s*\*\s+/, '- ');
-    }
-
-    let newMarkdown = '';
-    for (const line of lineArray) {
-      newMarkdown += `${line}\n`;
-    }
-
-    return newMarkdown;
+    return markdown;
   }
 
   private async sendToChannel(channel: BotChannel, text: string, embed?: any): Promise<boolean> {
