@@ -165,13 +165,11 @@ export default class TelegramBot extends BotClient {
       let templateFound = false;
 
       const templates = message.game.telegramIVTemplates;
-      this.logDebug(`There are ${templates.length} templates for ${message.game.label}.`);
 
       // Test for IV template matches
       for (const telegramIVtemplate of templates) {
         const templateLink = telegramIVtemplate.testUrl(link);
         if (templateLink) {
-          this.logDebug(`IV template found for ${link}.`);
           templateFound = true;
           const titleText = `[${message.title.text}](${templateLink})`;
 
@@ -185,11 +183,11 @@ export default class TelegramBot extends BotClient {
             text = `New **${message.game.label}** update:\n\n${titleText}`;
           }
         }
+        break;
       }
 
       // Check if an IV template matched
       if (!templateFound) {
-        this.logDebug(`IV template NOT found for ${link}.`);
         // Convert to normal text
         text = this.msgFromMarkdown(message.toMDString());
       }
