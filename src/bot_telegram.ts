@@ -5,7 +5,6 @@ import BotChannel from './channel';
 import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
-import { template } from '@babel/core';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
