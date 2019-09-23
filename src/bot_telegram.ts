@@ -160,13 +160,44 @@ export default class TelegramBot extends BotClient {
         this.logError(`Failed to send message to channel:\n${error}`);
       }
     } else {
-      let text = this.msgFromMarkdown(message.toMDString());
+      const link = message.title.link;
+      let text = '';
+      let templateFound = false;
+
+      const templates = message.game.telegramIVTemplates;
+
+      // Test for IV template matches
+      for (const telegramIVtemplate of templates) {
+        const templateLink = telegramIVtemplate.testUrl(link);
+        if (templateLink) {
+          templateFound = true;
+          const titleText = `[${message.title.text}](${templateLink})`;
+
+          if (message.author.text) {
+            const authorText = message.author.link
+              ? `[${message.author.text}](${message.author.link})`
+              : message.author.text;
+
+            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}`;
+          } else {
+            text = `New **${message.game.label}** update:\n\n${titleText}`;
+          }
+        }
+        break;
+      }
+
+      // Check if an IV template matched
+      if (!templateFound) {
+        // Convert to normal text
+        text = this.msgFromMarkdown(message.toMDString());
+      }
+
       if (text.length > 2048) {
         text = text.substring(0, 2048);
       }
       try {
         await this.bot.sendMessage(channel.id, text, {
-          disable_web_page_preview: true,
+          disable_web_page_preview: !templateFound,
           parse_mode: 'Markdown',
         });
       } catch (error) {
