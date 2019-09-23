@@ -187,8 +187,6 @@ export default class TelegramBot extends BotClient {
         break;
       }
 
-      this.logDebug(`Template found: ${templateFound}.`);
-
       // Check if an IV template matched
       if (!templateFound) {
         // Convert to normal text
