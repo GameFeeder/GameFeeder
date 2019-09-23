@@ -1,8 +1,13 @@
 version: '3.3'
 services:
   bot:
-    image: valvebot:2.0
+    image: gamefeeder/gamefeeder:latest
     volumes:
       - ./config:/app/config
       - ./data:/app/data
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
