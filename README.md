@@ -39,7 +39,6 @@ So far, we are providing the following commands:
 | `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
 | `notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
 | `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
-| `stats`                                  | Owner      | Display statistics about the bot.               |
 
 #### Permissions
 
