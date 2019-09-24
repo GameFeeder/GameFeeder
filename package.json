@@ -1,7 +1,7 @@
 {
-  "name": "valvegamesannouncerbot",
-  "version": "0.4.0",
-  "description": "A notification bot for multiple Valve games, available on Discord and Telegram.",
+  "name": "gamefeeder",
+  "version": "0.5.0",
+  "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "scripts": {
     "build": "tsc --build",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TimJentzsch/valveGamesAnnouncerBot.git"
+    "url": "git+https://github.com/GameFeeder/GameFeeder"
   },
   "author": "Tim Jentzsch",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/TimJentzsch/valveGamesAnnouncerBot/issues"
+    "url": "https://github.com/GameFeeder/GameFeeder/issues"
   },
-  "homepage": "https://github.com/TimJentzsch/valveGamesAnnouncerBot",
+  "homepage": "https://github.com/GameFeeder/GameFeeder",
   "engines": {
     "node": "^10",
     "yarn": "^1.16.0"

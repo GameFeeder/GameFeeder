@@ -5,19 +5,21 @@ import DataManager from './data_manager';
 import Game from './game';
 import botLogger from './bot_logger';
 import { filterAsync, mapAsync, naturalJoin } from './util';
-
-const gitLink = `https://github.com/TimJentzsch/valveGamesAnnouncerBot`;
+import ProjectManager from './project_manager';
 
 // Start
 const startCmd = new Command(
   'Start',
-  'Get started with the valveGamesAnnouncerBot.',
+  'Get started with the GameFeeder.',
   'start',
   'start',
   (bot, channel, user) => {
+    const name = ProjectManager.getName();
+    const gitLink = ProjectManager.getURL();
+    const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `Welcome to the **valveGamesAnnouncerBot**!\n` +
+      `Welcome to the **${name}** (v${version})!\n` +
         `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n` +
         `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
@@ -53,9 +55,12 @@ const aboutCmd = new Command(
   'about',
   '(about)|(info)\\s*$',
   (bot, channel) => {
+    const name = ProjectManager.getName();
+    const gitLink = ProjectManager.getURL();
+    const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `A notification bot for Valve's games. Learn more on [GitHub](${gitLink}).`,
+      `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
 );
