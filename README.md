@@ -3,7 +3,7 @@
 # GameFeeder <!-- omit in toc -->
 
 A notification bot for multiple games.
-Available on Telegram and Discord soon<sup>TM</sup>.
+Available on Discord and Telegram soon<sup>TM</sup>.
 
 A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
 
@@ -51,19 +51,19 @@ So far, we are providing the following commands:
 
 So far, we are supporting the following games:
 
-- <img src="https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png" align="left" height="17px"/> **Artifact**
+- **Artifact** <img src="https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png" align="left" height="17px"/>
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/Artifact](https://www.reddit.com/r/Artifact/)
-- <img src="http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png" align="left" height="17px"/> **CS:GO**
+- **CS:GO** <img src="http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png" align="left" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
-- <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/> **Dota 2**
+- **Dota 2** <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/>
   - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/), [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
-- <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/> **Steam**
+- **Steam** <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
-- <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png" align="left" height="17px"/> **Team Fortress 2**
+- **Team Fortress 2** <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png" align="left" height="17px"/>
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
-- <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" align="left" height="17px"/> **Dota Underlords**
+- **Dota Underlords** <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" align="left" height="17px"/>
   - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
 
 ### Contributing
@@ -86,6 +86,6 @@ We are providing the bot under the GPL-3.0 License. Read more [here](LICENSE).
 
 ### Disclaimer
 
-Please note that this project is not affiliated with Valve Corporation.
+Please note that this project is not affiliated with any games or corporations it posts updates for.
 
-**Artifact**, **Dota 2**, **CS:GO** and **Team Fortress 2** are registered trademarks of Valve Corporation.
+**Artifact**, **CS:GO**, **Dota 2**, **Steam**, **Team Fortress 2** and **Dota Underlords** are registered trademarks of Valve Corporation.
