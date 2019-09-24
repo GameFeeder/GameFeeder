@@ -10,7 +10,7 @@ export type project_info = {
 };
 
 export default class ProjectManager {
-  public static projectName = 'GameFeeder';
+  private static projectName = 'GameFeeder';
   public static fileName = 'package.json';
 
   /** Gets the info about this project. */
