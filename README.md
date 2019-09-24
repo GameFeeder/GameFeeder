@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot.svg?branch=develop)](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot)
 
-# valveGamesAnnouncerBot <!-- omit in toc -->
+# GameFeeder <!-- omit in toc -->
 
-A notification bot for Valve's games.
+A notification bot for multiple games.
 Available on Telegram and Discord soon<sup>TM</sup>.
 
 A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
