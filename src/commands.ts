@@ -14,11 +14,12 @@ const startCmd = new Command(
   'start',
   'start',
   (bot, channel, user) => {
+    const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `Welcome to the **GameFeeder** (v${version})!\n` +
+      `Welcome to the **${name}** (v${version})!\n` +
         `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n` +
         `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
@@ -54,11 +55,12 @@ const aboutCmd = new Command(
   'about',
   '(about)|(info)\\s*$',
   (bot, channel) => {
+    const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `**GameFeeder** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
+      `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
 );
