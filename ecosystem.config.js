@@ -1,7 +1,7 @@
 module.exports = {
   apps : [{
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    name: 'valveGamesAnnouncer',
+    name: 'GameFeeder',
     script: 'dist/_main.js',
     instances: 1,
     interpreter : 'node@10.15.3',
