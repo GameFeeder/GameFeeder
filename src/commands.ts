@@ -5,8 +5,7 @@ import DataManager from './data_manager';
 import Game from './game';
 import botLogger from './bot_logger';
 import { filterAsync, mapAsync, naturalJoin } from './util';
-
-const gitLink = `https://github.com/GameFeeder/GameFeeder`;
+import ProjectManager from './project_manager';
 
 // Start
 const startCmd = new Command(
@@ -15,9 +14,11 @@ const startCmd = new Command(
   'start',
   'start',
   (bot, channel, user) => {
+    const gitLink = ProjectManager.getURL();
+    const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `Welcome to the **GameFeeder**!\n` +
+      `Welcome to the **GameFeeder** (v${version})!\n` +
         `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n` +
         `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
@@ -53,9 +54,11 @@ const aboutCmd = new Command(
   'about',
   '(about)|(info)\\s*$',
   (bot, channel) => {
+    const gitLink = ProjectManager.getURL();
+    const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
       channel,
-      `A notification bot for several games. Learn more on [GitHub](${gitLink}).`,
+      `**GameFeeder** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
 );
