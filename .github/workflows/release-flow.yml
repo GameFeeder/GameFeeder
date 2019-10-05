@@ -1,0 +1,22 @@
+name: release-flow
+
+on:
+  release:
+    type: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and tag the Docker image
+        run: docker build .
+          --target production
+          --tag gamefeeder/gamefeeder:$(jq -r '.version' package.json)
+          --tag gamefeeder/gamefeeder:latest
+      - name: Login to Docker
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Publish the Docker image:version
+        run: docker push gamefeeder/gamefeeder:$(jq -r '.version' package.json)
+      - name: Publish the Docker image:latest
+        run: docker push gamefeeder/gamefeeder:latest
