@@ -18,7 +18,7 @@ This document will guide you through setting up the bot on your PC, editing the 
 
 To set up the bot locally on your machine, you will first need to fork and clone the project.
 
-Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `data/` and `config/`, to enable your personal configuration files.
+Next you will need to create multiple API keys. First, run the bot (`yarn dev`) once to initialize the config files. The bot will copy all example files in `data/` and `config/`, to enable your personal configuration files.
 The bot should warn you that you have missing bot and reddit tokens.
 
 **Important**: Never share your API keys with anyone! Make sure to never add your api tokens and secrets to the example files, as they are uploaded to GitHub!
