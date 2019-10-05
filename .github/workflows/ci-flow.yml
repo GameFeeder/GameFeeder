@@ -1,4 +1,4 @@
-name: Node CI
+name: ci-flow
 
 on: [push, pull_request]
 
@@ -18,7 +18,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Check for code style & formatting
         run: |
-          yarn install
+          yarn install --frozen-lockfile
           yarn lint
           yarn prettier-check
         env:
@@ -39,7 +39,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Run typescript compiler
         run: |
-          yarn install
+          yarn install --frozen-lockfile
           yarn build
         env:
           CI: true
@@ -59,7 +59,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Run the tests
         run: |
-          yarn install
+          yarn install --frozen-lockfile
           yarn test
         env:
           CI: true
