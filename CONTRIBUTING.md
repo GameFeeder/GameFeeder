@@ -33,11 +33,17 @@ You will need to create a Discord bot if you want to test out the Discord notifi
 
 To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create an application with a bot. This provide you with a bot token. Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field. Make sure to take the bot's token and not the application's client secret, it won't work otherwise.
 
+Some commands require `OWNER` permissions. To access those, you need to add your userID to `config/api_config.json` in the `bots.discord.owners` array.
+To find out your ID, you can follow [this](https://support.discordapp.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) guide.
+
 ### Telegram Bot
 
 You will need to create a Telegram bot if you want to test out the Telegram notification functionalities.
 
 To do that, first follow [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) tutorial to create the bot. This will give you a token. Copy & paste that in the `config/api_config.json`, in the `bots.telegram.token` field.
+
+Some commands require `OWNER` permissions. To access those, you need to add your userID to `config/api_config.json` in the `bots.telegram.owners` array.
+To find out your ID, you can use [@get_id_bot](https://telegram.me/get_id_bot).
 
 ### Reddit API
 
