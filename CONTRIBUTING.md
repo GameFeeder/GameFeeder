@@ -23,9 +23,9 @@ To set up the bot locally on your machine, you will first need to fork and clone
 Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `/data/` and `/config/`, to enable your personal configuration files.
 The bot should warn you that you have missing bot and reddit tokens.
 
-**Important**: Never share your API keys with anyone! Make sure to never add your api tokens and secrets to the example files, as they are uploaded to GitHub!
+**Important**: Never share your API keys with anyone! Make sure to never add your API tokens and secrets to the example files, as they are uploaded to GitHub!
 
-You can now use the following tutorials to get the keys you need. If you don't want to use one of the features, skip the step and leave the `token` field empty. This (should) just disable this API. For the bots, you can aditionally set `autostart` to `false`, if you only want to test out a certain bot.
+You can now use the following tutorials to get the keys you need. If you don't want to use one of the features, skip the step and leave the `token` field empty. This (should) just disable this API. For the bots, you can additionally set `autostart` to `false`, if you only want to test out a certain bot.
 
 ### Discord Bot
 
