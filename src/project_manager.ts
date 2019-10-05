@@ -1,12 +1,12 @@
 import FileManager from './file_manager';
 
 export type project_info = {
-  name: string,
-  version: string,
-  description: string,
-  author: string,
-  license: string,
-  homepage: string,
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  license: string;
+  homepage: string;
 };
 
 export default class ProjectManager {

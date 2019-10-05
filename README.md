@@ -1,18 +1,22 @@
-[![Build Status](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot.svg?branch=develop)](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot)
+![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
 
 # GameFeeder <!-- omit in toc -->
 
-A notification bot for multiple games.
+You can use this bot to get notified about updates and blog posts for multiple games. With the commands you can modify which notifications you want to recieve.
+
 Available on Discord and Telegram soon<sup>TM</sup>.
 
 A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
 
 ---
+
 ## Index <!-- omit in toc -->
+
 - [About this project](#about-this-project)
   - [Commands](#commands)
     - [Permissions](#permissions)
   - [Games](#games)
+  - [Deployments](#deployments)
   - [Contributing](#contributing)
 - [Miscellaneous](#miscellaneous)
   - [Privacy](#privacy)
@@ -50,20 +54,29 @@ So far, we are providing the following commands:
 
 So far, we are supporting the following games:
 
-- **Artifact** <img src="https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png" align="left" height="17px"/>
+- <strong align="left">Artifact</strong> <img src="https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png" height="17px"/>
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/Artifact](https://www.reddit.com/r/Artifact/)
-- **CS:GO** <img src="http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png" align="left" height="17px"/>
+- <strong align="left">CS:GO</strong> <img src="http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
-- **Dota 2** <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" align="left" height="17px"/>
+- <strong align="left">Dota 2</strong> <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" height="17px"/>
   - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/), [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
-- **Steam** <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" align="left" height="17px"/>
+- <strong align="left">Steam</strong> <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
-- **Team Fortress 2** <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png" align="left" height="17px"/>
+- <strong align="left">Team Fortress 2</strong> <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png" height="17px"/>
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
-- **Dota Underlords** <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" align="left" height="17px"/>
+- <strong align="left">Dota Underlords</strong> <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" height="17px"/>
   - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
+
+### Deployments
+
+The bot runs publicly in the following platforms:
+
+- Discord: GameFeeder#5446
+- Telegram: AnnouncerDude @AnnounceBot
+
+You can also download production-ready images from the [dockerhub repo](https://hub.docker.com/r/gamefeeder/gamefeeder/tags). You will still need your own configuration and data files for it to work (more info about how to do that in [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ### Contributing
 

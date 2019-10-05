@@ -9,28 +9,28 @@ export enum DATA {
 /** The data for one subscribing channel. */
 export type subscriber = {
   /** The names of the games the channel subscribed to. */
-  gameSubs: string[],
+  gameSubs: string[];
   /** The channel ID. */
-  id: string,
+  id: string;
   /** The prefix the channel uses */
-  prefix: string,
+  prefix: string;
 };
 
 /** The data for the subscribers. */
 export type subscriber_data = {
-  [index: string]: subscriber[],
+  [index: string]: subscriber[];
   /** The discord subs. */
-  discord: subscriber[],
+  discord: subscriber[];
   /** The telegram subs. */
-  telegram: subscriber[],
+  telegram: subscriber[];
 };
 
 /** The data for the updater. */
 export type updater_data = {
   /** The time of the last update. */
-  lastUpdate: string,
+  lastUpdate: string;
   /** The version string of the last dota patch. */
-  lastDotaPatch: string,
+  lastDotaPatch: string;
   /** Timestamp of the last update cycle run */
   healthcheckTimestamp: string;
 };

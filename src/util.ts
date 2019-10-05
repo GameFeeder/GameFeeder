@@ -37,8 +37,7 @@ export function naturalJoin(array: string[], seperator?: string): string {
     return array[0];
   }
   const sep = seperator || ', ';
-  return array.slice(0, array.length - 1).join(sep)
-    + ' and ' + array[array.length - 1];
+  return array.slice(0, array.length - 1).join(sep) + ' and ' + array[array.length - 1];
 }
 
 export class ObjUtil {

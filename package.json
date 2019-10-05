@@ -1,6 +1,6 @@
 {
   "name": "gamefeeder",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "scripts": {
@@ -12,6 +12,8 @@
     "demolish": "rimraf dist",
     "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
     "start": "node dist/_main.js",
+    "prettier-check": "prettier --check \"*.{js,json,md,yml}\" \"{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}\"",
+    "prettier": "yarn prettier-check --write",
     "test": "jest --coverage",
     "watch": "tsc --watch"
   },
@@ -39,9 +41,11 @@
     "ts-jest": "24.1.0",
     "tslint": "5.20.0",
     "tslint-config-airbnb": "5.11.1",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "3.6.3"
   },
   "dependencies": {
+    "@discordjs/uws": "10.149.0",
     "@types/cheerio": "0.22.13",
     "@types/jest": "24.0.18",
     "@types/jsdom": "12.2.4",
@@ -51,7 +55,6 @@
     "@types/request-promise-native": "1.0.16",
     "@types/showdown": "1.9.3",
     "@types/xml2js": "0.4.5",
-    "@discordjs/uws": "10.149.0",
     "cheerio": "1.0.0-rc.3",
     "discord.js": "11.5.1",
     "escape-string-regexp": "2.0.0",

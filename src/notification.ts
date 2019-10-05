@@ -86,9 +86,7 @@ export default class BotNotification implements Comparable<BotNotification> {
         ? `[${this.author.text}](${this.author.link})`
         : this.author.text;
 
-      return `New **${this.game.label}** update - ${authorText}:\n\n${titleText}\n\n${
-        this.description
-      }`;
+      return `New **${this.game.label}** update - ${authorText}:\n\n${titleText}\n\n${this.description}`;
     }
 
     return `New **${this.game.label}** update:\n\n${titleText}\n\n${this.description}`;
