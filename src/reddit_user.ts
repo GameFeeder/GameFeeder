@@ -7,7 +7,7 @@ export default class RedditUserProvider {
 
   constructor(name: string, titleFilter?: string | RegExp) {
     this.name = name;
-    if (typeof(titleFilter) === 'string' || titleFilter instanceof String) {
+    if (typeof titleFilter === 'string' || titleFilter instanceof String) {
       this.titleFilter = new RegExp(titleFilter);
       botLogger.debug(`Regex filter created from '${titleFilter}' for ${this.name}`, this.logLabel);
     } else if (titleFilter instanceof RegExp) {
@@ -15,8 +15,11 @@ export default class RedditUserProvider {
       botLogger.debug(`Filter '${titleFilter}' is already a regex for ${this.name}`, this.logLabel);
     } else {
       this.titleFilter = /.*/;
-      botLogger.warn(`Filter '${titleFilter}' for ${this.name} cannot become a regex - \
-        using /.*/ instead`, this.logLabel);
+      botLogger.warn(
+        `Filter '${titleFilter}' for ${this.name} cannot become a regex - \
+        using /.*/ instead`,
+        this.logLabel,
+      );
     }
   }
 }

@@ -43,15 +43,16 @@ You will need to register for the Reddit API to be able to test out the Reddit p
 
 To do that,
 
-* Create an app for the bot, following [these](https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started) steps,
-* Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
-* Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator.
+- Create an app for the bot, following [these](https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started) steps,
+- Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
+- Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object.
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in the `bot_config.json`, in the corresponding fields in the `reddit` object.
 
 ### Docker containers
 
 Included in the repo are 2 Dockerfiles:
+
 - /.devcontainer/Dockerfile
 - /Dockerfile
 

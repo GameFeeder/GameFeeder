@@ -9,7 +9,9 @@ Available on Discord and Telegram soon<sup>TM</sup>.
 A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdatesBot) by [/u/karaflix](https://www.reddit.com/message/compose/?to=karaflix), supporting multiple clients and games.
 
 ---
+
 ## Index <!-- omit in toc -->
+
 - [About this project](#about-this-project)
   - [Commands](#commands)
     - [Permissions](#permissions)

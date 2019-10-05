@@ -26,18 +26,11 @@ export default class RSS {
         const postDate = new Date(item.isoDate) || new Date();
 
         if (title && content) {
-          const rssItem = new RSSItem(
-            title,
-            creator,
-            link,
-            converter.turndown(content),
-            postDate,
-            {
-              link: feed,
-              name: feed.title,
-              source: '',
-            },
-          );
+          const rssItem = new RSSItem(title, creator, link, converter.turndown(content), postDate, {
+            link: feed,
+            name: feed.title,
+            source: '',
+          });
           if (!date || rssItem.timestamp > date) {
             feedItems.push(rssItem);
           }
