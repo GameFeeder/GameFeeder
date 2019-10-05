@@ -3,11 +3,7 @@
     {
       "name": "artifact",
       "label": "Artifact",
-      "aliases": [
-        "artifact",
-        "card game",
-        "dcg"
-      ],
+      "aliases": ["artifact", "card game", "dcg"],
       "color": "#FFD700",
       "icon": "https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png",
       "providers": {
@@ -34,12 +30,7 @@
     {
       "name": "dota",
       "label": "Dota 2",
-      "aliases": [
-        "dota",
-        "dota2",
-        "dota 2",
-        "d2"
-      ],
+      "aliases": ["dota", "dota2", "dota 2", "d2"],
       "color": "#CC0000",
       "icon": "http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png",
       "telegramIVTemplates": [
@@ -80,12 +71,7 @@
     {
       "name": "tf2",
       "label": "Team Fortress 2",
-      "aliases": [
-        "team fortress 2",
-        "team fortress",
-        "tf",
-        "tf2"
-      ],
+      "aliases": ["team fortress 2", "team fortress", "tf", "tf2"],
       "color": "#9A4713",
       "icon": "http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png",
       "providers": {
@@ -104,12 +90,7 @@
     {
       "name": "csgo",
       "label": "CS:GO",
-      "aliases": [
-        "counter strike",
-        "global offensive",
-        "csgo",
-        "cs:go"
-      ],
+      "aliases": ["counter strike", "global offensive", "csgo", "cs:go"],
       "color": "#000000",
       "icon": "http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png",
       "providers": {
@@ -133,9 +114,7 @@
     {
       "name": "steam",
       "label": "Steam",
-      "aliases": [
-        "steam"
-      ],
+      "aliases": ["steam"],
       "color": "#0B5A8E",
       "icon": "https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg",
       "providers": {
@@ -159,11 +138,7 @@
     {
       "name": "underlords",
       "label": "Dota Underlords",
-      "aliases": [
-        "underlords",
-        "dota underlords",
-        "du"
-      ],
+      "aliases": ["underlords", "dota underlords", "du"],
       "color": "#FFFFFF",
       "icon": "https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png",
       "providers": {
