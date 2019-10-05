@@ -47,7 +47,7 @@ To do that,
 - Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
 - Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `config/api_config.json`, in the corresponding fields in the `reddit` object.
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and your `userName`. Copy & paste all of the, in  the `config/api_config.json`, in the corresponding fields in the `reddit` object.
 
 ### Docker containers
 
