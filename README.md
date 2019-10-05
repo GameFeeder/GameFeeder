@@ -1,4 +1,4 @@
-![](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
+![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
 
 # GameFeeder <!-- omit in toc -->
 
