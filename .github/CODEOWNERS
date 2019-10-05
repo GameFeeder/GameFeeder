@@ -1,0 +1,33 @@
+# Global owners
+@zachkont @TimJentzsch
+
+# Typescript files
+.ts                               @TimJentzsch
+
+# Github-related files
+/.github/ISSUE_TEMPLATE           @TimJentzsch
+/.github/pull_request_template.md @TimJentzsch
+/.github/CODEOWNERS               @TimJentzsch @zachkont
+/.github/workflows                @zachkont
+
+# Docker-related files
+/.devcontainer                    @zachkont
+Dockerfile                        @zachkont
+docker-compose                    @zachkont
+
+# Data/config files and documentation
+.md                               @TimJentzsch
+LICENSE                           @TimJentzsch
+/@types                           @TimJentzsch
+/config                           @TimJentzsch
+/data                             @TimJentzsch
+
+# Repo configuration files
+/.editorconfig                    @zachkont
+/.gitignore                       @zachkont
+/.jest.config.js                  @zachkont
+/.prettierrc                      @zachkont
+/package.json                     @zachkont
+/tsconfig.json                    @zachkont
+/tslint.json                      @zachkont
+/yarn.lock                        @zachkont
