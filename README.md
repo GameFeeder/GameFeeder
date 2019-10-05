@@ -2,7 +2,7 @@
 
 # GameFeeder <!-- omit in toc -->
 
-You can use this bot to get notified about updates and blog posts for multiple games. With the commands you can modify which notifications you want to recieve.
+You can use this bot to get notified about updates and blog posts for multiple games. With the commands you can modify which notifications you want to receive.
 
 Available on Discord and Telegram soon<sup>TM</sup>.
 
