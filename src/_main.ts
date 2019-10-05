@@ -44,8 +44,8 @@ async function startUpdater() {
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
   botLogger.info(
-    `Starting main in ${ProjectManager.getEnvironment()} mode,`
-    + ` v${ProjectManager.getVersionNumber()}.`,
+    `Starting main in ${ProjectManager.getEnvironment()} mode,` +
+      ` v${ProjectManager.getVersionNumber()}.`,
     'Main',
   );
   InitManager.initAll();

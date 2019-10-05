@@ -246,8 +246,7 @@ describe('Markdown regex', () => {
         const resultText = MDRegex.replaceLink(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });
-        const expected =
-          `We have a Link1: url1 and another Link2: url2 and even a third Link3: url3.`;
+        const expected = `We have a Link1: url1 and another Link2: url2 and even a third Link3: url3.`;
 
         expect(resultText).toEqual(expected);
       });
@@ -288,8 +287,7 @@ describe('Markdown regex', () => {
       test('multiple', () => {
         const testText =
           'We have an ![Image1](url1) and another ![Image2](url2) and a third ![Image3](url3).';
-        const expected =
-          `We have an Image1: url1 and another Image2: url2 and a third Image3: url3.`;
+        const expected = `We have an Image1: url1 and another Image2: url2 and a third Image3: url3.`;
         const resultText = MDRegex.replaceImage(testText, (_, label, url) => {
           return `${label}: ${url}`;
         });

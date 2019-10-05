@@ -37,16 +37,20 @@ export default class Reddit {
       missingParams.push('userName');
     }
     if (missingParams.length > 0) {
-      botLogger.warn(`Missing parameters in 'api_config.json': ${missingParams.join(', ')}`
-        + `\n  Disabling reddit updates.`, 'Reddit');
+      botLogger.warn(
+        `Missing parameters in 'api_config.json': ${missingParams.join(', ')}` +
+          `\n  Disabling reddit updates.`,
+        'Reddit',
+      );
       isEnabled = false;
       isInit = true;
       return;
     }
 
-    const userAgent = `discord/telegram(${ProjectManager.getEnvironment()}):`
-      + `${ProjectManager.getIdentifier()}:v${ProjectManager.getVersionNumber()}`
-      + ` (by /u/${userName})`;
+    const userAgent =
+      `discord/telegram(${ProjectManager.getEnvironment()}):` +
+      `${ProjectManager.getIdentifier()}:v${ProjectManager.getVersionNumber()}` +
+      ` (by /u/${userName})`;
 
     reddit = new Snoowrap({
       clientId,
