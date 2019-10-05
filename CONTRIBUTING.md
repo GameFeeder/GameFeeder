@@ -50,7 +50,7 @@ To do that,
   
   `<platform>:<app ID>:<version string> (by /u/<reddit username>)`.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `bot_config.json`, in the corresponding fields in the `reddit` object.
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and `userAgent`. Copy & paste all of the, in  the `config/api_config.json`, in the corresponding fields in the `reddit` object.
 
 ### Docker containers
 
