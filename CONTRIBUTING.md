@@ -29,7 +29,7 @@ You can now use the following tutorials to get the keys you need. If you don't w
 
 You will need to create a Discord bot if you want to test out the Discord notification functionalities.
 
-To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create the bot. This will give you with a token ("Client Secret"). Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field.
+To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create an application with a bot. This provide you with a bot token. Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field. Make sure to take the bot's token and not the application's client secret, it won't work otherwise.
 
 ### Telegram Bot
 
