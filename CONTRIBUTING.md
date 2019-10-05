@@ -60,4 +60,10 @@ The first is meant to be used as a dev container. Instead of having to install d
 
 If you are using Windows, you can also leverage the WSL with no further configuration necessary. Just follow the steps described [here](https://code.visualstudio.com/docs/remote/wsl).
 
-Finally, the `Dockerfile` provided in the root folder along with the `docker-compose.yml` is meant to be used a simple lightweight way to deploy the bot in production mode. This is pending some improvements along with a public image repo which will be included in this document once set up.
+Finally, the `Dockerfile` provided in the root folder along with the `docker-compose.yml` is meant to be used as a simple lightweight way of deploying the bot in production mode. However, it can also be used to use your bot without worrying about dependencies. To deploy the bot locally (for example to test your changes), you will need to install [docker-ce](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) and then do the following while in the root directory of the project:
+
+- make sure you are in the root directory of the project
+- make sure you have set up the configuration files as described above
+- `docker build . -t gamefeeder-test:1:0` to build the docker image using your code
+- `docker run --name --volume ./config:/app/config --volume ./data:/app/data gamefeeder-test:1:0` to run the image you just built
+- `docker ps -a` to check that it's actually running
