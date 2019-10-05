@@ -43,7 +43,7 @@ You will need to register for the Reddit API to be able to test out the Reddit p
 
 To do that,
 
-- Create an app for the bot, following [these](https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started) steps,
+- Create an app for the bot, following [these](https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started) steps (choose "web app" as type),
 - Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
 - Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator.
 
