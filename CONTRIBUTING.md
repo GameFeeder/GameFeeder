@@ -13,6 +13,8 @@ This document will guide you through setting up the bot on your PC, editing the 
     - [Telegram Bot](#telegram-bot)
     - [Reddit API](#reddit-api)
     - [Docker containers](#docker-containers)
+  - [Debugging and configurations](#debugging-and-configurations)
+  - [Testing](#testing)
 
 ## Local setup
 
@@ -67,3 +69,23 @@ Finally, the `Dockerfile` provided in the root folder along with the `docker-com
 - `docker build . -t gamefeeder-test:1:0` to build the docker image using your code
 - `docker run --name --volume ./config:/app/config --volume ./data:/app/data gamefeeder-test:1:0` to run the image you just built
 - `docker ps -a` to check that it's actually running
+
+## Debugging and configurations
+
+To test out the bot in development, use the `yarn dev` command. The bot will try to make sure that the `config/` and `data/` files are up-to-date and launch all enabled bots and the updater. The bot will restart on any `config/` or code changes.
+
+Several `config/` changes are recommeded for testing and debugging:
+- In `config/updater_config`:
+  - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a `lastUpdate` date in `data/updater_data.json` for your testing needs without it being overwritten by the updater
+  - It might be necessary to increase the `limit` to test out an older update
+  - If your work is unreleated to the updater, you can disable it by setting `autostart` to `false`
+- In `api_config.json`:
+  - You can disable one of the bots by setting its `autostart` value to `false`
+
+To test out the bot's functionality, we recommend to try the following steps:
+- Use the `start` command to test basic command functionality
+- Make sure you are subscribed to a game (`subscribe` or `sub`) and start the updater. Make sure you recieve the notifications
+
+## Testing
+
+You can use `yarn test` to run the unit tests to make sure that you didn't break anything. Please provide unittests for your code if applicable.
