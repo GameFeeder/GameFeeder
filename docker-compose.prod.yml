@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  bot:
+    image: gamefeeder/gamefeeder:latest
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200k'
+        max-file: '10'
