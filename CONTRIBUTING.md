@@ -13,6 +13,8 @@ This document will guide you through setting up the bot on your PC, editing the 
     - [Telegram Bot](#telegram-bot)
     - [Reddit API](#reddit-api)
     - [Docker containers](#docker-containers)
+      - [Using the VSCode Dev Container](#using-the-vscode-dev-container)
+      - [Using the production-ready Docker image & Docker Compose](#using-the-production-ready-docker-image--docker-compose)
 
 ## Local setup
 
@@ -51,19 +53,26 @@ After following these steps, you should have `clientID`, `clientSecret`, `refres
 
 ### Docker containers
 
-Included in the repo are 2 Dockerfiles:
+You can use Docker containers in order to run the bot without worrying about other system dependencies. The only requirement is [Docker Engine](https://docs.docker.com/install/) 18.06.0+.
 
-- /.devcontainer/Dockerfile
-- /Dockerfile
+#### Using the VSCode Dev Container
 
-The first is meant to be used as a dev container. Instead of having to install dependencies like node and typescript in your machine, you can use this docker container. VScode can also utilize this automatically. For more information check out the [official VSCode guide](https://code.visualstudio.com/docs/remote/containers) on developing inside a container.
+> Location: `/.devcontainer/Dockerfile`
+
+This is meant to be used as a dev container. VSCode can utilize this automatically. For more information check out the [official VSCode guide](https://code.visualstudio.com/docs/remote/containers) on developing inside a container.
 
 If you are using Windows, you can also leverage the WSL with no further configuration necessary. Just follow the steps described [here](https://code.visualstudio.com/docs/remote/wsl).
 
-Finally, the `Dockerfile` provided in the root folder along with the `docker-compose.yml` is meant to be used as a simple lightweight way of deploying the bot in production mode. However, it can also be used to use your bot without worrying about dependencies. To deploy the bot locally (for example to test your changes), you will need to install [docker-ce](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) and then do the following while in the root directory of the project:
+#### Using the production-ready Docker image & Docker Compose
+
+> Location: `/Dockerfile`
+
+The `Dockerfile` provided in the root folder along with the `docker-compose.yml` can be used to try the bot in production mode. In addition to the Docker engine, you will need [Docker Compose](https://docs.docker.com/compose/install/) 1.22.0+.
+
+To run the bot locally (for example to test your changes), follow these steps:
 
 - make sure you are in the root directory of the project
 - make sure you have set up the configuration files as described above
-- `docker build . -t gamefeeder-test:1:0` to build the docker image using your code
-- `docker run --name --volume ./config:/app/config --volume ./data:/app/data gamefeeder-test:1:0` to run the image you just built
-- `docker ps -a` to check that it's actually running
+- `docker-compose up --build -d` to build the image and run the container in the background
+- `docker-compose ps` to check that it's actually up and running
+- `docker-compose logs -f bot` to observe the log output of the bot
