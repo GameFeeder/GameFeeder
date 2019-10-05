@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  bot:
+    build:
+      context: .
+      target: production
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    restart: unless-stopped
