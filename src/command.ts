@@ -87,9 +87,7 @@ export default class Command {
     const userTag = EscapeRegex(await bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.getPrefix());
     const prefix = this.hasPrefix
-      ? `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${
-          bot.prefix
-        })\\s*(${userTag})))\\s*`
+      ? `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*`
       : '';
 
     const regexString = prefix + this.trigger;
