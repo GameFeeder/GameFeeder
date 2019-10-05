@@ -18,7 +18,7 @@ This document will guide you through setting up the bot on your PC, editing the 
 
 To set up the bot locally on your machine, you will first need to fork and clone the project.
 
-Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `/data/` and `/config/`, to enable your personal configuration files.
+Next you will need to create multiple API keys. First, run the bot once to initialize the config files. The bot will copy all example files in `data/` and `config/`, to enable your personal configuration files.
 The bot should warn you that you have missing bot and reddit tokens.
 
 **Important**: Never share your API keys with anyone! Make sure to never add your api tokens and secrets to the example files, as they are uploaded to GitHub!
@@ -29,13 +29,13 @@ You can now use the following tutorials to get the keys you need. If you don't w
 
 You will need to create a Discord bot if you want to test out the Discord notification functionalities.
 
-To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create the bot. This will give you with a token ("Client Secret"). Copy & paste that in the `bot_config.json`, in the `bots.discord.token` field.
+To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create the bot. This will give you with a token ("Client Secret"). Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field.
 
 ### Telegram Bot
 
 You will need to create a Telegram bot if you want to test out the Telegram notification functionalities.
 
-To do that, first follow [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) tutorial to create the bot. This will give you a token. Copy & paste that in the `bot_config.json`, in the `bots.telegram.token` field.
+To do that, first follow [this](https://core.telegram.org/bots#3-how-do-i-create-a-bot) tutorial to create the bot. This will give you a token. Copy & paste that in the `config/api_config.json`, in the `bots.telegram.token` field.
 
 ### Reddit API
 
