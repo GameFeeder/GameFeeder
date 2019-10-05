@@ -12,8 +12,8 @@
     "demolish": "rimraf dist",
     "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
     "start": "node dist/_main.js",
-    "prettier-check": "prettier --check '{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}'",
-    "prettier": "prettier --write '{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}'",
+    "prettier-check": "prettier --check '*.{js,json,md,yml}' '{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}'",
+    "prettier": "yarn prettier-check --write",
     "test": "jest --coverage",
     "watch": "tsc --watch"
   },
