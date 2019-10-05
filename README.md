@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot.svg?branch=develop)](https://travis-ci.com/TimJentzsch/valveGamesAnnouncerBot)
+![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
 
 # GameFeeder <!-- omit in toc -->
 
