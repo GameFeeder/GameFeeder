@@ -57,7 +57,7 @@ To do that,
 - Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
 - Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator.
 
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and your `userName`. Copy & paste all of the, in  the `config/api_config.json`, in the corresponding fields in the `reddit` object.
+After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and your `userName`. Copy & paste all of the, in the `config/api_config.json`, in the corresponding fields in the `reddit` object.
 
 ### Docker containers
 
@@ -94,6 +94,7 @@ To tear down the container, simply run:
 To test out the bot in development, use the `yarn dev` command. The bot will try to make sure that the `config/` and `data/` files are up-to-date and launch all enabled bots and the updater. The bot will restart on any `config/` or code changes.
 
 Several `config/` changes are recommeded for testing and debugging:
+
 - In `config/updater_config`:
   - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a `lastUpdate` date in `data/updater_data.json` for your testing needs without it being overwritten by the updater
   - It might be necessary to increase the `limit` to test out an older update
@@ -102,6 +103,7 @@ Several `config/` changes are recommeded for testing and debugging:
   - You can disable one of the bots by setting its `autostart` value to `false`
 
 To test out the bot's functionality, we recommend to try the following steps:
+
 - Use the `start` command to test basic command functionality
 - Make sure you are subscribed to a game (`subscribe` or `sub`) and start the updater. Make sure you recieve the notifications
 
