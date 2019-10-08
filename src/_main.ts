@@ -5,54 +5,56 @@ import Updater from './updater';
 import InitManager from './init_manager';
 import ProjectManager from './project_manager';
 
-const logger = new Logger('Main');
+export default class Main {
+  public static logger = new Logger('Main');
 
-/** Registers the bot commands. */
-async function registerCommands() {
-  for (const command of commands) {
-    for (const bot of getBots()) {
-      bot.registerCommand(command);
-    }
-    logger.debug(`Registered command: '${command.label}'.`);
-  }
-  logger.info('Registered commands.');
-}
-
-/** Starts the bots. */
-async function startBots() {
-  // Start bots
-  for (const bot of getBots()) {
-    if (bot.autostart) {
-      if (await bot.start()) {
-        const userName = await bot.getUserName();
-        bot.logger.info(`Started bot as @${userName}`);
-      } else {
-        bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
+  /** Registers the bot commands. */
+  public static async registerCommands() {
+    for (const command of commands) {
+      for (const bot of getBots()) {
+        bot.registerCommand(command);
       }
-    } else {
-      bot.logger.debug('Autostart disabled.');
+      Main.logger.debug(`Registered command: '${command.label}'.`);
+    }
+    Main.logger.info('Registered commands.');
+  }
+
+  /** Starts the bots. */
+  public static async startBots() {
+    // Start bots
+    for (const bot of getBots()) {
+      if (bot.autostart) {
+        if (await bot.start()) {
+          const userName = await bot.getUserName();
+          bot.logger.info(`Started bot as @${userName}`);
+        } else {
+          bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
+        }
+      } else {
+        bot.logger.debug('Autostart disabled.');
+      }
     }
   }
-}
 
-/** Starts the updater. */
-async function startUpdater() {
-  if (Updater.getUpdater().autostart) {
-    Updater.getUpdater().start();
-    Updater.logger.info('Started updater.');
+  /** Starts the updater. */
+  public static async startUpdater() {
+    if (Updater.getUpdater().autostart) {
+      Updater.getUpdater().start();
+      Updater.logger.info('Started updater.');
+    }
+  }
+
+  /** Registers the commands, starts the bots and the updater. */
+  public static async start() {
+    Main.logger.info(
+      `Starting main in ${ProjectManager.getEnvironment()} mode,` +
+        ` v${ProjectManager.getVersionNumber()}.`,
+    );
+    InitManager.initAll();
+    await Main.registerCommands();
+    await Main.startBots();
+    await Main.startUpdater();
   }
 }
 
-/** Registers the commands, starts the bots and the updater. */
-async function start() {
-  logger.info(
-    `Starting main in ${ProjectManager.getEnvironment()} mode,` +
-      ` v${ProjectManager.getVersionNumber()}.`,
-  );
-  InitManager.initAll();
-  await registerCommands();
-  await startBots();
-  await startUpdater();
-}
-
-start();
+Main.start();
