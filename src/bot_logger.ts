@@ -1,7 +1,7 @@
 import { Format } from 'logform';
 import Winston from 'winston';
 
-class Logger {
+export class MainLogger {
   private format: Format;
   private logger: Winston.Logger;
 
@@ -66,7 +66,55 @@ class Logger {
   }
 }
 
-// The logger we use
-const botLogger = new Logger();
+/** The logger instance we use. */
+export const mainLogger = new MainLogger();
 
-export default botLogger;
+/** A labeled wrapper for the logger instance. */
+export default class Logger {
+  /** The label to use while logging. */
+  public label: string;
+
+  /** Creates a new logger wrapper with the given label.
+   *
+   * @param label - The label to use while logging.
+   */
+  constructor(label: string) {
+    this.label = label;
+  }
+
+  /** Logs a debug message.
+   *
+   * @param  {string} message - The message to debug-log.
+   * @returns void
+   */
+  public debug(message: string): void {
+    mainLogger.debug(message, this.label);
+  }
+
+  /** Logs an info message.
+   *
+   * @param  {string} message - The message to info-log.
+   * @returns void
+   */
+  public info(message: string): void {
+    mainLogger.info(message, this.label);
+  }
+
+  /** Logs a warning message.
+   *
+   * @param  {string} message - The message to warn-log.
+   * @returns void
+   */
+  public warn(message: string): void {
+    mainLogger.warn(message, this.label);
+  }
+
+  /** Logs an error message.
+   *
+   * @param  {string} message - The message to error-log.
+   * @returns void
+   */
+  public error(message: string): void {
+    mainLogger.error(message, this.label);
+  }
+}

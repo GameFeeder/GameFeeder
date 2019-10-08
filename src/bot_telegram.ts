@@ -42,7 +42,7 @@ export default class TelegramBot extends BotClient {
       const botUser = await this.bot.getMe();
       return botUser.username;
     } catch (error) {
-      this.logError(`Failed to get user name:\n${error}`);
+      this.logger.error(`Failed to get user name:\n${error}`);
     }
   }
 
@@ -51,7 +51,7 @@ export default class TelegramBot extends BotClient {
       const userName = await this.getUserName();
       return `@${userName}`;
     } catch (error) {
-      this.logError(`Failed to get user tag:\n${error}`);
+      this.logger.error(`Failed to get user tag:\n${error}`);
     }
   }
 
@@ -80,7 +80,7 @@ export default class TelegramBot extends BotClient {
         return UserPermission.ADMIN;
       }
     } catch (error) {
-      this.logError(`Failed to get chat admins:\n${error}`);
+      this.logger.error(`Failed to get chat admins:\n${error}`);
     }
     // the user is just a regular user
     return UserPermission.USER;
@@ -91,7 +91,7 @@ export default class TelegramBot extends BotClient {
     try {
       return (await this.bot.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
-      this.logError(`Failed to get chat member count for channel ${channel}:\n${error}`);
+      this.logger.error(`Failed to get chat member count for channel ${channel}:\n${error}`);
     }
   }
 
@@ -126,7 +126,7 @@ export default class TelegramBot extends BotClient {
         );
       }
     } catch (error) {
-      this.logError(`Failed to execute command ${command.label}:\n${error}`);
+      this.logger.error(`Failed to execute command ${command.label}:\n${error}`);
     }
   }
 
@@ -138,7 +138,7 @@ export default class TelegramBot extends BotClient {
         return true;
       }
     } catch (error) {
-      this.logError(`Failed to start bot:\n${error}`);
+      this.logger.error(`Failed to start bot:\n${error}`);
     }
     return false;
   }
@@ -158,7 +158,7 @@ export default class TelegramBot extends BotClient {
       try {
         await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
       } catch (error) {
-        this.logError(`Failed to send message to channel:\n${error}`);
+        this.logger.error(`Failed to send message to channel:\n${error}`);
       }
     } else {
       const link = message.title.link;
@@ -202,7 +202,7 @@ export default class TelegramBot extends BotClient {
           parse_mode: 'Markdown',
         });
       } catch (error) {
-        this.logError(`Failed to send notification to channel ${channel.id}:\n${error}`);
+        this.logger.error(`Failed to send notification to channel ${channel.id}:\n${error}`);
       }
     }
     return true;
