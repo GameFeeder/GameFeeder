@@ -1,10 +1,11 @@
 import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
-import botLogger from './bot_logger';
 import RSSItem from './rss_item';
 import { sortLimitEnd } from './comparable';
+import Logger from './bot_logger';
 
 export default class RSS {
+  public static logger = new Logger('RSS');
   private parser: any;
 
   constructor() {
@@ -42,7 +43,7 @@ export default class RSS {
 
       return feedItems;
     } catch (error) {
-      botLogger.error(`Failed to parse feed url '${url}':\n${error}`, 'RSS');
+      RSS.logger.error(`Failed to parse feed url '${url}':\n${error}`);
       return [];
     }
   }

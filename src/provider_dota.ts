@@ -4,11 +4,12 @@ import BotNotification from './notification';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
 import NotificationElement from './notification_element';
-import botLogger from './bot_logger';
+import Logger from './bot_logger';
 import request from 'request-promise-native';
 import cheerio from 'cheerio';
 
 export default class DotaProvider extends Provider {
+  public static logger = new Logger('Dota Provider');
   public lastPatch: string;
 
   constructor() {
@@ -53,9 +54,8 @@ export default class DotaProvider extends Provider {
         );
       });
     } catch (error) {
-      botLogger.error(
+      DotaProvider.logger.error(
         `Dota updates page parsing failed, error: ${error.substring(0, 120)}`,
-        'DotaProvider',
       );
     } finally {
       return notifications;

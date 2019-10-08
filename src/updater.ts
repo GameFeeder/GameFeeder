@@ -2,15 +2,14 @@ import getBots from './bots';
 import DataManager from './data_manager';
 import ConfigManager from './config_manager';
 import Game from './game';
-import botLogger from './bot_logger';
+import Logger from './bot_logger';
 import BotNotification from './notification';
-import RSS from './rss';
 import { sort, sortLimitEnd } from './comparable';
-
-const loggerTag = 'Updater';
 
 export default class Updater {
   private static updater: Updater;
+
+  public static logger = new Logger('Updater');
   public autostart: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
@@ -39,18 +38,6 @@ export default class Updater {
       this.updater = new Updater();
     }
     return this.updater;
-  }
-  public debug(msg: string): void {
-    botLogger.debug(msg, loggerTag);
-  }
-  public info(msg: string): void {
-    botLogger.info(msg, loggerTag);
-  }
-  public warn(msg: string): void {
-    botLogger.warn(msg, loggerTag);
-  }
-  public error(msg: string): void {
-    botLogger.error(msg, loggerTag);
   }
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
@@ -85,7 +72,7 @@ export default class Updater {
   }
   /** Run an update cycle. */
   public async update(): Promise<void> {
-    this.debug('Starting update cycle...');
+    Updater.logger.debug('Starting update cycle...');
 
     const startTime = Date.now();
 
@@ -105,7 +92,9 @@ export default class Updater {
 
         const gameEndTime = Date.now();
         const gameTime = Math.abs(gameStartTime - gameEndTime);
-        this.info(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+        Updater.logger.info(
+          `Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`,
+        );
 
         // Add the game notifications to the total notifications.
         notifications = notifications.concat(gameNotifications);
@@ -117,7 +106,9 @@ export default class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      this.info(`Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`);
+      Updater.logger.info(
+        `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
+      );
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);
@@ -130,7 +121,7 @@ export default class Updater {
       }
       const endNotifyTime = Date.now();
       const notifyTime = Math.abs(endNotifyTime - endPollTime);
-      this.info(`Notified channels in ${notifyTime}ms.`);
+      Updater.logger.info(`Notified channels in ${notifyTime}ms.`);
     }
   }
   public saveDate(date: Date): void {
@@ -161,7 +152,7 @@ export default class Updater {
         this.updateHealthcheck();
       }
     } catch (error) {
-      this.error(`Update loop failed:\n${error}`);
+      Updater.logger.error(`Update loop failed:\n${error}`);
     } finally {
       if (this.doUpdates) {
         // Update again after the delay
