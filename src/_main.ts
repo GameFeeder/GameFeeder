@@ -1,9 +1,11 @@
-import botLogger from './bot_logger';
+import Logger from './bot_logger';
 import getBots from './bots';
 import commands from './commands';
 import Updater from './updater';
 import InitManager from './init_manager';
 import ProjectManager from './project_manager';
+
+const logger = new Logger('Main');
 
 /** Registers the bot commands. */
 async function registerCommands() {
@@ -11,9 +13,9 @@ async function registerCommands() {
     for (const bot of getBots()) {
       bot.registerCommand(command);
     }
-    botLogger.debug(`Registered command: '${command.label}'.`, 'Main');
+    logger.debug(`Registered command: '${command.label}'.`);
   }
-  botLogger.info('Registered commands.', 'Main');
+  logger.info('Registered commands.');
 }
 
 /** Starts the bots. */
@@ -43,10 +45,9 @@ async function startUpdater() {
 
 /** Registers the commands, starts the bots and the updater. */
 async function start() {
-  botLogger.info(
+  logger.info(
     `Starting main in ${ProjectManager.getEnvironment()} mode,` +
       ` v${ProjectManager.getVersionNumber()}.`,
-    'Main',
   );
   InitManager.initAll();
   await registerCommands();

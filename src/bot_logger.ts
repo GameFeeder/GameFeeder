@@ -69,10 +69,16 @@ export class MainLogger {
 /** The logger instance we use. */
 export const mainLogger = new MainLogger();
 
+/** A labeled wrapper for the logger instance. */
 export default class Logger {
+  /** The label to use while logging. */
   public label: string;
 
-  constructur(label: string) {
+  /** Creates a new logger wrapper with the given label.
+   * 
+   * @param label - The label to use while logging.
+   */
+  constructor(label: string) {
     this.label = label;
   }
 
