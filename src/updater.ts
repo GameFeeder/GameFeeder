@@ -4,13 +4,12 @@ import ConfigManager from './config_manager';
 import Game from './game';
 import Logger from './bot_logger';
 import BotNotification from './notification';
-import RSS from './rss';
 import { sort, sortLimitEnd } from './comparable';
-
-const logger = new Logger('Updater');
 
 export default class Updater {
   private static updater: Updater;
+
+  public static logger = new Logger('Updater');
   public autostart: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
@@ -73,7 +72,7 @@ export default class Updater {
   }
   /** Run an update cycle. */
   public async update(): Promise<void> {
-    logger.debug('Starting update cycle...');
+    Updater.logger.debug('Starting update cycle...');
 
     const startTime = Date.now();
 
@@ -93,7 +92,7 @@ export default class Updater {
 
         const gameEndTime = Date.now();
         const gameTime = Math.abs(gameStartTime - gameEndTime);
-        logger.info(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+        Updater.logger.info(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
 
         // Add the game notifications to the total notifications.
         notifications = notifications.concat(gameNotifications);
@@ -105,7 +104,7 @@ export default class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      logger.info(`Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`);
+      Updater.logger.info(`Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`);
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);
@@ -118,7 +117,7 @@ export default class Updater {
       }
       const endNotifyTime = Date.now();
       const notifyTime = Math.abs(endNotifyTime - endPollTime);
-      logger.info(`Notified channels in ${notifyTime}ms.`);
+      Updater.logger.info(`Notified channels in ${notifyTime}ms.`);
     }
   }
   public saveDate(date: Date): void {
@@ -149,7 +148,7 @@ export default class Updater {
         this.updateHealthcheck();
       }
     } catch (error) {
-      logger.error(`Update loop failed:\n${error}`);
+      Updater.logger.error(`Update loop failed:\n${error}`);
     } finally {
       if (this.doUpdates) {
         // Update again after the delay

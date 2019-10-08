@@ -39,7 +39,7 @@ async function startBots() {
 async function startUpdater() {
   if (Updater.getUpdater().autostart) {
     Updater.getUpdater().start();
-    Updater.getUpdater().info('Started updater.');
+    Updater.logger.info('Started updater.');
   }
 }
 
