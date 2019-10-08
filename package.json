@@ -3,6 +3,20 @@
   "version": "0.5.2",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GameFeeder/GameFeeder"
+  },
+  "author": "Tim Jentzsch",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GameFeeder/GameFeeder/issues"
+  },
+  "homepage": "https://github.com/GameFeeder/GameFeeder",
+  "engines": {
+    "node": "^10",
+    "yarn": "^1.16.0"
+  },
   "scripts": {
     "build": "tsc --build",
     "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
@@ -20,19 +34,11 @@
     "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
     "watch": "tsc --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GameFeeder/GameFeeder"
-  },
-  "author": "Tim Jentzsch",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/GameFeeder/GameFeeder/issues"
-  },
-  "homepage": "https://github.com/GameFeeder/GameFeeder",
-  "engines": {
-    "node": "^10",
-    "yarn": "^1.16.0"
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn format && yarn lint",
+      "pre-push": "yarn build"
+    }
   },
   "devDependencies": {
     "concurrently": "4.1.2",
@@ -71,11 +77,5 @@
     "snoowrap": "1.19.0",
     "turndown": "5.0.3",
     "winston": "3.2.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn build && yarn test"
-    }
   }
 }
