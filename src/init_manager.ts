@@ -1,22 +1,15 @@
 import FS from 'fs';
 import { ObjUtil } from './util';
 import FileManager from './file_manager';
-import botLogger from './bot_logger';
+import Logger from './bot_logger';
 import ConfigManager from './config_manager';
 import DataManager from './data_manager';
 import _ from 'lodash';
 
 export default class InitManager {
+  public static logger = new Logger('Init Manager');
   public static exampleExt = '.example.json';
   public static userExt = '.json';
-
-  public static info(message: string): void {
-    botLogger.info(message, 'InitManager');
-  }
-
-  public static warn(message: string): void {
-    botLogger.warn(message, 'InitManager');
-  }
 
   /** Gets the full file name of the given example file.
    *
@@ -143,7 +136,7 @@ export default class InitManager {
       const exampleFile = this.getExampleFileName(file);
       const userFile = this.getUserFileName(file);
 
-      this.warn(
+      InitManager.logger.warn(
         `Didn't find '${FileManager.getFilePath(
           path,
           userFile,
@@ -226,7 +219,7 @@ export default class InitManager {
         if (missingKeys.length > 0) {
           const keyString = `    - ${missingKeys.map((path) => path.join(' > ')).join('\n    - ')}`;
 
-          this.warn(
+          InitManager.logger.warn(
             `Found missing keys in '${this.getUserFileName(
               file,
             )}, replacing by default.\n${keyString}`,
@@ -254,6 +247,6 @@ export default class InitManager {
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
 
-    this.info('Finished initialization check.');
+    InitManager.logger.info('Finished initialization check.');
   }
 }
