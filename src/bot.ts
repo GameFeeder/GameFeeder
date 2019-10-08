@@ -1,12 +1,10 @@
-import botLogger from './bot_logger';
 import BotUser, { UserPermission } from './bot_user';
 import BotChannel from './channel';
 import Command from './command';
 import DataManager from './data_manager';
 import Game from './game';
 import BotNotification from './notification';
-import DiscordBot from './bot_discord';
-import TelegramBot from './bot_telegram';
+import Logger from './bot_logger';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -19,6 +17,8 @@ export default abstract class BotClient {
   public isRunning: boolean;
   /** Indicates whether the bot should be started automatically. */
   public autostart: boolean;
+  /** The logger used for this bot. */
+  public logger: Logger;
 
   /** Creates a new BotClient.
    *
@@ -33,6 +33,8 @@ export default abstract class BotClient {
     this.prefix = prefix;
     this.autostart = autostart;
     this.isRunning = false;
+
+    this.logger = new Logger(label);
   }
 
   /** Gets the username of the bot.
@@ -140,7 +142,7 @@ export default abstract class BotClient {
 
         // Remove unnecessary entries
         if (sub.gameSubs.length === 0 && !sub.prefix) {
-          this.logDebug('Removing unnecessary channel entry...');
+          this.logger.debug('Removing unnecessary channel entry...');
           subs.splice(i, 1);
         } else {
           subs[i] = sub;
@@ -245,42 +247,6 @@ export default abstract class BotClient {
         }
       }
     }
-  }
-
-  /** Logs a debug message.
-   *
-   * @param  {string} msg - The message to debug-log.
-   * @returns void
-   */
-  public logDebug(msg: string): void {
-    botLogger.debug(msg, this.label);
-  }
-
-  /** Logs an info message.
-   *
-   * @param  {string} msg - The message to info-log.
-   * @returns void
-   */
-  public logInfo(msg: string): void {
-    botLogger.info(msg, this.label);
-  }
-
-  /** Logs a warning message.
-   *
-   * @param  {string} msg - The message to warn-log.
-   * @returns void
-   */
-  public logWarn(msg: string): void {
-    botLogger.warn(msg, this.label);
-  }
-
-  /** Logs an error message.
-   *
-   * @param  {string} msg - The message to error-log.
-   * @returns void
-   */
-  public logError(msg: string): void {
-    botLogger.error(msg, this.label);
   }
 }
 

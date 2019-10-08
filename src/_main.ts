@@ -25,12 +25,12 @@ async function startBots() {
     if (bot.autostart) {
       if (await bot.start()) {
         const userName = await bot.getUserName();
-        bot.logInfo(`Started bot as @${userName}`);
+        bot.logger.info(`Started bot as @${userName}`);
       } else {
-        bot.logWarn('Bot did not start. Did you provide a token in "bot_config.json"?');
+        bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
       }
     } else {
-      bot.logDebug('Autostart disabled.');
+      bot.logger.debug('Autostart disabled.');
     }
   }
 }

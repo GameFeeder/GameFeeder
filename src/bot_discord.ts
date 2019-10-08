@@ -190,7 +190,7 @@ export default class DiscordBot extends BotClient {
     }
     // Thumbnail
     if (notification.thumbnail) {
-      this.logDebug(`ThumbnailUrl: '${notification.thumbnail}'`);
+      this.logger.debug(`ThumbnailUrl: '${notification.thumbnail}'`);
       embed.setThumbnail(notification.thumbnail);
     }
     // Timestamp
