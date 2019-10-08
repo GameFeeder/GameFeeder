@@ -75,7 +75,7 @@ export default class Logger {
   public label: string;
 
   /** Creates a new logger wrapper with the given label.
-   * 
+   *
    * @param label - The label to use while logging.
    */
   constructor(label: string) {

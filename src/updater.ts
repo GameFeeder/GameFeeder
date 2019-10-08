@@ -92,7 +92,9 @@ export default class Updater {
 
         const gameEndTime = Date.now();
         const gameTime = Math.abs(gameStartTime - gameEndTime);
-        Updater.logger.info(`Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`);
+        Updater.logger.info(
+          `Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`,
+        );
 
         // Add the game notifications to the total notifications.
         notifications = notifications.concat(gameNotifications);
@@ -104,7 +106,9 @@ export default class Updater {
 
       const endPollTime = Date.now();
       const pollTime = Math.abs(endPollTime - startTime);
-      Updater.logger.info(`Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`);
+      Updater.logger.info(
+        `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
+      );
 
       // Update time
       this.saveDate(notifications[notifications.length - 1].timestamp);

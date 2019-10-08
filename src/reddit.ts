@@ -8,18 +8,17 @@ import { sortLimitEnd } from './comparable';
 import ProjectManager from './project_manager';
 import Logger from './bot_logger';
 
-const logger = new Logger('Reddit');
-
 let reddit: Snoowrap;
 let isInit: boolean = false;
 let isEnabled: boolean = true;
 
 export default class Reddit {
+  public static logger = new Logger('Reddit');
   public static init(): void {
     if (isInit) {
       return;
     }
-    logger.debug('Initializing Reddit API...');
+    Reddit.logger.debug('Initializing Reddit API...');
     const redditConfig = ConfigManager.getRedditConfig();
     const { clientId, clientSecret, refreshToken, userName } = redditConfig;
 
@@ -38,7 +37,7 @@ export default class Reddit {
       missingParams.push('userName');
     }
     if (missingParams.length > 0) {
-      logger.warn(
+      Reddit.logger.warn(
         `Missing parameters in 'api_config.json': ${missingParams.join(', ')}` +
           `\n  Disabling reddit updates.`,
       );
@@ -58,7 +57,7 @@ export default class Reddit {
       refreshToken,
       userAgent,
     });
-    logger.info(`Initialization successful with userAgent '${userAgent}'.`);
+    Reddit.logger.info(`Initialization successful with userAgent '${userAgent}'.`);
     isInit = true;
   }
 
@@ -88,7 +87,7 @@ export default class Reddit {
     for (const user of users) {
       // Get all new submissions in the given subreddit
       try {
-        logger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`);
+        Reddit.logger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`);
         const allPosts = await reddit.getUser(user.name).getSubmissions();
         const posts = allPosts.filter((submission) => {
           const timestamp = new Date(submission.created_utc * 1000);
@@ -117,7 +116,7 @@ export default class Reddit {
           notifications.push(notification);
         }
       } catch (error) {
-        logger.error(`Failed to get notification from Reddit:\n${error}`);
+        Reddit.logger.error(`Failed to get notification from Reddit:\n${error}`);
       }
     }
 
