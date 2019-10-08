@@ -293,7 +293,7 @@ const prefixCmd = new Command(
 
         // Remove unnecessary entries
         if (sub.gameSubs.length === 0 && !sub.prefix) {
-          bot.logDebug('Removing unnecessary channel entry...');
+          bot.logger.debug('Removing unnecessary channel entry...');
           channels.splice(i, 1);
         } else {
           channels[i] = sub;

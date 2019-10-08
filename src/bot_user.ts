@@ -1,9 +1,10 @@
 import BotClient from './bot';
 import BotChannel from './channel';
-import botLogger from './bot_logger';
+import Logger from './bot_logger';
 
 /** Represents a user of a bot. */
 export default class BotUser {
+  public static logger = new Logger('Bot User');
   /** The bot the user is associated to. */
   public bot: BotClient;
   /** The unique ID of the user. */
@@ -40,7 +41,7 @@ export default class BotUser {
       case UserPermission.USER:
         return true;
       default:
-        botLogger.debug('Unknown UserPermission. Denying access.', 'User');
+        BotUser.logger.debug('Unknown UserPermission. Denying access.');
         return false;
     }
   }
