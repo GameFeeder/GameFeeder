@@ -13,10 +13,13 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
 ## Index <!-- omit in toc -->
 
 - [About this project](#about-this-project)
+  - [Usage](#usage)
+    - [Discord](#discord)
+    - [Telegram](#telegram)
+    - [Local setup](#local-setup)
   - [Commands](#commands)
     - [Permissions](#permissions)
   - [Games](#games)
-  - [Deployments](#deployments)
   - [Contributing](#contributing)
 - [Miscellaneous](#miscellaneous)
   - [Privacy](#privacy)
@@ -24,6 +27,22 @@ A TypeScript port of the [dota2UpdatesBot](https://github.com/zachkont/dotaUpdat
   - [Disclaimer](#disclaimer)
 
 ## About this project
+
+### Usage
+
+The quickest way to use the bot is via our public bots and servers:
+
+#### Discord
+
+On Discord, the bot runs publicly as **@GameFeeder#5446**. The best way to use the bot is to join our [Discord server](https://discord.gg/hFNRHE5) (make sure to mute the channels you are not interested in). You can also add the bot to your own servers via this [invite link](https://discordapp.com/oauth2/authorize?&client_id=626677125105188884&scope=bot&permissions=0).
+
+#### Telegram
+
+On Telegram, the bot runs publicly as **@AnnounceBot**. The best way to use the bot is to [add it directly](https://telegram.me/AnnounceBot) (don't forget to subscribe to the games you are interested in). If you are only interested in Dota 2, you can also use the old [Dota 2 Feeder channel](https://t.me/dota2feeder).
+
+#### Local setup
+
+You can also download production-ready images from the [dockerhub repo](https://hub.docker.com/r/gamefeeder/gamefeeder/tags). You will still need your own configuration and data files for it to work (more info about how to do that in [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ### Commands
 
@@ -68,15 +87,6 @@ So far, we are supporting the following games:
   - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
 - <strong align="left">Dota Underlords</strong> <img src="https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png" height="17px"/>
   - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
-
-### Deployments
-
-The bot runs publicly in the following platforms:
-
-- Discord: GameFeeder#5446
-- Telegram: AnnouncerDude @AnnounceBot
-
-You can also download production-ready images from the [dockerhub repo](https://hub.docker.com/r/gamefeeder/gamefeeder/tags). You will still need your own configuration and data files for it to work (more info about how to do that in [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ### Contributing
 
