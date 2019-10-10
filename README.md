@@ -61,7 +61,8 @@ So far, we are providing the following commands:
 | `start`                                  | User       | Get started with the GameFeeder.                |
 | `help`                                   | User       | Display all available commands.                 |
 | `about`                                  | User       | Display information about this bot.             |
-| `settings`                               | User       | Display an overview of the settings you can configure for the bot. |
+| `settings`                               | User       | Display an overview of the settings you can     |
+                                           |            | configure for the bot.                          |
 | `games`                                  | User       | Display a list of all available games.          |
 | `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
 | `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
