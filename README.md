@@ -70,6 +70,8 @@ So far, we are providing the following commands:
 | `notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
 | `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
 
+**Note:** The messages in the notification commands should be provided in the raw markdown format, they will be reformatted for the different clients. Discord should be used for these commands, as some formatting information gets lost in Telegram (when Telegram uses the same format).
+
 #### Permissions
 
 - **User**: Any user can execute this command
