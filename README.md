@@ -56,19 +56,18 @@ So far, we are providing the following commands:
 - The default prefix on Discord is `!`.
 - You can also use the bot's tag as prefix.
 
-| Command                                  | Permission | Summary                                         |
-| ---------------------------------------- | ---------- | ----------------------------------------------- |
-| `start`                                  | User       | Get started with the GameFeeder.                |
-| `help`                                   | User       | Display all available commands.                 |
-| `about`                                  | User       | Display information about this bot.             |
-| `settings`                               | User       | Display an overview of the settings you can     |
-|                                          |            | configure for the bot.                          |
-| `games`                                  | User       | Display a list of all available games.          |
-| `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
-| `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
-| `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
-| `notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
-| `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
+| Command                                  | Permission | Summary                                                            |
+| ---------------------------------------- | ---------- | ------------------------------------------------------------------ |
+| `start`                                  | User       | Get started with the GameFeeder.                                   |
+| `help`                                   | User       | Display all available commands.                                    |
+| `about`                                  | User       | Display information about this bot.                                |
+| `settings`                               | User       | Display an overview of the settings you can configure for the bot. |
+| `games`                                  | User       | Display a list of all available games.                             |
+| `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                                        |
+| `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                                    |
+| `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel.                    |
+| `notifyAll <message>`                    | Owner      | Send a message to all subscribers.                                 |
+| `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.                       |
 
 #### Permissions
 
