@@ -24,7 +24,7 @@
     "demolish": "rimraf dist",
     "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
     "start": "node dist/_main.js",
-    "lint": "yarn lint-tslint && yarn lint-prettier",
+    "lint": "yarn lint-tslint",
     "lint-tslint": "tslint --config tslint.json --format stylish --project tsconfig.json",
     "lint-prettier": "prettier --check \"*.{js,json,md,yml}\" \"{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}\"",
     "format": "yarn format-prettier",
