@@ -12,6 +12,7 @@ import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
 import MDRegex from './regex';
+import { StrUtil } from './util';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -169,11 +170,8 @@ export default class DiscordBot extends BotClient {
     // Description
     if (notification.description) {
       const descriptionMD = DiscordBot.msgFromMarkdown(notification.description, true);
-      if (descriptionMD.length > 2048) {
-        embed.setDescription(descriptionMD.substring(0, 2048));
-      } else {
-        embed.setDescription(descriptionMD);
-      }
+      // 2048 is the maximum notification length
+      embed.setDescription(StrUtil.naturalLimit(descriptionMD, 2048));
     }
     // Footer
     if (notification.footer) {

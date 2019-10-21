@@ -1,4 +1,4 @@
-import { mapAsync, filterAsync, naturalJoin, ObjUtil } from './util';
+import { mapAsync, filterAsync, naturalJoin, ObjUtil, StrUtil } from './util';
 
 describe('Util', () => {
   describe('map async', () => {
@@ -101,6 +101,68 @@ describe('Util', () => {
         const actual = ObjUtil.getInnerObject(object);
 
         expect(actual).toEqual(expected);
+      });
+    });
+  });
+
+  describe('String util', () => {
+    describe('limit string', () => {
+      test('should not limit', () => {
+        const testStr = 'Test message';
+        const expected = 'Test message';
+        const actual = StrUtil.limit(testStr, 12);
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('has to limit', () => {
+        const testStr = 'Test message';
+        const expected = 'Test messag';
+        const actual = StrUtil.limit(testStr, 11);
+
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    describe('natural limit string', () => {
+      test('should not limit with default indicator', () => {
+        const testStr = 'Test message';
+        const expected = 'Test message';
+        const actual = StrUtil.naturalLimit(testStr, 12);
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('has to limit with default indicator', () => {
+        const testStr = 'Test message';
+        const expected = 'Test mes...';
+        const actual = StrUtil.naturalLimit(testStr, 11);
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('has to limit with custom indicator', () => {
+        const testStr = 'Test message';
+        const expected = 'Test  [...]';
+        const actual = StrUtil.naturalLimit(testStr, 11, ' [...]');
+
+        expect(actual).toEqual(expected);
+      });
+
+      test('with too long default indicator', () => {
+        const testStr = 'Test message';
+
+        expect(() => {
+          StrUtil.naturalLimit(testStr, 2);
+        }).toThrow();
+      });
+
+      test('with too long custom indicator', () => {
+        const testStr = 'Test message';
+
+        expect(() => {
+          StrUtil.naturalLimit(testStr, 5, ' [...]');
+        }).toThrow();
       });
     });
   });
