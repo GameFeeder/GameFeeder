@@ -56,19 +56,18 @@ So far, we are providing the following commands:
 - The default prefix on Discord is `!`.
 - You can also use the bot's tag as prefix.
 
-| Command                                  | Permission | Summary                                         |
-| ---------------------------------------- | ---------- | ----------------------------------------------- |
-| `start`                                  | User       | Get started with the GameFeeder.                |
-| `help`                                   | User       | Display all available commands.                 |
-| `about`                                  | User       | Display information about this bot.             |
-| `settings`                               | User       | Display an overview of the settings you can     |
-|                                          |            | configure for the bot.                          |
-| `games`                                  | User       | Display a list of all available games.          |
-| `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                     |
-| `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                 |
-| `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel. |
-| `notifyAll <message>`                    | Owner      | Send a message to all subscribers.              |
-| `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.    |
+| Command                                  | Permission | Summary                                                            |
+| ---------------------------------------- | ---------- | ------------------------------------------------------------------ |
+| `start`                                  | User       | Get started with the GameFeeder.                                   |
+| `help`                                   | User       | Display all available commands.                                    |
+| `about`                                  | User       | Display information about this bot.                                |
+| `settings`                               | User       | Display an overview of the settings you can configure for the bot. |
+| `games`                                  | User       | Display a list of all available games.                             |
+| `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                                        |
+| `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                                    |
+| `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel.                    |
+| `notifyAll <message>`                    | Owner      | Send a message to all subscribers.                                 |
+| `notifyGameSubs (<game name>) <message>` | Owner      | Send a message to all subscribers of a game.                       |
 
 **Note:** The messages in the notification commands should be provided in the raw markdown format, they will be reformatted for the different clients. Discord should be used for these commands, as some formatting information gets lost in Telegram (when Telegram uses the same format).
 
@@ -89,6 +88,8 @@ So far, we are supporting the following games:
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <strong align="left">Dota 2</strong> <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" height="17px"/>
   - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/), [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
+- <strong align="left">Factorio</strong> <img src="https://wiki.factorio.com/images/Factorio-icon.png" height="17px"/>
+  - Posts on the [Steam feed](https://steamcommunity.com/games/427520/announcements)
 - <strong align="left">Steam</strong> <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
