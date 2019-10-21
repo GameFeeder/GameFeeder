@@ -6,6 +6,7 @@ import Command from './command';
 import ConfigManager from './config_manager';
 import BotNotification from './notification';
 import MDRegex, { bold, seperator } from './regex';
+import { StrUtil } from './util';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -193,9 +194,9 @@ export default class TelegramBot extends BotClient {
         text = TelegramBot.msgFromMarkdown(message.toMDString());
       }
 
-      if (text.length > 2048) {
-        text = text.substring(0, 2048);
-      }
+      // 2048 is the maximum notification length
+      text = StrUtil.naturalLimit(text, 2048);
+
       try {
         await this.bot.sendMessage(channel.id, text, {
           disable_web_page_preview: !templateFound,
