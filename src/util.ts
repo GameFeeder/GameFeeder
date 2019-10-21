@@ -40,6 +40,41 @@ export function naturalJoin(array: string[], seperator?: string): string {
   return array.slice(0, array.length - 1).join(sep) + ' and ' + array[array.length - 1];
 }
 
+/** Utility functions for strings. */
+export class StrUtil {
+  /** Limits the given string to the given maximum length.
+   *
+   * @param str - The string to limit.
+   * @param limit - The maximum length of the string.
+   */
+  public static limit(str: string, limit: number): string {
+    if (str.length > limit) {
+      return str.substring(0, limit);
+    }
+    return str;
+  }
+
+  /**Limits the given string to the given maximum length naturally, by adding an indicator.
+   * E.g. Text message => Text messa...
+   *
+   * @param str - The string to limit.
+   * @param limit - The maximum length of the string.
+   * @param indicator - The indicator to use when the string is too long.
+   */
+  public static naturalLimit(str: string, limit: number, indicator?: string): string {
+    const newIndicator = indicator == null ? '...' : indicator;
+
+    if (newIndicator.length > limit) {
+      throw new Error('The indicator must not be longer than the limit.');
+    }
+    if (str.length > limit) {
+      const cutStr = this.limit(str, limit - newIndicator.length);
+      return cutStr + newIndicator;
+    }
+    return str;
+  }
+}
+
 export class ObjUtil {
   public static keys(object: any): string[] {
     if (!(object instanceof Object)) {
