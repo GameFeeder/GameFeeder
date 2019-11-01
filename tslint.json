@@ -1,6 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint-config-airbnb", "tslint-config-prettier"],
+  "extends": ["tslint-config-airbnb", "tslint-config-prettier", "tslint-plugin-prettier"],
   "jsRules": {},
   "rules": {
     "import-name": false,
@@ -9,7 +9,8 @@
     "quotemark": [true, "single"],
     "ter-arrow-parens": "always",
     "align": [true, "parameters", "statements", "members", "elements"],
-    "prefer-template": false
+    "prefer-template": false,
+    "prettier": true
   },
   "rulesDirectory": [
     "node_modules/tslint-eslint-rules/dist/rules",

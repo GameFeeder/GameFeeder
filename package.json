@@ -1,22 +1,8 @@
 {
   "name": "gamefeeder",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
-  "scripts": {
-    "build": "tsc --build",
-    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
-    "deploy": "yarn install && yarn demolish && yarn build",
-    "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
-    "lint": "tslint --config tslint.json --format stylish --project tsconfig.json",
-    "demolish": "rimraf dist",
-    "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
-    "start": "node dist/_main.js",
-    "prettier-check": "prettier --check \"*.{js,json,md,yml}\" \"{.github,@types,config,data,src}/**/*.{js,json,md,ts,yml}\"",
-    "prettier": "yarn prettier-check --write",
-    "test": "jest --coverage",
-    "watch": "tsc --watch"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GameFeeder/GameFeeder"
@@ -31,6 +17,25 @@
     "node": "^10",
     "yarn": "^1.16.0"
   },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
+    "deploy": "yarn install && yarn demolish && yarn build",
+    "demolish": "rimraf dist",
+    "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
+    "start": "node dist/_main.js",
+    "lint": "tslint --config tslint.json --format stylish --project tsconfig.json",
+    "format": "tslint --config tslint.json --format stylish --project tsconfig.json --fix",
+    "test": "jest --coverage",
+    "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
+    "watch": "tsc --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn build"
+    }
+  },
   "devDependencies": {
     "concurrently": "4.1.2",
     "husky": "3.0.5",
@@ -42,6 +47,7 @@
     "tslint": "5.20.0",
     "tslint-config-airbnb": "5.11.1",
     "tslint-config-prettier": "1.18.0",
+    "tslint-plugin-prettier": "2.0.1",
     "typescript": "3.6.3"
   },
   "dependencies": {
@@ -68,11 +74,5 @@
     "snoowrap": "1.19.0",
     "turndown": "5.0.3",
     "winston": "3.2.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn build && yarn test"
-    }
   }
 }
