@@ -123,8 +123,6 @@ export default class ConfigManager {
 
   /** The file name of the API config. */
   private static apiFileName = 'api_config';
-  /** The file name of the game config. */
-  private static gameFileName = 'game_config';
   /** The file name of the updater config. */
   private static updaterFileName = 'updater_config';
   /** The name of the games folder. */
