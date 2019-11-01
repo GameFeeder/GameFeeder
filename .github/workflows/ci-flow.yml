@@ -20,7 +20,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn lint
-          yarn prettier-check
         env:
           CI: true
 
