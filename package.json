@@ -32,8 +32,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn format",
-      "pre-push": "yarn build && yarn lint"
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn build"
     }
   },
   "devDependencies": {
