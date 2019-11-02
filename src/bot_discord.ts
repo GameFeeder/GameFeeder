@@ -35,7 +35,7 @@ export default class DiscordBot extends BotClient {
     const {
       prefix: discordPrefix,
       token: discordToken,
-      autostart: discordAutostart,
+      enabled: discordAutostart,
     } = ConfigManager.getBotConfig().discord;
 
     this.standardBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);

@@ -1,20 +1,21 @@
 {
   "bots": {
     "telegram": {
-      "autostart": true,
+      "enabled": true,
       "prefix": "/",
       "token": "",
       "owners": []
     },
 
     "discord": {
-      "autostart": true,
+      "enabled": true,
       "prefix": "!",
       "token": "",
       "owners": []
     }
   },
   "reddit": {
+    "enabled": true,
     "clientId": "",
     "clientSecret": "",
     "refreshToken": "",

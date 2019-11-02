@@ -10,7 +10,7 @@ export default class Updater {
   private static updater: Updater;
 
   public static logger = new Logger('Updater');
-  public autostart: boolean;
+  public enabled: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
   /** The update interval in milliseconds */
@@ -30,7 +30,7 @@ export default class Updater {
     this.limit = updaterConfig.limit;
     this.lastUpdate = updaterData.lastUpdate ? new Date(updaterData.lastUpdate) : new Date();
     this.doUpdates = false;
-    this.autostart = updaterConfig.autostart;
+    this.enabled = updaterConfig.enabled;
     this.autosave = updaterConfig.autosave;
   }
   public static getUpdater(): Updater {
