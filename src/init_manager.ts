@@ -27,20 +27,12 @@ export default class InitManager {
     return fileName + this.userExt;
   }
 
-  /** Returns all file names in the given directory.
-   *
-   * @param path - The path of the directory to get the files in.
-   */
-  public static getFiles(path: string): string[] {
-    return FS.readdirSync(path);
-  }
-
   /** Returns all example file names in the given directory.
    *
    * @param path - The path of the directory to get the example files in.
    */
   public static getExampleFiles(path: string): string[] {
-    const files = this.getFiles(path);
+    const files = FileManager.getFiles(path);
 
     const exampleRegex = /^(.*)\.example\.json$/;
     const exampleFiles = [];
@@ -61,7 +53,7 @@ export default class InitManager {
    * @param path - The path of the directory to get the user files in.
    */
   public static getUserFiles(path: string): string[] {
-    const files = this.getFiles(path);
+    const files = FileManager.getFiles(path);
 
     const exampleRegex = /^(.*)\.example\.json$/;
     const jsonRegex = /^(.*)\.json$/;
