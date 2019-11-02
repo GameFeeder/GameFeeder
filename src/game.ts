@@ -1,7 +1,7 @@
 import ConfigManager, { reddit_user } from './config_manager';
 import botLogger from './bot_logger';
 import Provider from './provider';
-import BlogProvider from './provider_blog';
+import RSSProvider from './provider_rss';
 import RedditProvider from './provider_reddit';
 import RedditUserProvider from './reddit_user';
 import DotaProvider from './provider_dota';
@@ -123,9 +123,9 @@ export default class Game {
         providers.push(new RedditProvider(redditUsers, subreddit, game));
       }
       // Blog providers
-      if (gameSettings.providers.blogs) {
-        for (const blog of gameSettings.providers.blogs) {
-          providers.push(new BlogProvider(blog.url, blog.label, game));
+      if (gameSettings.providers.rss) {
+        for (const blog of gameSettings.providers.rss) {
+          providers.push(new RSSProvider(blog.url, blog.label, game));
         }
       }
       game.providers = providers;

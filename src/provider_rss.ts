@@ -4,7 +4,7 @@ import NotificationElement from './notification_element';
 import Provider from './provider';
 import { rss } from './rss';
 
-export default class BlogProvider extends Provider {
+export default class RSSProvider extends Provider {
   constructor(url: string, label: string, game: Game) {
     super(url, label, game);
   }

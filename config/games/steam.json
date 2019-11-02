@@ -14,7 +14,7 @@
         }
       ]
     },
-    "blogs": [
+    "rss": [
       {
         "label": "Steam Blog",
         "url": "https://steamcommunity.com/games/593110/rss/"
