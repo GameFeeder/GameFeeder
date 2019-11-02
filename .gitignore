@@ -4,6 +4,7 @@
 
 config/*
 !config/*example.json
+!config/games
 
 data/*
 !data/*example.json

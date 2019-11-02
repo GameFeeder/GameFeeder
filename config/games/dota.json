@@ -1,0 +1,41 @@
+{
+  "name": "dota",
+  "label": "Dota 2",
+  "aliases": ["dota", "dota2", "dota 2", "d2"],
+  "color": "#CC0000",
+  "icon": "http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png",
+  "telegramIVTemplates": [
+    {
+      "domain": "dota2.com",
+      "templateHash": "a8aa3892b2f818"
+    }
+  ],
+  "providers": {
+    "reddit": {
+      "subreddit": "DotA2",
+      "users": [
+        {
+          "name": "Kappa_Man",
+          "titleFilter": "Dota 2 Update"
+        },
+        {
+          "name": "Magesunite",
+          "titleFilter": "Dota 2 Update"
+        },
+        {
+          "name": "SirBelvedere",
+          "titleFilter": "Dota 2 Update"
+        },
+        {
+          "name": "wickedplayer494",
+          "titleFilter": "Dota 2 update"
+        },
+        {
+          "name": "wykrhm",
+          "titleFilter": ".*"
+        }
+      ]
+    },
+    "blogs": []
+  }
+}

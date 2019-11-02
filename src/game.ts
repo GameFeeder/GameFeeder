@@ -113,7 +113,7 @@ export default class Game {
       // Add providers
       const providers: Provider[] = [];
       // Reddit providers
-      if (gameSettings.providers.reddit.users) {
+      if (gameSettings.providers.reddit && gameSettings.providers.reddit.users) {
         const subreddit = gameSettings.providers.reddit.subreddit;
         // tslint:disable-next-line prefer-array-literal
         const users: reddit_user[] = gameSettings.providers.reddit.users;

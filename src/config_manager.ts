@@ -3,7 +3,6 @@ import FileManager from './file_manager';
 /** The available config files. */
 export enum CONFIG {
   'API',
-  'GAME',
   'UPDATER',
 }
 
@@ -106,9 +105,6 @@ export type game_settings = {
   telegramIVTemplates: telegramIVTemplate[];
 };
 
-/** The config of the games. */
-export type game_config = game_settings[];
-
 /** The config of the updater. */
 export type updater_config = {
   /** The delay in seconds between each update. */
@@ -129,10 +125,10 @@ export default class ConfigManager {
 
   /** The file name of the API config. */
   private static apiFileName = 'api_config';
-  /** The file name of the game config. */
-  private static gameFileName = 'game_config';
   /** The file name of the updater config. */
   private static updaterFileName = 'updater_config';
+  /** The name of the games folder. */
+  private static gamesFolder = 'games/';
 
   /** Gets the name of the given file.
    *
@@ -142,8 +138,6 @@ export default class ConfigManager {
     switch (file) {
       case CONFIG.API:
         return this.apiFileName + this.ext;
-      case CONFIG.GAME:
-        return this.gameFileName + this.ext;
       case CONFIG.UPDATER:
         return this.updaterFileName + this.ext;
       default:
@@ -207,13 +201,17 @@ export default class ConfigManager {
   }
 
   /** Gets the game config object. */
-  public static getGameConfig(): game_config {
-    return this.parseFile(CONFIG.GAME).games;
-  }
+  public static getGameConfig(): game_settings[] {
+    const gamesPath = this.basePath + this.gamesFolder;
+    const gameSettingsFiles = FileManager.getFiles(gamesPath);
+    const gameConfig: game_settings[] = [];
 
-  /** Sets the game config object. */
-  public static setGameConfig(config: game_config): void {
-    this.writeObject(CONFIG.GAME, { games: config });
+    for (const file of gameSettingsFiles) {
+      const setting: game_settings = FileManager.parseFile(gamesPath, file);
+      gameConfig.push(setting);
+    }
+
+    return gameConfig;
   }
 
   /** Gets the updater config object. */
