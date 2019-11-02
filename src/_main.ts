@@ -23,7 +23,7 @@ export default class Main {
   public static async startBots() {
     // Start bots
     for (const bot of getBots()) {
-      if (bot.autostart) {
+      if (bot.enabled) {
         if (await bot.start()) {
           const userName = await bot.getUserName();
           bot.logger.info(`Started bot as @${userName}`);
@@ -38,7 +38,7 @@ export default class Main {
 
   /** Starts the updater. */
   public static async startUpdater() {
-    if (Updater.getUpdater().autostart) {
+    if (Updater.getUpdater().enabled) {
       Updater.getUpdater().start();
       Updater.logger.info('Started updater.');
     }

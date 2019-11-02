@@ -16,7 +16,7 @@ export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */
   public isRunning: boolean;
   /** Indicates whether the bot should be started automatically. */
-  public autostart: boolean;
+  public enabled: boolean;
   /** The logger used for this bot. */
   public logger: Logger;
 
@@ -31,7 +31,7 @@ export default abstract class BotClient {
     this.name = name;
     this.label = label;
     this.prefix = prefix;
-    this.autostart = autostart;
+    this.enabled = autostart;
     this.isRunning = false;
 
     this.logger = new Logger(label);

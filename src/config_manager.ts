@@ -9,7 +9,7 @@ export enum CONFIG {
 /** The configuration settings for a bot. */
 export type bot_settings = {
   /** Determines whether the bot starts automatically at the launch of the program.  */
-  autostart: boolean;
+  enabled: boolean;
   /** The default prefix the bot is using. */
   prefix: string;
   /** The token used to log into the bot. */
@@ -38,6 +38,8 @@ export type api_config = {
 
 /** The configuration settings for the reddit client. */
 export type reddit_config = {
+  /** Determines wheather reddit posts should be processed. */
+  enabled: boolean;
   /** The client id used by the reddit client. */
   clientId: string;
   /** The client secret used by the reddit client. */
@@ -110,7 +112,7 @@ export type updater_config = {
   /** The maximum amount of notifications to send at once (e.g. after a restart). */
   limit: number;
   /** Determines whether the updater should start automatically. */
-  autostart: boolean;
+  enabled: boolean;
   /** Determines whether the bot saves the update parameters (disable for testing). */
   autosave: boolean;
 };
