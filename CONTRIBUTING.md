@@ -98,9 +98,9 @@ Several `config/` changes are recommeded for testing and debugging:
 - In `config/updater_config`:
   - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a `lastUpdate` date in `data/updater_data.json` for your testing needs without it being overwritten by the updater
   - It might be necessary to increase the `limit` to test out an older update
-  - If your work is unreleated to the updater, you can disable it by setting `autostart` to `false`
+  - If your work is unreleated to the updater, you can disable it by setting `enabled` to `false`
 - In `api_config.json`:
-  - You can disable one of the bots by setting its `autostart` value to `false`
+  - You can disable one of the bots or reddit updates by setting its `enabled` value to `false`
 
 To test out the bot's functionality, we recommend to try the following steps:
 
