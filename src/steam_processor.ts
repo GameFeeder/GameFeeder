@@ -6,6 +6,7 @@ export default class SteamProcessor extends PreProcessor {
 
   public linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\]?<\/span>)/g;
   public headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/g;
+  public linkFilter = /(?:(?<=")https:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*?)(?="))/g;
 
   public urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
   public headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/g;
@@ -21,6 +22,8 @@ export default class SteamProcessor extends PreProcessor {
 
     // Remove link hosts
     newContent = newContent.replace(this.linkHostReg, () => '');
+    // Remove link filters
+    newContent = newContent.replace(this.linkFilter, (_, url) => url);
     // Convert headers
     newContent = newContent.replace(this.headerReg, (_, level, headerText) => {
       const lvl = parseInt(level, 10);
