@@ -125,7 +125,7 @@ export default class Game {
       // Blog providers
       if (gameSettings.providers.rss) {
         for (const blog of gameSettings.providers.rss) {
-          providers.push(new RSSProvider(blog.url, blog.label, game));
+          providers.push(new RSSProvider(blog.url, blog.label, game, blog.flavor));
         }
       }
       game.providers = providers;

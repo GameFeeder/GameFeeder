@@ -72,6 +72,8 @@ export type rss_provider = {
   label: string;
   /** The URL of the rss feed. */
   url: string;
+  /** The flavor of the rss feed. */
+  flavor: string;
 };
 
 /** A Telegram IV template. */

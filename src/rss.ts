@@ -3,6 +3,7 @@ import TurndownService from 'turndown';
 import RSSItem from './rss_item';
 import { sortLimitEnd } from './comparable';
 import Logger from './bot_logger';
+import PreProcessor from './pre_processor';
 
 export default class RSS {
   public static logger = new Logger('RSS');
@@ -12,7 +13,12 @@ export default class RSS {
     this.parser = new RSSParser();
   }
 
-  public async getFeedItems(url: string, date?: Date, limit?: number): Promise<RSSItem[]> {
+  public async getFeedItems(
+    url: string,
+    preProcessors: PreProcessor[],
+    date?: Date,
+    limit?: number,
+  ): Promise<RSSItem[]> {
     let feedItems: RSSItem[] = [];
 
     try {
@@ -20,14 +26,22 @@ export default class RSS {
 
       const converter = new TurndownService();
       for (const item of feed.items) {
-        const title = item.title;
         const creator = item.creator || '';
         const link = item.link || '';
-        const content = item.content;
+        let content = item.content;
         const postDate = new Date(item.isoDate) || new Date();
 
+        // Apply pre-processing
+        for (const processor of preProcessors) {
+          content = processor.process(content);
+        }
+
+        // Convert to markdown
+        const title = converter.turndown(item.title);
+        content = converter.turndown(content);
+
         if (title && content) {
-          const rssItem = new RSSItem(title, creator, link, converter.turndown(content), postDate, {
+          const rssItem = new RSSItem(title, creator, link, content, postDate, {
             link: feed,
             name: feed.title,
             source: '',

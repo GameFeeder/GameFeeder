@@ -17,7 +17,8 @@
     "rss": [
       {
         "label": "Steam Blog",
-        "url": "https://steamcommunity.com/games/593110/rss/"
+        "url": "https://steamcommunity.com/games/593110/rss/",
+        "flavor": "steam"
       }
     ]
   }

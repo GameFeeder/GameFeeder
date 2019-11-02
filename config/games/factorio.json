@@ -12,7 +12,8 @@
     "rss": [
       {
         "label": "Steam Feed",
-        "url": "https://steamcommunity.com/games/427520/rss/"
+        "url": "https://steamcommunity.com/games/427520/rss/",
+        "flavor": "steam"
       }
     ]
   }
