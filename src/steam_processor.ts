@@ -1,17 +1,20 @@
 import PreProcessor from './pre_processor';
+import Logger from './bot_logger';
 
 export default class SteamProcessor extends PreProcessor {
-  private linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\[<\/span>)/g;
-  private headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/g;
+  public static logger = new Logger('SteamProcessor');
 
-  private urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
-  private headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/g;
-  private boldTagReg = /(?:\[b\/?\])(.*?)(?:\/?\[\/b\/?\])/g;
-  private underlineTagReg = /(?:\[u\/?\])(.*?)(?:\/?\[\/u\/?\])/g;
-  private italicTagReg = /(?:\[i\/?\])(.*?)(?:\/?\[\/i\/?\])/g;
-  private strikethroughTagReg = /(?:\[strike\/?\])(.*?)(?:\/?\[\/strike\/?\])/g;
-  private spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
-  private noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
+  public linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\]?<\/span>)/g;
+  public headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/g;
+
+  public urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
+  public headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/g;
+  public boldTagReg = /(?:\[b\/?\])(.*?)(?:\/?\[\/b\/?\])/g;
+  public underlineTagReg = /(?:\[u\/?\])(.*?)(?:\/?\[\/u\/?\])/g;
+  public italicTagReg = /(?:\[i\/?\])(.*?)(?:\/?\[\/i\/?\])/g;
+  public strikethroughTagReg = /(?:\[strike\/?\])(.*?)(?:\/?\[\/strike\/?\])/g;
+  public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
+  public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
@@ -20,7 +23,8 @@ export default class SteamProcessor extends PreProcessor {
     newContent = newContent.replace(this.linkHostReg, () => '');
     // Convert headers
     newContent = newContent.replace(this.headerReg, (_, level, headerText) => {
-      return `<h${level}>${headerText}</h${level}>`;
+      const lvl = parseInt(level, 10);
+      return `<h${lvl}>${headerText}</h${lvl}>`;
     });
 
     // Convert Steam formatting tags
@@ -35,7 +39,8 @@ export default class SteamProcessor extends PreProcessor {
     });
     // Convert header tag
     newContent = newContent.replace(this.headerTagReg, (_, level, headerText) => {
-      return `<h${level}>${headerText}</h${level}>`;
+      const lvl = parseInt(level, 10);
+      return `<h${lvl}>${headerText}</h${lvl}>`;
     });
     // Convert bold tag
     newContent = newContent.replace(this.boldTagReg, (_, boldText) => {
