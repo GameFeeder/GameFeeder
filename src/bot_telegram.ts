@@ -31,7 +31,7 @@ export default class TelegramBot extends BotClient {
     const {
       prefix: telegramPrefix,
       token: telegramToken,
-      autostart: telegramAutostart,
+      enabled: telegramAutostart,
     } = ConfigManager.getBotConfig().telegram;
 
     this.standardBot = new TelegramBot(telegramPrefix, telegramToken, telegramAutostart);
