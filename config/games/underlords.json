@@ -1,0 +1,19 @@
+{
+  "name": "underlords",
+  "label": "Dota Underlords",
+  "aliases": ["underlords", "dota underlords", "du"],
+  "color": "#FFFFFF",
+  "icon": "https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png",
+  "providers": {
+    "reddit": {
+      "subreddit": "underlords",
+      "users": [
+        {
+          "name": "wykrhm",
+          "titleFilter": ".*"
+        }
+      ]
+    },
+    "blogs": []
+  }
+}

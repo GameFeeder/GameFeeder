@@ -1,0 +1,24 @@
+{
+  "name": "csgo",
+  "label": "CS:GO",
+  "aliases": ["counter strike", "global offensive", "csgo", "cs:go"],
+  "color": "#000000",
+  "icon": "http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png",
+  "providers": {
+    "reddit": {
+      "subreddit": "csgo",
+      "users": [
+        {
+          "name": "wickedplayer494",
+          "titleFilter": "Counter-Strike: Global Offensive update"
+        }
+      ]
+    },
+    "blogs": [
+      {
+        "label": "CS:GO Blog",
+        "url": "https://blog.counter-strike.net/index.php/feed/"
+      }
+    ]
+  }
+}

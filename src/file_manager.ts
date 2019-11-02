@@ -1,6 +1,14 @@
 import FS from 'fs';
 
 export default class FileManager {
+  /** Returns all file names in the given directory.
+   *
+   * @param path - The path of the directory to get the files in.
+   */
+  public static getFiles(path: string): string[] {
+    return FS.readdirSync(path);
+  }
+
   /** Returns the filepath of the given file.
    *
    * @param path - The path of the file directory.
