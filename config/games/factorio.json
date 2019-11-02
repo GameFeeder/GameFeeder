@@ -1,0 +1,19 @@
+{
+  "name": "factorio",
+  "label": "Factorio",
+  "aliases": ["factorio", "fff"],
+  "color": "#C67328",
+  "icon": "https://wiki.factorio.com/images/Factorio-icon.png",
+  "providers": {
+    "reddit": {
+      "subreddit": "factorio",
+      "users": []
+    },
+    "blogs": [
+      {
+        "label": "Steam Feed",
+        "url": "https://steamcommunity.com/games/427520/rss/"
+      }
+    ]
+  }
+}
