@@ -20,7 +20,15 @@ export default class Reddit {
     }
     Reddit.logger.debug('Initializing Reddit API...');
     const redditConfig = ConfigManager.getRedditConfig();
-    const { clientId, clientSecret, refreshToken, userName } = redditConfig;
+    const { enabled, clientId, clientSecret, refreshToken, userName } = redditConfig;
+
+    if (!enabled) {
+      isEnabled = false;
+      isInit = true;
+
+      Reddit.logger.debug('Autostart disabled.');
+      return;
+    }
 
     // Check for parameters
     const missingParams = [];

@@ -15,6 +15,7 @@
     }
   },
   "reddit": {
+    "enabled": true,
     "clientId": "",
     "clientSecret": "",
     "refreshToken": "",

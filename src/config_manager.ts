@@ -39,6 +39,8 @@ export type api_config = {
 
 /** The configuration settings for the reddit client. */
 export type reddit_config = {
+  /** Determines wheather reddit posts should be processed. */
+  enabled: boolean;
   /** The client id used by the reddit client. */
   clientId: string;
   /** The client secret used by the reddit client. */
