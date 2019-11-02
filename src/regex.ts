@@ -6,6 +6,11 @@ export const someNoHash = '[^#]+?';
 export const anyWs = '\\s*';
 export const someWs = '\\s+';
 
+// A simulation of the ^ character outside the multiline mode
+export const lineStart = `(?<!.)`;
+// A simulation of the $ character outside the multiline mode
+export const lineEnd = `(?!.)`;
+
 /** Parenthesis left  */
 export const pl = '\\(';
 /** Parenthesis right  */
@@ -35,13 +40,16 @@ export const italic = `(?:${italicAsterisk})|(?:${italicUnderscore})`;
 export const list = `^${anyWs}[-\\*]${someWs}(${any})${anyWs}$`;
 
 export const hBase = `${anyWs}(${some})${anyWs}#*${anyWs}`;
-export const hAny = `^(#{1,6})${hBase}$`;
-export const h1 = `^#${hBase}$`;
-export const h2 = `^##${hBase}$`;
-export const h3 = `^###${hBase}$`;
-export const h4 = `^####${hBase}$`;
-export const h5 = `^#####${hBase}$`;
-export const h6 = `^######${hBase}$`;
+export const hAny = `${anyWs}${lineStart}(#{1,6})${hBase}${lineEnd}${anyWs}`;
+export const h1 = `${anyWs}${lineStart}#${hBase}${lineEnd}${anyWs}`;
+export const h2 = `${anyWs}${lineStart}##${hBase}${lineEnd}${anyWs}`;
+export const h3 = `${anyWs}${lineStart}###${hBase}${lineEnd}${anyWs}`;
+export const h4 = `${anyWs}${lineStart}####${hBase}${lineEnd}${anyWs}`;
+export const h5 = `${anyWs}${lineStart}#####${hBase}${lineEnd}${anyWs}`;
+export const h6 = `${anyWs}${lineStart}######${hBase}${lineEnd}${anyWs}`;
+
+export const h1Alt = `(?:${anyWs})(${some})(?:[ \t\f\v\r]*\n={3,}${anyWs})`;
+export const h2Alt = `(?:${anyWs})(${some})(?:[ \t\f\v\r]*\n-{3,}${anyWs})`;
 
 export const quote = `^>${anyWs}(${any})${anyWs}$`;
 
@@ -143,13 +151,15 @@ export default class MDRegex {
    */
   public static list = new RegExp(list, 'gm');
 
-  public static hAny = new RegExp(hAny, 'gm');
-  public static h1 = new RegExp(h1, 'gm');
-  public static h2 = new RegExp(h2, 'gm');
-  public static h3 = new RegExp(h3, 'gm');
-  public static h4 = new RegExp(h4, 'gm');
-  public static h5 = new RegExp(h5, 'gm');
-  public static h6 = new RegExp(h6, 'gm');
+  public static hAny = new RegExp(hAny, 'g');
+  public static h1 = new RegExp(h1, 'g');
+  public static h1Alt = new RegExp(h1Alt, 'g');
+  public static h2 = new RegExp(h2, 'g');
+  public static h2Alt = new RegExp(h2Alt, 'g');
+  public static h3 = new RegExp(h3, 'g');
+  public static h4 = new RegExp(h4, 'g');
+  public static h5 = new RegExp(h5, 'g');
+  public static h6 = new RegExp(h6, 'g');
 
   public static quote = new RegExp(quote, 'gm');
 
@@ -272,10 +282,19 @@ export default class MDRegex {
     text: string,
     replaceFn: (match: string, headerText: string, level: number) => string,
   ): string {
-    return text.replace(MDRegex.hAny, (match, hashes, headerText) => {
+    // Default headers
+    let newText = text.replace(MDRegex.hAny, (match, hashes, headerText) => {
       const level = hashes.length;
       return replaceFn(match, headerText, level);
     });
+    // Alternative headers
+    newText = newText.replace(MDRegex.h1Alt, (match, headerText) => {
+      return replaceFn(match, headerText, 1);
+    });
+    newText = newText.replace(MDRegex.h2Alt, (match, headerText) => {
+      return replaceFn(match, headerText, 2);
+    });
+    return newText;
   }
 
   /** Replaces markdown blockquotes with the given function.

@@ -703,6 +703,30 @@ describe('Markdown regex', () => {
         expect(resultText).toEqual(expected);
       });
 
+      test('h1 alternative', () => {
+        const testText = 'Header\n===';
+        const expected = '**Header**';
+
+        const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
+          expect(level).toEqual(1);
+          return `**${headerText}**`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
+      test('h2 alternative', () => {
+        const testText = 'Header\n---';
+        const expected = '**Header**';
+
+        const resultText = MDRegex.replaceHeader(testText, (_, headerText, level) => {
+          expect(level).toEqual(2);
+          return `**${headerText}**`;
+        });
+
+        expect(resultText).toEqual(expected);
+      });
+
       test('h6', () => {
         const testText = '###### Header';
         const expected = '**Header**';
