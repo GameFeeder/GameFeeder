@@ -14,7 +14,7 @@
         }
       ]
     },
-    "blogs": [
+    "rss": [
       {
         "label": "CS:GO Blog",
         "url": "https://blog.counter-strike.net/index.php/feed/"

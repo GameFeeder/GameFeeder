@@ -193,7 +193,7 @@ describe('Telegram bot', () => {
       const testText4 = '#### Test';
       const testText5 = '##### Test';
       const testText6 = '###### Test';
-      const expected = '\n*Test*';
+      const expected = '\n\n*Test*\n';
 
       const test1 = TelegramBot.msgFromMarkdown(testText1);
       const test2 = TelegramBot.msgFromMarkdown(testText2);
