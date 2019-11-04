@@ -4,17 +4,28 @@ import Logger from './bot_logger';
 export default class SteamProcessor extends PreProcessor {
   public static logger = new Logger('SteamProcessor');
 
+  // <span class="bb_link_host">[github.com]</span>
   public linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\]?<\/span>)/g;
+  // <div class="bb_h1">Text</div>
   public headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/g;
+  // <a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>
   public linkFilter = /(?:(?<=")https:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*?)(?="))/g;
 
+  // [url=https://github.com]Text[/url]
   public urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
+  // [h1]Text[/h1]
   public headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/g;
+  // [b]Text[/b]
   public boldTagReg = /(?:\[b\/?\])(.*?)(?:\/?\[\/b\/?\])/g;
+  // [u]Text[/u]
   public underlineTagReg = /(?:\[u\/?\])(.*?)(?:\/?\[\/u\/?\])/g;
+  // [i]Text[/i]
   public italicTagReg = /(?:\[i\/?\])(.*?)(?:\/?\[\/i\/?\])/g;
+  // [strike]Text[/strike]
   public strikethroughTagReg = /(?:\[strike\/?\])(.*?)(?:\/?\[\/strike\/?\])/g;
+  // [spoiler]Text[/spoiler]
   public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
+  // [noparse]Text[/noparse]
   public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
 
   public process(htmlContent: string): string {
