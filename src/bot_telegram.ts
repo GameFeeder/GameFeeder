@@ -265,7 +265,7 @@ export default class TelegramBot extends BotClient {
 
     // Headers
     markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
-      return `\n*${headerText}*`;
+      return `\n\n*${headerText}*\n`;
     });
 
     // Seperators

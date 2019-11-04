@@ -66,12 +66,14 @@ export type reddit_providers = {
   users: reddit_user[];
 };
 
-/** A blog provider. */
-export type blog_provider = {
-  /** The name of the blog. */
+/** An RSS provider. */
+export type rss_provider = {
+  /** The name of the rss feed. */
   label: string;
-  /** The URL of the blog. */
+  /** The URL of the rss feed. */
   url: string;
+  /** The flavor of the rss feed. */
+  flavor: string;
 };
 
 /** A Telegram IV template. */
@@ -98,8 +100,8 @@ export type game_settings = {
   providers: {
     /** The reddit providers of the game. */
     reddit: reddit_providers;
-    /** The blog providers of the game. */
-    blogs: blog_provider[];
+    /** The rss providers of the game. */
+    rss: rss_provider[];
   };
   /** The Telegram IV templates of the game. */
   telegramIVTemplates: telegramIVTemplate[];

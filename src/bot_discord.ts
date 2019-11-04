@@ -260,11 +260,11 @@ export default class DiscordBot extends BotClient {
     markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
       // H1-3
       if (level <= 3) {
-        return `\n__**${headerText}**__`;
+        return `\n\n__**${headerText}**__\n`;
       }
 
       // H4-6
-      return `\n**${headerText}**`;
+      return `\n\n**${headerText}**\n`;
     });
 
     // Seperators

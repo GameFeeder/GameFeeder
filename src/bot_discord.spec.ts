@@ -228,7 +228,7 @@ describe('Discord bot', () => {
       const testText1 = '# Test';
       const testText2 = '## Test';
       const testText3 = '### Test';
-      const expected = '\n__**Test**__';
+      const expected = '\n\n__**Test**__\n';
 
       const testNoEmbed1 = DiscordBot.msgFromMarkdown(testText1, false);
       const testEmbed1 = DiscordBot.msgFromMarkdown(testText1, true);
@@ -249,7 +249,7 @@ describe('Discord bot', () => {
       const testText4 = '#### Test';
       const testText5 = '##### Test';
       const testText6 = '###### Test';
-      const expected = '\n**Test**';
+      const expected = '\n\n**Test**\n';
 
       const testNoEmbed4 = DiscordBot.msgFromMarkdown(testText4, false);
       const testEmbed4 = DiscordBot.msgFromMarkdown(testText4, true);
