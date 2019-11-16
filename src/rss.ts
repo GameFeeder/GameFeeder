@@ -7,7 +7,7 @@ import PreProcessor from './pre_processor';
 
 export default class RSS {
   public static logger = new Logger('RSS');
-  private parser: any;
+  private parser: RSSParser;
 
   constructor() {
     this.parser = new RSSParser();
@@ -28,7 +28,7 @@ export default class RSS {
       for (const item of feed.items) {
         const creator = item.creator || '';
         const link = item.link || '';
-        let content = item.content;
+        let content = item.content || '';
         const postDate = new Date(item.isoDate) || new Date();
 
         // Apply pre-processing
@@ -42,7 +42,7 @@ export default class RSS {
 
         if (title && content) {
           const rssItem = new RSSItem(title, creator, link, content, postDate, {
-            link: feed,
+            link: feed.link,
             name: feed.title,
             source: '',
           });
@@ -57,7 +57,11 @@ export default class RSS {
 
       return feedItems;
     } catch (error) {
-      RSS.logger.error(`Failed to parse feed url '${url}':\n${error}`);
+      if (error instanceof Error) {
+        RSS.logger.error(`Failed to parse feed url '${url}':\n${error.stack}`);
+      } else {
+        RSS.logger.error(`Failed to parse feed url '${url}':\n${error}`);
+      }
       return [];
     }
   }
