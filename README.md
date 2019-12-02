@@ -34,7 +34,7 @@ The quickest way to use the bot is via our public bots and servers:
 
 #### Discord
 
-On Discord, the bot runs publicly as **@GameFeeder#5446**. The best way to use the bot is to join our [Discord server](https://discord.gg/hFNRHE5) (make sure to mute the channels you are not interested in). You can also add the bot to your own servers via this [invite link](https://discordapp.com/oauth2/authorize?&client_id=626677125105188884&scope=bot&permissions=0).
+On Discord, the bot runs publicly as **@GameFeeder#5446**. The best way to use the bot is to join our [Discord server](https://discord.gg/hFNRHE5) (make sure to mute the channels you are not interested in). You can also add the bot to your own servers via this [invite link](https://discordapp.com/oauth2/authorize?&client_id=626677125105188884&scope=bot&permissions=18432).
 
 ![Discord Preview](https://imgur.com/62T4GBa.png)
 
