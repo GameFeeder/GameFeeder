@@ -1,5 +1,5 @@
-import Game from './game';
-import BotNotification from './notification';
+import Game from '../game';
+import Notification from '../notifications/notification';
 
 export default abstract class Provider {
   public url: string;
@@ -12,5 +12,5 @@ export default abstract class Provider {
     this.game = game;
   }
 
-  public abstract async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]>;
+  public abstract async getNotifications(date?: Date, limit?: number): Promise<Notification[]>;
 }

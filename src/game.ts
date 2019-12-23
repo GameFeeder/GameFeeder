@@ -1,10 +1,10 @@
-import ConfigManager, { reddit_user } from './config_manager';
-import botLogger from './bot_logger';
-import Provider from './provider';
-import RSSProvider from './provider_rss';
-import RedditProvider from './provider_reddit';
-import RedditUserProvider from './reddit_user';
-import DotaProvider from './provider_dota';
+import ConfigManager, { reddit_user } from './managers/config_manager';
+import botLogger from './logger';
+import Provider from './providers/provider';
+import RSSProvider from './providers/provider_rss';
+import RedditProvider from './providers/provider_reddit';
+import RedditUserProvider from './reddit/reddit_user';
+import DotaProvider from './providers/provider_dota';
 import TelegramIVTemplate from './telegram_iv_template';
 
 /** A representation of a game. */

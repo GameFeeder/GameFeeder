@@ -1,4 +1,4 @@
-import Logger from './bot_logger';
+import Logger from '../logger';
 
 export default class RedditUserProvider {
   public name: string;

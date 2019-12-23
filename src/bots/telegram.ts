@@ -1,12 +1,12 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
-import BotUser, { UserPermission } from './bot_user';
-import BotChannel from './channel';
-import Command from './command';
-import ConfigManager from './config_manager';
-import BotNotification from './notification';
-import MDRegex, { bold, seperator } from './regex';
-import { StrUtil } from './util';
+import User, { UserPermission } from '../user';
+import Channel from '../channel';
+import Command from '../commands/command';
+import ConfigManager from '../managers/config_manager';
+import Notification from '../notifications/notification';
+import MDRegex, { bold, seperator } from '../util/regex';
+import { StrUtil } from '../util/util';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -56,7 +56,7 @@ export default class TelegramBot extends BotClient {
     }
   }
 
-  public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
+  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
     try {
       // Channel messages don't have an author, we assigned the user id channelAuthorID
       // A bit hacky, but should work for now
@@ -87,7 +87,7 @@ export default class TelegramBot extends BotClient {
     return UserPermission.USER;
   }
 
-  public async getChannelUserCount(channel: BotChannel): Promise<number> {
+  public async getChannelUserCount(channel: Channel): Promise<number> {
     // Get the count and subscract the bot itself
     try {
       return (await this.bot.getChatMembersCount(channel.id)) - 1;
@@ -96,9 +96,9 @@ export default class TelegramBot extends BotClient {
     }
   }
 
-  public async getOwners(): Promise<BotUser[]> {
+  public async getOwners(): Promise<User[]> {
     const ownerIds: string[] = ConfigManager.getBotConfig().telegram.owners || [];
-    return ownerIds.map((id) => new BotUser(this, id));
+    return ownerIds.map((id) => new User(this, id));
   }
 
   public registerCommand(command: Command): void {
@@ -122,7 +122,7 @@ export default class TelegramBot extends BotClient {
           this,
           channel,
           // FIX: Properly identify the user key
-          new BotUser(this, userID),
+          new User(this, userID),
           regMatch,
         );
       }
@@ -149,10 +149,7 @@ export default class TelegramBot extends BotClient {
     this.isRunning = false;
   }
 
-  public async sendMessage(
-    channel: BotChannel,
-    messageText: string | BotNotification,
-  ): Promise<boolean> {
+  public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
     let message = messageText;
     if (typeof message === 'string') {
       message = TelegramBot.msgFromMarkdown(message);

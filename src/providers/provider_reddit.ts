@@ -1,9 +1,9 @@
 import Snoowrap from 'snoowrap';
-import Game from './game';
-import BotNotification from './notification';
+import Game from '../game';
+import Notification from '../notifications/notification';
 import Provider from './provider';
-import Reddit from './reddit';
-import RedditUserProvider from './reddit_user';
+import Reddit from '../reddit/reddit';
+import RedditUserProvider from '../reddit/reddit_user';
 
 export default class RedditProvider extends Provider {
   public users: RedditUserProvider[];
@@ -17,7 +17,7 @@ export default class RedditProvider extends Provider {
     Reddit.init();
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
+  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
     return Reddit.getNotifications(this.subreddit, this.users, this.game, date, limit);
   }
 }

@@ -1,9 +1,9 @@
-import Logger from './bot_logger';
-import getBots from './bots';
-import commands from './commands';
+import Logger from './logger';
+import getBots from './bots/bots';
+import commands from './commands/commands';
 import Updater from './updater';
-import InitManager from './init_manager';
-import ProjectManager from './project_manager';
+import InitManager from './managers/init_manager';
+import ProjectManager from './managers/project_manager';
 
 export default class Main {
   public static logger = new Logger('Main');

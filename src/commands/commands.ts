@@ -1,11 +1,11 @@
-import { UserPermission } from './bot_user';
-import getBots from './bots';
+import { UserPermission } from '../user';
+import getBots from '../bots/bots';
 import Command from './command';
-import DataManager from './data_manager';
-import Game from './game';
-import botLogger from './bot_logger';
-import { filterAsync, mapAsync, naturalJoin } from './util';
-import ProjectManager from './project_manager';
+import DataManager from '../managers/data_manager';
+import Game from '../game';
+import botLogger from '../logger';
+import { filterAsync, mapAsync, naturalJoin } from '../util/util';
+import ProjectManager from '../managers/project_manager';
 
 // Start
 const startCmd = new Command(

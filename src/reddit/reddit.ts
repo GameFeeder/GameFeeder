@@ -1,12 +1,12 @@
 import Snoowrap from 'snoowrap';
-import ConfigManager from './managers/config_manager';
-import Game from './game';
-import Notification from './notifications/notification';
-import NotificationElement from './notifications/notification_element';
-import RedditUserProvider from './reddit/reddit_user';
-import { sortLimitEnd } from './util/comparable';
-import ProjectManager from './managers/project_manager';
-import Logger from './logger';
+import ConfigManager from '../managers/config_manager';
+import Game from '../game';
+import Notification from '../notifications/notification';
+import NotificationElement from '../notifications/notification_element';
+import RedditUserProvider from './reddit_user';
+import { sortLimitEnd } from '../util/comparable';
+import ProjectManager from '../managers/project_manager';
+import Logger from '../logger';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;

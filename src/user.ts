@@ -1,10 +1,10 @@
-import BotClient from './bot';
-import BotChannel from './channel';
-import Logger from './bot_logger';
+import BotClient from './bots/bot';
+import Channel from './channel';
+import Logger from './logger';
 
 /** Represents a user of a bot. */
-export default class BotUser {
-  public static logger = new Logger('Bot User');
+export default class User {
+  public static logger = new Logger('User');
   /** The bot the user is associated to. */
   public bot: BotClient;
   /** The unique ID of the user. */
@@ -22,7 +22,7 @@ export default class BotUser {
    * @param channel - The channel to get the permissions on.
    * @returns The permission the user has on the given channel.
    */
-  public async getPermission(channel: BotChannel): Promise<UserPermission> {
+  public async getPermission(channel: Channel): Promise<UserPermission> {
     return await this.bot.getUserPermission(this, channel);
   }
   /** Determines whether the user has the given permission on the given channel.
@@ -32,7 +32,7 @@ export default class BotUser {
    *
    * @returns True, if the user has the given permission on the given channel, else false.
    */
-  public async hasPermission(channel: BotChannel, permission: UserPermission): Promise<boolean> {
+  public async hasPermission(channel: Channel, permission: UserPermission): Promise<boolean> {
     switch (permission) {
       case UserPermission.OWNER:
         return (await this.getPermission(channel)) === UserPermission.OWNER;
@@ -41,7 +41,7 @@ export default class BotUser {
       case UserPermission.USER:
         return true;
       default:
-        BotUser.logger.debug('Unknown UserPermission. Denying access.');
+        User.logger.debug('Unknown UserPermission. Denying access.');
         return false;
     }
   }
