@@ -1,7 +1,7 @@
 import EscapeRegex from 'escape-string-regexp';
-import BotClient from './bot';
-import BotUser, { UserPermission } from './bot_user';
-import BotChannel from './channel';
+import BotClient from '../bots/bot';
+import User, { UserPermission } from '../user';
+import Channel from '../channel';
 
 export default class Command {
   /** The label of the command. */
@@ -13,12 +13,7 @@ export default class Command {
   /** The RegExp string triggering the command. */
   public trigger: string;
   /** The callback function executing the command. */
-  public callback: (
-    bot: BotClient,
-    channel: BotChannel,
-    user: BotUser,
-    match: RegExpMatchArray,
-  ) => void;
+  public callback: (bot: BotClient, channel: Channel, user: User, match: RegExpMatchArray) => void;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
   /** The permission required to execute the command. */
@@ -39,7 +34,7 @@ export default class Command {
     description: string,
     triggerLabel: string,
     trigger: string,
-    callback: (bot: BotClient, channel: BotChannel, user: BotUser, match: RegExpMatchArray) => void,
+    callback: (bot: BotClient, channel: Channel, user: User, match: RegExpMatchArray) => void,
     permission?: UserPermission,
     hasPrefix?: boolean,
   ) {
@@ -60,8 +55,8 @@ export default class Command {
    */
   public async execute(
     bot: BotClient,
-    channel: BotChannel,
-    user: BotUser,
+    channel: Channel,
+    user: User,
     match: RegExpMatchArray,
   ): Promise<boolean> {
     // Check if the user has the required permission to execute the command.
@@ -82,7 +77,7 @@ export default class Command {
    *
    * @param client - The BotChannel to trigger the command on.
    */
-  public async getRegExp(channel: BotChannel) {
+  public async getRegExp(channel: Channel) {
     const bot = channel.client;
     const userTag = EscapeRegex(await bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.getPrefix());
@@ -99,7 +94,7 @@ export default class Command {
    * @param channel - The channel to get the trigger label in.
    * @returns The complete trigger label, e.g. '/subscribe'
    */
-  public getTriggerLabel(channel: BotChannel): string {
+  public getTriggerLabel(channel: Channel): string {
     const prefixString = this.hasPrefix ? channel.getPrefix() : '';
     return prefixString + this.triggerLabel;
   }

@@ -1,10 +1,10 @@
 import { URL } from 'url';
-import Game from './game';
+import Game from '../game';
 import NotificationElement from './notification_element';
-import Comparable from './comparable';
+import Comparable from '../util/comparable';
 
 /** A representation of a bot notification. */
-export default class BotNotification implements Comparable<BotNotification> {
+export default class Notification implements Comparable<Notification> {
   /** Simple text in the notification. */
   public text: string;
   /** The game the notification is for. */
@@ -26,7 +26,7 @@ export default class BotNotification implements Comparable<BotNotification> {
   /** The footer of the notification. */
   public footer?: NotificationElement;
 
-  /** Creates a new BotNotification.
+  /** Creates a new Notification.
    * @param  {string} text - Simple text in the notification.
    * @param  {Game} game - The game the notification is for.
    * @param  {NotificationElement} title - The title of the notification.
@@ -66,7 +66,7 @@ export default class BotNotification implements Comparable<BotNotification> {
     this.color = color ? color : game ? game.color : '';
   }
 
-  public compareTo(other: BotNotification): -1 | 0 | 1 {
+  public compareTo(other: Notification): -1 | 0 | 1 {
     if (this.timestamp < other.timestamp) {
       return -1;
     }

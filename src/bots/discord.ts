@@ -1,18 +1,12 @@
-import DiscordAPI, {
-  DMChannel,
-  GroupDMChannel,
-  TextBasedChannel,
-  TextChannel,
-  User,
-} from 'discord.js';
+import DiscordAPI, { DMChannel, GroupDMChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
-import BotUser, { UserPermission } from './bot_user';
-import BotChannel from './channel';
-import Command from './command';
-import ConfigManager from './config_manager';
-import BotNotification from './notification';
-import MDRegex from './regex';
-import { StrUtil } from './util';
+import User, { UserPermission } from '../user';
+import Channel from '../channel';
+import Command from '../commands/command';
+import ConfigManager from '../managers/config_manager';
+import Notification from '../notifications/notification';
+import MDRegex from '../util/regex';
+import { StrUtil } from '../util/util';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -56,7 +50,7 @@ export default class DiscordBot extends BotClient {
     return `<@${this.bot.user.id}>`;
   }
 
-  public async getChannelUserCount(channel: BotChannel): Promise<number> {
+  public async getChannelUserCount(channel: Channel): Promise<number> {
     const discordChannel = this.bot.channels.get(channel.id);
 
     if (discordChannel instanceof DMChannel) {
@@ -71,7 +65,7 @@ export default class DiscordBot extends BotClient {
     return 0;
   }
 
-  public async getUserPermission(user: BotUser, channel: BotChannel): Promise<UserPermission> {
+  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
     // Check if the user is one of the owners
     const ownerIds = (await this.getOwners()).map((owner) => owner.id);
     if (ownerIds.includes(user.id)) {
@@ -94,9 +88,9 @@ export default class DiscordBot extends BotClient {
     return UserPermission.USER;
   }
 
-  public async getOwners(): Promise<BotUser[]> {
+  public async getOwners(): Promise<User[]> {
     const ownerIds: string[] = ConfigManager.getBotConfig().discord.owners;
-    return ownerIds.map((id) => new BotUser(this, id));
+    return ownerIds.map((id) => new User(this, id));
   }
 
   public async registerCommand(command: Command): Promise<void> {
@@ -108,7 +102,7 @@ export default class DiscordBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(this, channel, new BotUser(this, message.author.id), regMatch);
+        command.execute(this, channel, new User(this, message.author.id), regMatch);
       }
     });
   }
@@ -126,10 +120,7 @@ export default class DiscordBot extends BotClient {
     this.isRunning = false;
   }
 
-  public async sendMessage(
-    channel: BotChannel,
-    message: string | BotNotification,
-  ): Promise<boolean> {
+  public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
     if (typeof message === 'string') {
       // Parse markdown
       const messageText = DiscordBot.msgFromMarkdown(message, false);
@@ -144,7 +135,7 @@ export default class DiscordBot extends BotClient {
       return false;
     }
   }
-  public embedFromNotification(notification: BotNotification): DiscordAPI.RichEmbed {
+  public embedFromNotification(notification: Notification): DiscordAPI.RichEmbed {
     const embed = new DiscordAPI.RichEmbed();
     // Title
     if (notification.title) {
@@ -278,7 +269,7 @@ export default class DiscordBot extends BotClient {
     return markdown;
   }
 
-  private async sendToChannel(channel: BotChannel, text: string, embed?: any): Promise<boolean> {
+  private async sendToChannel(channel: Channel, text: string, embed?: any): Promise<boolean> {
     const botChannels = this.bot.channels;
     const discordChannel = botChannels.get(channel.id);
 

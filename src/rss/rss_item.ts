@@ -1,4 +1,4 @@
-import Comparable from './comparable';
+import Comparable from '../util/comparable';
 
 export default class RSSItem implements Comparable<RSSItem> {
   public title: string;

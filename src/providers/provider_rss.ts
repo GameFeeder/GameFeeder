@@ -1,10 +1,10 @@
-import Game from './game';
-import BotNotification from './notification';
-import NotificationElement from './notification_element';
+import Game from '../game';
+import Notification from '../notifications/notification';
+import NotificationElement from '../notifications/notification_element';
 import Provider from './provider';
-import { rss } from './rss';
-import PreProcessor from './pre_processor';
-import SteamProcessor from './steam_processor';
+import { rss } from '../rss/rss';
+import PreProcessor from '../processors/pre_processor';
+import SteamProcessor from '../processors/steam_processor';
 
 export default class RSSProvider extends Provider {
   public flavor?: string;
@@ -22,10 +22,10 @@ export default class RSSProvider extends Provider {
     }
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<BotNotification[]> {
+  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
     const feedItems = await rss.getFeedItems(this.url, this.preProcessors, date, limit);
-    const notifications: BotNotification[] = feedItems.map((feedItem) => {
-      return new BotNotification(
+    const notifications: Notification[] = feedItems.map((feedItem) => {
+      return new Notification(
         this.game,
         `New post from the [${feedItem.feed.name}](${feedItem.feed.link})!`,
         new NotificationElement(feedItem.title, feedItem.link),

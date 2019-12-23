@@ -1,10 +1,10 @@
-import BotUser, { UserPermission } from './bot_user';
-import BotChannel from './channel';
-import Command from './command';
-import DataManager from './data_manager';
-import Game from './game';
-import BotNotification from './notification';
-import Logger from './bot_logger';
+import User, { UserPermission } from '../user';
+import Channel from '../channel';
+import Command from '../commands/command';
+import DataManager from '../managers/data_manager';
+import Game from '../game';
+import Notification from '../notifications/notification';
+import Logger from '../logger';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -71,24 +71,21 @@ export default abstract class BotClient {
    * @param user - The user to get the permission of.
    * @param channel - The channel to get the permission on.
    */
-  public abstract async getUserPermission(
-    user: BotUser,
-    channel: BotChannel,
-  ): Promise<UserPermission>;
+  public abstract async getUserPermission(user: User, channel: Channel): Promise<UserPermission>;
 
   /** Gets a list of the owners of the bot.
    *
    * @returns An array filled with the owner BotUsers of the bot.
    */
-  public abstract async getOwners(): Promise<BotUser[]>;
+  public abstract async getOwners(): Promise<User[]>;
 
   /** Add a channel subscription to a game.
    *
-   * @param  {BotChannel} channel - The channel to subscribe to the game.
+   * @param  {Channel} channel - The channel to subscribe to the game.
    * @param  {Game} game - The game to subscribe to.
    * @returns True, if the subscription was successful, else false.
    */
-  public addSubscriber(channel: BotChannel, game: Game): boolean {
+  public addSubscriber(channel: Channel, game: Game): boolean {
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.name];
 
@@ -125,11 +122,11 @@ export default abstract class BotClient {
 
   /** Remove a channel subscription from a game.
    *
-   * @param  {BotChannel} channel - The channel to unsubscribe from the game.
+   * @param  {Channel} channel - The channel to unsubscribe from the game.
    * @param  {Game} game - The game to unsubscribe from.
    * @returns True, if the unsubscription was successful, else false.
    */
-  public removeSubscriber(channel: BotChannel, game: Game): boolean {
+  public removeSubscriber(channel: Channel, game: Game): boolean {
     const subscribers = DataManager.getSubscriberData();
     const subs = subscribers[this.name];
 
@@ -162,17 +159,17 @@ export default abstract class BotClient {
    * @param channel - The channel to count the users in.
    * @returns The number of users in the given channel.
    */
-  public abstract async getChannelUserCount(channel: BotChannel): Promise<number>;
+  public abstract async getChannelUserCount(channel: Channel): Promise<number>;
 
   /** Get the channels subscribed on this bot client.
    *
    * @returns The channels subscribed to this bot client.
    */
-  public getBotChannels(): BotChannel[] {
+  public getBotChannels(): Channel[] {
     return DataManager.getSubscriberData()[this.name].map(
       (jsonChannel: { id: string; gameSubs: string[]; prefix: string }) => {
         const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-        return new BotChannel(jsonChannel.id, this, subs, jsonChannel.prefix);
+        return new Channel(jsonChannel.id, this, subs, jsonChannel.prefix);
       },
     );
   }
@@ -182,9 +179,9 @@ export default abstract class BotClient {
    * @param id - The ID of the channel.
    * @returns The BotChannel with the specified ID.
    */
-  public getChannelByID(id: string): BotChannel {
+  public getChannelByID(id: string): Channel {
     const channels = DataManager.getSubscriberData()[this.name];
-    const channel = new BotChannel(id, this);
+    const channel = new Channel(id, this);
 
     // Check if the channel is already registered
     for (const sub of channels) {
@@ -203,29 +200,29 @@ export default abstract class BotClient {
 
   /** Sends a message to a channel.
    *
-   * @param  {BotChannel} channel - The channel to message.
-   * @param  {string|BotNotification} message - The message to send to the channel.
+   * @param  {Channel} channel - The channel to message.
+   * @param  {string|Notification} message - The message to send to the channel.
    * @returns void
    */
   public abstract async sendMessage(
-    channel: BotChannel,
-    message: string | BotNotification,
+    channel: Channel,
+    message: string | Notification,
   ): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *
    * @param  {Game} game - The game to notify the subscribers of.
-   * @param  {string|BotNotification} message - The message to send to the subscribers.
+   * @param  {string|Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToGameSubs(game: Game, message: string | BotNotification): void {
+  public sendMessageToGameSubs(game: Game, message: string | Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {
       for (const channel of subscribers) {
         if (channel.gameSubs && channel.gameSubs.includes(game.name)) {
           const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-          this.sendMessage(new BotChannel(channel.id, this, gameSubs, channel.prefix), message);
+          this.sendMessage(new Channel(channel.id, this, gameSubs, channel.prefix), message);
         }
       }
     }
@@ -233,17 +230,17 @@ export default abstract class BotClient {
 
   /** Sends a message to all subscribers.
    *
-   * @param  {string|BotNotification} message - The message to send to the subscribers.
+   * @param  {string|Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToAllSubs(message: string | BotNotification): void {
+  public sendMessageToAllSubs(message: string | Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {
       for (const channel of subscribers) {
         if (channel.gameSubs && channel.gameSubs.length !== 0) {
           const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-          this.sendMessage(new BotChannel(channel.id, this, gameSubs, channel.prefix), message);
+          this.sendMessage(new Channel(channel.id, this, gameSubs, channel.prefix), message);
         }
       }
     }
