@@ -1,9 +1,9 @@
 import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
 import RSSItem from './rss_item';
-import { sortLimitEnd } from './comparable';
-import Logger from './bot_logger';
-import PreProcessor from './pre_processor';
+import { sortLimitEnd } from '../util/comparable';
+import Logger from '../logger';
+import PreProcessor from '../processors/pre_processor';
 
 export default class RSS {
   public static logger = new Logger('RSS');

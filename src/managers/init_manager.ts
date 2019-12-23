@@ -1,7 +1,7 @@
 import FS from 'fs';
-import { ObjUtil } from './util';
+import { ObjUtil } from '../util/util';
 import FileManager from './file_manager';
-import Logger from './bot_logger';
+import Logger from '../logger';
 import ConfigManager from './config_manager';
 import DataManager from './data_manager';
 import _ from 'lodash';

@@ -1,7 +1,7 @@
-import DiscordBot from './bot_discord';
-import TelegramBot from './bot_telegram';
+import DiscordBot from './discord';
+import TelegramBot from './telegram';
 import BotClient from './bot';
-import botLogger from './bot_logger';
+import botLogger from '../logger';
 
 export default function getBots(): BotClient[] {
   const discordBot = DiscordBot.getBot();

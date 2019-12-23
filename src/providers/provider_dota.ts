@@ -1,10 +1,10 @@
-import Provider from './providers/provider';
-import Game from './game';
-import Notification from './notifications/notification';
-import DataManager from './managers/data_manager';
-import ConfigManager from './managers/config_manager';
-import NotificationElement from './notifications/notification_element';
-import Logger from './logger';
+import Provider from './provider';
+import Game from '../game';
+import Notification from '../notifications/notification';
+import DataManager from '../managers/data_manager';
+import ConfigManager from '../managers/config_manager';
+import NotificationElement from '../notifications/notification_element';
+import Logger from '../logger';
 import request from 'request-promise-native';
 import cheerio from 'cheerio';
 

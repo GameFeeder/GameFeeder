@@ -1,9 +1,9 @@
-import BotClient from './bot';
+import BotClient from './bots/bot';
 import Game from './game';
-import botLogger from './bot_logger';
+import botLogger from './logger';
 
 /** A representation of a bot's channel. */
-export default class BotChannel {
+export default class Channel {
   /** The unique ID of the channel. */
   public id: string;
   /** The BotClient this channel is used in. */
@@ -12,7 +12,7 @@ export default class BotChannel {
   public gameSubs: Game[];
   /** The prefix the channel uses. */
   public prefix: string;
-  /** Creates a new BotChannel. */
+  /** Creates a new Channel. */
   constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
     this.client = client;
@@ -24,7 +24,7 @@ export default class BotChannel {
    * @param  {IBotChannel} other - The other channel to compare to.
    * @returns {boolean} True, if the channels are equal, else false.
    */
-  public isEqual(other: BotChannel | string): boolean {
+  public isEqual(other: Channel | string): boolean {
     if (typeof other === 'string') {
       return this.id === other;
     }

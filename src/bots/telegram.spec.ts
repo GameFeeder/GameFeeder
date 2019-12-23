@@ -1,5 +1,5 @@
 jest.mock('request-promise-native');
-import TelegramBot from './bot_telegram';
+import TelegramBot from './telegram';
 
 describe('Telegram bot', () => {
   describe('message from markdown', () => {

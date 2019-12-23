@@ -1,10 +1,10 @@
-import getBots from './bots';
-import DataManager from './data_manager';
-import ConfigManager from './config_manager';
+import getBots from './bots/bots';
+import DataManager from './managers/data_manager';
+import ConfigManager from './managers/config_manager';
 import Game from './game';
-import Logger from './bot_logger';
-import BotNotification from './notification';
-import { sort, sortLimitEnd } from './comparable';
+import Logger from './logger';
+import Notification from './notifications/notification';
+import { sort, sortLimitEnd } from './util/comparable';
 
 export default class Updater {
   private static updater: Updater;
@@ -76,11 +76,11 @@ export default class Updater {
 
     const startTime = Date.now();
 
-    let notifications: BotNotification[] = [];
+    let notifications: Notification[] = [];
     for (const game of Game.getGames()) {
       const gameStartTime = Date.now();
 
-      let gameNotifications: BotNotification[] = [];
+      let gameNotifications: Notification[] = [];
       for (const provider of game.providers) {
         gameNotifications = gameNotifications.concat(
           await provider.getNotifications(this.lastUpdate, this.limit),
