@@ -12,10 +12,7 @@
   ],
   "providers": {
     "reddit": {
-      "urlFilters": [
-        "dota2.com/patches",
-        "blog.dota2.com"
-      ],
+      "urlFilters": ["dota2.com/patches", "blog.dota2.com"],
       "subreddit": "DotA2",
       "users": [
         {
@@ -40,6 +37,11 @@
         }
       ]
     },
-    "rss": []
+    "rss": [
+      {
+        "label": "Dota 2 Blog",
+        "url": "http://blog.dota2.com/feed"
+      }
+    ]
   }
 }
