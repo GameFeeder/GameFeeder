@@ -108,7 +108,7 @@ export default class Reddit {
         for (const post of posts) {
           // Convert the post into a notification
           const notification = new Notification(new Date(post.created_utc * 1000))
-            .withGame(game)
+            .withGameAndFooter(game)
             .withTitle(post.title, post.url)
             .withAuthor(
               `/u/${user.name}`,

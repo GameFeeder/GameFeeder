@@ -27,7 +27,7 @@ export default class RSSProvider extends Provider {
     const notifications: Notification[] = feedItems.map((feedItem) => {
       return new Notification(feedItem.timestamp)
         .withTitle(feedItem.title, feedItem.link)
-        .withGame(this.game)
+        .withGameAndFooter(this.game)
         .withContent(feedItem.content)
         .withAuthor(feedItem.author);
     });

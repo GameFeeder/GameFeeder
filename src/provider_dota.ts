@@ -40,7 +40,7 @@ export default class DotaProvider extends Provider {
       // Convert the patches to notifications
       notifications = newPatches.map((value) => {
         return new Notification()
-          .withGame(this.game)
+          .withGameAndFooter(this.game)
           .withTitle(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`)
           .withAuthor('Dota 2');
       });
