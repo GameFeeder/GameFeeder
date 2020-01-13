@@ -25,16 +25,11 @@ export default class RSSProvider extends Provider {
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
     const feedItems = await rss.getFeedItems(this.url, this.preProcessors, date, limit);
     const notifications: Notification[] = feedItems.map((feedItem) => {
-      return new Notification(
-        this.game,
-        `New post from the [${feedItem.feed.name}](${feedItem.feed.link})!`,
-        new NotificationElement(feedItem.title, feedItem.link),
-        feedItem.content,
-        feedItem.timestamp,
-        null,
-        null,
-        new NotificationElement(feedItem.author),
-      );
+      return new Notification(feedItem.timestamp)
+        .withTitle(feedItem.title, feedItem.link)
+        .withGame(this.game)
+        .withText(feedItem.content)
+        .withAuthor(feedItem.author);
     });
     return notifications;
   }

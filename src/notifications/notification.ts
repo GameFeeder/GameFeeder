@@ -1,4 +1,3 @@
-import { URL } from 'url';
 import Game from '../game';
 import NotificationElement from './notification_element';
 import Comparable from '../util/comparable';
@@ -27,43 +26,10 @@ export default class Notification implements Comparable<Notification> {
   public footer?: NotificationElement;
 
   /** Creates a new Notification.
-   * @param  {string} text - Simple text in the notification.
-   * @param  {Game} game - The game the notification is for.
-   * @param  {NotificationElement} title - The title of the notification.
-   * @param  {NotificationElement} author - The author of the notification.
-   * @param  {string} color - The color of the notification.
-   * @param  {string} description - The description of the notification.
-   * @param  {string} thumbnail - he (small) thumbnail of the notification.
-   * @param  {string} image - The (big) image of the notification.
-   * @param  {Date} timestamp - The timestamp of the notification.
-   * @param  {NotificationElement} footer - The footer of the notification.
+   * @param timestamp - The timestamp of the notification (default: now).
    */
-  constructor(
-    game: Game,
-    text: string,
-    title: NotificationElement,
-    description: string,
-    timestamp: Date,
-    thumbnail: string,
-    image: string,
-    author: NotificationElement,
-    footer?: NotificationElement,
-    color?: string,
-  ) {
-    this.game = game;
-    this.text = text;
-    this.title = title;
-    this.description = description;
-    this.timestamp = timestamp;
-    this.thumbnail = thumbnail;
-    this.image = image;
-    this.author = author;
-    this.footer = footer
-      ? footer
-      : game
-      ? new NotificationElement(`New ${game.label} update!`, null, game.icon)
-      : null;
-    this.color = color ? color : game ? game.color : '';
+  constructor(timestamp?: Date) {
+    this.timestamp = timestamp ? timestamp : new Date();
   }
 
   /** Changes the text of the notification.
