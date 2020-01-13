@@ -107,20 +107,16 @@ export default class Reddit {
 
         for (const post of posts) {
           // Convert the post into a notification
-          const notification = new Notification(
-            game,
-            `New post by ${user.name}!`,
-            new NotificationElement(post.title, post.url),
-            this.mdFromReddit(post.selftext),
-            new Date(post.created_utc * 1000),
-            null, // post.thumbnail,
-            null,
-            new NotificationElement(
+          const notification = new Notification(new Date(post.created_utc * 1000))
+            .withGameDefaults(game)
+            .withTitle(post.title, post.url)
+            .withAuthor(
               `/u/${user.name}`,
               `https://www.reddit.com/user/${user.name}`,
               'https://www.redditstatic.com/new-icon.png',
-            ),
-          );
+            )
+            .withContent(this.mdFromReddit(post.selftext));
+
           notifications.push(notification);
         }
       } catch (error) {
