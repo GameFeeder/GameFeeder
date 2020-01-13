@@ -4,8 +4,6 @@ import Comparable from '../util/comparable';
 
 /** A representation of a bot notification. */
 export default class Notification implements Comparable<Notification> {
-  /** Simple text in the notification. */
-  public text: string;
   /** The game the notification is for. */
   public game: Game;
   /** The title of the notification. */
@@ -14,8 +12,8 @@ export default class Notification implements Comparable<Notification> {
   public author: NotificationElement;
   /** The color of the notification. */
   public color?: string;
-  /** The description of the notification. */
-  public description: string;
+  /** The content of the notification. */
+  public content: string;
   /** The (small) thumbnail of the notification. */
   public thumbnail: string;
   /** The (big) image of the notification. */
@@ -32,12 +30,12 @@ export default class Notification implements Comparable<Notification> {
     this.timestamp = timestamp ? timestamp : new Date();
   }
 
-  /** Changes the text of the notification.
+  /** Changes the content of the notification.
    *
-   * @param text - The new text of the notification.
+   * @param content - The new content of the notification.
    */
-  public withText(text: string): Notification {
-    this.text = text;
+  public withContent(content: string): Notification {
+    this.content = content;
     return this;
   }
 
@@ -138,9 +136,9 @@ export default class Notification implements Comparable<Notification> {
         ? `[${this.author.text}](${this.author.link})`
         : this.author.text;
 
-      return `New **${this.game.label}** update - ${authorText}:\n\n${titleText}\n\n${this.description}`;
+      return `New **${this.game.label}** update - ${authorText}:\n\n${titleText}\n\n${this.content}`;
     }
 
-    return `New **${this.game.label}** update:\n\n${titleText}\n\n${this.description}`;
+    return `New **${this.game.label}** update:\n\n${titleText}\n\n${this.content}`;
   }
 }

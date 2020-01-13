@@ -115,7 +115,7 @@ export default class Reddit {
               `https://www.reddit.com/user/${user.name}`,
               'https://www.redditstatic.com/new-icon.png',
             )
-            .withText(this.mdFromReddit(post.selftext));
+            .withContent(this.mdFromReddit(post.selftext));
 
           notifications.push(notification);
         }

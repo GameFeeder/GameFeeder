@@ -28,7 +28,7 @@ export default class RSSProvider extends Provider {
       return new Notification(feedItem.timestamp)
         .withTitle(feedItem.title, feedItem.link)
         .withGame(this.game)
-        .withText(feedItem.content)
+        .withContent(feedItem.content)
         .withAuthor(feedItem.author);
     });
     return notifications;

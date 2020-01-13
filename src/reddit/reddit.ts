@@ -109,7 +109,7 @@ export default class Reddit {
           // Convert the post into a notification
           const notification = new Notification(new Date(post.created_utc * 1000))
             .withTitle(post.title, post.url)
-            .withText(this.mdFromReddit(post.selftext))
+            .withContent(this.mdFromReddit(post.selftext))
             .withAuthor(
               `/u/${user.name}`,
               `https://www.reddit.com/user/${user.name}`,
