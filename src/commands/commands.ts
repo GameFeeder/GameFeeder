@@ -424,6 +424,70 @@ const flipCmd = new Command(
   UserPermission.USER,
 );
 
+// Roll
+const rollCmd = new Command(
+  'Roll',
+  'Roll some dice.',
+  'roll <dice count> <dice type> <modifier>',
+  'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
+  (bot, channel, user, match) => {
+    const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
+
+    let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
+    if (diceCount <= 0) {
+      diceCount = 1;
+    }
+
+    let diceType = diceTypeStr ? parseInt(diceTypeStr, 10) : 12;
+    if (diceType <= 1) {
+      diceType = 12;
+    }
+
+    const modifier = modifierStr ? parseInt(modifierStr, 10) : 0;
+
+    let sum = 0;
+    const resultStrs = [];
+
+    for (let i = 0; i < diceCount; i++) {
+      // Throw a die
+      const die = Math.floor(Math.random() * diceType) + 1;
+      // Update sum
+      sum += die;
+      // Mark critical failure / success
+      const isCrit = die === 1 || die === diceType;
+      // Generate str
+      const dieStr = isCrit ? `_${die}_` : `${die}`;
+
+      resultStrs.push(dieStr);
+    }
+
+    let resultStr = diceCount === 1 ? `${sum}` : `${resultStrs.join(' + ')} = **${sum}**`;
+
+    let text = `Rolling ${diceCount} d${diceType}`;
+
+    // Add modifier
+    if (modifier !== 0) {
+      text += ` with a modifier of ${modifier}`;
+      sum += modifier;
+      resultStr += `${modifierStr} = **${sum}**`;
+    }
+
+    // Mark critical failure / success
+    const isCriticalFailure = diceCount === 1 && sum === 1;
+    const isCriticalSuccess = diceCount === 1 && sum === diceType;
+
+    if (isCriticalFailure) {
+      resultStr += ' _(critical failure)_';
+    } else if (isCriticalSuccess) {
+      resultStr += ' _(critical success)_';
+    }
+
+    // Notify user
+    bot.sendMessage(channel, `${text}:\n${resultStr}`);
+  },
+  UserPermission.USER,
+);
+
 // Stats
 const statsCmd = new Command(
   'Stats',
@@ -475,6 +539,7 @@ const commands = [
   aboutCmd,
   gamesCmd,
   flipCmd,
+  rollCmd,
   // Admin commands
   subCmd,
   unsubCmd,
