@@ -77,17 +77,6 @@ export default class Reddit {
     date?: Date,
     limit?: number,
   ): Promise<Notification[]> {
-    return await this.getNotificationsFromSnoowrap(subreddit, users, urlFilters, game, date, limit);
-  }
-
-  public static async getNotificationsFromSnoowrap(
-    subreddit: string,
-    users: RedditUserProvider[],
-    urlFilters: string[],
-    game: Game,
-    date?: Date,
-    limit?: number,
-  ): Promise<Notification[]> {
     let notifications: Notification[] = [];
 
     if (!isInit || !isEnabled) {
@@ -135,11 +124,6 @@ export default class Reddit {
 
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);
-
-    /*
-    botLogger.debug(`Found ${notifications.length} posts from ` +
-    `${usernames.map((user) => `/u/${user}`).join(', ')} in /r/${subreddit}.`, 'Reddit');
-    */
 
     return notifications;
   }
