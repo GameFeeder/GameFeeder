@@ -63,6 +63,7 @@ So far, we are providing the following commands:
 | `about`                                  | User       | Display information about this bot.                                |
 | `settings`                               | User       | Display an overview of the settings you can configure for the bot. |
 | `games`                                  | User       | Display a list of all available games.                             |
+| `flip`                                   | User       | Flip a coin.                                                       |
 | `subscribe <game name>`                  | Admin      | Subscribe to a game's feed.                                        |
 | `unsubscribe <game name>`                | Admin      | Unsubscribe from a game's feed.                                    |
 | `prefix <new prefix>`                    | Admin      | Change the prefix the bot uses on this channel.                    |

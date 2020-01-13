@@ -401,6 +401,29 @@ const notifyGameSubsCmd = new Command(
   UserPermission.OWNER,
 );
 
+// Flip
+const flipCmd = new Command(
+  'Flip',
+  'Flip a coin.',
+  'flip',
+  'flip',
+  (bot, channel, user, match) => {
+    const rnd = Math.random();
+
+    let result;
+    // Flip the coin
+    if (rnd < 0.5) {
+      result = 'HEADS';
+    } else {
+      result = 'TAILS';
+    }
+
+    // Notify the user
+    bot.sendMessage(channel, `Flipping a coin: **${result}**`);
+  },
+  UserPermission.USER,
+);
+
 // Stats
 const statsCmd = new Command(
   'Stats',
@@ -451,6 +474,7 @@ const commands = [
   settingsCmd,
   aboutCmd,
   gamesCmd,
+  flipCmd,
   // Admin commands
   subCmd,
   unsubCmd,
