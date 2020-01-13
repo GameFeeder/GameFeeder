@@ -159,8 +159,8 @@ export default class DiscordBot extends BotClient {
       embed.setColor(notification.color);
     }
     // Description
-    if (notification.description) {
-      const descriptionMD = DiscordBot.msgFromMarkdown(notification.description, true);
+    if (notification.content) {
+      const descriptionMD = DiscordBot.msgFromMarkdown(notification.content, true);
       // 2048 is the maximum notification length
       embed.setDescription(StrUtil.naturalLimit(descriptionMD, 2048));
     }
