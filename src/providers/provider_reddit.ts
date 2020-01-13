@@ -20,6 +20,13 @@ export default class RedditProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    return Reddit.getNotifications(this.subreddit, this.users, this.game, date, limit);
+    return Reddit.getNotifications(
+      this.subreddit,
+      this.users,
+      this.urlFilters,
+      this.game,
+      date,
+      limit,
+    );
   }
 }

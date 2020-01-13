@@ -119,7 +119,9 @@ export default class Game {
         const redditUsers = users.map(
           (user) => new RedditUserProvider(user.name, user.titleFilter),
         );
-        const urlFilters = gameSettings.providers.reddit.urlFilters;
+        const urlFilters = gameSettings.providers.reddit.urlFilters
+          ? gameSettings.providers.reddit.urlFilters
+          : [];
         providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
       }
       // Blog providers
