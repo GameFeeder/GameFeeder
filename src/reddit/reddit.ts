@@ -115,7 +115,7 @@ export default class Reddit {
               `https://www.reddit.com/user/${user.name}`,
               'https://www.redditstatic.com/new-icon.png',
             )
-            .withGameAndFooter(game);
+            .withGameDefaults(game);
           notifications.push(notification);
         }
       } catch (error) {

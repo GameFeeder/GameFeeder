@@ -79,12 +79,13 @@ export default class Notification implements Comparable<Notification> {
     return this;
   }
 
-  /** Changes the game of the notification and adds the default footer.
+  /** Changes the game of the notification and adds the default footer and color.
    *
    * @param game - The new game of the notification.
    */
-  public withGameAndFooter(game: Game): Notification {
+  public withGameDefaults(game: Game): Notification {
     this.game = game;
+    this.color = game.color;
     this.footer = new NotificationElement(`New ${game.label} update!`, null, game.icon);
     return this;
   }
