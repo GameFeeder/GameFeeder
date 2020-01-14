@@ -89,10 +89,12 @@ export default class Reddit {
         Reddit.logger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`);
         const allPosts = await reddit.getUser(user.name).getSubmissions();
         const posts = allPosts.filter((submission) => {
+          // Check if the post is new
           const timestamp = new Date(submission.created_utc * 1000);
           const isNew = timestamp > date;
+          // Check if the subreddit is correct
           const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
-          // Test if the url is already covered by other providers
+          // Check if the url is already covered by other providers
           let isNewSource = true;
           for (const filter of urlFilters) {
             const alreadyCovered = new RegExp(filter).test(submission.url);
@@ -100,8 +102,11 @@ export default class Reddit {
               isNewSource = false;
             }
           }
+          // Check the title to determine if the post is an update
           const isValidTitle = user.titleFilter.test(submission.title);
-          return isNew && isCorrectSub && isValidTitle && isNewSource;
+          // Check if the post has been deleted
+          const isDeleted = /^\[removed\]$/.test(submission.selftext);
+          return isNew && isCorrectSub && isValidTitle && isNewSource && !isDeleted;
         });
 
         for (const post of posts) {
