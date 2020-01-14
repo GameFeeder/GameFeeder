@@ -64,6 +64,8 @@ export type reddit_providers = {
   subreddit: string;
   /** The relevant users in that subreddit. */
   users: reddit_user[];
+  /** URLs that should be filtered out. */
+  urlFilters: string[];
 };
 
 /** An RSS provider. */

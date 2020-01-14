@@ -90,6 +90,8 @@ So far, we are supporting the following games:
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <strong align="left">Dota 2</strong> <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" height="17px"/>
   - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/), [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
+  - Gamplay updates on the [Dota 2 patch page](https://www.dota2.com/patches)
+  - Blog posts on the [Dota 2 Blog](http://blog.dota2.com/?l=english)
 - <strong align="left">Factorio</strong> <img src="https://wiki.factorio.com/images/Factorio-icon.png" height="17px"/>
   - Posts on the [Steam feed](https://steamcommunity.com/games/427520/announcements)
 - <strong align="left">Steam</strong> <img src="https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg" height="17px"/>
