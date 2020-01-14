@@ -63,6 +63,7 @@ So far, we are providing the following commands:
 | `about`                                    | User       | Display information about this bot.                                |
 | `settings`                                 | User       | Display an overview of the settings you can configure for the bot. |
 | `games`                                    | User       | Display a list of all available games.                             |
+| `stats`                                    | User       | Display some stats about the bot.                                  |
 | `flip`                                     | User       | Flip a coin.                                                       |
 | `roll <dice count> <dice type> <modifier>` | User       | Roll some dice.                                                    |
 | `subscribe <game name>`                    | Admin      | Subscribe to a game's feed.                                        |
