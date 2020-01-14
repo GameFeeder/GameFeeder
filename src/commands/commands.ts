@@ -527,7 +527,7 @@ const statsCmd = new Command(
 
     bot.sendMessage(channel, statString);
   },
-  UserPermission.OWNER,
+  UserPermission.USER,
 );
 
 /** The standard commands available on all bots. */
@@ -540,6 +540,7 @@ const commands = [
   gamesCmd,
   flipCmd,
   rollCmd,
+  statsCmd,
   // Admin commands
   subCmd,
   unsubCmd,

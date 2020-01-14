@@ -57,7 +57,7 @@ export default class DiscordBot extends BotClient {
       return 1;
     }
     if (discordChannel instanceof TextChannel) {
-      return discordChannel.members.size - 1;
+      return discordChannel.guild.memberCount - 1;
     }
     if (discordChannel instanceof GroupDMChannel) {
       return discordChannel.recipients.size - 1;
