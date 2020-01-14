@@ -503,6 +503,7 @@ const statsCmd = new Command(
 
     const bots = getBots();
 
+    // User and channel count
     for (const curBot of bots) {
       const channelCount = await curBot.getChannelCount();
       const userCount = await curBot.getUserCount();
@@ -511,15 +512,16 @@ const statsCmd = new Command(
       totalChannelCount += channelCount;
 
       const userString = userCount > 1 ? 'users' : 'user';
-      const channelString = channelCount > 1 ? 'channels' : 'channel';
+      const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
         `     ${curBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 
     const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
-    const totalChannelStr = totalChannelCount > 1 ? 'channels' : 'channel';
+    const totalChannelStr = totalChannelCount > 1 ? 'servers' : 'server';
 
+    // Other stuff
     const name = ProjectManager.getName();
     const version = ProjectManager.getVersionNumber();
 
