@@ -161,6 +161,12 @@ export default abstract class BotClient {
    */
   public abstract async getChannelUserCount(channel: Channel): Promise<number>;
 
+  /** Gets the number of users for this bot. */
+  public abstract async getUserCount(): Promise<number>;
+
+  /** Gets the number of channels for this bot. */
+  public abstract async getChannelCount(): Promise<number>;
+
   /** Get the channels subscribed on this bot client.
    *
    * @returns The channels subscribed to this bot client.
