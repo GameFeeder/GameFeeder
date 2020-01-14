@@ -92,7 +92,8 @@ export default class TelegramBot extends BotClient {
     try {
       return (await this.bot.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
-      this.logger.error(`Failed to get chat member count for channel ${channel}:\n${error}`);
+      this.logger.error(`Failed to get chat member count for a channel:\n${error}`);
+      return 0;
     }
   }
 
