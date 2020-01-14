@@ -88,21 +88,9 @@ export default class Reddit {
       try {
         Reddit.logger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`);
         const allPosts = await reddit.getUser(user.name).getSubmissions();
-        const posts = allPosts.filter((submission) => {
-          const timestamp = new Date(submission.created_utc * 1000);
-          const isNew = timestamp > date;
-          const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
-          // Test if the url is already covered by other providers
-          let isNewSource = true;
-          for (const filter of urlFilters) {
-            const alreadyCovered = new RegExp(filter).test(submission.url);
-            if (alreadyCovered) {
-              isNewSource = false;
-            }
-          }
-          const isValidTitle = user.titleFilter.test(submission.title);
-          return isNew && isCorrectSub && isValidTitle && isNewSource;
-        });
+        const posts = allPosts.filter((submission) =>
+          this.isValidSubmission(submission, subreddit, user, date, urlFilters),
+        );
 
         for (const post of posts) {
           // Convert the post into a notification
@@ -126,6 +114,56 @@ export default class Reddit {
     notifications = sortLimitEnd(notifications, limit);
 
     return notifications;
+  }
+
+  /** Determines if the submission is valid. */
+  private static isValidSubmission(
+    submission: Snoowrap.Submission,
+    subreddit: string,
+    user: RedditUserProvider,
+    date: Date,
+    urlFilters: string[],
+  ) {
+    return (
+      this.isNew(submission, date) &&
+      this.isCorrectSub(submission, subreddit) &&
+      this.isValidTitle(submission, user) &&
+      this.isNewSource(submission, urlFilters) &&
+      !this.isDeleted(submission)
+    );
+  }
+
+  /** Checks if the url is already covered by other providers. */
+  private static isNewSource(submission: Snoowrap.Submission, urlFilters: string[]): boolean {
+    let isNewSource = true;
+    for (const filter of urlFilters) {
+      const alreadyCovered = new RegExp(filter).test(submission.url);
+      if (alreadyCovered) {
+        isNewSource = false;
+      }
+    }
+    return isNewSource;
+  }
+
+  /** Checks the title to determine if the post is an update. */
+  private static isValidTitle(submission: Snoowrap.Submission, user: RedditUserProvider): boolean {
+    return user.titleFilter.test(submission.title);
+  }
+
+  /** Checks if the submission is new. */
+  private static isNew(submission: Snoowrap.Submission, date: Date): boolean {
+    const timestamp = new Date(submission.created_utc * 1000);
+    return timestamp > date;
+  }
+
+  /** Checks if the subreddit is correct. */
+  private static isCorrectSub(submission: Snoowrap.Submission, subreddit: string): boolean {
+    return submission.subreddit_name_prefixed === `r/${subreddit}`;
+  }
+
+  /** Checks if the post has been deleted. */
+  private static isDeleted(submission: Snoowrap.Submission): boolean {
+    return /^\[removed\]$/.test(submission.selftext);
   }
 
   private static mdFromReddit(text: string): string {
