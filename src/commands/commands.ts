@@ -4,8 +4,9 @@ import Command from './command';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
 import botLogger from '../logger';
-import { filterAsync, mapAsync, naturalJoin } from '../util/util';
+import { filterAsync, mapAsync, naturalJoin, StrUtil } from '../util/util';
 import ProjectManager from '../managers/project_manager';
+import { Util } from 'discord.js';
 
 // Start
 const startCmd = new Command(
@@ -500,34 +501,44 @@ const statsCmd = new Command(
     let totalUserCount = 0;
     let totalChannelCount = 0;
 
-    for (const curBot of getBots()) {
-      const botChannels = curBot.getBotChannels();
-      const channelCount = botChannels.length;
-      const userCounts = await mapAsync(
-        botChannels,
-        async (botChannel) => await botChannel.getUserCount(),
-      );
-      const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    const bots = getBots();
+
+    // User and channel count
+    for (const curBot of bots) {
+      const channelCount = await curBot.getChannelCount();
+      const userCount = await curBot.getUserCount();
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;
 
       const userString = userCount > 1 ? 'users' : 'user';
-      const channelString = channelCount > 1 ? 'channels' : 'channel';
+      const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
-        `- **${curBot.label}**: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        `     ${curBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 
     const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
-    const totalChannelStr = totalChannelCount > 1 ? 'channels' : 'channel';
+    const totalChannelStr = totalChannelCount > 1 ? 'servers' : 'server';
+
+    // Other stuff
+    const name = ProjectManager.getName();
+    const version = ProjectManager.getVersionNumber();
+
+    const gameCount = Game.getGames().length;
+    const clientCount = bots.length;
+    const clients = naturalJoin(bots.map((bot) => bot.label), ', ');
+
     const statString =
-      `**Total**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
+      `**${name}** (v${version}) statistics:\n` +
+      `- **Games**: ${gameCount}\n` +
+      `- **Clients**: ${clientCount} (${clients})\n` +
+      `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 
     bot.sendMessage(channel, statString);
   },
-  UserPermission.OWNER,
+  UserPermission.USER,
 );
 
 /** The standard commands available on all bots. */
@@ -540,6 +551,7 @@ const commands = [
   gamesCmd,
   flipCmd,
   rollCmd,
+  statsCmd,
   // Admin commands
   subCmd,
   unsubCmd,

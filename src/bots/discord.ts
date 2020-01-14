@@ -6,7 +6,7 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
-import { StrUtil } from '../util/util';
+import { StrUtil, mapAsync } from '../util/util';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -57,12 +57,56 @@ export default class DiscordBot extends BotClient {
       return 1;
     }
     if (discordChannel instanceof TextChannel) {
-      return discordChannel.members.size - 1;
+      return discordChannel.guild.memberCount - 1;
     }
     if (discordChannel instanceof GroupDMChannel) {
       return discordChannel.recipients.size - 1;
     }
     return 0;
+  }
+
+  public async getChannelCount(): Promise<number> {
+    let channels = this.getBotChannels();
+    // Save guilds
+    const seenGuilds = new Map<string, boolean>();
+    // Only consider each guild once
+    channels = channels.filter((channel) => {
+      const discordChannel = this.bot.channels.get(channel.id);
+      if (discordChannel instanceof TextChannel) {
+        const guildID = discordChannel.guild.id;
+        const isDuplicate = seenGuilds.get(guildID);
+        seenGuilds.set(guildID, true);
+        return !isDuplicate;
+      }
+      return true;
+    });
+
+    return channels.length;
+  }
+
+  public async getUserCount(): Promise<number> {
+    let channels = this.getBotChannels();
+    // Save guilds
+    const seenGuilds = new Map<string, boolean>();
+    // Only consider each guild once
+    channels = channels.filter((channel) => {
+      const discordChannel = this.bot.channels.get(channel.id);
+      if (discordChannel instanceof TextChannel) {
+        const guildID = discordChannel.guild.id;
+        const isDuplicate = seenGuilds.get(guildID);
+        seenGuilds.set(guildID, true);
+        return !isDuplicate;
+      }
+      return true;
+    });
+
+    // Aggregate results
+    const userCounts = await mapAsync(
+      channels,
+      async (botChannel) => await botChannel.getUserCount(),
+    );
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    return userCount;
   }
 
   public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
