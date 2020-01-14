@@ -76,30 +76,13 @@ export default class Updater {
 
     const startTime = Date.now();
 
-    let notifications: Notification[] = [];
-    for (const game of Game.getGames()) {
-      const gameStartTime = Date.now();
+    // Get game notifications concurrently
+    const handles = Game.getGames().map((game) => this.updateGame(game));
 
-      let gameNotifications: Notification[] = [];
-      for (const provider of game.providers) {
-        gameNotifications = gameNotifications.concat(
-          await provider.getNotifications(this.lastUpdate, this.limit),
-        );
-      }
-      if (gameNotifications.length > 0) {
-        // Only take the newest notifications
-        gameNotifications = sortLimitEnd(gameNotifications, this.limit);
+    // Combine the game notifications
+    const gameNotifications = await Promise.all(handles);
+    let notifications: Notification[] = [].concat(...gameNotifications);
 
-        const gameEndTime = Date.now();
-        const gameTime = Math.abs(gameStartTime - gameEndTime);
-        Updater.logger.info(
-          `Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`,
-        );
-
-        // Add the game notifications to the total notifications.
-        notifications = notifications.concat(gameNotifications);
-      }
-    }
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
       notifications = sort(notifications);
@@ -124,6 +107,35 @@ export default class Updater {
       Updater.logger.info(`Notified channels in ${notifyTime}ms.`);
     }
   }
+
+  /** Get the updates for the specified game.
+   *
+   * @param game - The game to get the updates for.
+   */
+  public async updateGame(game: Game): Promise<Notification[]> {
+    const gameStartTime = Date.now();
+    // Get provider notifications concurrently
+    const handles = game.providers.map((provider) =>
+      provider.getNotifications(this.lastUpdate, this.limit),
+    );
+
+    // Combine the provider notifications
+    const providerNotifications = await Promise.all(handles);
+    let gameNotifications: Notification[] = [].concat(...providerNotifications);
+
+    if (gameNotifications.length > 0) {
+      // Only take the newest notifications
+      gameNotifications = sortLimitEnd(gameNotifications, this.limit);
+
+      const gameEndTime = Date.now();
+      const gameTime = Math.abs(gameStartTime - gameEndTime);
+      Updater.logger.info(
+        `Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`,
+      );
+    }
+    return gameNotifications;
+  }
+
   public saveDate(date: Date): void {
     this.lastUpdate = date;
     if (this.autosave) {
@@ -132,14 +144,17 @@ export default class Updater {
       DataManager.setUpdaterData(data);
     }
   }
+
   public loadDate(): void {
     this.lastUpdate = new Date(DataManager.getUpdaterData().lastUpdate);
   }
+
   public updateHealthcheck(): void {
     const data = DataManager.getUpdaterData();
     data.healthcheckTimestamp = new Date().toISOString();
     DataManager.setUpdaterData(data);
   }
+
   /** Updates in the specified time interval.
    * @returns {void}
    */
