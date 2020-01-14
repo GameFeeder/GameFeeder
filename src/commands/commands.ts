@@ -504,13 +504,8 @@ const statsCmd = new Command(
     const bots = getBots();
 
     for (const curBot of bots) {
-      const botChannels = curBot.getBotChannels();
-      const channelCount = botChannels.length;
-      const userCounts = await mapAsync(
-        botChannels,
-        async (botChannel) => await botChannel.getUserCount(),
-      );
-      const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+      const channelCount = await curBot.getChannelCount();
+      const userCount = await curBot.getUserCount();
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;

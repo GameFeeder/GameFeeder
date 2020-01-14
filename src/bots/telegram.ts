@@ -6,7 +6,7 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex, { bold, seperator } from '../util/regex';
-import { StrUtil } from '../util/util';
+import { StrUtil, mapAsync } from '../util/util';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -94,6 +94,16 @@ export default class TelegramBot extends BotClient {
     } catch (error) {
       this.logger.error(`Failed to get chat member count for channel ${channel}:\n${error}`);
     }
+  }
+
+  public async getUserCount(): Promise<number> {
+    const channels = this.getBotChannels();
+    const userCounts = await mapAsync(
+      channels,
+      async (botChannel) => await botChannel.getUserCount(),
+    );
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    return userCount;
   }
 
   public async getOwners(): Promise<User[]> {

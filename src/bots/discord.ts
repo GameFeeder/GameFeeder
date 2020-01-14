@@ -6,7 +6,7 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
-import { StrUtil } from '../util/util';
+import { StrUtil, mapAsync } from '../util/util';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -63,6 +63,16 @@ export default class DiscordBot extends BotClient {
       return discordChannel.recipients.size - 1;
     }
     return 0;
+  }
+
+  public async getUserCount(): Promise<number> {
+    const channels = this.getBotChannels();
+    const userCounts = await mapAsync(
+      channels,
+      async (botChannel) => await botChannel.getUserCount(),
+    );
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    return userCount;
   }
 
   public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
