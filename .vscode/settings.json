@@ -11,5 +11,13 @@
     "unsub",
     "unsubscription",
     "usertag"
+  ],
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext"
   ]
 }
