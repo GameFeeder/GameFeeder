@@ -66,7 +66,22 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getUserCount(): Promise<number> {
-    const channels = this.getBotChannels();
+    let channels = this.getBotChannels();
+    // Save guilds
+    const seenGuilds = new Map<string, boolean>();
+    // Only consider each guild once
+    channels = channels.filter((channel) => {
+      const discordChannel = this.bot.channels.get(channel.id);
+      if (discordChannel instanceof TextChannel) {
+        const guildID = discordChannel.guild.id;
+        const isDuplicate = seenGuilds.get(guildID);
+        seenGuilds.set(guildID, true);
+        return !isDuplicate;
+      }
+      return true;
+    });
+
+    // Aggregate results
     const userCounts = await mapAsync(
       channels,
       async (botChannel) => await botChannel.getUserCount(),
