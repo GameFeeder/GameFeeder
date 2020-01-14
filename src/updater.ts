@@ -80,12 +80,15 @@ export default class Updater {
     for (const game of Game.getGames()) {
       const gameStartTime = Date.now();
 
-      let gameNotifications: Notification[] = [];
-      for (const provider of game.providers) {
-        gameNotifications = gameNotifications.concat(
-          await provider.getNotifications(this.lastUpdate, this.limit),
-        );
-      }
+      // Get provider notifications concurrently
+      const handles = game.providers.map((provider) =>
+        provider.getNotifications(this.lastUpdate, this.limit),
+      );
+
+      // Combine the provider notifications
+      const providerNotifications = await Promise.all(handles);
+      let gameNotifications: Notification[] = [].concat(...providerNotifications);
+
       if (gameNotifications.length > 0) {
         // Only take the newest notifications
         gameNotifications = sortLimitEnd(gameNotifications, this.limit);
@@ -124,6 +127,7 @@ export default class Updater {
       Updater.logger.info(`Notified channels in ${notifyTime}ms.`);
     }
   }
+
   public saveDate(date: Date): void {
     this.lastUpdate = date;
     if (this.autosave) {
@@ -132,14 +136,17 @@ export default class Updater {
       DataManager.setUpdaterData(data);
     }
   }
+
   public loadDate(): void {
     this.lastUpdate = new Date(DataManager.getUpdaterData().lastUpdate);
   }
+
   public updateHealthcheck(): void {
     const data = DataManager.getUpdaterData();
     data.healthcheckTimestamp = new Date().toISOString();
     DataManager.setUpdaterData(data);
   }
+
   /** Updates in the specified time interval.
    * @returns {void}
    */
