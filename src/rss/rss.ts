@@ -21,6 +21,11 @@ export default class RSS {
   ): Promise<RSSItem[]> {
     let feedItems: RSSItem[] = [];
 
+    if (!url) {
+      RSS.logger.warn('Trying to parse undefined URL.');
+      return feedItems;
+    }
+
     try {
       const feed = await this.parser.parseURL(url);
 

@@ -72,16 +72,7 @@ export default class Reddit {
   public static async getNotifications(
     subreddit: string,
     users: RedditUserProvider[],
-    game: Game,
-    date?: Date,
-    limit?: number,
-  ): Promise<Notification[]> {
-    return await this.getNotificationsFromSnoowrap(subreddit, users, game, date, limit);
-  }
-
-  public static async getNotificationsFromSnoowrap(
-    subreddit: string,
-    users: RedditUserProvider[],
+    urlFilters: string[],
     game: Game,
     date?: Date,
     limit?: number,
@@ -101,8 +92,16 @@ export default class Reddit {
           const timestamp = new Date(submission.created_utc * 1000);
           const isNew = timestamp > date;
           const isCorrectSub = submission.subreddit_name_prefixed === `r/${subreddit}`;
+          // Test if the url is already covered by other providers
+          let isNewSource = true;
+          for (const filter of urlFilters) {
+            const alreadyCovered = new RegExp(filter).test(submission.url);
+            if (alreadyCovered) {
+              isNewSource = false;
+            }
+          }
           const isValidTitle = user.titleFilter.test(submission.title);
-          return isNew && isCorrectSub && isValidTitle;
+          return isNew && isCorrectSub && isValidTitle && isNewSource;
         });
 
         for (const post of posts) {
@@ -125,11 +124,6 @@ export default class Reddit {
 
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);
-
-    /*
-    botLogger.debug(`Found ${notifications.length} posts from ` +
-    `${usernames.map((user) => `/u/${user}`).join(', ')} in /r/${subreddit}.`, 'Reddit');
-    */
 
     return notifications;
   }
