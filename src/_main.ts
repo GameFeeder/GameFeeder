@@ -21,12 +21,15 @@ export default class Main {
 
   /** Starts the bots. */
   public static async startBots() {
+    const startTime = Date.now();
     // Start bots
     for (const bot of getBots()) {
       if (bot.enabled) {
+        const botStart = Date.now();
         if (await bot.start()) {
           const userName = await bot.getUserName();
-          bot.logger.info(`Started bot as @${userName}`);
+          const botTime = Date.now() - botStart;
+          bot.logger.info(`Started bot as @${userName} in ${botTime} ms.`);
         } else {
           bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
         }
@@ -34,6 +37,8 @@ export default class Main {
         bot.logger.debug('Autostart disabled.');
       }
     }
+    const time = Date.now() - startTime;
+    Main.logger.info(`Started bots in ${time} ms.`);
   }
 
   /** Starts the updater. */
