@@ -52,7 +52,8 @@ export default class RedditPost {
     const title = submission.title;
     const url = submission.url;
     const content = Reddit.mdFromReddit(submission.selftext);
-    const subreddit = submission.subreddit.name;
+    // Remove subreddit prefix
+    const subreddit = submission.subreddit_name_prefixed.substr(2);
     const user = submission.author.name;
     const timestamp = new Date(submission.created_utc * 1000);
 
@@ -76,11 +77,10 @@ export default class RedditPost {
   }
 
   /** Determines if the post is 'valid' and should be send to the users. */
-  public isValid(date: Date, subreddit: string, user: RedditUserProvider, urlFilters: string[]) {
+  public isValid(date: Date, titleFilter: RegExp, urlFilters: string[]) {
     return (
       this.isNew(date) &&
-      this.isCorrectSub(subreddit) &&
-      this.hasValidTitle(user) &&
+      this.hasValidTitle(titleFilter) &&
       this.isNewSource(urlFilters) &&
       !this.isDeleted()
     );
@@ -99,8 +99,8 @@ export default class RedditPost {
   }
 
   /** Checks the title to determine if the post is an update. */
-  public hasValidTitle(user: RedditUserProvider): boolean {
-    return user.titleFilter.test(this.title);
+  public hasValidTitle(titleFilter: RegExp): boolean {
+    return titleFilter.test(this.title);
   }
 
   /** Checks if the submission is new. */

@@ -26,7 +26,12 @@ export default class RedditProvider extends Provider {
     for (const user of this.users) {
       // Get all new submissions in the given subreddit
       let posts = await Reddit.getUserPosts(user.name);
-      posts = posts.filter((post) => post.isValid(date, this.subreddit, user, this.urlFilters));
+      const postCount = posts.length;
+      posts = posts.filter((post) => {
+        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
+        const isCorrectSub = post.isCorrectSub(this.subreddit);
+        return isValid && isCorrectSub;
+      });
       const userNotifications = posts.map((post) => post.toGameNotification(this.game));
       notifications = notifications.concat(userNotifications);
     }
