@@ -5,6 +5,7 @@ import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
 import { sortLimitEnd } from '../util/comparable';
+import { mapAsync } from '../util/util';
 
 export default class RedditProvider extends Provider {
   public users: RedditUserProvider[];
@@ -21,21 +22,19 @@ export default class RedditProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    // Get all new submissions in the given subreddit
-    let posts = await Reddit.getSubredditPosts(this.subreddit);
-    posts = posts.filter((post) => {
-      // Check if the post was made by a provider
-      for (const user of this.users) {
-        if (post.user === user.name) {
-          return post.isValid(date, user.titleFilter, this.urlFilters);
-        }
-      }
-      // The post is made by an unknown user
-      return false;
+    const userNotifications = await mapAsync(this.users, async (user) => {
+      let userPosts = await Reddit.getUserPosts(user.name);
+      // Filter out irrelevant posts
+      userPosts = userPosts.filter((post) => {
+        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
+        const isCorrectSub = post.isCorrectSub(this.subreddit);
+        return isValid && isCorrectSub;
+      });
+      return userPosts.map((post) => post.toGameNotification(this.game));
     });
 
-    let notifications = posts.map((post) => post.toGameNotification(this.game));
-
+    // Combine the user notifications
+    let notifications = [].concat(...userNotifications);
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);
 
