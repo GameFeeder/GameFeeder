@@ -4,20 +4,22 @@ import commands from './commands/commands';
 import Updater from './updater';
 import InitManager from './managers/init_manager';
 import ProjectManager from './managers/project_manager';
-import { mapAsync } from './util/util';
+import { mapAsync, naturalJoin } from './util/util';
 
 export default class Main {
   public static logger = new Logger('Main');
 
   /** Registers the bot commands. */
   public static async registerCommands() {
+    const startTime = Date.now();
     for (const command of commands) {
       for (const bot of getBots()) {
         bot.registerCommand(command);
       }
-      Main.logger.debug(`Registered command: '${command.label}'.`);
     }
-    Main.logger.info('Registered commands.');
+    const time = Date.now() - startTime;
+    const commandStr = naturalJoin(commands.map((command) => command.label), ', ');
+    Main.logger.info(`Registered ${commands.length} commands in ${time} ms:\n${commandStr}`);
   }
 
   /** Starts the bots. */
