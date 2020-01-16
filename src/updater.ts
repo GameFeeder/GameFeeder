@@ -72,8 +72,6 @@ export default class Updater {
   }
   /** Run an update cycle. */
   public async update(): Promise<void> {
-    Updater.logger.debug('Starting update cycle...');
-
     const startTime = Date.now();
 
     // Get game notifications concurrently
@@ -88,9 +86,9 @@ export default class Updater {
       notifications = sort(notifications);
 
       const endPollTime = Date.now();
-      const pollTime = Math.abs(endPollTime - startTime);
+      const pollTime = endPollTime - startTime;
       Updater.logger.info(
-        `Found ${notifications.length} posts in ${pollTime}ms. ` + `Notifying channels...`,
+        `Found ${notifications.length} posts in ${pollTime} ms. ` + `Notifying channels...`,
       );
 
       // Update time
@@ -102,10 +100,11 @@ export default class Updater {
           bot.sendMessageToGameSubs(notification.game, notification);
         }
       }
-      const endNotifyTime = Date.now();
-      const notifyTime = Math.abs(endNotifyTime - endPollTime);
-      Updater.logger.info(`Notified channels in ${notifyTime}ms.`);
+      const notifyTime = Date.now() - endPollTime;
+      Updater.logger.info(`Notified channels in ${notifyTime} ms.`);
     }
+    const updateTime = Date.now() - startTime;
+    Updater.logger.debug(`Finished update cycle in ${updateTime} ms.`);
   }
 
   /** Get the updates for the specified game.
@@ -130,7 +129,7 @@ export default class Updater {
       const gameEndTime = Date.now();
       const gameTime = Math.abs(gameStartTime - gameEndTime);
       Updater.logger.info(
-        `Found ${gameNotifications.length} posts for ${game.label} in ${gameTime}ms.`,
+        `Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`,
       );
     }
     return gameNotifications;
