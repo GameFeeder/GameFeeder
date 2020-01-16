@@ -9,6 +9,18 @@ import { mapAsync, naturalJoin } from './util/util';
 export default class Main {
   public static logger = new Logger('Main');
 
+  /** Registers the commands, starts the bots and the updater. */
+  public static async start() {
+    Main.logger.info(
+      `Starting main in ${ProjectManager.getEnvironment()} mode,` +
+        ` v${ProjectManager.getVersionNumber()}.`,
+    );
+    InitManager.initAll();
+    await Main.registerCommands();
+    await Main.startBots();
+    await Main.startUpdater();
+  }
+
   /** Registers the bot commands. */
   public static async registerCommands() {
     const startTime = Date.now();
@@ -54,18 +66,6 @@ export default class Main {
       Updater.getUpdater().start();
       Updater.logger.info('Started updater.');
     }
-  }
-
-  /** Registers the commands, starts the bots and the updater. */
-  public static async start() {
-    Main.logger.info(
-      `Starting main in ${ProjectManager.getEnvironment()} mode,` +
-        ` v${ProjectManager.getVersionNumber()}.`,
-    );
-    InitManager.initAll();
-    await Main.registerCommands();
-    await Main.startBots();
-    await Main.startUpdater();
   }
 }
 
