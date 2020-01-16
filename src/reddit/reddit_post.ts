@@ -75,6 +75,17 @@ export default class RedditPost {
       .withGameDefaults(game);
   }
 
+  /** Determines if the post is 'valid' and should be send to the users. */
+  public isValid(date: Date, subreddit: string, user: RedditUserProvider, urlFilters: string[]) {
+    return (
+      this.isNew(date) &&
+      this.isCorrectSub(subreddit) &&
+      this.hasValidTitle(user) &&
+      this.isNewSource(urlFilters) &&
+      !this.isDeleted()
+    );
+  }
+
   /** Checks if the url is already covered by other providers. */
   public isNewSource(urlFilters: string[]): boolean {
     let isNewSource = true;

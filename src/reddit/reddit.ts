@@ -7,6 +7,7 @@ import RedditUserProvider from './reddit_user';
 import { sortLimitEnd } from '../util/comparable';
 import ProjectManager from '../managers/project_manager';
 import Logger from '../logger';
+import RedditPost from './reddit_post';
 
 let reddit: Snoowrap;
 let isInit: boolean = false;
@@ -85,29 +86,10 @@ export default class Reddit {
 
     for (const user of users) {
       // Get all new submissions in the given subreddit
-      try {
-        Reddit.logger.debug(`Getting posts from /u/${user.name} on /r/${subreddit}...`);
-        const allPosts = await reddit.getUser(user.name).getSubmissions();
-        const posts = allPosts.filter((submission) =>
-          this.isValidSubmission(submission, subreddit, user, date, urlFilters),
-        );
-
-        for (const post of posts) {
-          // Convert the post into a notification
-          const notification = new Notification(new Date(post.created_utc * 1000))
-            .withTitle(post.title, post.url)
-            .withContent(this.mdFromReddit(post.selftext))
-            .withAuthor(
-              `/u/${user.name}`,
-              `https://www.reddit.com/user/${user.name}`,
-              'https://www.redditstatic.com/new-icon.png',
-            )
-            .withGameDefaults(game);
-          notifications.push(notification);
-        }
-      } catch (error) {
-        Reddit.logger.error(`Failed to get notification from Reddit:\n${error}`);
-      }
+      let posts = await this.getUserPosts(user.name);
+      posts = posts.filter((post) => post.isValid(date, subreddit, user, urlFilters));
+      const userNotifications = posts.map((post) => post.toGameNotification(game));
+      notifications = notifications.concat(userNotifications);
     }
 
     // Limit the length
@@ -116,54 +98,28 @@ export default class Reddit {
     return notifications;
   }
 
-  /** Determines if the submission is valid. */
-  private static isValidSubmission(
-    submission: Snoowrap.Submission,
-    subreddit: string,
-    user: RedditUserProvider,
-    date: Date,
-    urlFilters: string[],
-  ) {
-    return (
-      this.isNew(submission, date) &&
-      this.isCorrectSub(submission, subreddit) &&
-      this.isValidTitle(submission, user) &&
-      this.isNewSource(submission, urlFilters) &&
-      !this.isDeleted(submission)
-    );
-  }
-
-  /** Checks if the url is already covered by other providers. */
-  private static isNewSource(submission: Snoowrap.Submission, urlFilters: string[]): boolean {
-    let isNewSource = true;
-    for (const filter of urlFilters) {
-      const alreadyCovered = new RegExp(filter).test(submission.url);
-      if (alreadyCovered) {
-        isNewSource = false;
-      }
+  /** Get the reddit posts recently submitted on the given subreddit. */
+  public static async getSubredditPosts(subreddit: string): Promise<RedditPost[]> {
+    let posts: RedditPost[] = [];
+    try {
+      const submissions = await reddit.getSubreddit(subreddit).getNew();
+      posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
+    } catch (error) {
+      Reddit.logger.error(`Failed to get submissions on /r/${subreddit}:\n${error}`);
     }
-    return isNewSource;
+    return posts;
   }
 
-  /** Checks the title to determine if the post is an update. */
-  private static isValidTitle(submission: Snoowrap.Submission, user: RedditUserProvider): boolean {
-    return user.titleFilter.test(submission.title);
-  }
-
-  /** Checks if the submission is new. */
-  private static isNew(submission: Snoowrap.Submission, date: Date): boolean {
-    const timestamp = new Date(submission.created_utc * 1000);
-    return timestamp > date;
-  }
-
-  /** Checks if the subreddit is correct. */
-  private static isCorrectSub(submission: Snoowrap.Submission, subreddit: string): boolean {
-    return submission.subreddit_name_prefixed === `r/${subreddit}`;
-  }
-
-  /** Checks if the post has been deleted. */
-  private static isDeleted(submission: Snoowrap.Submission): boolean {
-    return /^\[removed\]$/.test(submission.selftext);
+  /** Get the reddit posts submitted by the given user. */
+  public static async getUserPosts(user: string): Promise<RedditPost[]> {
+    let posts: RedditPost[] = [];
+    try {
+      const submissions = await reddit.getUser(user).getSubmissions();
+      posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
+    } catch (error) {
+      Reddit.logger.error(`Failed to get submissions by /r/${user}:\n${error}`);
+    }
+    return posts;
   }
 
   public static mdFromReddit(text: string): string {
