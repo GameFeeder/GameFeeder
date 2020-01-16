@@ -12,11 +12,15 @@ export default class Main {
   /** Registers the bot commands. */
   public static async registerCommands() {
     const startTime = Date.now();
-    for (const command of commands) {
-      for (const bot of getBots()) {
+    const bots = getBots();
+
+    // Register the commands asynchronously
+    await mapAsync(commands, async (command) => {
+      mapAsync(bots, async (bot) => {
         bot.registerCommand(command);
-      }
-    }
+      });
+    });
+
     const time = Date.now() - startTime;
     const commandStr = naturalJoin(commands.map((command) => command.label), ', ');
     Main.logger.info(`Registered ${commands.length} commands in ${time} ms:\n${commandStr}`);
