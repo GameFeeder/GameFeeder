@@ -166,7 +166,7 @@ export default class Reddit {
     return /^\[removed\]$/.test(submission.selftext);
   }
 
-  private static mdFromReddit(text: string): string {
+  public static mdFromReddit(text: string): string {
     let fulltext = '';
     // User links
     fulltext = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
