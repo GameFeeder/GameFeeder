@@ -70,37 +70,14 @@ export default class Reddit {
     isInit = true;
   }
 
-  public static async getNotifications(
-    subreddit: string,
-    users: RedditUserProvider[],
-    urlFilters: string[],
-    game: Game,
-    date?: Date,
-    limit?: number,
-  ): Promise<Notification[]> {
-    let notifications: Notification[] = [];
-
-    if (!isInit || !isEnabled) {
-      return notifications;
-    }
-
-    for (const user of users) {
-      // Get all new submissions in the given subreddit
-      let posts = await this.getUserPosts(user.name);
-      posts = posts.filter((post) => post.isValid(date, subreddit, user, urlFilters));
-      const userNotifications = posts.map((post) => post.toGameNotification(game));
-      notifications = notifications.concat(userNotifications);
-    }
-
-    // Limit the length
-    notifications = sortLimitEnd(notifications, limit);
-
-    return notifications;
-  }
-
   /** Get the reddit posts recently submitted on the given subreddit. */
   public static async getSubredditPosts(subreddit: string): Promise<RedditPost[]> {
     let posts: RedditPost[] = [];
+
+    if (!isInit || !isEnabled) {
+      return posts;
+    }
+
     try {
       const submissions = await reddit.getSubreddit(subreddit).getNew();
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
@@ -113,6 +90,11 @@ export default class Reddit {
   /** Get the reddit posts submitted by the given user. */
   public static async getUserPosts(user: string): Promise<RedditPost[]> {
     let posts: RedditPost[] = [];
+
+    if (!isInit || !isEnabled) {
+      return posts;
+    }
+
     try {
       const submissions = await reddit.getUser(user).getSubmissions();
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));

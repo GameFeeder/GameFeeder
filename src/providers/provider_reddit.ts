@@ -4,6 +4,7 @@ import Notification from '../notifications/notification';
 import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
+import { sortLimitEnd } from '../util/comparable';
 
 export default class RedditProvider extends Provider {
   public users: RedditUserProvider[];
@@ -20,13 +21,19 @@ export default class RedditProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    return Reddit.getNotifications(
-      this.subreddit,
-      this.users,
-      this.urlFilters,
-      this.game,
-      date,
-      limit,
-    );
+    let notifications: Notification[] = [];
+
+    for (const user of this.users) {
+      // Get all new submissions in the given subreddit
+      let posts = await Reddit.getUserPosts(user.name);
+      posts = posts.filter((post) => post.isValid(date, this.subreddit, user, this.urlFilters));
+      const userNotifications = posts.map((post) => post.toGameNotification(this.game));
+      notifications = notifications.concat(userNotifications);
+    }
+
+    // Limit the length
+    notifications = sortLimitEnd(notifications, limit);
+
+    return notifications;
   }
 }
