@@ -4,6 +4,7 @@ import commands from './commands/commands';
 import Updater from './updater';
 import InitManager from './managers/init_manager';
 import ProjectManager from './managers/project_manager';
+import { mapAsync } from './util/util';
 
 export default class Main {
   public static logger = new Logger('Main');
@@ -23,7 +24,7 @@ export default class Main {
   public static async startBots() {
     const startTime = Date.now();
     // Start bots
-    for (const bot of getBots()) {
+    await mapAsync(getBots(), async (bot) => {
       if (bot.enabled) {
         const botStart = Date.now();
         if (await bot.start()) {
@@ -36,7 +37,7 @@ export default class Main {
       } else {
         bot.logger.debug('Autostart disabled.');
       }
-    }
+    });
     const time = Date.now() - startTime;
     Main.logger.info(`Started bots in ${time} ms.`);
   }
