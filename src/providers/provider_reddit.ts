@@ -21,20 +21,20 @@ export default class RedditProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    let notifications: Notification[] = [];
+    // Get all new submissions in the given subreddit
+    let posts = await Reddit.getSubredditPosts(this.subreddit);
+    posts = posts.filter((post) => {
+      // Check if the post was made by a provider
+      for (const user of this.users) {
+        if (post.user === user.name) {
+          return post.isValid(date, user.titleFilter, this.urlFilters);
+        }
+      }
+      // The post is made by an unknown user
+      return false;
+    });
 
-    for (const user of this.users) {
-      // Get all new submissions in the given subreddit
-      let posts = await Reddit.getUserPosts(user.name);
-      const postCount = posts.length;
-      posts = posts.filter((post) => {
-        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
-        const isCorrectSub = post.isCorrectSub(this.subreddit);
-        return isValid && isCorrectSub;
-      });
-      const userNotifications = posts.map((post) => post.toGameNotification(this.game));
-      notifications = notifications.concat(userNotifications);
-    }
+    let notifications = posts.map((post) => post.toGameNotification(this.game));
 
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);

@@ -79,7 +79,7 @@ export default class Reddit {
     }
 
     try {
-      const submissions = await reddit.getSubreddit(subreddit).getNew();
+      const submissions = await reddit.getSubreddit(subreddit).getNew({ limit: 50 });
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
     } catch (error) {
       Reddit.logger.error(`Failed to get submissions on /r/${subreddit}:\n${error}`);
