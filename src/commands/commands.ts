@@ -10,7 +10,7 @@ import { Util, User } from 'discord.js';
 
 // Start
 const startCmd = new Command(
-  'Start',
+  'start',
   'Get started with the GameFeeder.',
   'start',
   'start',
@@ -29,7 +29,7 @@ const startCmd = new Command(
 
 // Help
 const helpCmd = new Command(
-  'Help',
+  'help',
   'Display a list of all available commands.',
   'help',
   'help\\s*$',
@@ -52,7 +52,7 @@ const helpCmd = new Command(
 
 // About
 const aboutCmd = new Command(
-  'About',
+  'about',
   'Display info about the bot.',
   'about',
   '(about)|(info)\\s*$',
@@ -69,7 +69,7 @@ const aboutCmd = new Command(
 
 // Settings
 const settingsCmd = new Command(
-  'Settings',
+  'settings',
   'Display an overview of the settings you can configure for the bot.',
   'settings',
   '(settings)|(options)|(config)\\s*$',
@@ -95,7 +95,7 @@ const settingsCmd = new Command(
 
 // Games
 const gamesCmd = new Command(
-  'Games',
+  'games',
   'Display all available games.',
   'games',
   'games\\s*$',
@@ -109,7 +109,7 @@ const gamesCmd = new Command(
 
 // Subscribe
 const subCmd = new Command(
-  'Subscribe',
+  'subscribe',
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
@@ -182,7 +182,7 @@ const subCmd = new Command(
 
 // Unsubscribe
 const unsubCmd = new Command(
-  'Unsubscribe',
+  'unsubscribe',
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
   'unsub(scribe)?(?<alias>.*)',
@@ -255,7 +255,7 @@ const unsubCmd = new Command(
 
 // Prefix
 const prefixCmd = new Command(
-  'Prefix',
+  'prefix',
   `Change the bot's prefix used in this channel.`,
   'prefix',
   'prefix(?<newPrefix>.*)$',
@@ -326,7 +326,7 @@ const prefixCmd = new Command(
 
 // Notify All
 const notifyAllCmd = new Command(
-  'Notify All',
+  'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
   '(notifyAll(Subs)?)\\s*(?<msg>(?:.|\\s)*)$',
@@ -357,7 +357,7 @@ const notifyAllCmd = new Command(
 
 // Notify Game Subs
 const notifyGameSubsCmd = new Command(
-  'Notify Game Subs',
+  'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
   '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<msg>(?:.|\\s)*)\\s*$',
@@ -411,7 +411,7 @@ const notifyGameSubsCmd = new Command(
 
 // Flip
 const flipCmd = new Command(
-  'Flip',
+  'flip',
   'Flip a coin.',
   'flip',
   'flip',
@@ -434,7 +434,7 @@ const flipCmd = new Command(
 
 // Roll
 const rollCmd = new Command(
-  'Roll',
+  'roll',
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
   'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
@@ -498,7 +498,7 @@ const rollCmd = new Command(
 
 // Stats
 const statsCmd = new Command(
-  'Stats',
+  'stats',
   'Display statistics about the bot.',
   'stats',
   'stat(istic)?s?',
@@ -550,7 +550,7 @@ const statsCmd = new Command(
 
 // Ping
 const pingCmd = new Command(
-  'Ping',
+  'ping',
   'Test the delay of the bot.',
   'ping',
   'ping',
@@ -559,6 +559,28 @@ const pingCmd = new Command(
     bot.sendMessage(message.channel, `Pong! (${time} ms)`);
   },
   UserPermission.USER,
+);
+
+// Telegram Cmds
+const telegramCmdsCmd = new Command(
+  'telegramCmds',
+  'Get the string to properly register the commands on Telegram.',
+  'telegramCmds',
+  'telegramCmds?',
+  (bot, message, _) => {
+    const cmds = commands.filter((command) => {
+      // Filter out owner commands
+      return command.permission !== UserPermission.OWNER;
+    });
+    const cmdEntries = cmds.map((cmd) => {
+      return `${cmd.label} - ${cmd.description}`;
+    });
+    // Block code format
+    const telegramCmdStr = '```\n' + cmdEntries.join('\n') + '\n```';
+
+    bot.sendMessage(message.channel, telegramCmdStr);
+  },
+  UserPermission.OWNER,
 );
 
 /** The standard commands available on all bots. */
@@ -580,6 +602,7 @@ const commands = [
   // Owner commands
   notifyAllCmd,
   notifyGameSubsCmd,
+  telegramCmdsCmd,
 ];
 
 export default commands;
