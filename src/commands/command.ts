@@ -61,8 +61,9 @@ export default class Command {
   ): Promise<boolean> {
     // Check if the user has the required permission to execute the command.
     if (await message.user.hasPermission(message.channel, this.permission)) {
-      bot.logger.debug(`Command: ${this.label}`);
       this.callback(bot, message, match);
+      const time = Date.now() - message.timestamp.valueOf();
+      bot.logger.debug(`Command '${this.label}' executed in ${time} ms.`);
       return true;
     }
     bot.logger.debug(`Command: ${this.label}: Insufficient permissions.`);

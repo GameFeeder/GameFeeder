@@ -6,7 +6,7 @@ import Game from '../game';
 import botLogger from '../logger';
 import { filterAsync, mapAsync, naturalJoin, StrUtil } from '../util/util';
 import ProjectManager from '../managers/project_manager';
-import { Util } from 'discord.js';
+import { Util, User } from 'discord.js';
 
 // Start
 const startCmd = new Command(
@@ -548,6 +548,19 @@ const statsCmd = new Command(
   UserPermission.USER,
 );
 
+// Ping
+const pingCmd = new Command(
+  'Ping',
+  'Test the delay of the bot.',
+  'ping',
+  'ping',
+  (bot, message, _) => {
+    const time = Date.now() - message.timestamp.valueOf();
+    bot.sendMessage(message.channel, `Pong! (${time} ms)`);
+  },
+  UserPermission.USER,
+);
+
 /** The standard commands available on all bots. */
 const commands = [
   // User commands
@@ -559,6 +572,7 @@ const commands = [
   flipCmd,
   rollCmd,
   statsCmd,
+  pingCmd,
   // Admin commands
   subCmd,
   unsubCmd,

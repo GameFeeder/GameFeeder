@@ -132,7 +132,8 @@ export default class TelegramBot extends BotClient {
       // FIX: Properly identify the user key
       const user = new User(this, userID);
       const content = msg.text;
-      const timestamp = new Date(msg.date);
+      // Convert from Unix time to date
+      const timestamp = new Date(msg.date * 1000);
 
       const reg = await command.getRegExp(channel);
       // Run regex on the msg
