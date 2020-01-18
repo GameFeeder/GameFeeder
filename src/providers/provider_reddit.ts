@@ -4,6 +4,8 @@ import Notification from '../notifications/notification';
 import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
+import { sortLimitEnd } from '../util/comparable';
+import { mapAsync } from '../util/util';
 
 export default class RedditProvider extends Provider {
   public users: RedditUserProvider[];
@@ -20,13 +22,22 @@ export default class RedditProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    return Reddit.getNotifications(
-      this.subreddit,
-      this.users,
-      this.urlFilters,
-      this.game,
-      date,
-      limit,
-    );
+    const userNotifications = await mapAsync(this.users, async (user) => {
+      let userPosts = await Reddit.getUserPosts(user.name);
+      // Filter out irrelevant posts
+      userPosts = userPosts.filter((post) => {
+        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
+        const isCorrectSub = post.isCorrectSub(this.subreddit);
+        return isValid && isCorrectSub;
+      });
+      return userPosts.map((post) => post.toGameNotification(this.game));
+    });
+
+    // Combine the user notifications
+    let notifications = [].concat(...userNotifications);
+    // Limit the length
+    notifications = sortLimitEnd(notifications, limit);
+
+    return notifications;
   }
 }
