@@ -2,6 +2,7 @@ import EscapeRegex from 'escape-string-regexp';
 import BotClient from '../bots/bot';
 import User, { UserPermission } from '../user';
 import Channel from '../channel';
+import Message from '../message';
 
 export default class Command {
   /** The label of the command. */
@@ -13,7 +14,7 @@ export default class Command {
   /** The RegExp string triggering the command. */
   public trigger: string;
   /** The callback function executing the command. */
-  public callback: (bot: BotClient, channel: Channel, user: User, match: RegExpMatchArray) => void;
+  public callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
   /** The permission required to execute the command. */
@@ -34,7 +35,7 @@ export default class Command {
     description: string,
     triggerLabel: string,
     trigger: string,
-    callback: (bot: BotClient, channel: Channel, user: User, match: RegExpMatchArray) => void,
+    callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void,
     permission?: UserPermission,
     hasPrefix?: boolean,
   ) {
@@ -55,19 +56,19 @@ export default class Command {
    */
   public async execute(
     bot: BotClient,
-    channel: Channel,
-    user: User,
+    message: Message,
     match: RegExpMatchArray,
   ): Promise<boolean> {
     // Check if the user has the required permission to execute the command.
-    if (await user.hasPermission(channel, this.permission)) {
-      bot.logger.debug(`Command: ${this.label}`);
-      this.callback(bot, channel, user, match);
+    if (await message.user.hasPermission(message.channel, this.permission)) {
+      this.callback(bot, message, match);
+      const time = Date.now() - message.timestamp.valueOf();
+      bot.logger.debug(`Command '${this.label}' executed in ${time} ms.`);
       return true;
     }
     bot.logger.debug(`Command: ${this.label}: Insufficient permissions.`);
     bot.sendMessage(
-      channel,
+      message.channel,
       `You need the permission '${this.permission}' on this server to execute this command!`,
     );
     return false;

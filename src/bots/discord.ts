@@ -7,6 +7,7 @@ import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
+import Message from '../message';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -138,15 +139,20 @@ export default class DiscordBot extends BotClient {
   }
 
   public async registerCommand(command: Command): Promise<void> {
-    this.bot.on('message', async (message) => {
-      const channel = this.getChannelByID(message.channel.id);
+    this.bot.on('message', async (msg) => {
+      const channel = this.getChannelByID(msg.channel.id);
+      const user = new User(this, msg.author.id);
+      const timestamp = msg.createdAt;
+      const content = msg.toString();
+
       const reg = await command.getRegExp(channel);
       // Run regex on the msg
-      const regMatch = reg.exec(message.toString());
+      const regMatch = reg.exec(content);
+      const message = new Message(user, channel, content, timestamp);
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(this, channel, new User(this, message.author.id), regMatch);
+        command.execute(this, message, regMatch);
       }
     });
   }
