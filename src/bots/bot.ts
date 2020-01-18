@@ -5,6 +5,7 @@ import DataManager from '../managers/data_manager';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
+import Permissions from '../permissions';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -72,6 +73,13 @@ export default abstract class BotClient {
    * @param channel - The channel to get the role on.
    */
   public abstract async getUserRole(user: User, channel: Channel): Promise<UserRole>;
+
+  /** Gets the permissions of a user on a given channel.
+   *
+   * @param user - The user to get the permissions of.
+   * @param channel - The channel to get the permissions on.
+   */
+  public abstract async getUserPermissions(user: User, channel: Channel): Promise<Permissions>;
 
   /** Gets a list of the owners of the bot.
    *

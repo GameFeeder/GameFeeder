@@ -8,6 +8,7 @@ import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
+import Permissions from '../permissions';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -131,6 +132,34 @@ export default class DiscordBot extends BotClient {
     }
     // The user is just a regular user
     return UserRole.USER;
+  }
+
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    let canWrite;
+    let canEdit;
+    let canPin;
+
+    if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
+      // You always have all permissions in DM and group channels
+      canWrite = true;
+      canEdit = true;
+      canPin = true;
+    } else if (discordChannel instanceof TextChannel) {
+      // Check for the permissions
+      const discordUser = discordChannel.members.get(user.id);
+      canWrite = discordUser.hasPermission(2048);
+      canEdit = discordUser.hasPermission(8192);
+      canPin = discordUser.hasPermission(8192);
+    } else {
+      canWrite = false;
+      canEdit = false;
+      canPin = false;
+    }
+
+    const permissions = new Permissions(true, canWrite, canEdit, canPin);
+    return permissions;
   }
 
   public async getOwners(): Promise<User[]> {

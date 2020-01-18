@@ -8,6 +8,7 @@ import Notification from '../notifications/notification';
 import MDRegex, { bold, seperator } from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
+import Permissions from '../permissions';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -86,6 +87,29 @@ export default class TelegramBot extends BotClient {
     }
     // the user is just a regular user
     return UserRole.USER;
+  }
+
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+    let canWrite;
+    let canEdit;
+    let canPin;
+
+    try {
+      const chatMember = await this.bot.getChatMember(channel.id, user.id);
+
+      canWrite = chatMember.can_send_messages;
+      canEdit = chatMember.can_edit_messages;
+      canPin = chatMember.can_pin_messages;
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions:\n${error}`);
+
+      canWrite = false;
+      canEdit = false;
+      canPin = false;
+    }
+
+    const permissions = new Permissions(true, canWrite, canEdit, canPin);
+    return permissions;
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
