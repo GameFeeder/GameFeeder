@@ -1,4 +1,4 @@
-import { UserPermission } from '../user';
+import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import Command from './command';
 import DataManager from '../managers/data_manager';
@@ -34,10 +34,10 @@ const helpCmd = new Command(
   'help',
   'help\\s*$',
   async (bot, message, _) => {
-    // Only show the commands the user has permission to execute.
+    // Only show the commands the user has the role to execute.
     const filteredCommands = await filterAsync(
       commands,
-      async (command) => await message.user.hasPermission(message.channel, command.permission),
+      async (command) => await message.user.hasRole(message.channel, command.role),
     );
     const commandsList = filteredCommands.map(
       (command) =>
@@ -177,7 +177,7 @@ const subCmd = new Command(
 
     bot.sendMessage(channel, msg);
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Unsubscribe
@@ -250,7 +250,7 @@ const unsubCmd = new Command(
 
     bot.sendMessage(channel, msg);
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Prefix
@@ -321,7 +321,7 @@ const prefixCmd = new Command(
     DataManager.setSubscriberData(subscribers);
     return;
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Notify All
@@ -352,7 +352,7 @@ const notifyAllCmd = new Command(
       curBot.sendMessageToAllSubs(msg);
     }
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Notify Game Subs
@@ -406,7 +406,7 @@ const notifyGameSubsCmd = new Command(
         `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Flip
@@ -429,7 +429,7 @@ const flipCmd = new Command(
     // Notify the user
     bot.sendMessage(message.channel, `Flipping a coin: **${result}**`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Roll
@@ -493,7 +493,7 @@ const rollCmd = new Command(
     // Notify user
     bot.sendMessage(message.channel, `${text}:\n${resultStr}`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Stats
@@ -545,7 +545,7 @@ const statsCmd = new Command(
 
     bot.sendMessage(message.channel, statString);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Ping
@@ -558,7 +558,7 @@ const pingCmd = new Command(
     const time = Date.now() - message.timestamp.valueOf();
     bot.sendMessage(message.channel, `Pong! (${time} ms)`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Telegram Cmds
@@ -570,7 +570,7 @@ const telegramCmdsCmd = new Command(
   (bot, message, _) => {
     const cmds = commands.filter((command) => {
       // Filter out owner commands
-      return command.permission !== UserPermission.OWNER;
+      return command.role !== UserRole.OWNER;
     });
     const cmdEntries = cmds.map((cmd) => {
       return `${cmd.label} - ${cmd.description}`;
@@ -580,7 +580,7 @@ const telegramCmdsCmd = new Command(
 
     bot.sendMessage(message.channel, telegramCmdStr);
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Debug
@@ -591,7 +591,7 @@ const debugCmd = new Command(
   'debug',
   async (bot, message, _) => {
     // Aggregate debug info
-    const userPermission = await message.user.getPermission(message.channel);
+    const userRole = await message.user.getRole(message.channel);
     const userID = message.user.id;
     const channelID = message.channel.id;
     const serverMembers = await bot.getChannelUserCount(message.channel);
@@ -599,7 +599,7 @@ const debugCmd = new Command(
     const time = Date.now() - message.timestamp.valueOf();
 
     const debugStr =
-      `**User info:**\n- ID: ${userID}\n- Permission: ${userPermission}\n` +
+      `**User info:**\n- ID: ${userID}\n- Role: ${userRole}\n` +
       `**Channel info:**\n-ID: ${channelID}\n- Server members: ${serverMembers}\n` +
       `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
 

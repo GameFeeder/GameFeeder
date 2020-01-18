@@ -1,6 +1,6 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
@@ -57,35 +57,35 @@ export default class TelegramBot extends BotClient {
     }
   }
 
-  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
+  public async getUserRole(user: User, channel: Channel): Promise<UserRole> {
     try {
       // Channel messages don't have an author, we assigned the user id channelAuthorID
       // A bit hacky, but should work for now
       if (user.id === this.channelAuthorID) {
-        // If you can write in a channel, you get admin permissions
-        return UserPermission.ADMIN;
+        // If you can write in a channel, you have an admin role
+        return UserRole.ADMIN;
       }
       // Check if user is owner
       const ownerIds = (await this.getOwners()).map((owner) => owner.id);
       if (ownerIds.includes(user.id)) {
-        return UserPermission.OWNER;
+        return UserRole.OWNER;
       }
       // Check if user has default admin rights
       const chat = await this.bot.getChat(channel.id);
       if (chat.all_members_are_administrators || chat.type === 'private') {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
       // Check if user is an admin on this channel
       const chatAdmins = (await this.bot.getChatAdministrators(channel.id)) || [];
       const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
       if (adminIds.includes(user.id)) {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
     } catch (error) {
       this.logger.error(`Failed to get chat admins:\n${error}`);
     }
     // the user is just a regular user
-    return UserPermission.USER;
+    return UserRole.USER;
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {

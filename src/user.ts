@@ -17,38 +17,38 @@ export default class User {
     this.bot = bot;
     this.id = id;
   }
-  /** Get's the user's permission on the given channel.
+  /** Get's the user's rpöe on the given channel.
    *
-   * @param channel - The channel to get the permissions on.
-   * @returns The permission the user has on the given channel.
+   * @param channel - The channel to get the role on.
+   * @returns The role the user has on the given channel.
    */
-  public async getPermission(channel: Channel): Promise<UserPermission> {
-    return await this.bot.getUserPermission(this, channel);
+  public async getRole(channel: Channel): Promise<UserRole> {
+    return await this.bot.getUserRole(this, channel);
   }
-  /** Determines whether the user has the given permission on the given channel.
+  /** Determines whether the user has the given role on the given channel.
    *
-   * @param channel - The channel the user wants the permission on.
-   * @param permission - The permission the user should have.
+   * @param channel - The channel the user wants the role on.
+   * @param role - The role the user should have.
    *
-   * @returns True, if the user has the given permission on the given channel, else false.
+   * @returns True, if the user has the given role on the given channel, else false.
    */
-  public async hasPermission(channel: Channel, permission: UserPermission): Promise<boolean> {
-    switch (permission) {
-      case UserPermission.OWNER:
-        return (await this.getPermission(channel)) === UserPermission.OWNER;
-      case UserPermission.ADMIN:
-        return (await this.getPermission(channel)) !== UserPermission.USER;
-      case UserPermission.USER:
+  public async hasRole(channel: Channel, role: UserRole): Promise<boolean> {
+    switch (role) {
+      case UserRole.OWNER:
+        return (await this.getRole(channel)) === UserRole.OWNER;
+      case UserRole.ADMIN:
+        return (await this.getRole(channel)) !== UserRole.USER;
+      case UserRole.USER:
         return true;
       default:
-        User.logger.debug('Unknown UserPermission. Denying access.');
+        User.logger.debug('Unknown UserRole. Denying access.');
         return false;
     }
   }
 }
 
-/** Determines the permission a user has on a channel. */
-export enum UserPermission {
+/** Determines the role a user has on a channel. */
+export enum UserRole {
   /** The user is just a normal user. */
   USER = 'User',
   /** The user has admin priviliges. */

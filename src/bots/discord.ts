@@ -1,6 +1,6 @@
 import DiscordAPI, { DMChannel, GroupDMChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
@@ -110,27 +110,27 @@ export default class DiscordBot extends BotClient {
     return userCount;
   }
 
-  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
+  public async getUserRole(user: User, channel: Channel): Promise<UserRole> {
     // Check if the user is one of the owners
     const ownerIds = (await this.getOwners()).map((owner) => owner.id);
     if (ownerIds.includes(user.id)) {
-      return UserPermission.OWNER;
+      return UserRole.OWNER;
     }
 
     const discordChannel = this.bot.channels.get(channel.id);
     // Check if the user has default admin rights
     if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
-      return UserPermission.ADMIN;
+      return UserRole.ADMIN;
     }
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser.hasPermission(8)) {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
     }
     // The user is just a regular user
-    return UserPermission.USER;
+    return UserRole.USER;
   }
 
   public async getOwners(): Promise<User[]> {

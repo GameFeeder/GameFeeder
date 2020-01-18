@@ -1,4 +1,4 @@
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import DataManager from '../managers/data_manager';
@@ -66,12 +66,12 @@ export default abstract class BotClient {
    */
   public abstract stop(): void;
 
-  /** Gets the permission of a user on a given channel.
+  /** Gets the role of a user on a given channel.
    *
-   * @param user - The user to get the permission of.
-   * @param channel - The channel to get the permission on.
+   * @param user - The user to get the role of.
+   * @param channel - The channel to get the role on.
    */
-  public abstract async getUserPermission(user: User, channel: Channel): Promise<UserPermission>;
+  public abstract async getUserRole(user: User, channel: Channel): Promise<UserRole>;
 
   /** Gets a list of the owners of the bot.
    *

@@ -1,6 +1,6 @@
 import EscapeRegex from 'escape-string-regexp';
 import BotClient from '../bots/bot';
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
 
@@ -17,8 +17,8 @@ export default class Command {
   public callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
-  /** The permission required to execute the command. */
-  public permission: UserPermission;
+  /** The role required to execute the command. */
+  public role: UserRole;
 
   /** Create a new command.
    *
@@ -27,7 +27,7 @@ export default class Command {
    * @param {string} triggerLabel - The label of the command trigger. Displayed in the help-command.
    * @param {string} trigger - The RegExp string triggering the command.
    * @param {Function} callback - The callback function executing the command.
-   * @param {UserPermission} permission - The permission required to execute the command.
+   * @param {UserRole} role - The role required to execute the command.
    * @param {boolean} hasPrefix - Whether the command should use the bot prefix. Default is true.
    */
   constructor(
@@ -36,7 +36,7 @@ export default class Command {
     triggerLabel: string,
     trigger: string,
     callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void,
-    permission?: UserPermission,
+    role?: UserRole,
     hasPrefix?: boolean,
   ) {
     this.label = label;
@@ -44,7 +44,7 @@ export default class Command {
     this.triggerLabel = triggerLabel;
     this.trigger = trigger;
     this.callback = callback;
-    this.permission = permission != null ? permission : UserPermission.USER;
+    this.role = role != null ? role : UserRole.USER;
     this.hasPrefix = hasPrefix != null ? hasPrefix : true;
   }
   /** Tries to execute the command on the given channel.
@@ -59,17 +59,17 @@ export default class Command {
     message: Message,
     match: RegExpMatchArray,
   ): Promise<boolean> {
-    // Check if the user has the required permission to execute the command.
-    if (await message.user.hasPermission(message.channel, this.permission)) {
+    // Check if the user has the required role to execute the command.
+    if (await message.user.hasRole(message.channel, this.role)) {
       this.callback(bot, message, match);
       const time = Date.now() - message.timestamp.valueOf();
       bot.logger.debug(`Command '${this.label}' executed in ${time} ms.`);
       return true;
     }
-    bot.logger.debug(`Command: ${this.label}: Insufficient permissions.`);
+    bot.logger.debug(`Command: ${this.label}: ${this.role} role required.`);
     bot.sendMessage(
       message.channel,
-      `You need the permission '${this.permission}' on this server to execute this command!`,
+      `You need the role '${this.role}' on this server to execute this command!`,
     );
     return false;
   }
