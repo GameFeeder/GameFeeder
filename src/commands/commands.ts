@@ -583,6 +583,30 @@ const telegramCmdsCmd = new Command(
   UserPermission.OWNER,
 );
 
+// Debug
+const debugCmd = new Command(
+  'debug',
+  'Display some useful debug information.',
+  'debug',
+  'debug',
+  async (bot, message, _) => {
+    // Aggregate debug info
+    const userPermission = await message.user.getPermission(message.channel);
+    const userID = message.user.id;
+    const channelID = message.channel.id;
+    const serverMembers = await bot.getChannelUserCount(message.channel);
+    const botTag = await bot.getUserTag();
+    const time = Date.now() - message.timestamp.valueOf();
+
+    const debugStr =
+      `**User info:**\n- ID: ${userID}\n- Permission: ${userPermission}\n` +
+      `**Channel info:**\n-ID: ${channelID}\n- Server members: ${serverMembers}\n` +
+      `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
+
+    bot.sendMessage(message.channel, debugStr);
+  },
+);
+
 /** The standard commands available on all bots. */
 const commands = [
   // User commands
@@ -595,6 +619,7 @@ const commands = [
   rollCmd,
   statsCmd,
   pingCmd,
+  debugCmd,
   // Admin commands
   subCmd,
   unsubCmd,
