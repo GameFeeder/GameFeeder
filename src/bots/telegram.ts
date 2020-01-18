@@ -7,6 +7,7 @@ import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex, { bold, seperator } from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
+import Message from '../message';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -126,21 +127,21 @@ export default class TelegramBot extends BotClient {
   private async onMessage(msg: TelegramAPI.Message, command: Command): Promise<void> {
     try {
       const channel = this.getChannelByID(msg.chat.id.toString());
+      // Channel messages don't have an author, so we have to work around that
+      const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
+      // FIX: Properly identify the user key
+      const user = new User(this, userID);
+      const content = msg.text;
+      const timestamp = new Date(msg.date);
+
       const reg = await command.getRegExp(channel);
       // Run regex on the msg
-      const regMatch = reg.exec(msg.text);
+      const regMatch = reg.exec(content);
+      const message = new Message(user, channel, content, timestamp);
       // If the regex matched, execute the handler function
       if (regMatch) {
-        // Channel messages don't have an author, so we have to work around that
-        const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
         // Execute the command
-        await command.execute(
-          this,
-          channel,
-          // FIX: Properly identify the user key
-          new User(this, userID),
-          regMatch,
-        );
+        await command.execute(this, message, regMatch);
       }
     } catch (error) {
       this.logger.error(`Failed to execute command ${command.label}:\n${error}`);

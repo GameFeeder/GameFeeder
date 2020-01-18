@@ -14,14 +14,14 @@ const startCmd = new Command(
   'Get started with the GameFeeder.',
   'start',
   'start',
-  (bot, channel, user) => {
+  (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
-      channel,
+      message.channel,
       `Welcome to the **${name}** (v${version})!\n` +
-        `Use \`${helpCmd.getTriggerLabel(channel)}\` to display all available commands.\n` +
+        `Use \`${helpCmd.getTriggerLabel(message.channel)}\` to display all available commands.\n` +
         `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
     );
   },
@@ -33,19 +33,20 @@ const helpCmd = new Command(
   'Display a list of all available commands.',
   'help',
   'help\\s*$',
-  async (bot, channel, user) => {
+  async (bot, message, _) => {
     // Only show the commands the user has permission to execute.
     const filteredCommands = await filterAsync(
       commands,
-      async (command) => await user.hasPermission(channel, command.permission),
+      async (command) => await message.user.hasPermission(message.channel, command.permission),
     );
     const commandsList = filteredCommands.map(
-      (command) => `- \`${channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`,
+      (command) =>
+        `- \`${message.channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`,
     );
 
     const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
 
-    bot.sendMessage(channel, helpMD);
+    bot.sendMessage(message.channel, helpMD);
   },
 );
 
@@ -55,12 +56,12 @@ const aboutCmd = new Command(
   'Display info about the bot.',
   'about',
   '(about)|(info)\\s*$',
-  (bot, channel) => {
+  (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
     bot.sendMessage(
-      channel,
+      message.channel,
       `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
@@ -72,7 +73,8 @@ const settingsCmd = new Command(
   'Display an overview of the settings you can configure for the bot.',
   'settings',
   '(settings)|(options)|(config)\\s*$',
-  (bot, channel) => {
+  (bot, message, _) => {
+    const channel = message.channel;
     const gameStr =
       channel.gameSubs && channel.gameSubs.length > 0
         ? `> You are currently subscribed to the following games:\n` +
@@ -97,11 +99,11 @@ const gamesCmd = new Command(
   'Display all available games.',
   'games',
   'games\\s*$',
-  (bot, channel) => {
+  (bot, message, _) => {
     const gamesList = Game.getGames().map((game) => `- ${game.label}`);
     const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
-    bot.sendMessage(channel, gamesMD);
+    bot.sendMessage(message.channel, gamesMD);
   },
 );
 
@@ -111,7 +113,8 @@ const subCmd = new Command(
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
-  (bot, channel, user, match: any) => {
+  (bot, message, match: any) => {
+    const channel = message.channel;
     let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
 
@@ -153,26 +156,26 @@ const subCmd = new Command(
     const validSubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
     const invalidSubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
-    let message = '';
+    let msg = '';
 
     // Valid subscriptions
     if (validSubs.length > 0) {
-      message += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
+      msg += `You are now subscribed to ${naturalJoin(validSubs.map((game) => game.label))}.`;
     }
     // Already subscribed
     if (invalidSubs.length > 0) {
-      message +=
+      msg +=
         `\nYou have already subscribed to ` +
         `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
     }
     // Unknown aliases
     if (invalidAliases.length > 0) {
-      message +=
+      msg +=
         `\nWe don't know any game(s) with the alias(es) ` +
         `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
     }
 
-    bot.sendMessage(channel, message);
+    bot.sendMessage(channel, msg);
   },
   UserPermission.ADMIN,
 );
@@ -183,7 +186,8 @@ const unsubCmd = new Command(
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
   'unsub(scribe)?(?<alias>.*)',
-  (bot, channel, user, match: any) => {
+  (bot, message, match: any) => {
+    const channel = message.channel;
     let { alias } = match.groups;
     alias = alias ? alias.trim() : '';
 
@@ -225,26 +229,26 @@ const unsubCmd = new Command(
     const validUnsubs = gameMap.filter((map) => map.isNew).map((map) => map.game);
     const invalidUnsubs = gameMap.filter((map) => !map.isNew).map((map) => map.game);
 
-    let message = '';
+    let msg = '';
 
     // Valid unsubscriptions
     if (validUnsubs.length > 0) {
-      message += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
+      msg += `You unsubscribed from ${naturalJoin(validUnsubs.map((game) => game.label))}.`;
     }
     // Already unsubscribed
     if (invalidUnsubs.length > 0) {
-      message +=
+      msg +=
         `\nYou have never subscribed to ` +
         `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
     }
     // Unknown aliases
     if (invalidAliases.length > 0) {
-      message +=
+      msg +=
         `\nWe don't know any game(s) with the alias(es) ` +
         `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
     }
 
-    bot.sendMessage(channel, message);
+    bot.sendMessage(channel, msg);
   },
   UserPermission.ADMIN,
 );
@@ -255,7 +259,8 @@ const prefixCmd = new Command(
   `Change the bot's prefix used in this channel.`,
   'prefix',
   'prefix(?<newPrefix>.*)$',
-  (bot, channel, user, match: any) => {
+  (bot, message, match: any) => {
+    const channel = message.channel;
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
 
@@ -324,13 +329,14 @@ const notifyAllCmd = new Command(
   'Notify All',
   'Notify all subscribed users.',
   'notifyAll <message>',
-  '(notifyAll(Subs)?)\\s*(?<message>(?:.|\\s)*)$',
-  (bot, channel, user, match: any) => {
-    let { message } = match.groups;
-    message = message ? message.trim() : '';
+  '(notifyAll(Subs)?)\\s*(?<msg>(?:.|\\s)*)$',
+  (bot, message, match: any) => {
+    const channel = message.channel;
+    let { msg } = match.groups;
+    msg = msg ? msg.trim() : '';
 
     // Check if the user has provided a message
-    if (!message) {
+    if (!msg) {
       bot.sendMessage(
         channel,
         `You need to provide a message to send to everyone.\n` +
@@ -339,11 +345,11 @@ const notifyAllCmd = new Command(
       return;
     }
 
-    bot.sendMessage(channel, `Notifying all subs with:\n"${message}"`);
+    bot.sendMessage(channel, `Notifying all subs with:\n"${msg}"`);
 
     // Send the provided message to all subs
     for (const curBot of getBots()) {
-      curBot.sendMessageToAllSubs(message);
+      curBot.sendMessageToAllSubs(msg);
     }
   },
   UserPermission.OWNER,
@@ -354,14 +360,15 @@ const notifyGameSubsCmd = new Command(
   'Notify Game Subs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
-  '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<message>(?:.|\\s)*)\\s*$',
-  (bot, channel, user, match: any) => {
-    let { alias, message } = match.groups;
+  '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<msg>(?:.|\\s)*)\\s*$',
+  (bot, message, match: any) => {
+    const channel = message.channel;
+    let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
-    message = message ? message.trim() : '';
+    msg = msg ? msg.trim() : '';
 
     // Check if the user has provided a message
-    if (!message) {
+    if (!msg) {
       bot.sendMessage(
         channel,
         `You need to provide a message to send to everyone.\n` +
@@ -382,10 +389,10 @@ const notifyGameSubsCmd = new Command(
     // Try to find the game
     for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
-        bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${message}"`);
+        bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${msg}"`);
         // Notify the game's subs
         for (const curBot of getBots()) {
-          curBot.sendMessageToGameSubs(game, message);
+          curBot.sendMessageToGameSubs(game, msg);
         }
 
         return;
@@ -408,7 +415,7 @@ const flipCmd = new Command(
   'Flip a coin.',
   'flip',
   'flip',
-  (bot, channel, user, match) => {
+  (bot, message, _) => {
     const rnd = Math.random();
 
     let result;
@@ -420,7 +427,7 @@ const flipCmd = new Command(
     }
 
     // Notify the user
-    bot.sendMessage(channel, `Flipping a coin: **${result}**`);
+    bot.sendMessage(message.channel, `Flipping a coin: **${result}**`);
   },
   UserPermission.USER,
 );
@@ -431,7 +438,7 @@ const rollCmd = new Command(
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
   'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
-  (bot, channel, user, match) => {
+  (bot, message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
     let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
@@ -484,7 +491,7 @@ const rollCmd = new Command(
     }
 
     // Notify user
-    bot.sendMessage(channel, `${text}:\n${resultStr}`);
+    bot.sendMessage(message.channel, `${text}:\n${resultStr}`);
   },
   UserPermission.USER,
 );
@@ -495,7 +502,7 @@ const statsCmd = new Command(
   'Display statistics about the bot.',
   'stats',
   'stat(istic)?s?',
-  async (bot, channel, user) => {
+  async (bot, message, _) => {
     const botStatStrings: string[] = [];
 
     let totalUserCount = 0;
@@ -536,7 +543,7 @@ const statsCmd = new Command(
       `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 
-    bot.sendMessage(channel, statString);
+    bot.sendMessage(message.channel, statString);
   },
   UserPermission.USER,
 );
