@@ -58,6 +58,12 @@ export default class TelegramBot extends BotClient {
     }
   }
 
+  public async getUser(): Promise<User> {
+    const telegramUser = await this.bot.getMe();
+    const userID = telegramUser.id.toString();
+    return new User(this, userID);
+  }
+
   public async getUserRole(user: User, channel: Channel): Promise<UserRole> {
     try {
       // Channel messages don't have an author, we assigned the user id channelAuthorID

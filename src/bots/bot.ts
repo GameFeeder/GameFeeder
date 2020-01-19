@@ -182,6 +182,9 @@ export default abstract class BotClient {
     return false;
   }
 
+  /** Gets the bot user. */
+  public abstract async getUser(): Promise<User>;
+
   /** Get the number of users in a given channel.
    *
    * @param channel - The channel to count the users in.

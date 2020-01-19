@@ -52,6 +52,11 @@ export default class DiscordBot extends BotClient {
     return `<@${this.bot.user.id}>`;
   }
 
+  public async getUser(): Promise<User> {
+    const userID = this.bot.user.id;
+    return new User(this, userID);
+  }
+
   public async getChannelUserCount(channel: Channel): Promise<number> {
     const discordChannel = this.bot.channels.get(channel.id);
 
@@ -211,6 +216,7 @@ export default class DiscordBot extends BotClient {
     try {
       return await this.sendToChannel(channel, '', embed);
     } catch (error) {
+      this.logger.error(`Failed to send message:\n${error}`);
       return false;
     }
   }
