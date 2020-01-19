@@ -162,6 +162,26 @@ export default abstract class BotClient {
     return false;
   }
 
+  /** Removes the data of a channel.
+   *
+   * @param  {Channel} channel - The channel to remove the data from.
+   */
+  public removeData(channel: Channel): boolean {
+    const subscribers = DataManager.getSubscriberData();
+    const subs = subscribers[this.name];
+
+    // Check if the channel has an entry
+    for (let i = 0; i < subs.length; i++) {
+      const sub = subs[i];
+      if (channel.isEqual(sub.id)) {
+        // Remove the channel
+        subs.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Get the number of users in a given channel.
    *
    * @param channel - The channel to count the users in.
