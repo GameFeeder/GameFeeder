@@ -154,9 +154,9 @@ export default class DiscordBot extends BotClient {
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      canWrite = discordUser.permissions.has('SEND_MESSAGES');
-      canEdit = discordUser.hasPermission(8192);
-      canPin = discordUser.hasPermission(8192);
+      canWrite = discordChannel.permissionsFor(discordUser).has(['SEND_MESSAGES', 'VIEW_CHANNEL']);
+      canEdit = discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
+      canPin = discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
     } else {
       this.logger.error(`Unecpected Discord channel type.`);
       canWrite = false;
