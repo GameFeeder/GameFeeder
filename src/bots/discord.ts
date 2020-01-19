@@ -154,10 +154,11 @@ export default class DiscordBot extends BotClient {
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      canWrite = discordUser.hasPermission(2048);
+      canWrite = discordUser.permissions.has('SEND_MESSAGES');
       canEdit = discordUser.hasPermission(8192);
       canPin = discordUser.hasPermission(8192);
     } else {
+      this.logger.error(`Unecpected Discord channel type.`);
       canWrite = false;
       canEdit = false;
       canPin = false;
@@ -205,10 +206,26 @@ export default class DiscordBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
+    // Check if the bot can write to this channel
+    const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    this.logger.debug(
+      `Permissions: W: ${permissions.canWrite} | E: ${permissions.canEdit} | P: ${permissions.canPin}`,
+    );
+    if (!permissions.canWrite) {
+      if (this.removeData(channel)) {
+        this.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return false;
+    }
     if (typeof message === 'string') {
       // Parse markdown
       const messageText = DiscordBot.msgFromMarkdown(message, false);
-      return await this.sendToChannel(channel, messageText);
+      try {
+        return await this.sendToChannel(channel, messageText);
+      } catch (error) {
+        this.logger.error(`Failed to send message:\n${error}`);
+        return false;
+      }
     }
     // Parse markdown
     const embed = this.embedFromNotification(message);
@@ -356,23 +373,44 @@ export default class DiscordBot extends BotClient {
 
   private async sendToChannel(channel: Channel, text: string, embed?: any): Promise<boolean> {
     const botChannels = this.bot.channels;
-    const discordChannel = botChannels.get(channel.id);
+    let discordChannel;
+    try {
+      discordChannel = botChannels.get(channel.id);
+    } catch (error) {
+      this.logger.error(`Failed to get discord channel:\n${error}`);
+      return false;
+    }
 
     if (!discordChannel) {
       return false;
     }
 
-    if (discordChannel instanceof DMChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    }
-    if (discordChannel instanceof TextChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    }
-    if (discordChannel instanceof GroupDMChannel) {
-      discordChannel.send(text, embed);
-      return true;
+    const callback = (error: any) => {
+      let errorMsg;
+      if (error instanceof Error) {
+        errorMsg = `${error.name}: ${error.message}`;
+      } else {
+        errorMsg = error.toString();
+      }
+      this.logger.error(`Failed to send message to channel:\n${errorMsg}`);
+      return false;
+    };
+
+    try {
+      if (discordChannel instanceof DMChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+      if (discordChannel instanceof TextChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+      if (discordChannel instanceof GroupDMChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send message to channel:\n${error}`);
     }
     return false;
   }

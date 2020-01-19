@@ -198,6 +198,13 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
+    // Check if the bot can write to this channel
+    if (!(await this.getUserPermissions(await this.getUser(), channel)).canWrite) {
+      if (this.removeData(channel)) {
+        this.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return false;
+    }
     let message = messageText;
     if (typeof message === 'string') {
       message = TelegramBot.msgFromMarkdown(message);

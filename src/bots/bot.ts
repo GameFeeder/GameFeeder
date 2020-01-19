@@ -176,6 +176,11 @@ export default abstract class BotClient {
       if (channel.isEqual(sub.id)) {
         // Remove the channel
         subs.splice(i, 1);
+
+        // Save the changes
+        subscribers[this.name] = subs;
+        DataManager.setSubscriberData(subscribers);
+
         return true;
       }
     }
