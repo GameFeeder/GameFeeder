@@ -102,10 +102,26 @@ export default class TelegramBot extends BotClient {
 
     try {
       const chatMember = await this.bot.getChatMember(channel.id, user.id);
+      const chat = await this.bot.getChat(channel.id);
 
-      canWrite = chatMember.can_send_messages;
-      canEdit = chatMember.can_edit_messages;
-      canPin = chatMember.can_pin_messages;
+      canWrite =
+        chat.type === 'channel'
+          ? // In channels the user must be an admin to write and have posting permissions
+            chatMember.status === 'administrator' && chatMember.can_post_messages
+          : // If the user is restricted, check permissions, else he can send messages
+          chatMember.status === 'restricted'
+          ? chatMember.can_send_messages
+          : true;
+      // If the user is an admin, check permissions, else he cannot edit
+      canEdit = chatMember.status === 'administrator' ? chatMember.can_edit_messages : false;
+      canPin =
+        // Groups and supergroups only
+        chat.type === 'group' || chat.type === 'supergroup'
+          ? // Check if the permission is restricted
+            chatMember.status === 'restricted' || chatMember.status === 'administrator'
+            ? chatMember.can_pin_messages
+            : true
+          : false;
     } catch (error) {
       this.logger.error(`Failed to get user permissions:\n${error}`);
 
@@ -198,8 +214,12 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
+    const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    this.logger.debug(
+      `Permissions: W: ${permissions.canWrite} | E: ${permissions.canEdit} | P: ${permissions.canPin}`,
+    );
     // Check if the bot can write to this channel
-    if (!(await this.getUserPermissions(await this.getUser(), channel)).canWrite) {
+    if (!permissions.canWrite) {
       if (this.removeData(channel)) {
         this.logger.warn(`Can't write to channel, removing all data.`);
       }
