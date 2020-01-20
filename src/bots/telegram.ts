@@ -96,6 +96,7 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+    let hasAccess;
     let canWrite;
     let canEdit;
     let canPin;
@@ -104,33 +105,38 @@ export default class TelegramBot extends BotClient {
       const chatMember = await this.bot.getChatMember(channel.id, user.id);
       const chat = await this.bot.getChat(channel.id);
 
+      hasAccess = chatMember.status === 'left' || chatMember.status === 'kicked' ? false : true;
       canWrite =
-        chat.type === 'channel'
+        hasAccess &&
+        (chat.type === 'channel'
           ? // In channels the user must be an admin to write and have posting permissions
             chatMember.status === 'administrator' && chatMember.can_post_messages
           : // If the user is restricted, check permissions, else he can send messages
           chatMember.status === 'restricted'
           ? chatMember.can_send_messages
-          : true;
+          : true);
       // If the user is an admin, check permissions, else he cannot edit
-      canEdit = chatMember.status === 'administrator' ? chatMember.can_edit_messages : false;
+      canEdit =
+        hasAccess && (chatMember.status === 'administrator' ? chatMember.can_edit_messages : false);
       canPin =
+        hasAccess &&
         // Groups and supergroups only
-        chat.type === 'group' || chat.type === 'supergroup'
+        (chat.type === 'group' || chat.type === 'supergroup'
           ? // Check if the permission is restricted
             chatMember.status === 'restricted' || chatMember.status === 'administrator'
             ? chatMember.can_pin_messages
             : true
-          : false;
+          : false);
     } catch (error) {
       this.logger.error(`Failed to get user permissions:\n${error}`);
 
+      hasAccess = false;
       canWrite = false;
       canEdit = false;
       canPin = false;
     }
 
-    const permissions = new Permissions(true, canWrite, canEdit, canPin);
+    const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
     return permissions;
   }
 

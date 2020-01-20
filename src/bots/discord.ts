@@ -142,29 +142,33 @@ export default class DiscordBot extends BotClient {
   public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
     const discordChannel = this.bot.channels.get(channel.id);
 
+    let hasAccess;
     let canWrite;
     let canEdit;
     let canPin;
 
-    if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
+    if (discordChannel instanceof DMChannel) {
       // You always have all permissions in DM and group channels
+      hasAccess = true;
       canWrite = true;
       canEdit = true;
       canPin = true;
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      canWrite = discordChannel.permissionsFor(discordUser).has(['SEND_MESSAGES', 'VIEW_CHANNEL']);
-      canEdit = discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
-      canPin = discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
+      hasAccess = discordChannel.permissionsFor(discordUser).has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+      canWrite = hasAccess && discordChannel.permissionsFor(discordUser).has('SEND_MESSAGES');
+      canEdit = hasAccess && discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
+      canPin = hasAccess && discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
     } else {
       this.logger.error(`Unecpected Discord channel type.`);
+      hasAccess = false;
       canWrite = false;
       canEdit = false;
       canPin = false;
     }
 
-    const permissions = new Permissions(true, canWrite, canEdit, canPin);
+    const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
     return permissions;
   }
 
