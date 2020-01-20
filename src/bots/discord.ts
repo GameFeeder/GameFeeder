@@ -172,6 +172,34 @@ export default class DiscordBot extends BotClient {
     return permissions;
   }
 
+  /** Determines if the user can send embedded links.
+   *
+   * @param user - The user to get the permission for.
+   * @param channel - The channel to get the permission on.
+   */
+  public async canEmbed(user: User, channel: Channel): Promise<boolean> {
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    let canEmbed;
+
+    if (discordChannel instanceof DMChannel) {
+      // You always have all permissions in DM and group channels
+      canEmbed = true;
+    } else if (discordChannel instanceof TextChannel) {
+      // Check for the permissions
+      const discordUser = discordChannel.members.get(user.id);
+      const hasAccess = discordChannel
+        .permissionsFor(discordUser)
+        .has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+      canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
+    } else {
+      this.logger.error(`Unecpected Discord channel type.`);
+      canEmbed = false;
+    }
+
+    return canEmbed;
+  }
+
   public async getOwners(): Promise<User[]> {
     const ownerIds: string[] = ConfigManager.getBotConfig().discord.owners;
     return ownerIds.map((id) => new User(this, id));
@@ -231,16 +259,29 @@ export default class DiscordBot extends BotClient {
         return false;
       }
     }
-    // Parse markdown
-    const embed = this.embedFromNotification(message);
+    // Check if the bot can send embeds
+    if (await this.canEmbed(await this.getUser(), channel)) {
+      // Parse markdown
+      const embed = this.embedFromNotification(message);
 
+      try {
+        return await this.sendToChannel(channel, '', embed);
+      } catch (error) {
+        this.logger.error(`Failed to send message:\n${error}`);
+        return false;
+      }
+    }
+
+    // Convert to text and send it
+    const messageText = DiscordBot.msgFromMarkdown(message.toMDString(2000), false);
     try {
-      return await this.sendToChannel(channel, '', embed);
+      return await this.sendToChannel(channel, messageText);
     } catch (error) {
       this.logger.error(`Failed to send message:\n${error}`);
       return false;
     }
   }
+
   public embedFromNotification(notification: Notification): DiscordAPI.RichEmbed {
     const embed = new DiscordAPI.RichEmbed();
     // Title
