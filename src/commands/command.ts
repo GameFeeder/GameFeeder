@@ -14,7 +14,7 @@ export default class Command {
   /** The RegExp string triggering the command. */
   public trigger: string;
   /** The callback function executing the command. */
-  public callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void;
+  public callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => Promise<void>;
   /** Whether the command should use the bot prefix. */
   public hasPrefix: boolean;
   /** The role required to execute the command. */
@@ -35,7 +35,7 @@ export default class Command {
     description: string,
     triggerLabel: string,
     trigger: string,
-    callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => void,
+    callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => Promise<void>,
     role?: UserRole,
     hasPrefix?: boolean,
   ) {
@@ -61,7 +61,7 @@ export default class Command {
   ): Promise<boolean> {
     // Check if the user has the required role to execute the command.
     if (await message.user.hasRole(message.channel, this.role)) {
-      this.callback(bot, message, match);
+      await this.callback(bot, message, match);
       const time = Date.now() - message.timestamp.valueOf();
       bot.logger.debug(`Command '${this.label}' executed in ${time} ms.`);
       return true;

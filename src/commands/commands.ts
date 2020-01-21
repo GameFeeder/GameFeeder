@@ -3,10 +3,8 @@ import getBots from '../bots/bots';
 import Command from './command';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
-import botLogger from '../logger';
 import { filterAsync, mapAsync, naturalJoin, StrUtil } from '../util/util';
 import ProjectManager from '../managers/project_manager';
-import { Util, User } from 'discord.js';
 
 // Start
 const startCmd = new Command(
@@ -14,7 +12,7 @@ const startCmd = new Command(
   'Get started with the GameFeeder.',
   'start',
   'start',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
@@ -56,7 +54,7 @@ const aboutCmd = new Command(
   'Display info about the bot.',
   'about',
   '(about)|(info)\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
@@ -73,7 +71,7 @@ const settingsCmd = new Command(
   'Display an overview of the settings you can configure for the bot.',
   'settings',
   '(settings)|(options)|(config)\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const channel = message.channel;
     const gameStr =
       channel.gameSubs && channel.gameSubs.length > 0
@@ -99,7 +97,7 @@ const gamesCmd = new Command(
   'Display all available games.',
   'games',
   'games\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const gamesList = Game.getGames().map((game) => `- ${game.label}`);
     const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
@@ -186,7 +184,7 @@ const unsubCmd = new Command(
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
   'unsub(scribe)?(?<alias>.*)',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { alias } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -287,7 +285,7 @@ const prefixCmd = new Command(
       if (bot.removeData(channel)) {
         bot.logger.warn(`Can't write to channel, removing all data.`);
       }
-      return false;
+      return;
     }
 
     bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
@@ -339,7 +337,7 @@ const notifyAllCmd = new Command(
   'Notify all subscribed users.',
   'notifyAll <message>',
   '(notifyAll(Subs)?)\\s*(?<msg>(?:.|\\s)*)$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
@@ -370,7 +368,7 @@ const notifyGameSubsCmd = new Command(
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
   '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<msg>(?:.|\\s)*)\\s*$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -424,7 +422,7 @@ const flipCmd = new Command(
   'Flip a coin.',
   'flip',
   'flip',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const rnd = Math.random();
 
     let result;
@@ -447,7 +445,7 @@ const rollCmd = new Command(
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
   'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
-  (bot, message, match) => {
+  async (bot, message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
     let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
@@ -566,7 +564,7 @@ const pingCmd = new Command(
   'Test the delay of the bot.',
   'ping',
   'ping',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const time = Date.now() - message.timestamp.valueOf();
     bot.sendMessage(message.channel, `Pong! (${time} ms)`);
   },
@@ -579,7 +577,7 @@ const telegramCmdsCmd = new Command(
   'Get the string to properly register the commands on Telegram.',
   'telegramCmds',
   'telegramCmds?',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const cmds = commands.filter((command) => {
       // Filter out owner commands
       return command.role !== UserRole.OWNER;
