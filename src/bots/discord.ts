@@ -277,9 +277,6 @@ export default class DiscordBot extends BotClient {
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
     // Check if the bot can write to this channel
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
-    this.logger.debug(
-      `Permissions: W: ${permissions.canWrite} | E: ${permissions.canEdit} | P: ${permissions.canPin}`,
-    );
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
         this.logger.warn(`Can't write to channel, removing all data.`);

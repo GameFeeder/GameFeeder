@@ -253,9 +253,6 @@ export default class TelegramBot extends BotClient {
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
-    this.logger.debug(
-      `Permissions: W: ${permissions.canWrite} | E: ${permissions.canEdit} | P: ${permissions.canPin}`,
-    );
     // Check if the bot can write to this channel
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
