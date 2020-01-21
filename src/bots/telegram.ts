@@ -217,6 +217,27 @@ export default class TelegramBot extends BotClient {
       if (this.token) {
         await this.bot.startPolling({ restart: true });
         this.isRunning = true;
+        // Handle being removed from chats (except channels apparently)
+        this.bot.on('left_chat_member', async (message) => {
+          const leftMember = message.left_chat_member;
+          const telegramUser = await this.bot.getMe();
+          const userID = telegramUser.id;
+
+          if (!leftMember || leftMember.id !== userID) {
+            // It's not the bot
+            return;
+          }
+
+          const channels = this.getBotChannels();
+          const channelID = message.chat.id.toString();
+          // Search for the channel
+          for (const channel of channels) {
+            if (channelID === channel.id) {
+              // Remove channel data
+              await this.onRemoved(channel);
+            }
+          }
+        });
         return true;
       }
     } catch (error) {
