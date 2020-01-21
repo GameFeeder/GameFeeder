@@ -145,17 +145,14 @@ export default class Notification implements Comparable<Notification> {
 
     let mdStr;
 
-    if (this.author.text) {
-      const authorText = this.author.link
-        ? `[${this.author.text}](${this.author.link})`
-        : this.author.text;
+    const authorText = this.author.text
+      ? this.author.link
+        ? ` - [${this.author.text}](${this.author.link})`
+        : this.author.text
+      : '';
 
-      const contentText = this.content ? `\n\n${this.content}` : '';
-      mdStr = `New **${this.game.label}** update - ${authorText}:\n\n${titleText}${contentText}`;
-    } else {
-      const contentText = this.content ? `\n\n${this.content}` : '';
-      mdStr = `New **${this.game.label}** update:\n\n${titleText}${contentText}`;
-    }
+    const contentText = this.content ? `\n\n${this.content}` : '';
+    mdStr = `New **${this.game.label}** update${authorText}:\n\n${titleText}${contentText}`;
 
     mdStr = StrUtil.naturalLimit(mdStr, limit);
 
