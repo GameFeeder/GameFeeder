@@ -147,7 +147,13 @@ export default class DiscordBot extends BotClient {
     let canEdit;
     let canPin;
 
-    if (discordChannel instanceof DMChannel) {
+    if (!discordChannel) {
+      // The user has been kicked from the channel
+      hasAccess = false;
+      canWrite = false;
+      canEdit = false;
+      canPin = false;
+    } else if (discordChannel instanceof DMChannel) {
       // You always have all permissions in DM and group channels
       hasAccess = true;
       canWrite = true;
@@ -161,7 +167,7 @@ export default class DiscordBot extends BotClient {
       canEdit = hasAccess && discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
       canPin = hasAccess && discordChannel.permissionsFor(discordUser).has('MANAGE_MESSAGES');
     } else {
-      this.logger.error(`Unecpected Discord channel type.`);
+      this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
       hasAccess = false;
       canWrite = false;
       canEdit = false;
