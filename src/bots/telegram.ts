@@ -102,8 +102,22 @@ export default class TelegramBot extends BotClient {
     let canPin;
 
     try {
-      const chatMember = await this.bot.getChatMember(channel.id, user.id);
-      const chat = await this.bot.getChat(channel.id);
+      // Try to get chat member
+      const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((_) => {
+        return undefined;
+      });
+      if (!chatMember) {
+        // The user has been removed from the chat
+        return new Permissions(false, false, false, false);
+      }
+      // Try to get chat
+      const chat = await this.bot.getChat(channel.id).catch((error) => {
+        this.logger.error(`Failed to get chat to check permissions:\n${error}`);
+        return undefined;
+      });
+      if (!chat) {
+        return new Permissions(false, false, false, false);
+      }
 
       hasAccess = chatMember.status === 'left' || chatMember.status === 'kicked' ? false : true;
       canWrite =
@@ -130,10 +144,7 @@ export default class TelegramBot extends BotClient {
     } catch (error) {
       this.logger.error(`Failed to get user permissions:\n${error}`);
 
-      hasAccess = false;
-      canWrite = false;
-      canEdit = false;
-      canPin = false;
+      return new Permissions(false, false, false, false);
     }
 
     const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
