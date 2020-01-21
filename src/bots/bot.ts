@@ -200,14 +200,18 @@ export default abstract class BotClient {
     const channels = this.getBotChannels();
 
     // Iterate through all the channels
+    let removeCount = 0;
     for (const channel of channels) {
       const permissions = await this.getUserPermissions(await this.getUser(), channel);
       if (!permissions.canWrite) {
         // The bot can not write to this channel, remove channel data
         if (this.removeData(channel)) {
-          this.logger.warn(`Cleaning up channel without write access.`);
+          removeCount += 1;
         }
       }
+    }
+    if (removeCount > 0) {
+      this.logger.warn(`Cleaning up ${removeCount} channel(s) without write access.`);
     }
   }
 

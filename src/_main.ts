@@ -52,6 +52,8 @@ export default class Main {
         } else {
           bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
         }
+        // Clean up dead bot channels
+        await bot.removeChannelsWithoutWritePermissions();
       } else {
         bot.logger.debug('Autostart disabled.');
       }

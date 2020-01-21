@@ -520,9 +520,12 @@ const statsCmd = new Command(
     const bots = getBots();
 
     // User and channel count
-    for (const curBot of bots) {
-      const channelCount = await curBot.getChannelCount();
-      const userCount = await curBot.getUserCount();
+    for (const bot of bots) {
+      // Clean up dead channels
+      await bot.removeChannelsWithoutWritePermissions();
+      // Get statistics
+      const channelCount = await bot.getChannelCount();
+      const userCount = await bot.getUserCount();
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;
@@ -530,7 +533,7 @@ const statsCmd = new Command(
       const userString = userCount > 1 ? 'users' : 'user';
       const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
-        `     ${curBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        `     ${bot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 

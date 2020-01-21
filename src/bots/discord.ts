@@ -112,7 +112,7 @@ export default class DiscordBot extends BotClient {
       channels,
       async (botChannel) => await botChannel.getUserCount(),
     );
-    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
 
