@@ -195,6 +195,22 @@ export default abstract class BotClient {
     return false;
   }
 
+  /** Removes the data of all channels without write permissions. */
+  public async removeChannelsWithoutWritePermissions() {
+    const channels = this.getBotChannels();
+
+    // Iterate through all the channels
+    for (const channel of channels) {
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      if (!permissions.canWrite) {
+        // The bot can not write to this channel, remove channel data
+        if (this.removeData(channel)) {
+          this.logger.warn(`Cleaning up channel without write access.`);
+        }
+      }
+    }
+  }
+
   /** Gets the bot user. */
   public abstract async getUser(): Promise<User>;
 
