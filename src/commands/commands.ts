@@ -519,8 +519,6 @@ const statsCmd = new Command(
 
     // User and channel count
     for (const bot of bots) {
-      // Clean up dead channels
-      await bot.removeChannelsWithoutWritePermissions();
       // Get statistics
       const channelCount = await bot.getChannelCount();
       const userCount = await bot.getUserCount();
