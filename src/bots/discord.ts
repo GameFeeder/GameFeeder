@@ -233,6 +233,37 @@ export default class DiscordBot extends BotClient {
     if (this.token) {
       await this.bot.login(this.token);
       this.isRunning = true;
+      // Handle being removed from a guild
+      this.bot.on('guildDelete', async (guild) => {
+        const guildID = guild.id;
+        const channels = this.getBotChannels();
+
+        // Remove all channel data of that guild
+        for (const channel of channels) {
+          const discordChannel = this.bot.channels.get(channel.id);
+          if (!discordChannel) {
+            // Can't find the channel, it probably belongs to the guild, remove data
+            await this.onRemoved(channel);
+          } else if (discordChannel instanceof TextChannel) {
+            const channelGuildID = discordChannel.guild.id;
+            if (guildID === channelGuildID) {
+              // The channel belongs to the guild, remove data
+              await this.onRemoved(channel);
+            }
+          }
+        }
+      });
+      // Handle deleted channels
+      this.bot.on('channelDelete', async (discordChannel) => {
+        const channels = this.getBotChannels();
+
+        // Search for the deleted channel
+        for (const channel of channels) {
+          if (channel.id === discordChannel.id) {
+            await this.onRemoved(channel);
+          }
+        }
+      });
       return true;
     }
 
