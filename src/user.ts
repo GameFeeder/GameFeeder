@@ -17,7 +17,7 @@ export default class User {
     this.bot = bot;
     this.id = id;
   }
-  /** Get's the user's rpöe on the given channel.
+  /** Get's the user's role on the given channel.
    *
    * @param channel - The channel to get the role on.
    * @returns The role the user has on the given channel.
