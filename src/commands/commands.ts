@@ -113,7 +113,7 @@ const subCmd = new Command(
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
@@ -148,8 +148,8 @@ const subCmd = new Command(
     invalidAliases = [...new Set(invalidAliases)];
 
     // The map of which game is a new sub
-    const gameMap = aliasGames.map((game) => {
-      const isNew = bot.addSubscriber(channel, game);
+    const gameMap = await mapAsync(aliasGames, async (game) => {
+      const isNew = await bot.addSubscriber(channel, game);
       return { game, isNew };
     });
 

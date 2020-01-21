@@ -93,7 +93,15 @@ export default abstract class BotClient {
    * @param  {Game} game - The game to subscribe to.
    * @returns True, if the subscription was successful, else false.
    */
-  public addSubscriber(channel: Channel, game: Game): boolean {
+  public async addSubscriber(channel: Channel, game: Game): Promise<boolean> {
+    // Check if the bot can write to this channel
+    const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    if (!permissions.canWrite) {
+      if (this.removeData(channel)) {
+        this.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return false;
+    }
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.name];
 
