@@ -259,7 +259,7 @@ const prefixCmd = new Command(
   `Change the bot's prefix used in this channel.`,
   'prefix',
   'prefix(?<newPrefix>.*)$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
@@ -279,6 +279,15 @@ const prefixCmd = new Command(
     // Check if the user wants to reset the prefix
     if (newPrefix === 'reset') {
       newPrefix = bot.prefix;
+    }
+
+    // Check if the bot can write to this channel
+    const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
+    if (!permissions.canWrite) {
+      if (bot.removeData(channel)) {
+        bot.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return false;
     }
 
     bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
