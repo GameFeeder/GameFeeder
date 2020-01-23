@@ -102,20 +102,32 @@ export default class TelegramBot extends BotClient {
     let canPin;
 
     try {
-      // Try to get chat member
-      const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((_) => {
-        return undefined;
-      });
-      if (!chatMember) {
-        // The user has been removed from the chat
-        return new Permissions(false, false, false, false);
-      }
       // Try to get chat
       const chat = await this.bot.getChat(channel.id).catch((error) => {
+        if (error.code === 'ETELEGRAM') {
+          const response = error.response.body;
+          const errorCode = response.error_code;
+          switch (errorCode) {
+            case 403: // Bot is not a member of the channel chat
+              return undefined;
+            default:
+              throw error;
+          }
+        }
         this.logger.error(`Failed to get chat to check permissions:\n${error}`);
-        return undefined;
+        throw error;
       });
+      // Check for expected chat errors
       if (!chat) {
+        return new Permissions(false, false, false, false);
+      }
+      // Try to get chat member
+      const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
+        this.logger.error(`Failed to get chat member:\n${error}`);
+        throw error;
+      });
+      // Check for expected chat member errors
+      if (!chatMember) {
         return new Permissions(false, false, false, false);
       }
 
@@ -142,9 +154,8 @@ export default class TelegramBot extends BotClient {
             : true
           : false);
     } catch (error) {
-      this.logger.error(`Failed to get user permissions:\n${error}`);
-
-      return new Permissions(false, false, false, false);
+      this.logger.error(`Failed to get user permissions due to unexpected error:\n${error}`);
+      throw error;
     }
 
     const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
@@ -253,14 +264,20 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
-    const permissions = await this.getUserPermissions(await this.getUser(), channel);
-    // Check if the bot can write to this channel
-    if (!permissions.canWrite) {
-      if (this.removeData(channel)) {
-        this.logger.warn(`Can't write to channel, removing all data.`);
+    try {
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      // Check if the bot can write to this channel
+      if (!permissions.canWrite) {
+        if (this.removeData(channel)) {
+          this.logger.warn(`Can't write to channel, removing all data.`);
+        }
+        return false;
       }
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
       return false;
     }
+
     let message = messageText;
     if (typeof message === 'string') {
       message = TelegramBot.msgFromMarkdown(message);
