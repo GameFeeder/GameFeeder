@@ -216,7 +216,9 @@ export default class DiscordBot extends BotClient {
     this.bot.on('message', async (msg) => {
       const channel = this.getChannelByID(msg.channel.id);
       const user = new User(this, msg.author.id);
-      const timestamp = msg.createdAt;
+      const now = new Date();
+      // Ensure proper timestamp
+      const timestamp = msg.createdAt > now ? now : msg.createdAt;
       const content = msg.toString();
 
       const reg = await command.getRegExp(channel);
