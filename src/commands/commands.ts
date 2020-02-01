@@ -1,12 +1,10 @@
-import { UserPermission } from '../user';
+import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import Command from './command';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
-import botLogger from '../logger';
 import { filterAsync, mapAsync, naturalJoin, StrUtil } from '../util/util';
 import ProjectManager from '../managers/project_manager';
-import { Util, User } from 'discord.js';
 
 // Start
 const startCmd = new Command(
@@ -14,7 +12,7 @@ const startCmd = new Command(
   'Get started with the GameFeeder.',
   'start',
   'start',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
@@ -34,10 +32,10 @@ const helpCmd = new Command(
   'help',
   'help\\s*$',
   async (bot, message, _) => {
-    // Only show the commands the user has permission to execute.
+    // Only show the commands the user has the role to execute.
     const filteredCommands = await filterAsync(
       commands,
-      async (command) => await message.user.hasPermission(message.channel, command.permission),
+      async (command) => await message.user.hasRole(message.channel, command.role),
     );
     const commandsList = filteredCommands.map(
       (command) =>
@@ -56,7 +54,7 @@ const aboutCmd = new Command(
   'Display info about the bot.',
   'about',
   '(about)|(info)\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
@@ -73,7 +71,7 @@ const settingsCmd = new Command(
   'Display an overview of the settings you can configure for the bot.',
   'settings',
   '(settings)|(options)|(config)\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const channel = message.channel;
     const gameStr =
       channel.gameSubs && channel.gameSubs.length > 0
@@ -99,7 +97,7 @@ const gamesCmd = new Command(
   'Display all available games.',
   'games',
   'games\\s*$',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const gamesList = Game.getGames().map((game) => `- ${game.label}`);
     const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
@@ -113,7 +111,7 @@ const subCmd = new Command(
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
   'sub(scribe)?(?<alias>.*)',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
@@ -148,8 +146,8 @@ const subCmd = new Command(
     invalidAliases = [...new Set(invalidAliases)];
 
     // The map of which game is a new sub
-    const gameMap = aliasGames.map((game) => {
-      const isNew = bot.addSubscriber(channel, game);
+    const gameMap = await mapAsync(aliasGames, async (game) => {
+      const isNew = await bot.addSubscriber(channel, game);
       return { game, isNew };
     });
 
@@ -177,7 +175,7 @@ const subCmd = new Command(
 
     bot.sendMessage(channel, msg);
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Unsubscribe
@@ -186,7 +184,7 @@ const unsubCmd = new Command(
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
   'unsub(scribe)?(?<alias>.*)',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { alias } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -250,7 +248,7 @@ const unsubCmd = new Command(
 
     bot.sendMessage(channel, msg);
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Prefix
@@ -259,7 +257,7 @@ const prefixCmd = new Command(
   `Change the bot's prefix used in this channel.`,
   'prefix',
   'prefix(?<newPrefix>.*)$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
@@ -279,6 +277,15 @@ const prefixCmd = new Command(
     // Check if the user wants to reset the prefix
     if (newPrefix === 'reset') {
       newPrefix = bot.prefix;
+    }
+
+    // Check if the bot can write to this channel
+    const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
+    if (!permissions.canWrite) {
+      if (bot.removeData(channel)) {
+        bot.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return;
     }
 
     bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
@@ -321,7 +328,7 @@ const prefixCmd = new Command(
     DataManager.setSubscriberData(subscribers);
     return;
   },
-  UserPermission.ADMIN,
+  UserRole.ADMIN,
 );
 
 // Notify All
@@ -330,7 +337,7 @@ const notifyAllCmd = new Command(
   'Notify all subscribed users.',
   'notifyAll <message>',
   '(notifyAll(Subs)?)\\s*(?<msg>(?:.|\\s)*)$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
@@ -352,7 +359,7 @@ const notifyAllCmd = new Command(
       curBot.sendMessageToAllSubs(msg);
     }
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Notify Game Subs
@@ -361,7 +368,7 @@ const notifyGameSubsCmd = new Command(
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
   '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<msg>(?:.|\\s)*)\\s*$',
-  (bot, message, match: any) => {
+  async (bot, message, match: any) => {
     const channel = message.channel;
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -406,7 +413,7 @@ const notifyGameSubsCmd = new Command(
         `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
     );
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Flip
@@ -415,7 +422,7 @@ const flipCmd = new Command(
   'Flip a coin.',
   'flip',
   'flip',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const rnd = Math.random();
 
     let result;
@@ -429,7 +436,7 @@ const flipCmd = new Command(
     // Notify the user
     bot.sendMessage(message.channel, `Flipping a coin: **${result}**`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Roll
@@ -438,7 +445,7 @@ const rollCmd = new Command(
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
   'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
-  (bot, message, match) => {
+  async (bot, message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
     let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
@@ -493,7 +500,7 @@ const rollCmd = new Command(
     // Notify user
     bot.sendMessage(message.channel, `${text}:\n${resultStr}`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Stats
@@ -511,9 +518,10 @@ const statsCmd = new Command(
     const bots = getBots();
 
     // User and channel count
-    for (const curBot of bots) {
-      const channelCount = await curBot.getChannelCount();
-      const userCount = await curBot.getUserCount();
+    for (const bot of bots) {
+      // Get statistics
+      const channelCount = await bot.getChannelCount();
+      const userCount = await bot.getUserCount();
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;
@@ -521,7 +529,7 @@ const statsCmd = new Command(
       const userString = userCount > 1 ? 'users' : 'user';
       const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
-        `     ${curBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        `     ${bot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 
@@ -545,7 +553,7 @@ const statsCmd = new Command(
 
     bot.sendMessage(message.channel, statString);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Ping
@@ -554,11 +562,11 @@ const pingCmd = new Command(
   'Test the delay of the bot.',
   'ping',
   'ping',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const time = Date.now() - message.timestamp.valueOf();
     bot.sendMessage(message.channel, `Pong! (${time} ms)`);
   },
-  UserPermission.USER,
+  UserRole.USER,
 );
 
 // Telegram Cmds
@@ -567,10 +575,10 @@ const telegramCmdsCmd = new Command(
   'Get the string to properly register the commands on Telegram.',
   'telegramCmds',
   'telegramCmds?',
-  (bot, message, _) => {
+  async (bot, message, _) => {
     const cmds = commands.filter((command) => {
       // Filter out owner commands
-      return command.permission !== UserPermission.OWNER;
+      return command.role !== UserRole.OWNER;
     });
     const cmdEntries = cmds.map((cmd) => {
       return `${cmd.label} - ${cmd.description}`;
@@ -580,7 +588,7 @@ const telegramCmdsCmd = new Command(
 
     bot.sendMessage(message.channel, telegramCmdStr);
   },
-  UserPermission.OWNER,
+  UserRole.OWNER,
 );
 
 // Debug
@@ -591,7 +599,7 @@ const debugCmd = new Command(
   'debug',
   async (bot, message, _) => {
     // Aggregate debug info
-    const userPermission = await message.user.getPermission(message.channel);
+    const userRole = await message.user.getRole(message.channel);
     const userID = message.user.id;
     const channelID = message.channel.id;
     const serverMembers = await bot.getChannelUserCount(message.channel);
@@ -599,7 +607,7 @@ const debugCmd = new Command(
     const time = Date.now() - message.timestamp.valueOf();
 
     const debugStr =
-      `**User info:**\n- ID: ${userID}\n- Permission: ${userPermission}\n` +
+      `**User info:**\n- ID: ${userID}\n- Role: ${userRole}\n` +
       `**Channel info:**\n-ID: ${channelID}\n- Server members: ${serverMembers}\n` +
       `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
 

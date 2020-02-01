@@ -1,6 +1,6 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import { BotClient } from './bot';
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
@@ -8,6 +8,7 @@ import Notification from '../notifications/notification';
 import MDRegex, { bold, seperator } from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
+import Permissions from '../permissions';
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
@@ -57,35 +58,108 @@ export default class TelegramBot extends BotClient {
     }
   }
 
-  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
+  public async getUser(): Promise<User> {
+    const telegramUser = await this.bot.getMe();
+    const userID = telegramUser.id.toString();
+    return new User(this, userID);
+  }
+
+  public async getUserRole(user: User, channel: Channel): Promise<UserRole> {
     try {
       // Channel messages don't have an author, we assigned the user id channelAuthorID
       // A bit hacky, but should work for now
       if (user.id === this.channelAuthorID) {
-        // If you can write in a channel, you get admin permissions
-        return UserPermission.ADMIN;
+        // If you can write in a channel, you have an admin role
+        return UserRole.ADMIN;
       }
       // Check if user is owner
       const ownerIds = (await this.getOwners()).map((owner) => owner.id);
       if (ownerIds.includes(user.id)) {
-        return UserPermission.OWNER;
+        return UserRole.OWNER;
       }
       // Check if user has default admin rights
       const chat = await this.bot.getChat(channel.id);
       if (chat.all_members_are_administrators || chat.type === 'private') {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
       // Check if user is an admin on this channel
       const chatAdmins = (await this.bot.getChatAdministrators(channel.id)) || [];
       const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
       if (adminIds.includes(user.id)) {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
     } catch (error) {
       this.logger.error(`Failed to get chat admins:\n${error}`);
     }
     // the user is just a regular user
-    return UserPermission.USER;
+    return UserRole.USER;
+  }
+
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+    let hasAccess;
+    let canWrite;
+    let canEdit;
+    let canPin;
+
+    try {
+      // Try to get chat
+      const chat = await this.bot.getChat(channel.id).catch((error) => {
+        if (error.code === 'ETELEGRAM') {
+          const response = error.response.body;
+          const errorCode = response.error_code;
+          switch (errorCode) {
+            case 403: // Bot is not a member of the channel chat
+              return undefined;
+            default:
+              throw error;
+          }
+        }
+        this.logger.error(`Failed to get chat to check permissions:\n${error}`);
+        throw error;
+      });
+      // Check for expected chat errors
+      if (!chat) {
+        return new Permissions(false, false, false, false);
+      }
+      // Try to get chat member
+      const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
+        this.logger.error(`Failed to get chat member:\n${error}`);
+        throw error;
+      });
+      // Check for expected chat member errors
+      if (!chatMember) {
+        return new Permissions(false, false, false, false);
+      }
+
+      hasAccess = chatMember.status === 'left' || chatMember.status === 'kicked' ? false : true;
+      canWrite =
+        hasAccess &&
+        (chat.type === 'channel'
+          ? // In channels the user must be an admin to write and have posting permissions
+            chatMember.status === 'administrator' && chatMember.can_post_messages
+          : // If the user is restricted, check permissions, else he can send messages
+          chatMember.status === 'restricted'
+          ? chatMember.can_send_messages
+          : true);
+      // If the user is an admin, check permissions, else he cannot edit
+      canEdit =
+        hasAccess && (chatMember.status === 'administrator' ? chatMember.can_edit_messages : false);
+      canPin =
+        hasAccess &&
+        // Groups and supergroups only
+        (chat.type === 'group' || chat.type === 'supergroup'
+          ? // Check if the permission is restricted
+            chatMember.status === 'restricted' || chatMember.status === 'administrator'
+            ? chatMember.can_pin_messages
+            : true
+          : false);
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions due to unexpected error:\n${error}`);
+      throw error;
+    }
+
+    const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
+    return permissions;
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
@@ -104,7 +178,7 @@ export default class TelegramBot extends BotClient {
       channels,
       async (botChannel) => await botChannel.getUserCount(),
     );
-    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
 
@@ -133,7 +207,8 @@ export default class TelegramBot extends BotClient {
       const user = new User(this, userID);
       const content = msg.text;
       // Convert from Unix time to date
-      const timestamp = new Date(msg.date * 1000 + 500);
+      const timeNumber = Math.min(Date.now(), msg.date * 1000 + 500);
+      const timestamp = new Date(timeNumber);
 
       const reg = await command.getRegExp(channel);
       // Run regex on the msg
@@ -154,6 +229,27 @@ export default class TelegramBot extends BotClient {
       if (this.token) {
         await this.bot.startPolling({ restart: true });
         this.isRunning = true;
+        // Handle being removed from chats (except channels apparently)
+        this.bot.on('left_chat_member', async (message) => {
+          const leftMember = message.left_chat_member;
+          const telegramUser = await this.bot.getMe();
+          const userID = telegramUser.id;
+
+          if (!leftMember || leftMember.id !== userID) {
+            // It's not the bot
+            return;
+          }
+
+          const channels = this.getBotChannels();
+          const channelID = message.chat.id.toString();
+          // Search for the channel
+          for (const channel of channels) {
+            if (channelID === channel.id) {
+              // Remove channel data
+              await this.onRemoved(channel);
+            }
+          }
+        });
         return true;
       }
     } catch (error) {
@@ -168,6 +264,20 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
+    try {
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      // Check if the bot can write to this channel
+      if (!permissions.canWrite) {
+        if (this.removeData(channel)) {
+          this.logger.warn(`Can't write to channel, removing all data.`);
+        }
+        return false;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
+      return false;
+    }
+
     let message = messageText;
     if (typeof message === 'string') {
       message = TelegramBot.msgFromMarkdown(message);
