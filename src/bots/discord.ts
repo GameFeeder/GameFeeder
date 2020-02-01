@@ -140,43 +140,40 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
-    const discordChannel = this.bot.channels.get(channel.id);
+    const channels = this.bot.channels;
 
-    let hasAccess;
-    let canWrite;
-    let canEdit;
-    let canPin;
+    if (!channels) {
+      // This probably means that the Discord API is down
+      throw new Error('Failed to get bot channels.');
+    }
+
+    const discordChannel = this.bot.channels.get(channel.id);
 
     if (!discordChannel) {
       // The user has been kicked from the channel
-      hasAccess = false;
-      canWrite = false;
-      canEdit = false;
-      canPin = false;
-    } else if (discordChannel instanceof DMChannel) {
+      return new Permissions(false, false, false, false);
+    }
+
+    if (discordChannel instanceof DMChannel) {
       // You always have all permissions in DM and group channels
-      hasAccess = true;
-      canWrite = true;
-      canEdit = true;
-      canPin = true;
-    } else if (discordChannel instanceof TextChannel) {
+      return new Permissions(true, true, true, true);
+    }
+
+    if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
       const discordPermissions = discordChannel.permissionsFor(discordUser);
-      hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
-      canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
-      canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
-      canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
-    } else {
-      this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
-      hasAccess = false;
-      canWrite = false;
-      canEdit = false;
-      canPin = false;
+
+      const hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+      const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
+      const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+      const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+
+      return new Permissions(hasAccess, canWrite, canEdit, canPin);
     }
 
-    const permissions = new Permissions(hasAccess, canWrite, canEdit, canPin);
-    return permissions;
+    this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
+    return new Permissions(false, false, false, false);
   }
 
   /** Determines if the user can send embedded links.
@@ -278,14 +275,20 @@ export default class DiscordBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
-    // Check if the bot can write to this channel
-    const permissions = await this.getUserPermissions(await this.getUser(), channel);
-    if (!permissions.canWrite) {
-      if (this.removeData(channel)) {
-        this.logger.warn(`Can't write to channel, removing all data.`);
+    try {
+      // Check if the bot can write to this channel
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      if (!permissions.canWrite) {
+        if (this.removeData(channel)) {
+          this.logger.warn(`Can't write to channel, removing all data.`);
+        }
+        return false;
       }
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
       return false;
     }
+
     if (typeof message === 'string') {
       // Parse markdown
       const messageText = DiscordBot.msgFromMarkdown(message, false);
