@@ -160,16 +160,21 @@ export default class DiscordBot extends BotClient {
     }
 
     if (discordChannel instanceof TextChannel) {
-      // Check for the permissions
-      const discordUser = discordChannel.members.get(user.id);
-      const discordPermissions = discordChannel.permissionsFor(discordUser);
+      try {
+        // Check for the permissions
+        const discordUser = discordChannel.members.get(user.id);
+        const discordPermissions = discordChannel.permissionsFor(discordUser);
 
-      const hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
-      const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
-      const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
-      const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+        const hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+        const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
+        const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+        const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
 
-      return new Permissions(hasAccess, canWrite, canEdit, canPin);
+        return new Permissions(hasAccess, canWrite, canEdit, canPin);
+      } catch (error) {
+        this.logger.error(`Failed to get permissions for text channel:\n${error}`);
+        throw error;
+      }
     }
 
     this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
@@ -177,7 +182,7 @@ export default class DiscordBot extends BotClient {
   }
 
   /** Determines if the user can send embedded links.
-   *
+   *SS
    * @param user - The user to get the permission for.
    * @param channel - The channel to get the permission on.
    */
