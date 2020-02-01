@@ -1,6 +1,7 @@
 import Game from '../game';
 import NotificationElement from './notification_element';
 import Comparable from '../util/comparable';
+import { StrUtil } from '../util/util';
 
 /** A representation of a bot notification. */
 export default class Notification implements Comparable<Notification> {
@@ -137,19 +138,24 @@ export default class Notification implements Comparable<Notification> {
     return 0;
   }
 
-  public toMDString(): string {
+  public toMDString(limit?: number): string {
     const titleText = this.title.link
       ? `[**${this.title.text}**](${this.title.link})`
       : this.title.text;
 
-    if (this.author.text) {
-      const authorText = this.author.link
-        ? `[${this.author.text}](${this.author.link})`
-        : this.author.text;
+    let mdStr;
 
-      return `New **${this.game.label}** update - ${authorText}:\n\n${titleText}\n\n${this.content}`;
-    }
+    const authorText = this.author.text
+      ? this.author.link
+        ? ` - [${this.author.text}](${this.author.link})`
+        : this.author.text
+      : '';
 
-    return `New **${this.game.label}** update:\n\n${titleText}\n\n${this.content}`;
+    const contentText = this.content ? `\n\n${this.content}` : '';
+    mdStr = `New **${this.game.label}** update${authorText}:\n\n${titleText}${contentText}`;
+
+    mdStr = StrUtil.naturalLimit(mdStr, limit);
+
+    return mdStr;
   }
 }

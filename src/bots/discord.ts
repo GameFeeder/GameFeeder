@@ -1,6 +1,6 @@
 import DiscordAPI, { DMChannel, GroupDMChannel, TextChannel } from 'discord.js';
 import { BotClient } from './bot';
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
@@ -8,6 +8,7 @@ import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
+import Permissions from '../permissions';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -49,6 +50,11 @@ export default class DiscordBot extends BotClient {
       return '?';
     }
     return `<@${this.bot.user.id}>`;
+  }
+
+  public async getUser(): Promise<User> {
+    const userID = this.bot.user.id;
+    return new User(this, userID);
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
@@ -106,31 +112,101 @@ export default class DiscordBot extends BotClient {
       channels,
       async (botChannel) => await botChannel.getUserCount(),
     );
-    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue);
+    const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
 
-  public async getUserPermission(user: User, channel: Channel): Promise<UserPermission> {
+  public async getUserRole(user: User, channel: Channel): Promise<UserRole> {
     // Check if the user is one of the owners
     const ownerIds = (await this.getOwners()).map((owner) => owner.id);
     if (ownerIds.includes(user.id)) {
-      return UserPermission.OWNER;
+      return UserRole.OWNER;
     }
 
     const discordChannel = this.bot.channels.get(channel.id);
     // Check if the user has default admin rights
     if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
-      return UserPermission.ADMIN;
+      return UserRole.ADMIN;
     }
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser.hasPermission(8)) {
-        return UserPermission.ADMIN;
+        return UserRole.ADMIN;
       }
     }
     // The user is just a regular user
-    return UserPermission.USER;
+    return UserRole.USER;
+  }
+
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+    const channels = this.bot.channels;
+
+    if (!channels) {
+      // This probably means that the Discord API is down
+      throw new Error('Failed to get bot channels.');
+    }
+
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    if (!discordChannel) {
+      // The user has been kicked from the channel
+      return new Permissions(false, false, false, false);
+    }
+
+    if (discordChannel instanceof DMChannel) {
+      // You always have all permissions in DM and group channels
+      return new Permissions(true, true, true, true);
+    }
+
+    if (discordChannel instanceof TextChannel) {
+      try {
+        // Check for the permissions
+        const discordUser = discordChannel.members.get(user.id);
+        const discordPermissions = discordChannel.permissionsFor(discordUser);
+
+        const hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+        const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
+        const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+        const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+
+        return new Permissions(hasAccess, canWrite, canEdit, canPin);
+      } catch (error) {
+        this.logger.error(`Failed to get permissions for text channel:\n${error}`);
+        throw error;
+      }
+    }
+
+    this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
+    return new Permissions(false, false, false, false);
+  }
+
+  /** Determines if the user can send embedded links.
+   *SS
+   * @param user - The user to get the permission for.
+   * @param channel - The channel to get the permission on.
+   */
+  public async canEmbed(user: User, channel: Channel): Promise<boolean> {
+    const discordChannel = this.bot.channels.get(channel.id);
+
+    let canEmbed;
+
+    if (discordChannel instanceof DMChannel) {
+      // You always have all permissions in DM and group channels
+      canEmbed = true;
+    } else if (discordChannel instanceof TextChannel) {
+      // Check for the permissions
+      const discordUser = discordChannel.members.get(user.id);
+      const hasAccess = discordChannel
+        .permissionsFor(discordUser)
+        .has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+      canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
+    } else {
+      this.logger.error(`Unecpected Discord channel type.`);
+      canEmbed = false;
+    }
+
+    return canEmbed;
   }
 
   public async getOwners(): Promise<User[]> {
@@ -142,7 +218,9 @@ export default class DiscordBot extends BotClient {
     this.bot.on('message', async (msg) => {
       const channel = this.getChannelByID(msg.channel.id);
       const user = new User(this, msg.author.id);
-      const timestamp = msg.createdAt;
+      const now = new Date();
+      // Ensure proper timestamp
+      const timestamp = msg.createdAt > now ? now : msg.createdAt;
       const content = msg.toString();
 
       const reg = await command.getRegExp(channel);
@@ -160,6 +238,37 @@ export default class DiscordBot extends BotClient {
     if (this.token) {
       await this.bot.login(this.token);
       this.isRunning = true;
+      // Handle being removed from a guild
+      this.bot.on('guildDelete', async (guild) => {
+        const guildID = guild.id;
+        const channels = this.getBotChannels();
+
+        // Remove all channel data of that guild
+        for (const channel of channels) {
+          const discordChannel = this.bot.channels.get(channel.id);
+          if (!discordChannel) {
+            // Can't find the channel, it probably belongs to the guild, remove data
+            await this.onRemoved(channel);
+          } else if (discordChannel instanceof TextChannel) {
+            const channelGuildID = discordChannel.guild.id;
+            if (guildID === channelGuildID) {
+              // The channel belongs to the guild, remove data
+              await this.onRemoved(channel);
+            }
+          }
+        }
+      });
+      // Handle deleted channels
+      this.bot.on('channelDelete', async (discordChannel) => {
+        const channels = this.getBotChannels();
+
+        // Search for the deleted channel
+        for (const channel of channels) {
+          if (channel.id === discordChannel.id) {
+            await this.onRemoved(channel);
+          }
+        }
+      });
       return true;
     }
 
@@ -171,20 +280,53 @@ export default class DiscordBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
+    try {
+      // Check if the bot can write to this channel
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      if (!permissions.canWrite) {
+        if (this.removeData(channel)) {
+          this.logger.warn(`Can't write to channel, removing all data.`);
+        }
+        return false;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
+      return false;
+    }
+
     if (typeof message === 'string') {
       // Parse markdown
       const messageText = DiscordBot.msgFromMarkdown(message, false);
-      return await this.sendToChannel(channel, messageText);
+      try {
+        return await this.sendToChannel(channel, messageText);
+      } catch (error) {
+        this.logger.error(`Failed to send message:\n${error}`);
+        return false;
+      }
     }
-    // Parse markdown
-    const embed = this.embedFromNotification(message);
+    // Check if the bot can send embeds
+    if (await this.canEmbed(await this.getUser(), channel)) {
+      // Parse markdown
+      const embed = this.embedFromNotification(message);
 
+      try {
+        return await this.sendToChannel(channel, '', embed);
+      } catch (error) {
+        this.logger.error(`Failed to send message:\n${error}`);
+        return false;
+      }
+    }
+
+    // Convert to text and send it
+    const messageText = DiscordBot.msgFromMarkdown(message.toMDString(2000), false);
     try {
-      return await this.sendToChannel(channel, '', embed);
+      return await this.sendToChannel(channel, messageText);
     } catch (error) {
+      this.logger.error(`Failed to send message:\n${error}`);
       return false;
     }
   }
+
   public embedFromNotification(notification: Notification): DiscordAPI.RichEmbed {
     const embed = new DiscordAPI.RichEmbed();
     // Title
@@ -321,23 +463,44 @@ export default class DiscordBot extends BotClient {
 
   private async sendToChannel(channel: Channel, text: string, embed?: any): Promise<boolean> {
     const botChannels = this.bot.channels;
-    const discordChannel = botChannels.get(channel.id);
+    let discordChannel;
+    try {
+      discordChannel = botChannels.get(channel.id);
+    } catch (error) {
+      this.logger.error(`Failed to get discord channel:\n${error}`);
+      return false;
+    }
 
     if (!discordChannel) {
       return false;
     }
 
-    if (discordChannel instanceof DMChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    }
-    if (discordChannel instanceof TextChannel) {
-      discordChannel.send(text, embed);
-      return true;
-    }
-    if (discordChannel instanceof GroupDMChannel) {
-      discordChannel.send(text, embed);
-      return true;
+    const callback = (error: any) => {
+      let errorMsg;
+      if (error instanceof Error) {
+        errorMsg = `${error.name}: ${error.message}`;
+      } else {
+        errorMsg = error.toString();
+      }
+      this.logger.error(`Failed to send message to channel:\n${errorMsg}`);
+      return false;
+    };
+
+    try {
+      if (discordChannel instanceof DMChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+      if (discordChannel instanceof TextChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+      if (discordChannel instanceof GroupDMChannel) {
+        discordChannel.send(text, embed).catch(callback);
+        return true;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send message to channel:\n${error}`);
     }
     return false;
   }

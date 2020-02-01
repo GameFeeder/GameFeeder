@@ -1,10 +1,11 @@
-import User, { UserPermission } from '../user';
+import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
+import Permissions from '../permissions';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -66,12 +67,19 @@ export default abstract class BotClient {
    */
   public abstract stop(): void;
 
-  /** Gets the permission of a user on a given channel.
+  /** Gets the role of a user on a given channel.
    *
-   * @param user - The user to get the permission of.
-   * @param channel - The channel to get the permission on.
+   * @param user - The user to get the role of.
+   * @param channel - The channel to get the role on.
    */
-  public abstract async getUserPermission(user: User, channel: Channel): Promise<UserPermission>;
+  public abstract async getUserRole(user: User, channel: Channel): Promise<UserRole>;
+
+  /** Gets the permissions of a user on a given channel.
+   *
+   * @param user - The user to get the permissions of.
+   * @param channel - The channel to get the permissions on.
+   */
+  public abstract async getUserPermissions(user: User, channel: Channel): Promise<Permissions>;
 
   /** Gets a list of the owners of the bot.
    *
@@ -85,7 +93,15 @@ export default abstract class BotClient {
    * @param  {Game} game - The game to subscribe to.
    * @returns True, if the subscription was successful, else false.
    */
-  public addSubscriber(channel: Channel, game: Game): boolean {
+  public async addSubscriber(channel: Channel, game: Game): Promise<boolean> {
+    // Check if the bot can write to this channel
+    const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    if (!permissions.canWrite) {
+      if (this.removeData(channel)) {
+        this.logger.warn(`Can't write to channel, removing all data.`);
+      }
+      return false;
+    }
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.name];
 
@@ -153,6 +169,54 @@ export default abstract class BotClient {
     }
     return false;
   }
+
+  /** Removes the data of a channel.
+   *
+   * @param  {Channel} channel - The channel to remove the data from.
+   */
+  public removeData(channel: Channel): boolean {
+    const subscribers = DataManager.getSubscriberData();
+    const subs = subscribers[this.name];
+
+    // Check if the channel has an entry
+    for (let i = 0; i < subs.length; i++) {
+      const sub = subs[i];
+      if (channel.isEqual(sub.id)) {
+        // Remove the channel
+        subs.splice(i, 1);
+
+        // Save the changes
+        subscribers[this.name] = subs;
+        DataManager.setSubscriberData(subscribers);
+
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Removes the data of all channels without write permissions. */
+  public async removeChannelsWithoutWritePermissions() {
+    const channels = this.getBotChannels();
+
+    // Iterate through all the channels
+    let removeCount = 0;
+    for (const channel of channels) {
+      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      if (!permissions.canWrite) {
+        // The bot can not write to this channel, remove channel data
+        if (this.removeData(channel)) {
+          removeCount += 1;
+        }
+      }
+    }
+    if (removeCount > 0) {
+      this.logger.warn(`Cleaning up ${removeCount} channel(s) without write access.`);
+    }
+  }
+
+  /** Gets the bot user. */
+  public abstract async getUser(): Promise<User>;
 
   /** Get the number of users in a given channel.
    *
@@ -249,6 +313,13 @@ export default abstract class BotClient {
           this.sendMessage(new Channel(channel.id, this, gameSubs, channel.prefix), message);
         }
       }
+    }
+  }
+
+  /** Called when the bot is removed from the given channel. */
+  public async onRemoved(channel: Channel) {
+    if (this.removeData(channel)) {
+      this.logger.debug(`Bot removed from channel, removing channel data.`);
     }
   }
 }
