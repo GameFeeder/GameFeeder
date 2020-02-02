@@ -1,4 +1,5 @@
-import rp from 'request-promise-native';
+import axios from 'axios';
+import circular from 'circular-json';
 import Logger from '../logger';
 import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 
@@ -8,6 +9,11 @@ import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
  */
 export default class SteamWebAPI {
   public static logger = new Logger('SteamWebAPI');
+  public static instance = axios.create({
+    baseURL: 'https://api.steampowered.com/',
+    timeout: 1000,
+    responseType: 'json',
+  });
 
   /** Get the news for the specified app.
    *
@@ -30,16 +36,12 @@ export default class SteamWebAPI {
       feeds: feeds ? feeds.join(',') : undefined,
     };
 
-    const options = {
-      uri: 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/',
-      qs: newsOptions,
-      json: false,
-    };
-
     try {
-      const response: SteamAppNewsResponse = JSON.parse(await rp(options));
-      this.logger.debug(JSON.stringify(response).substr(0, 5000));
-      return new SteamAppNews(response);
+      const response = await this.instance.get('ISteamNews/GetNewsForApp/v2/', {
+        params: newsOptions,
+      });
+
+      return new SteamAppNews(response.data);
     } catch (error) {
       this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
       // Return empty news
