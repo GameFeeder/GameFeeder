@@ -14,6 +14,9 @@
         }
       ]
     },
+    "steam": {
+      "appID": 730
+    },
     "rss": [
       {
         "label": "CS:GO Blog",

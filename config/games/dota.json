@@ -37,6 +37,9 @@
         }
       ]
     },
+    "steam": {
+      "appID": 570
+    },
     "rss": [
       {
         "label": "Dota 2 Blog",
