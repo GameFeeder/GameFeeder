@@ -1,5 +1,6 @@
 import rp from 'request-promise-native';
 import Logger from '../logger';
+import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 
 /** A wrapper around the Steam Web API.
  *
@@ -36,13 +37,13 @@ export default class SteamWebAPI {
     };
 
     try {
-      const response: SteamAppNews = await rp(options);
-      return response;
+      const response: SteamAppNewsResponse = await rp(options);
+      return new SteamAppNews(response);
     } catch (error) {
       this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
       // Return empty news
-      const respose: SteamAppNews = { appid, newsitems: [] };
-      return respose;
+      const respose: SteamAppNewsResponse = { appid, newsitems: [] };
+      return new SteamAppNews(respose);
     }
   }
 }
@@ -58,40 +59,4 @@ export type SteamNewsOptions = {
   count?: number;
   /** Comma-seperated list of feed names to return news for. */
   feeds?: string;
-};
-
-/** News for a Steam app. */
-export type SteamAppNews = {
-  /** The ID of the app that the news are for. */
-  appid: number;
-  /** The news items for the app. */
-  newsitems: SteamNewsItem[];
-};
-
-/** A news item for a Steam app. */
-export type SteamNewsItem = {
-  /** The ID of the news item. */
-  gid: number;
-  /** The title of the news item. */
-  title: string;
-  /** The URL of the news item. */
-  url: string;
-  /** Determines if the URL is external. */
-  is_external_url: boolean;
-  /** The name of the author of the news item. */
-  author: string;
-  /** The contents of the news item. */
-  contents: string;
-  /** The label of the feed this item was posted to. */
-  feedlabel: string;
-  /** The date of the news item (Unix time). */
-  date: number;
-  /** The name of the feed this item was posted to. */
-  feedname: string;
-  /** The type of the feed this item was posted to. */
-  feed_type: number;
-  /** The ID of the app these news are from. */
-  appid: number;
-  /** The tags of this news item. */
-  tags: string[];
 };
