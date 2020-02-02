@@ -6,6 +6,7 @@ import RedditProvider from './providers/reddit_provider';
 import RedditUserProvider from './reddit/reddit_user';
 import DotaProvider from './providers/dota_provider';
 import TelegramIVTemplate from './telegram_iv_template';
+import SteamProvider from './providers/steam_provider';
 
 /** A representation of a game. */
 export default class Game {
@@ -129,6 +130,11 @@ export default class Game {
         for (const blog of gameSettings.providers.rss) {
           providers.push(new RSSProvider(blog.url, blog.label, game, blog.flavor));
         }
+      }
+      // Steam providers
+      if (gameSettings.providers.steam) {
+        const steamSettings = gameSettings.providers.steam;
+        providers.push(new SteamProvider(steamSettings.appID, steamSettings.feeds, game));
       }
       game.providers = providers;
 

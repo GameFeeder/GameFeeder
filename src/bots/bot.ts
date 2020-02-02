@@ -288,6 +288,11 @@ export default abstract class BotClient {
   public sendMessageToGameSubs(game: Game, message: string | Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
+    if (!game) {
+      this.logger.error(`Failed to send message to game subs:\nNo game specified!`);
+      return;
+    }
+
     if (subscribers) {
       for (const channel of subscribers) {
         if (channel.gameSubs && channel.gameSubs.includes(game.name)) {

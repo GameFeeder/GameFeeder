@@ -9,8 +9,10 @@ export default class SteamAppNews {
   public newsItems: SteamNewsItem[];
 
   constructor(response: SteamAppNewsResponse) {
-    this.appID = response.appid;
-    this.newsItems = response.newsitems.map((newsitem) => new SteamNewsItem(newsitem));
+    this.appID = response.appnews.appid;
+    this.newsItems = response.appnews.newsitems
+      ? response.appnews.newsitems.map((newsitem) => new SteamNewsItem(newsitem))
+      : [];
   }
 
   /** Converts the steam app news to game notifications.
@@ -72,16 +74,21 @@ export class SteamNewsItem {
     return new Notification(new Date(this.date * 1000))
       .withTitle(this.title, this.url)
       .withAuthor(this.author)
-      .withContent(this.contents);
+      .withContent(this.contents)
+      .withGameDefaults(game);
   }
 }
 
 /** News for a Steam app. */
 export type SteamAppNewsResponse = {
-  /** The ID of the app that the news are for. */
-  appid: number;
-  /** The news items for the app. */
-  newsitems: SteamNewsItemResponse[];
+  appnews: {
+    /** The ID of the app that the news are for. */
+    appid: number;
+    /** The news items for the app. */
+    newsitems: SteamNewsItemResponse[];
+    /** The total number of news items. */
+    count: number;
+  };
 };
 
 /** A news item for a Steam app. */

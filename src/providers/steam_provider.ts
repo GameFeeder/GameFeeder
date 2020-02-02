@@ -9,7 +9,7 @@ export default class SteamProvider extends Provider {
   public feeds: string[];
 
   constructor(appID: number, feeds: string[], game: Game) {
-    super(`https://steamcommunity.com/games/${appID}/announcements`, `Steam App ${appID}`, game);
+    super(`https://steamcommunity.com/games/${appID}/announcements`, `App ${appID}`, game);
     this.appID = appID;
     this.feeds = feeds;
   }
@@ -17,13 +17,7 @@ export default class SteamProvider extends Provider {
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
     try {
       // Get the news from the Steam Web API
-      const steamNews = await SteamWebAPI.getNewsForApp(
-        this.appID,
-        length,
-        date,
-        limit,
-        this.feeds,
-      );
+      const steamNews = await SteamWebAPI.getNewsForApp(this.appID, 3000, date, limit, this.feeds);
 
       // Convert to notifications
       let notifications = steamNews.toGameNotifications(this.game);

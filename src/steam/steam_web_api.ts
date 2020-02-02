@@ -38,11 +38,12 @@ export default class SteamWebAPI {
 
     try {
       const response: SteamAppNewsResponse = await rp(options);
+      // this.logger.debug(JSON.stringify(response).substr(0, 1000));
       return new SteamAppNews(response);
     } catch (error) {
       this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
       // Return empty news
-      const respose: SteamAppNewsResponse = { appid, newsitems: [] };
+      const respose: SteamAppNewsResponse = { appnews: { appid, newsitems: [], count: 0 } };
       return new SteamAppNews(respose);
     }
   }
