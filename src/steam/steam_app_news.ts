@@ -1,5 +1,6 @@
 import Notification from '../notifications/notification';
 import Game from '../game';
+import SteamProcessor from '../processors/steam_processor';
 
 /** News for a Steam app. */
 export default class SteamAppNews {
@@ -71,10 +72,11 @@ export class SteamNewsItem {
    * @param game - The game to generate the notification for.
    */
   public toGameNotification(game: Game): Notification {
+    const steamProcessor = new SteamProcessor();
     return new Notification(new Date(this.date * 1000))
       .withTitle(this.title, this.url)
       .withAuthor(this.author)
-      .withContent(this.contents)
+      .withContent(steamProcessor.process(this.contents))
       .withGameDefaults(game);
   }
 }

@@ -15,12 +15,30 @@ export default class SteamProvider extends Provider {
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
+    if (!this.feeds || this.feeds.length === 0) {
+      return [];
+    }
+
     try {
       // Get the news from the Steam Web API
-      const steamNews = await SteamWebAPI.getNewsForApp(this.appID, 3000, date, limit, this.feeds);
+      const steamNews = await SteamWebAPI.getNewsForApp(
+        this.appID,
+        3000,
+        undefined,
+        limit,
+        this.feeds,
+      );
 
       // Convert to notifications
       let notifications = steamNews.toGameNotifications(this.game);
+
+      if (date) {
+        // Filter out outdated posts
+        notifications = notifications.filter((notification) => {
+          return notification.timestamp > date;
+        });
+      }
+
       // Limit the length
       notifications = sortLimitEnd(notifications, limit);
 

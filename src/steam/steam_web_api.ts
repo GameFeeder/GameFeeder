@@ -33,12 +33,12 @@ export default class SteamWebAPI {
     const options = {
       uri: 'https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/',
       qs: newsOptions,
-      json: true,
+      json: false,
     };
 
     try {
-      const response: SteamAppNewsResponse = await rp(options);
-      // this.logger.debug(JSON.stringify(response).substr(0, 1000));
+      const response: SteamAppNewsResponse = JSON.parse(await rp(options));
+      this.logger.debug(JSON.stringify(response).substr(0, 5000));
       return new SteamAppNews(response);
     } catch (error) {
       this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
