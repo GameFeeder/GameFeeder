@@ -591,7 +591,10 @@ const prefixCmds: CommandGroup = new CommandGroup(
   'prefixCmds',
   'All commands that need a prefix to be executed.',
   async (channel) => {
-    const cmdLabels = prefixCmds.commands.map((cmd) => `- ${cmd.channelLabel(channel)}`);
+    const cmdLabels = await mapAsync(
+      prefixCmds.commands,
+      async (cmd) => `- ${await cmd.channelLabel(channel)}`,
+    );
     return cmdLabels.join('\n');
   },
   async (channel) => {
@@ -599,7 +602,7 @@ const prefixCmds: CommandGroup = new CommandGroup(
     const userTag = EscapeRegex(await bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.getPrefix());
     return new RegExp(
-      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*`,
+      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*)$`,
     );
   },
   async (message, match) => {

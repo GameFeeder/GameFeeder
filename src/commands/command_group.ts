@@ -24,7 +24,16 @@ export default class CommandGroup extends Command {
       channelLabel,
       channelTrigger,
       async (message, match) => {
+        if (!match.groups) {
+          message.getBot().logger.warn(`Did not find match groups for command '${this.name}'!`);
+          return;
+        }
+
         const { group } = match.groups;
+
+        if (!group) {
+          return;
+        }
 
         // Execute the first matching sub-command
         for (const cmd of this.commands) {
