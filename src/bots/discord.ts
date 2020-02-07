@@ -230,7 +230,7 @@ export default class DiscordBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(this, message, regMatch);
+        await command.execute(message, regMatch);
       }
     });
   }

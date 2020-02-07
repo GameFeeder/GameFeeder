@@ -217,10 +217,10 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        await command.execute(this, message, regMatch);
+        await command.execute(message, regMatch);
       }
     } catch (error) {
-      this.logger.error(`Failed to execute command ${command.label}:\n${error}`);
+      this.logger.error(`Failed to execute command ${command.name}:\n${error}`);
     }
   }
 
