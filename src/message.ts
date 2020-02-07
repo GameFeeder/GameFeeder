@@ -1,5 +1,7 @@
 import User from './user';
 import Channel from './channel';
+import BotClient from './bots/bot';
+import Notification from './notifications/notification';
 
 /** A message sent to one of the bots. */
 export default class Message {
@@ -24,5 +26,18 @@ export default class Message {
     this.channel = channel;
     this.content = content;
     this.timestamp = timestamp;
+  }
+
+  /** Gets the bot associated to this message. */
+  public getBot(): BotClient {
+    return this.channel.bot;
+  }
+
+  /** Replies to this message.
+   *
+   * @param message - The message to send.
+   */
+  public async reply(message: string | Notification): Promise<boolean> {
+    return this.getBot().sendMessage(this.channel, message);
   }
 }
