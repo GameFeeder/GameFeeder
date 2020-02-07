@@ -76,14 +76,4 @@ export default class Command {
 
     return new RegExp(regexString);
   }
-
-  /** Gets the complete trigger label in the given channel, e.g. '/subscribe'
-   *
-   * @param channel - The channel to get the trigger label in.
-   */
-  public async getTriggerLabel(channel: Channel): Promise<string> {
-    const label = await this.channelLabel(channel);
-
-    return label;
-  }
 }

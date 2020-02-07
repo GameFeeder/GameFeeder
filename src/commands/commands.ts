@@ -17,7 +17,9 @@ const startCmd = new SimpleCommand('start', 'Get started with the GameFeeder.', 
   const version = ProjectManager.getVersionNumber();
   message.reply(
     `Welcome to the **${name}** (v${version})!\n` +
-      `Use \`${helpCmd.getTriggerLabel(message.channel)}\` to display all available commands.\n` +
+      `Use \`${await helpCmd.channelLabel(
+        message.channel,
+      )}\` to display all available commands.\n` +
       `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
   );
 });
@@ -33,7 +35,7 @@ const helpCmd = new SimpleCommand(
       async (command) => await message.user.hasRole(message.channel, command.role),
     );
     const commandsList = await mapAsync(filteredCommands, async (command) => {
-      const label = await command.channelTrigger(message.channel);
+      const label = await command.channelLabel(message.channel);
       return `- \`${message.channel.getPrefix()}${label}\`: ${command.description}`;
     });
 
@@ -47,7 +49,7 @@ const helpCmd = new SimpleCommand(
 const aboutCmd = new NoLabelCommand(
   'about',
   'Display info about the bot.',
-  /(about)|(info)/,
+  /^\s*(about)|(info)\s*$/,
   async (message, _) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
@@ -62,7 +64,7 @@ const aboutCmd = new NoLabelCommand(
 const settingsCmd = new NoLabelCommand(
   'settings',
   'Display an overview of the settings you can configure for the bot.',
-  /(settings)|(options)|(config)\s*$/,
+  /^\s*(settings)|(options)|(config)\s*$/,
   async (message, _) => {
     const channel = message.channel;
     const gameStr =
@@ -72,11 +74,13 @@ const settingsCmd = new NoLabelCommand(
         : '> You are currently not subscribed to any games.';
 
     message.reply(
-      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses ` +
+      `You can use \`${await prefixCmd.channelLabel(
+        channel,
+      )}\` to change the prefix the bot uses ` +
         `on this channel.\n` +
         `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-        `You can use \`${subCmd.getTriggerLabel(channel)}\` and ` +
-        `\`${unsubCmd.getTriggerLabel(channel)}\` to change the games you are subscribed to.\n` +
+        `You can use \`${await subCmd.channelLabel(channel)}\` and ` +
+        `\`${await unsubCmd.channelLabel(channel)}\` to change the games you are subscribed to.\n` +
         gameStr,
     );
   },
@@ -95,7 +99,7 @@ const subCmd = new NoChannelCommand(
   'subscribe',
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
-  /sub(scribe)?(?<alias>.*)/,
+  /^\s*sub(scribe)?(?<alias>.*)\s*$/,
   async (message, match) => {
     const channel = message.channel;
     let alias: string = match.groups.alias;
@@ -104,7 +108,7 @@ const subCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to subscribe to.\n` +
-          `Try \`${subCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${await subCmd.channelLabel(channel)}\`.`,
       );
     }
 
@@ -167,7 +171,7 @@ const unsubCmd = new NoChannelCommand(
   'unsubscribe',
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
-  /unsub(scribe)?(?<alias>.*)/,
+  /^\s*unsub(scribe)?(?<alias>.*)\s*$/,
   async (message, match) => {
     const channel = message.channel;
     let { alias } = match.groups;
@@ -176,7 +180,7 @@ const unsubCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to unsubscribe from.\n` +
-          `Try ${unsubCmd.getTriggerLabel(channel)}.`,
+          `Try ${await unsubCmd.channelLabel(channel)}.`,
       );
     }
 
@@ -239,7 +243,7 @@ const prefixCmd = new NoChannelCommand(
   'prefix',
   `Change the bot's prefix used in this channel.`,
   'prefix <new prefix>',
-  /prefix(?<newPrefix>.*)$/,
+  /^\s*prefix(?<newPrefix>.*)\s*$/,
   async (message, match) => {
     const bot = message.getBot();
     const channel = message.channel;
@@ -319,7 +323,7 @@ const notifyAllCmd = new NoChannelCommand(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
-  /(notifyAll(Subs)?)\s*(?<msg>(?:.|\s)*)$/,
+  /^\s*(notifyAll(Subs)?)\s*(?<msg>(?:.|\s)*)\s*$/,
   async (message, match) => {
     const channel = message.channel;
     let { msg } = match.groups;
@@ -329,7 +333,7 @@ const notifyAllCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${await notifyAllCmd.channelLabel(channel)}\`.`,
       );
       return;
     }
@@ -349,7 +353,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
-  /(notify(Game)?Subs)\s*(\((?<alias>.*)\))?\s*(?<msg>(?:.|\s)*)\s*$/,
+  /^\s*(notify(Game)?Subs)\s*(\((?<alias>.*)\))?\s*(?<msg>(?:.|\s)*)\s*$/,
   async (message, match) => {
     const channel = message.channel;
     let { alias, msg } = match.groups;
@@ -360,7 +364,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${await notifyGameSubsCmd.channelLabel(channel)}\`.`,
       );
       return;
     }
@@ -368,7 +372,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide a game to notify the subs of.\n` +
-          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${await notifyGameSubsCmd.channelLabel(channel)}\`.`,
       );
       return;
     }
@@ -389,7 +393,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     // We didn't find the specified game
     message.reply(
       `I didn't find a game with the alias '${alias}'.\n` +
-        `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+        `Use \`${await gamesCmd.channelLabel(channel)}\` to view a list of all available games.`,
     );
   },
   UserRole.OWNER,
@@ -421,7 +425,7 @@ const rollCmd = new NoChannelCommand(
   'roll',
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
-  /r(?:oll)?\s*(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?/,
+  /^\s*r(?:oll)?\s*(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?\s*$/,
   async (message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
@@ -484,7 +488,7 @@ const rollCmd = new NoChannelCommand(
 const statsCmd = new NoLabelCommand(
   'stats',
   'Display statistics about the bot.',
-  /stat(istic)?s?/,
+  /^\s*stat(istic)?s?\s*$/,
   async (message, _) => {
     const botStatStrings: string[] = [];
 

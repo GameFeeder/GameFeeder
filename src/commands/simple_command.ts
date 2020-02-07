@@ -22,7 +22,7 @@ export default class SimpleCommand extends NoLabelCommand {
       name,
       description,
       // The name is the regex
-      new RegExp(name),
+      new RegExp(`^\\s*${name}\\s*$`),
       async (message, match) => action(message),
       role,
     );
