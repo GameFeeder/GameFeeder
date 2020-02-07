@@ -1,28 +1,23 @@
-# Contributing to this project
+# Setting up the bot <!-- omit in toc -->
 
-First of, thanks for your help!
+This document will guide you through
 
-This document will guide you through setting up the bot on your PC, editing the project and creating a pull request for your changes.
-
-This guide is meant to be beginner-friendly. If you run into any issues during the setup, please open an issue on GitHub and we will be happy to help you out.
+This guide is meant to be beginner-friendly. If you run into any problems during the setup or if you have suggestions to improve this guide, please open an [issue on GitHub](https://github.com/GameFeeder/GameFeeder/issues/new/choose) and we will be happy to help you out.
 
 ## Index
 
-- [Contributing to this project](#contributing-to-this-project)
-  - [Index](#index)
-  - [Local setup](#local-setup)
-    - [Prerequisites](#prerequisites)
-    - [Configuration](#configuration)
-    - [API Keys](#api-keys)
-      - [Discord Bot](#discord-bot)
-      - [Telegram Bot](#telegram-bot)
-      - [Reddit API](#reddit-api)
-    - [Test the setup](#test-the-setup)
-  - [Docker containers](#docker-containers)
-    - [Using the VSCode Dev Container](#using-the-vscode-dev-container)
-    - [Using the production-ready Docker image & Docker Compose](#using-the-production-ready-docker-image--docker-compose)
-  - [Debugging and configurations](#debugging-and-configurations)
-  - [Testing](#testing)
+- [Index](#index)
+- [Local setup](#local-setup)
+  - [Prerequisites](#prerequisites)
+  - [Configuration](#configuration)
+  - [API Keys](#api-keys)
+    - [Discord Bot](#discord-bot)
+    - [Telegram Bot](#telegram-bot)
+    - [Reddit API](#reddit-api)
+  - [Test the setup](#test-the-setup)
+- [Docker containers](#docker-containers)
+  - [Using the VSCode Dev Container](#using-the-vscode-dev-container)
+  - [Using the production-ready Docker image & Docker Compose](#using-the-production-ready-docker-image--docker-compose)
 
 ## Local setup
 
@@ -48,9 +43,9 @@ $ git clone git@github.com:GameFeeder/GameFeeder.git
 
 This will create a new `GameFeeder` folder that you should open in *VS Code*. You should now install the recommended extensions (*VS Code* might ask you for it, otherwise navigate to the extension tab to install them).
 
-Now, open the *VS Code* terminal and run `yarn install` to install all packages you need to run the bot. After that, you can start the bot for the first time using `yarn dev`. The `Init Manager` will then setup the configuration and data files that you need. We use [nodemon](https://nodemon.io/) to automatically restart the bot when you made any changes to the code or when it crashes, so the bot will restart and warn you that API keys are missing. We will add those in the next section.
+Now, open the *VS Code* terminal and execute `yarn install` to install all packages you need to run the bot. After that, you can start the bot for the first time using `yarn dev`. The `Init Manager` will then setup the configuration and data files that you need. We use [nodemon](https://nodemon.io/) to automatically restart the bot when it crashes or when you made any changes to the code, so the bot will restart and warn you that API keys are missing. We will add those in the next section.
 
-But first, take some time to get familiar with the configuration files. The files are in JSON format and some of them have `.example` files. Do not modify these files! The `.example` files serve as template for the `Init Manager` and get uploaded on GitHub.
+But first, take some time to get familiar with the configuration files. The files are in JSON format and some of them are `.example` files. Do not modify these files! The `.example` files serve as template for the `Init Manager` and get uploaded on GitHub.
 
 The `config` folder contains files that configure the behaviour of the bot. In `config/api_config.json` you can configure the settings for the different APIs and enable or disable bot clients. In `config/updater_config.json` you can change the behaviour of the updater, e.g. the delay between each update cycle. For debugging, consider setting `autosave` to `false`. This will disable the bot to write the last time it checked for updates to the `data` files, so every time you restart the bot, it will provide you with fresh updates. Furthermore, the `games` folder contains one configuration file for each supported game. Here you can change the providers for each game. Changes in that folder will get uploaded to GitHub.
 
@@ -125,25 +120,3 @@ To run the bot locally (for example to test your changes), follow these steps:
 To tear down the container, simply run:
 
 - `docker-compose down`
-
-## Debugging and configurations
-
-To test out the bot in development, use the `yarn dev` command. The bot will try to make sure that the `config/` and `data/` files are up-to-date and launch all enabled bots and the updater. The bot will restart on any `config/` or code changes.
-
-Several `config/` changes are recommended for testing and debugging:
-
-- In `config/updater_config.json`:
-  - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a `lastUpdate` date in `data/updater_data.json` for your testing needs without it being overwritten by the updater
-  - It might be necessary to increase the `limit` to test out an older update
-  - If your work is unrelated to the updater, you can disable it by setting `enabled` to `false`
-- In `api_config.json`:
-  - You can disable one of the bots or reddit updates by setting its `enabled` value to `false`
-
-To test out the bot's functionality, we recommend to try the following steps:
-
-- Use the `start` command to test basic command functionality
-- Make sure you are subscribed to a game (`subscribe` or `sub`) and start the updater. Make sure you receive the notifications
-
-## Testing
-
-You can use `yarn test` to run the unit tests to make sure that you didn't break anything. Please provide unit tests for your code if applicable.
