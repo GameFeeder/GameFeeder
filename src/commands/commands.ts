@@ -609,7 +609,7 @@ const prefixCmds: CommandGroup = new CommandGroup(
     const { group } = match.groups;
     await message.channel.bot.sendMessage(
       message.channel,
-      `I don't know a command named '${group}'. Try the \`help\` command to see a list of all commands available.`,
+      `I don't know a command named '${group}'.\nTry the \`help\` command to see a list of all commands available.`,
     );
   },
   [

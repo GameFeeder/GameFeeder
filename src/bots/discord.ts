@@ -49,7 +49,7 @@ export default class DiscordBot extends BotClient {
     if (!this.bot || !this.bot.user) {
       return '?';
     }
-    return `<@${this.bot.user.id}>`;
+    return `<@!${this.bot.user.id}>`;
   }
 
   public async getUser(): Promise<User> {
