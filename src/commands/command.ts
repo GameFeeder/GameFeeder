@@ -49,7 +49,7 @@ export default class Command {
    */
   public async execute(message: Message, match: RegExpMatchArray): Promise<boolean> {
     // Check if the user has the required role to execute the command.
-    const bot = message.channel.client;
+    const bot = message.channel.bot;
 
     if (await message.user.hasRole(message.channel, this.role)) {
       await this.action(message, match);
