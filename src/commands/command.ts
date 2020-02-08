@@ -9,8 +9,10 @@ export default class Command {
   public name: string;
   /** The description of the command. */
   public description: string;
-  /** The label of the command trigger. Displayed in the help-command. */
+  /** The label of the command trigger. Used to compose the help-command. */
   public channelLabel: (channel: Channel) => Promise<string>;
+  /** The help string of the command. */
+  public channelHelp: (channel: Channel, prefix: string) => Promise<string>;
   /** Get the RegExp for the given channel. */
   public channelTrigger: (channel: Channel) => Promise<RegExp>;
   /** The action function executing the command. */
@@ -31,6 +33,7 @@ export default class Command {
     name: string,
     description: string,
     channelLabel: (channel: Channel) => Promise<string>,
+    channelHelp: (channel: Channel, prefix: string) => Promise<string>,
     channelTrigger: (channel: Channel) => Promise<RegExp>,
     action: (message: Message, match: RegExpMatchArray) => Promise<void>,
     role?: UserRole,
@@ -38,6 +41,7 @@ export default class Command {
     this.name = name;
     this.description = description;
     this.channelLabel = channelLabel;
+    this.channelHelp = channelHelp;
     this.channelTrigger = channelTrigger;
     this.action = action;
     this.role = role != null ? role : UserRole.USER;

@@ -35,8 +35,7 @@ const helpCmd = new SimpleCommand(
       async (command) => await message.user.hasRole(message.channel, command.role),
     );
     const commandsList = await mapAsync(filteredCommands, async (command) => {
-      const label = await command.channelLabel(message.channel);
-      return `- \`${message.channel.getPrefix()}${label}\`: ${command.description}`;
+      return await command.channelHelp(message.channel, '- ');
     });
 
     const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
@@ -594,13 +593,21 @@ const debugCmd = new SimpleCommand(
 const prefixCmds: CommandGroup = new CommandGroup(
   'prefixCmds',
   'All commands that need a prefix to be executed.',
+  // Label
   async (channel) => {
+    const prefix = EscapeRegex(channel.getPrefix());
+    return prefix;
+  },
+  // Help
+  async (channel, prefix) => {
+    const cmdPrefix = EscapeRegex(channel.getPrefix());
     const cmdLabels = await mapAsync(
       prefixCmds.commands,
-      async (cmd) => `- ${await cmd.channelLabel(channel)}`,
+      async (cmd) => `${prefix}${await cmd.channelHelp(channel, cmdPrefix)}`,
     );
     return cmdLabels.join('\n');
   },
+  // Trigger
   async (channel) => {
     const bot = channel.bot;
     const userTag = EscapeRegex(await bot.getUserTag());
@@ -609,6 +616,7 @@ const prefixCmds: CommandGroup = new CommandGroup(
       `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*)$`,
     );
   },
+  // Action
   async (message, match) => {
     const { group } = match.groups;
     await message.channel.bot.sendMessage(

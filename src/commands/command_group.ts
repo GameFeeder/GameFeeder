@@ -13,6 +13,7 @@ export default class CommandGroup extends Command {
     name: string,
     description: string,
     channelLabel: (channel: Channel) => Promise<string>,
+    channelHelp: (channel: Channel, prefix: string) => Promise<string>,
     channelTrigger: (channel: Channel) => Promise<RegExp>,
     defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
     commands: Command[],
@@ -22,6 +23,7 @@ export default class CommandGroup extends Command {
       name,
       description,
       channelLabel,
+      channelHelp,
       channelTrigger,
       async (message, match) => {
         if (!match.groups) {
