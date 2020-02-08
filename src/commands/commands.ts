@@ -542,7 +542,10 @@ const statsCmd = new Command(
 
     const gameCount = Game.getGames().length;
     const clientCount = bots.length;
-    const clients = naturalJoin(bots.map((bot) => bot.label), ', ');
+    const clients = naturalJoin(
+      bots.map((bot) => bot.label),
+      ', ',
+    );
 
     const statString =
       `**${name}** (v${version}) statistics:\n` +
