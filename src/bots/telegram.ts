@@ -5,16 +5,19 @@ import Channel from '../channel';
 import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
-import MDRegex, { bold, seperator } from '../util/regex';
+import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
+
+// node-telegram-bot-api includes snake_case properties
+/* eslint-disable @typescript-eslint/camelcase */
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
   private bot: TelegramAPI;
   private token: string;
-  private channelAuthorID: string = '-322';
+  private channelAuthorID = '-322';
 
   constructor(prefix: string, token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
@@ -46,6 +49,7 @@ export default class TelegramBot extends BotClient {
       return botUser.username;
     } catch (error) {
       this.logger.error(`Failed to get user name:\n${error}`);
+      throw error;
     }
   }
 
@@ -55,6 +59,7 @@ export default class TelegramBot extends BotClient {
       return `@${userName}`;
     } catch (error) {
       this.logger.error(`Failed to get user tag:\n${error}`);
+      throw error;
     }
   }
 
@@ -131,7 +136,7 @@ export default class TelegramBot extends BotClient {
         return new Permissions(false, false, false, false);
       }
 
-      hasAccess = chatMember.status === 'left' || chatMember.status === 'kicked' ? false : true;
+      hasAccess = !(chatMember.status === 'left' || chatMember.status === 'kicked');
       canWrite =
         hasAccess &&
         (chat.type === 'channel'
@@ -174,10 +179,7 @@ export default class TelegramBot extends BotClient {
 
   public async getUserCount(): Promise<number> {
     const channels = this.getBotChannels();
-    const userCounts = await mapAsync(
-      channels,
-      async (botChannel) => await botChannel.getUserCount(),
-    );
+    const userCounts = await mapAsync(channels, async (botChannel) => botChannel.getUserCount());
     const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
@@ -243,11 +245,9 @@ export default class TelegramBot extends BotClient {
           const channels = this.getBotChannels();
           const channelID = message.chat.id.toString();
           // Search for the channel
-          for (const channel of channels) {
-            if (channelID === channel.id) {
-              // Remove channel data
-              await this.onRemoved(channel);
-            }
+          const channel = channels.find((ch) => channelID === ch.id);
+          if (channel) {
+            await this.onRemoved(channel);
           }
         });
         return true;
@@ -342,10 +342,10 @@ export default class TelegramBot extends BotClient {
 
     // Links
     markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
-      let newLabel = label ? label : 'Link';
+      let newLabel = label || 'Link';
       // Remove nested formatting
-      newLabel = MDRegex.replaceItalic(newLabel, (_, italicText) => italicText);
-      newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
+      newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
+      newLabel = MDRegex.replaceBold(newLabel, (__, boldText) => boldText);
 
       if (imageUrl) {
         return `[${newLabel}](${linkUrl}) ([image](${imageUrl}))`;
@@ -356,10 +356,10 @@ export default class TelegramBot extends BotClient {
 
     // Images
     markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
-      let newLabel = label ? label : 'Image';
+      let newLabel = label || 'Image';
       // Remove nested formatting
-      newLabel = MDRegex.replaceItalic(newLabel, (_, italicText) => italicText);
-      newLabel = MDRegex.replaceBold(newLabel, (_, boldText) => boldText);
+      newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
+      newLabel = MDRegex.replaceBold(newLabel, (__, boldText) => boldText);
 
       if (linkUrl) {
         return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
@@ -389,12 +389,12 @@ export default class TelegramBot extends BotClient {
     });
 
     // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
+    markdown = MDRegex.replaceHeader(markdown, (_, headerText) => {
       return `\n\n*${headerText}*\n`;
     });
 
-    // Seperators
-    markdown = MDRegex.replaceSeperator(markdown, (_, seperator) => {
+    // Separators
+    markdown = MDRegex.replaceSeparator(markdown, () => {
       return `\n--\n`;
     });
 

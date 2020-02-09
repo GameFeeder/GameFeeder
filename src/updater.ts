@@ -88,7 +88,7 @@ export default class Updater {
       const endPollTime = Date.now();
       const pollTime = endPollTime - startTime;
       Updater.logger.info(
-        `Found ${notifications.length} posts in ${pollTime} ms. ` + `Notifying channels...`,
+        `Found ${notifications.length} posts in ${pollTime} ms. Notifying channels...`,
       );
 
       // Update time

@@ -1,12 +1,11 @@
+import request from 'request-promise-native';
+import cheerio from 'cheerio';
 import Provider from './provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import DataManager from '../managers/data_manager';
 import ConfigManager from '../managers/config_manager';
-import NotificationElement from '../notifications/notification_element';
 import Logger from '../logger';
-import request from 'request-promise-native';
-import cheerio from 'cheerio';
 
 export default class DotaProvider extends Provider {
   public static logger = new Logger('Dota Provider');
@@ -18,7 +17,7 @@ export default class DotaProvider extends Provider {
     this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
+  public async getNotifications(): Promise<Notification[]> {
     let notifications: Notification[] = [];
     try {
       const pageDoc = await this.getPatchPage();
@@ -27,8 +26,10 @@ export default class DotaProvider extends Provider {
       const newPatches = [];
 
       // Discard the old patches
+      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
         newPatches.push(patchList[i]);
+        this.logger.warn(patchList[i]);
       }
 
       // Update the last patch version
@@ -45,12 +46,9 @@ export default class DotaProvider extends Provider {
           .withAuthor('Dota 2');
       });
     } catch (error) {
-      DotaProvider.logger.error(
-        `Dota updates page parsing failed, error: ${error.substring(0, 120)}`,
-      );
-    } finally {
-      return notifications;
+      this.logger.error(`Dota updates page parsing failed, error: ${error.substring(0, 120)}`);
     }
+    return notifications;
   }
 
   /** Updates the last patch. */
@@ -71,6 +69,8 @@ export default class DotaProvider extends Provider {
     const patchList: string[] = [];
     const $ = pageDoc;
 
+    // This has to be a named function to set new `this` scope
+    // eslint-disable-next-line func-names
     $('#PatchSelector option').each(function() {
       const option = $(this).val();
       // botLogger.info(option);
@@ -85,7 +85,7 @@ export default class DotaProvider extends Provider {
   public async getPatchPage(): Promise<CheerioStatic> {
     const options = {
       uri: 'http://www.dota2.com/patches/',
-      transform: (body: any) => {
+      transform: (body: string) => {
         return cheerio.load(body);
       },
     };
