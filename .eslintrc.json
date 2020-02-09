@@ -28,6 +28,7 @@
         "ts": "never"
       }
     ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "@typescript-eslint/explicit-function-return-type": "off",
     "class-methods-use-this": "off",
     "jest/no-disabled-tests": "warn",
