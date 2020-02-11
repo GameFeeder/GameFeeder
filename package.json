@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "dev": "concurrently --kill-others \"yarn watch\" \"yarn serve\"",
+    "dev": "yarn build && concurrently --kill-others \"yarn watch\" \"yarn serve\"",
     "deploy": "yarn install && yarn demolish && yarn build",
     "demolish": "rimraf dist",
     "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
