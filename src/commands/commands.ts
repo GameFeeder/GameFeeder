@@ -299,6 +299,7 @@ const prefixCmd = new Command(
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[bot.name];
 
+    // Check if the channel is already registered
     const existingChannelId = channels.findIndex((ch) => channel.isEqual(ch.id));
     if (existingChannelId >= 0) {
       const existingChannel = channels[existingChannelId];
@@ -326,8 +327,6 @@ const prefixCmd = new Command(
       subscribers[bot.name] = channels;
       DataManager.setSubscriberData(subscribers);
     }
-
-    // Check if the channel is already registered
   },
   UserRole.ADMIN,
 );

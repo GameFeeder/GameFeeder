@@ -29,7 +29,6 @@ export default class DotaProvider extends Provider {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
         newPatches.push(patchList[i]);
-        this.logger.warn(patchList[i]);
       }
 
       // Update the last patch version
