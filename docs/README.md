@@ -108,7 +108,7 @@ So far, we are supporting the following games:
 
 ### Contributing
 
-We are thankful for your help! Please refer to the [contributing guidelines](CONTRIBUTE.md).
+We welcome all contributors, especially beginners! Please refer to the [contributing guidelines](CONTRIBUTE.md).
 
 ---
 
