@@ -1,6 +1,5 @@
 import BotClient from './bots/bot';
 import Game from './game';
-import botLogger from './logger';
 
 /** A representation of a bot's channel. */
 export default class Channel {
@@ -16,7 +15,7 @@ export default class Channel {
   constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
     this.client = client;
-    this.gameSubs = gameSubs ? gameSubs : [];
+    this.gameSubs = gameSubs || [];
     this.prefix = prefix != null ? prefix : '';
   }
   /** Compares the channel to another channel.
@@ -55,6 +54,6 @@ export default class Channel {
    * @returns The number of users in this channel
    */
   public async getUserCount(): Promise<number> {
-    return await this.client.getChannelUserCount(this);
+    return this.client.getChannelUserCount(this);
   }
 }

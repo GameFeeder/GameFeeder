@@ -28,7 +28,7 @@ export default class Notification implements Comparable<Notification> {
    * @param timestamp - The timestamp of the notification (default: now).
    */
   constructor(timestamp?: Date) {
-    this.timestamp = timestamp ? timestamp : new Date();
+    this.timestamp = timestamp || new Date();
   }
 
   /** Changes the content of the notification.

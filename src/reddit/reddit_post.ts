@@ -2,7 +2,6 @@ import Snoowrap from 'snoowrap';
 import Notification from '../notifications/notification';
 import Reddit from './reddit';
 import Game from '../game';
-import RedditUserProvider from './reddit_user';
 
 /** A post made on reddit. */
 export default class RedditPost {

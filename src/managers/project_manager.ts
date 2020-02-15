@@ -1,6 +1,6 @@
 import FileManager from './file_manager';
 
-export type project_info = {
+export type ProjectInfo = {
   name: string;
   version: string;
   description: string;
@@ -14,8 +14,8 @@ export default class ProjectManager {
   public static fileName = 'package.json';
 
   /** Gets the info about this project. */
-  public static getProjectInfo(): project_info {
-    return FileManager.parseFile('', this.fileName);
+  public static getProjectInfo(): ProjectInfo {
+    return FileManager.parseFile('', this.fileName) as ProjectInfo;
   }
 
   /** Gets the version number of this project. */

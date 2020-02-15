@@ -1,17 +1,12 @@
 import Snoowrap from 'snoowrap';
 import ConfigManager from '../managers/config_manager';
-import Game from '../game';
-import Notification from '../notifications/notification';
-import NotificationElement from '../notifications/notification_element';
-import RedditUserProvider from './reddit_user';
-import { sortLimitEnd } from '../util/comparable';
 import ProjectManager from '../managers/project_manager';
 import Logger from '../logger';
 import RedditPost from './reddit_post';
 
 let reddit: Snoowrap;
-let isInit: boolean = false;
-let isEnabled: boolean = true;
+let isInit = false;
+let isEnabled = true;
 
 export default class Reddit {
   public static logger = new Logger('Reddit');
@@ -111,6 +106,6 @@ export default class Reddit {
     // Subreddit links
     fulltext = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
 
-    return text;
+    return fulltext;
   }
 }
