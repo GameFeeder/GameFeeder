@@ -50,7 +50,7 @@ describe('Util', () => {
       expect(result).toEqual('one, two and three');
     });
 
-    test('3 items with seperator', () => {
+    test('3 items with separator', () => {
       const testArray: string[] = ['one', 'two', 'three'];
       const result = naturalJoin(testArray, '|');
       expect(result).toEqual('one|two and three');
@@ -59,14 +59,6 @@ describe('Util', () => {
 
   describe('Object util', () => {
     describe('keys', () => {
-      test('primative', () => {
-        const obj = 'B';
-        const expected: string[] = [];
-        const actual = ObjUtil.keys(obj);
-
-        expect(actual).toEqual(expected);
-      });
-
       test('array', () => {
         const obj = ['A', 'B', 'C'];
         const expected = ['0', '1', '2'];
