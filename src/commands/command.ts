@@ -1,6 +1,6 @@
 import EscapeRegex from 'escape-string-regexp';
 import BotClient from '../bots/bot';
-import User, { UserRole } from '../user';
+import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
 

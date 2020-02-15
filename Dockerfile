@@ -1,4 +1,4 @@
-FROM node:10-alpine AS production-dependencies
+FROM node:12-alpine AS production-dependencies
 WORKDIR /app
 COPY ./package.json ./yarn.lock /app/
 RUN yarn install --frozen-lockfile --production
@@ -9,7 +9,7 @@ COPY . /app
 RUN yarn install --frozen-lockfile
 RUN yarn build
 
-FROM mhart/alpine-node:slim-10 AS production
+FROM mhart/alpine-node:slim-12 AS production
 WORKDIR /app
 COPY ./package.json /app/
 COPY --from=build-dependencies /app/dist /app/dist

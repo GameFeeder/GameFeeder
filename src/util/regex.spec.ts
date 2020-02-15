@@ -1,5 +1,33 @@
 import MDRegex from './regex';
 
+/** Tests the given regular expression
+ *
+ * @param regExp - The RegExp to test.
+ * @param testStr - The string to test the regExp with.
+ * @param results - The expected results of the match.
+ */
+function testRegExp(regExp: RegExp, testStr: string, results: string[]) {
+  const match = regExp.exec(testStr);
+
+  if (results.length === 0) {
+    expect(match).toBeNull();
+    return;
+  }
+
+  if (!match) {
+    // For some reason the jest-eslint plugin doesn't contain fail()
+    // eslint-disable-next-line no-undef
+    fail(`Not matching '${testStr}'.`);
+    return;
+  }
+
+  expect(match).toHaveLength(results.length);
+
+  results.forEach((result, index) => {
+    expect(match[index]).toEqual(result);
+  });
+}
+
 describe('Markdown regex', () => {
   // ---
   // ATTRIBUTES
@@ -201,15 +229,15 @@ describe('Markdown regex', () => {
       });
     });
 
-    // SEPERATOR
-    describe('seperator', () => {
+    // SEPARATOR
+    describe('separator', () => {
       test('with 3 dashes', () => {
-        testRegExp(MDRegex.seperator, '\n\n---\n\n', ['\n\n---\n\n', '---']);
+        testRegExp(MDRegex.separator, '\n\n---\n\n', ['\n\n---\n\n', '---']);
       });
 
       xtest('with 3 asterisks', () => {
         // This should pass, the function test passes. No idea what's happening here
-        testRegExp(MDRegex.seperator, '\n\n***\n\n', ['\n\n***\n\n', '***']);
+        testRegExp(MDRegex.separator, '\n\n***\n\n', ['\n\n***\n\n', '***']);
       });
     });
   });
@@ -323,7 +351,7 @@ describe('Markdown regex', () => {
         const testText = 'We have an ![image](www.url.png) right here.';
         const expected = `We have an [image](www.url.png) right here.`;
 
-        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
+        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl) => {
           return `[${label}](${imageUrl})`;
         });
 
@@ -334,18 +362,18 @@ describe('Markdown regex', () => {
         const testText = 'We have a [link](www.url.com) right here.';
         const expected = `We have a [link](www.url.com) right here.`;
 
-        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
+        const resultText = MDRegex.replaceImageLink(testText, () => {
           return `+++`;
         });
 
         expect(resultText).toEqual(expected);
       });
 
-      test('not replacing links', () => {
+      test('not replacing link images', () => {
         const testText = 'We have a [![link image](www.url.png)](www.url.com) right here.';
         const expected = `We have a [![link image](www.url.png)](www.url.com) right here.`;
 
-        const resultText = MDRegex.replaceImageLink(testText, (_, label, imageUrl, linkUrl) => {
+        const resultText = MDRegex.replaceImageLink(testText, () => {
           return `+++`;
         });
 
@@ -370,7 +398,7 @@ describe('Markdown regex', () => {
         const testText = 'We have a [link](www.url.com) right here.';
         const expected = `We have a [link](www.url.com) right here.`;
 
-        const resultText = MDRegex.replaceLinkImage(testText, (_, label, linkUrl, imageUrl) => {
+        const resultText = MDRegex.replaceLinkImage(testText, (_, label, linkUrl) => {
           return `[${label}](${linkUrl})`;
         });
 
@@ -381,7 +409,7 @@ describe('Markdown regex', () => {
         const testText = 'We have an ![image](www.url.png) right here.';
         const expected = `We have an ![image](www.url.png) right here.`;
 
-        const resultText = MDRegex.replaceLinkImage(testText, (_, label, linkUrl, imageUrl) => {
+        const resultText = MDRegex.replaceLinkImage(testText, () => {
           return `+++`;
         });
 
@@ -392,7 +420,7 @@ describe('Markdown regex', () => {
         const testText = 'We have an ![[image link](www.url.com)](www.url.png) right here.';
         const expected = `We have an ![[image link](www.url.com)](www.url.png) right here.`;
 
-        const resultText = MDRegex.replaceLinkImage(testText, (_, label, linkUrl, imageUrl) => {
+        const resultText = MDRegex.replaceLinkImage(testText, () => {
           return `+++`;
         });
 
@@ -458,17 +486,6 @@ describe('Markdown regex', () => {
           return `~${boldText}~`;
         });
         const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
-
-        expect(resultText).toEqual(expected);
-      });
-
-      test('multiple with asterisks and underscores', () => {
-        const testText = '**asterisk1** and __underscore1__ and **asterisk2** and __underscore2__';
-        const expected = '~asterisk1~ and ~underscore1~ and ~asterisk2~ and ~underscore2~';
-
-        const resultText = MDRegex.replaceBold(testText, (_, boldText) => {
-          return `~${boldText}~`;
-        });
 
         expect(resultText).toEqual(expected);
       });
@@ -777,13 +794,13 @@ describe('Markdown regex', () => {
       });
     });
 
-    // SEPERATOR
-    describe('Seperator', () => {
+    // SEPARATOR
+    describe('Separator', () => {
       test('with 3 dashes', () => {
         const testText = 'Test text\n\n---\n\nAnd it goes on.';
         const expected = 'Test text\n--\nAnd it goes on.';
 
-        const resultText = MDRegex.replaceSeperator(testText, (_, seperator) => {
+        const resultText = MDRegex.replaceSeparator(testText, () => {
           return `\n--\n`;
         });
 
@@ -794,7 +811,7 @@ describe('Markdown regex', () => {
         const testText = 'Test text\n\n***\n\nAnd it goes on.';
         const expected = 'Test text\n--\nAnd it goes on.';
 
-        const resultText = MDRegex.replaceSeperator(testText, (_, seperator) => {
+        const resultText = MDRegex.replaceSeparator(testText, () => {
           return `\n--\n`;
         });
 
@@ -803,29 +820,3 @@ describe('Markdown regex', () => {
     });
   });
 });
-
-/** Tests the given regular expression
- *
- * @param regExp - The RegExp to test.
- * @param testStr - The string to test the regExp with.
- * @param results - The expected results of the match.
- */
-function testRegExp(regExp: RegExp, testStr: string, results: string[]) {
-  const match = regExp.exec(testStr);
-
-  if (results.length === 0) {
-    expect(match).toBeNull();
-    return;
-  }
-
-  if (!match) {
-    fail(`Not matching '${testStr}'.`);
-    return;
-  }
-
-  expect(match.length).toEqual(results.length);
-
-  for (let i = 0; i < results.length; i++) {
-    expect(match[i]).toEqual(results[i]);
-  }
-}

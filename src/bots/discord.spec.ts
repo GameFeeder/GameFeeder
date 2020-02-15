@@ -267,8 +267,8 @@ describe('Discord bot', () => {
     });
   });
 
-  // SEPERATOR
-  describe('seperator', () => {
+  // SEPARATOR
+  describe('separator', () => {
     test('with 3 dashes', () => {
       const testText = '\n\n---\n\n';
       const expected = '\n---\n';
