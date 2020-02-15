@@ -238,7 +238,7 @@ export default class DiscordBot extends BotClient {
         const channels = this.getBotChannels();
 
         // Remove all channel data of that guild
-        const removePromises = channels.map((channel) => {
+        await mapAsync(channels, (channel) => {
           const discordChannel = this.bot.channels.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data
@@ -256,7 +256,6 @@ export default class DiscordBot extends BotClient {
           // No promise needed otherwise
           return undefined;
         });
-        await Promise.all(removePromises);
       });
       // Handle deleted channels
       this.bot.on('channelDelete', async (discordChannel) => {

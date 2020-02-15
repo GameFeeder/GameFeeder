@@ -6,6 +6,7 @@ import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
 import Permissions from '../permissions';
+import { mapAsync } from '../util/util';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -196,9 +197,9 @@ export default abstract class BotClient {
   public async removeChannelsWithoutWritePermissions() {
     const user = await this.getUser();
     const channels = this.getBotChannels();
-    const permissionPromises = channels.map((channel) => this.getUserPermissions(user, channel));
-    const permissions: Permissions[] = await Promise.all(permissionPromises);
-
+    const permissions = await mapAsync(channels, (channel) =>
+      this.getUserPermissions(user, channel),
+    );
     // Iterate through all the channels
     let removeCount = 0;
     channels.forEach((channel, index) => {
