@@ -5,23 +5,25 @@
   "color": "#FFD700",
   "icon": "https://artifactwiki.com/wiki/Special:Redirect/file/Artifact_Cutout.png",
   "providers": {
-    "reddit": {
-      "subreddit": "Artifact",
-      "users": [
-        {
-          "name": "Magesunite",
-          "titleFilter": "Artifact Update"
-        },
-        {
-          "name": "SirBelvedere",
-          "titleFilter": "Artifact Update"
-        },
-        {
-          "name": "wykrhm",
-          "titleFilter": ".*"
-        }
-      ]
-    },
+    "reddit": [
+      {
+        "subreddit": "Artifact",
+        "users": [
+          {
+            "name": "Magesunite",
+            "titleFilter": "Artifact Update"
+          },
+          {
+            "name": "SirBelvedere",
+            "titleFilter": "Artifact Update"
+          },
+          {
+            "name": "wykrhm",
+            "titleFilter": ".*"
+          }
+        ]
+      }
+    ],
     "rss": []
   }
 }

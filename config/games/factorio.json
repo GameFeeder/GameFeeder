@@ -5,10 +5,12 @@
   "color": "#C67328",
   "icon": "https://wiki.factorio.com/images/Factorio-icon.png",
   "providers": {
-    "reddit": {
-      "subreddit": "factorio",
-      "users": []
-    },
+    "reddit": [
+      {
+        "subreddit": "factorio",
+        "users": []
+      }
+    ],
     "rss": [
       {
         "label": "Steam Feed",

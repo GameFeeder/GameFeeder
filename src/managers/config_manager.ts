@@ -101,7 +101,7 @@ export type GameSettings = {
   /** The providers of the game. */
   providers: {
     /** The reddit providers of the game. */
-    reddit: RedditProvider;
+    reddit: RedditProvider[];
     /** The rss providers of the game. */
     rss: RSSProvider[];
   };
