@@ -32,8 +32,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn build"
+      "pre-commit": "env FORCE_COLOR=1 yarn lint",
+      "pre-push": "env FORCE_COLOR=1 yarn build"
     }
   },
   "devDependencies": {
