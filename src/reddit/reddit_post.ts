@@ -64,8 +64,11 @@ export default class RedditPost {
    * @param game - The game the notification is about.
    */
   public toGameNotification(game: Game): Notification {
+    const crosspostRegex = /^\/r\/.*/;
+    // Crossposts have a relative url, e.g. '/r/DotA2/comments/...'
+    const url = crosspostRegex.test(this.url) ? `https://www.reddit.com${this.url}` : this.url;
     return new Notification(this.timestamp)
-      .withTitle(this.title, this.url)
+      .withTitle(this.title, url)
       .withContent(this.content)
       .withAuthor(
         `/u/${this.user}`,
