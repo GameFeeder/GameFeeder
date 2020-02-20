@@ -3,17 +3,19 @@
   "label": "Dota Underlords",
   "aliases": ["underlords", "dota underlords", "du"],
   "color": "#FFFFFF",
-  "icon": "https://pbs.twimg.com/profile_images/1139243347237691392/PzgWEKp7_400x400.png",
+  "icon": "https://styles.redditmedia.com/t5_117kpk/styles/communityIcon_87bnogkb67431.png",
   "providers": {
-    "reddit": {
-      "subreddit": "underlords",
-      "users": [
-        {
-          "name": "wykrhm",
-          "titleFilter": ".*"
-        }
-      ]
-    },
+    "reddit": [
+      {
+        "subreddit": "underlords",
+        "users": [
+          {
+            "name": "wykrhm",
+            "titleFilter": ".*"
+          }
+        ]
+      }
+    ],
     "rss": []
   }
 }

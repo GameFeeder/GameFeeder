@@ -1,4 +1,3 @@
-import Command from './command';
 import Message from '../message';
 import { UserRole } from '../user';
 import NoLabelCommand from './no_label_command';
@@ -23,7 +22,7 @@ export default class SimpleCommand extends NoLabelCommand {
       description,
       // The name is the regex
       new RegExp(`^\\s*${name}\\s*$`),
-      async (message, match) => action(message),
+      async (message) => action(message),
       role,
     );
   }

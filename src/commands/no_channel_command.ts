@@ -24,11 +24,11 @@ export default class NoChannelCommand extends Command {
       name,
       description,
       // The label is independant of the channel
-      async (channel) => label,
+      async () => label,
       // The help string is the label and the description
       async (channel, prefix) => `\`${prefix}${label}\` - ${description}`,
       // The trigger is independant of the channel
-      async (channel) => trigger,
+      async () => trigger,
       action,
       role,
     );

@@ -1,4 +1,3 @@
-import Command from './command';
 import Message from '../message';
 import { UserRole } from '../user';
 import NonChannelCommand from './no_channel_command';

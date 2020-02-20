@@ -1,5 +1,4 @@
-import ConfigManager, { reddit_user } from './managers/config_manager';
-import botLogger from './logger';
+import ConfigManager, { RedditUser } from './managers/config_manager';
 import Provider from './providers/provider';
 import RSSProvider from './providers/provider_rss';
 import RedditProvider from './providers/provider_reddit';
@@ -112,18 +111,22 @@ export default class Game {
 
       // Add providers
       const providers: Provider[] = [];
+
       // Reddit providers
-      if (gameSettings.providers.reddit && gameSettings.providers.reddit.users) {
-        const subreddit = gameSettings.providers.reddit.subreddit;
-        const users: reddit_user[] = gameSettings.providers.reddit.users;
-        const redditUsers = users.map(
-          (user) => new RedditUserProvider(user.name, user.titleFilter),
-        );
-        const urlFilters = gameSettings.providers.reddit.urlFilters
-          ? gameSettings.providers.reddit.urlFilters
-          : [];
-        providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
+      if (gameSettings.providers.reddit) {
+        gameSettings.providers.reddit.forEach((redditProvider) => {
+          if (redditProvider.users) {
+            const subreddit = redditProvider.subreddit;
+            const users: RedditUser[] = redditProvider.users;
+            const redditUsers = users.map(
+              (user) => new RedditUserProvider(user.name, user.titleFilter),
+            );
+            const urlFilters = redditProvider.urlFilters ? redditProvider.urlFilters : [];
+            providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
+          }
+        });
       }
+
       // Blog providers
       if (gameSettings.providers.rss) {
         for (const blog of gameSettings.providers.rss) {

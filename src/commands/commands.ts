@@ -1,11 +1,14 @@
+// TODO: Revisit these overrides
+/* eslint-disable prefer-template */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
-import { filterAsync, mapAsync, naturalJoin, StrUtil } from '../util/util';
+import { filterAsync, mapAsync, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
 import CommandGroup from './command_group';
-import EscapeRegex from 'escape-string-regexp';
 import SimpleCommand from './simple_command';
 import NoLabelCommand from './no_label_command';
 import NoChannelCommand from './no_channel_command';
@@ -30,12 +33,11 @@ const helpCmd = new SimpleCommand(
   'Display a list of all available commands.',
   async (message) => {
     // Only show the commands the user has the role to execute.
-    const filteredCommands = await filterAsync(
-      commands,
-      async (command) => await message.user.hasRole(message.channel, command.role),
+    const filteredCommands = await filterAsync(commands, async (command) =>
+      message.user.hasRole(message.channel, command.role),
     );
     const commandsList = await mapAsync(filteredCommands, async (command) => {
-      return await command.channelHelp(message.channel, '- ');
+      return command.channelHelp(message.channel, '- ');
     });
 
     const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
@@ -49,7 +51,7 @@ const aboutCmd = new NoLabelCommand(
   'about',
   'Display info about the bot.',
   /^\s*(about)|(info)\s*$/,
-  async (message, _) => {
+  async (message) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
@@ -64,7 +66,7 @@ const settingsCmd = new NoLabelCommand(
   'settings',
   'Display an overview of the settings you can configure for the bot.',
   /^\s*(settings)|(options)|(config)\s*$/,
-  async (message, _) => {
+  async (message) => {
     const channel = message.channel;
     const gameStr =
       channel.gameSubs && channel.gameSubs.length > 0
@@ -157,7 +159,7 @@ const subCmd = new NoChannelCommand(
     if (invalidAliases.length > 0) {
       msg +=
         `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
     }
 
     message.reply(msg);
@@ -229,7 +231,7 @@ const unsubCmd = new NoChannelCommand(
     if (invalidAliases.length > 0) {
       msg +=
         `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((alias) => `'${alias}'`))}.`;
+        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
     }
 
     message.reply(msg);
@@ -284,35 +286,33 @@ const prefixCmd = new NoChannelCommand(
     const channels = subscribers[bot.name];
 
     // Check if the channel is already registered
-    for (let i = 0; i < channels.length; i++) {
-      const sub = channels[i];
-      if (channel.isEqual(sub.id)) {
-        // Update prefix
-        sub.prefix = newPrefix !== bot.prefix ? newPrefix : '';
+    const existingChannelId = channels.findIndex((ch) => channel.isEqual(ch.id));
+    if (existingChannelId >= 0) {
+      const existingChannel = channels[existingChannelId];
+      // Update prefix
+      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : '';
 
-        // Remove unnecessary entries
-        if (sub.gameSubs.length === 0 && !sub.prefix) {
-          bot.logger.debug('Removing unnecessary channel entry...');
-          channels.splice(i, 1);
-        } else {
-          channels[i] = sub;
-        }
-        // Save changes
-        subscribers[bot.name] = channels;
-        DataManager.setSubscriberData(subscribers);
-        return;
+      // Remove unnecessary entries
+      if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
+        bot.logger.debug('Removing unnecessary channel entry...');
+        channels.splice(existingChannelId, 1);
+      } else {
+        channels[existingChannelId] = existingChannel;
       }
+      // Save changes
+      subscribers[bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    } else {
+      // Add channel with the new prefix
+      channels.push({
+        gameSubs: [],
+        id: channel.id,
+        prefix: newPrefix,
+      });
+      // Save the changes
+      subscribers[bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
     }
-    // Add channel with the new prefix
-    channels.push({
-      gameSubs: [],
-      id: channel.id,
-      prefix: newPrefix,
-    });
-    // Save the changes
-    subscribers[bot.name] = channels;
-    DataManager.setSubscriberData(subscribers);
-    return;
   },
   UserRole.ADMIN,
 );
@@ -433,6 +433,7 @@ const rollCmd = new NoChannelCommand(
       diceCount = 1;
     }
 
+    // dice type represents how many sides the die has
     let diceType = diceTypeStr ? parseInt(diceTypeStr, 10) : 12;
     if (diceType <= 1) {
       diceType = 12;
@@ -443,15 +444,16 @@ const rollCmd = new NoChannelCommand(
     let sum = 0;
     const resultStrs = [];
 
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < diceCount; i++) {
       // Throw a die
-      const die = Math.floor(Math.random() * diceType) + 1;
+      const dieResult = Math.floor(Math.random() * diceType) + 1;
       // Update sum
-      sum += die;
+      sum += dieResult;
       // Mark critical failure / success
-      const isCrit = die === 1 || die === diceType;
+      const isCrit = dieResult === 1 || dieResult === diceType;
       // Generate str
-      const dieStr = isCrit ? `_${die}_` : `${die}`;
+      const dieStr = isCrit ? `_${dieResult}_` : `${dieResult}`;
 
       resultStrs.push(dieStr);
     }
@@ -497,10 +499,13 @@ const statsCmd = new NoLabelCommand(
     const bots = getBots();
 
     // User and channel count
-    for (const bot of bots) {
+    for (const myBot of bots) {
       // Get statistics
-      const channelCount = await bot.getChannelCount();
-      const userCount = await bot.getUserCount();
+      // TODO: Convert these awaits to a Promise.all()
+      // eslint-disable-next-line no-await-in-loop
+      const channelCount = await myBot.getChannelCount();
+      // eslint-disable-next-line no-await-in-loop
+      const userCount = await myBot.getUserCount();
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;
@@ -508,7 +513,7 @@ const statsCmd = new NoLabelCommand(
       const userString = userCount > 1 ? 'users' : 'user';
       const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
-        `     ${bot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        `     ${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 
@@ -521,7 +526,10 @@ const statsCmd = new NoLabelCommand(
 
     const gameCount = Game.getGames().length;
     const clientCount = bots.length;
-    const clients = naturalJoin(bots.map((bot) => bot.label), ', ');
+    const clients = naturalJoin(
+      bots.map((_bot) => _bot.label),
+      ', ',
+    );
 
     const statString =
       `**${name}** (v${version}) statistics:\n` +
@@ -559,7 +567,7 @@ const telegramCmdsCmd = new SimpleCommand(
       return `${cmd.name} - ${cmd.description}`;
     });
     // Block code format
-    const telegramCmdStr = '```\n' + cmdEntries.join('\n') + '\n```';
+    const telegramCmdStr = `\`\`\`\n${cmdEntries.join('\n')}\n\`\`\``;
 
     message.reply(telegramCmdStr);
   },

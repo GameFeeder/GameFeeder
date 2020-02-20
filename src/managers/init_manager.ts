@@ -1,10 +1,10 @@
 import FS from 'fs';
+import _ from 'lodash';
 import { ObjUtil } from '../util/util';
 import FileManager from './file_manager';
 import Logger from '../logger';
 import ConfigManager from './config_manager';
 import DataManager from './data_manager';
-import _ from 'lodash';
 
 export default class InitManager {
   public static logger = new Logger('Init Manager');
@@ -154,17 +154,7 @@ export default class InitManager {
     return this.addMissingUserFiles(dataPath);
   }
 
-  public static checkForKey(object: any, keyPath: string[], key: string): boolean {
-    let target = object;
-
-    for (const path of keyPath) {
-      target = target[path];
-    }
-
-    return target[key];
-  }
-
-  public static getMissingKeys(reference: any, object: any, path?: string[]): string[][] {
+  public static getMissingKeys(reference: object, object: object, path?: string[]): string[][] {
     const refTarget = ObjUtil.getInnerObject(reference, path);
     const objTarget = ObjUtil.getInnerObject(object, path);
 
@@ -172,7 +162,7 @@ export default class InitManager {
     const objKeys = ObjUtil.keys(objTarget);
 
     let missing: string[][] = [];
-    const keyPath = path ? path : [];
+    const keyPath = path || [];
 
     for (const key of refKeys) {
       if (key && objKeys.includes(key)) {
@@ -186,7 +176,10 @@ export default class InitManager {
     return missing;
   }
 
-  public static addMissingKeys(reference: any, object: any): { object: any; keys: string[][] } {
+  public static addMissingKeys(
+    reference: object,
+    object: object,
+  ): { object: object; keys: string[][] } {
     const missing = this.getMissingKeys(reference, object);
     let newObj = object;
 
@@ -209,7 +202,9 @@ export default class InitManager {
 
         const { object: newUserObj, keys: missingKeys } = this.addMissingKeys(expObj, userObj);
         if (missingKeys.length > 0) {
-          const keyString = `    - ${missingKeys.map((path) => path.join(' > ')).join('\n    - ')}`;
+          const keyString = `    - ${missingKeys
+            .map((missingKey) => missingKey.join(' > '))
+            .join('\n    - ')}`;
 
           InitManager.logger.warn(
             `Found missing keys in '${this.getUserFileName(

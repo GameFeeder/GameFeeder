@@ -37,21 +37,23 @@ export default class CommandGroup extends Command {
           return;
         }
 
-        // Execute the first matching sub-command
-        for (const cmd of this.commands) {
+        // Find matching sub-command
+        const matchingCmd = this.commands.find(async (cmd) => {
           const regex = await cmd.getRegExp(message.channel);
           // Test if the sub-command matches
+          return regex.test(group);
+        });
+
+        if (matchingCmd) {
+          // Match found, execute sub-command
+          const regex = await matchingCmd.getRegExp(message.channel);
           const cmdMatch = regex.exec(group);
-
-          if (cmdMatch) {
-            // Execute the sub-command
-            await cmd.execute(message, cmdMatch);
-            return;
-          }
+          // Execute the sub-command
+          await matchingCmd.execute(message, cmdMatch);
+        } else {
+          // No match found, execute default action
+          this.defaultAction(message, match);
         }
-
-        // No match found, execute default action
-        this.defaultAction(message, match);
       },
       role,
     );

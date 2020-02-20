@@ -108,10 +108,7 @@ export default class DiscordBot extends BotClient {
     });
 
     // Aggregate results
-    const userCounts = await mapAsync(
-      channels,
-      async (botChannel) => await botChannel.getUserCount(),
-    );
+    const userCounts = await mapAsync(channels, async (botChannel) => botChannel.getUserCount());
     const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
@@ -197,9 +194,6 @@ export default class DiscordBot extends BotClient {
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      const hasAccess = discordChannel
-        .permissionsFor(discordUser)
-        .has(['VIEW_CHANNEL', 'READ_MESSAGES']);
       canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
     } else {
       this.logger.error(`Unecpected Discord channel type.`);
@@ -244,29 +238,33 @@ export default class DiscordBot extends BotClient {
         const channels = this.getBotChannels();
 
         // Remove all channel data of that guild
-        for (const channel of channels) {
+        await mapAsync(channels, (channel) => {
           const discordChannel = this.bot.channels.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data
-            await this.onRemoved(channel);
-          } else if (discordChannel instanceof TextChannel) {
+            return this.onRemoved(channel);
+          }
+
+          if (discordChannel instanceof TextChannel) {
             const channelGuildID = discordChannel.guild.id;
             if (guildID === channelGuildID) {
               // The channel belongs to the guild, remove data
-              await this.onRemoved(channel);
+              return this.onRemoved(channel);
             }
           }
-        }
+
+          // No promise needed otherwise
+          return undefined;
+        });
       });
       // Handle deleted channels
       this.bot.on('channelDelete', async (discordChannel) => {
         const channels = this.getBotChannels();
 
-        // Search for the deleted channel
-        for (const channel of channels) {
-          if (channel.id === discordChannel.id) {
-            await this.onRemoved(channel);
-          }
+        // Search for the channel
+        const channel = channels.find((ch) => discordChannel.id === ch.id);
+        if (channel) {
+          await this.onRemoved(channel);
         }
       });
       return true;
@@ -399,7 +397,7 @@ export default class DiscordBot extends BotClient {
 
     // Links
     markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
-      const newLabel = label ? label : 'Link';
+      const newLabel = label || 'Link';
 
       if (isEmbed) {
         if (imageUrl) {
@@ -413,7 +411,7 @@ export default class DiscordBot extends BotClient {
 
     // Images
     markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
-      const newLabel = label ? label : 'Image';
+      const newLabel = label || 'Image';
 
       if (linkUrl) {
         if (isEmbed) {
@@ -450,8 +448,8 @@ export default class DiscordBot extends BotClient {
       return `\n\n**${headerText}**\n`;
     });
 
-    // Seperators
-    markdown = MDRegex.replaceSeperator(markdown, (_, seperator) => {
+    // Separators
+    markdown = MDRegex.replaceSeparator(markdown, () => {
       return `\n---\n`;
     });
 
@@ -461,7 +459,11 @@ export default class DiscordBot extends BotClient {
     return markdown;
   }
 
-  private async sendToChannel(channel: Channel, text: string, embed?: any): Promise<boolean> {
+  private async sendToChannel(
+    channel: Channel,
+    text: string,
+    embed?: DiscordAPI.RichEmbed,
+  ): Promise<boolean> {
     const botChannels = this.bot.channels;
     let discordChannel;
     try {
@@ -475,7 +477,8 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    const callback = (error: any) => {
+    // TODO: Fix this unknown
+    const callback = (error: Error | unknown) => {
       let errorMsg;
       if (error instanceof Error) {
         errorMsg = `${error.name}: ${error.message}`;
