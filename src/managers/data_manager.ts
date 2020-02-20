@@ -17,7 +17,7 @@ export type subscriber = {
 };
 
 /** The data for the subscribers. */
-export type subscriber_data = {
+export type SubscriberData = {
   [index: string]: subscriber[];
   /** The discord subs. */
   discord: subscriber[];
@@ -26,7 +26,7 @@ export type subscriber_data = {
 };
 
 /** The data for the updater. */
-export type updater_data = {
+export type UpdaterData = {
   /** The time of the last update. */
   lastUpdate: string;
   /** The version string of the last dota patch. */
@@ -64,7 +64,7 @@ export default class DataManager {
    *
    * @param file - The file to parse.
    */
-  private static parseFile(file: DATA): any {
+  private static parseFile(file: DATA): object {
     return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
@@ -73,29 +73,29 @@ export default class DataManager {
    * @param file - The file to write to.
    * @param object - The object to write to the file.
    */
-  private static writeObject(file: DATA, object: any): void {
+  private static writeObject(file: DATA, object: object): void {
     return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 
   // Data getters and setters
 
   /** Gets the subscriber data as an object. */
-  public static getSubscriberData(): subscriber_data {
-    return this.parseFile(DATA.SUBS);
+  public static getSubscriberData(): SubscriberData {
+    return this.parseFile(DATA.SUBS) as SubscriberData;
   }
 
   /** Sets the subscriber data. */
-  public static setSubscriberData(data: subscriber_data): void {
+  public static setSubscriberData(data: SubscriberData): void {
     this.writeObject(DATA.SUBS, data);
   }
 
   /** Gets the updater data as an object. */
-  public static getUpdaterData(): updater_data {
-    return this.parseFile(DATA.UPDATER);
+  public static getUpdaterData(): UpdaterData {
+    return this.parseFile(DATA.UPDATER) as UpdaterData;
   }
 
   /** Sets the updater data. */
-  public static setUpdaterData(data: updater_data): void {
+  public static setUpdaterData(data: UpdaterData): void {
     this.writeObject(DATA.UPDATER, data);
   }
 }

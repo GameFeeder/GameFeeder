@@ -2,6 +2,16 @@ import BotClient from './bots/bot';
 import Channel from './channel';
 import Logger from './logger';
 
+/** Determines the role a user has on a channel. */
+export enum UserRole {
+  /** The user is just a normal user. */
+  USER = 'User',
+  /** The user has admin priviliges. */
+  ADMIN = 'Admin',
+  /** The user is the owner of the bot. */
+  OWNER = 'Owner',
+}
+
 /** Represents a user of a bot. */
 export default class User {
   public static logger = new Logger('User');
@@ -23,7 +33,7 @@ export default class User {
    * @returns The role the user has on the given channel.
    */
   public async getRole(channel: Channel): Promise<UserRole> {
-    return await this.bot.getUserRole(this, channel);
+    return this.bot.getUserRole(this, channel);
   }
   /** Determines whether the user has the given role on the given channel.
    *
@@ -45,14 +55,4 @@ export default class User {
         return false;
     }
   }
-}
-
-/** Determines the role a user has on a channel. */
-export enum UserRole {
-  /** The user is just a normal user. */
-  USER = 'User',
-  /** The user has admin priviliges. */
-  ADMIN = 'Admin',
-  /** The user is the owner of the bot. */
-  OWNER = 'Owner',
 }

@@ -1,23 +1,22 @@
 {
-  "editor.tabSize": 2,
-  "editor.wordWrap": "on",
-  "files.eol": "\n",
-  "cSpell.words": [
-    "csgo",
-    "dota",
-    "reddit",
-    "sub",
-    "subreddit",
-    "unsub",
-    "unsubscription",
-    "usertag"
-  ],
-  "spellright.language": [
-    "en"
-  ],
-  "spellright.documentTypes": [
-    "markdown",
-    "latex",
-    "plaintext"
-  ]
+    "cSpell.words": [
+        "csgo",
+        "dota",
+        "reddit",
+        "sub",
+        "subreddit",
+        "unsub",
+        "unsubscription",
+        "usertag"
+    ],
+    "editor.tabSize": 2,
+    "files.eol": "\n",
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "spellright.language": [
+        "en"
+    ]
 }

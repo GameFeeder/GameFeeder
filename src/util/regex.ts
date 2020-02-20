@@ -53,7 +53,7 @@ export const h2Alt = `(?:${anyWs})(${some})(?:[ \t\f\v\r]*\n-{3,}${anyWs})`;
 
 export const quote = `^>${anyWs}(${any})${anyWs}$`;
 
-export const seperator = `${anyWs}\n${anyWs}((?:-{3,})|(?:\\*{3,}))${anyWs}`;
+export const separator = `${anyWs}\n${anyWs}((?:-{3,})|(?:\\*{3,}))${anyWs}`;
 
 export default class MDRegex {
   // Links
@@ -64,6 +64,7 @@ export default class MDRegex {
    * - Group 2: The link URL
    */
   public static link = new RegExp(link, 'g');
+
   /** Matches a markdown image.
    * - Group 0: The whole markdown image
    * - Group 1: The image label
@@ -104,11 +105,13 @@ export default class MDRegex {
    * - Group 1: The bold text
    */
   public static boldAsterisk = new RegExp(boldAsterisk, 'g');
+
   /** Matches bold text sourrounded by underscores.
    * - Group 0: The whole bold markdown
    * - Group 1: The bold text
    */
   public static boldUnderscore = new RegExp(boldUnderscore, 'g');
+
   /** Matches bold text.
    * - Group 0: The whole bold markdown
    *
@@ -127,11 +130,13 @@ export default class MDRegex {
    * - Group 1: Italic text
    */
   public static italicAsterisk = new RegExp(italicAsterisk, 'g');
+
   /** Matches  text sourrounded by underscores.
    * - Group 0: The whole italic markdown
    * - Group 1: Italic text
    */
   public static italicUnderscore = new RegExp(italicUnderscore, 'g');
+
   /** Matches italic text.
    * - Group 0: The whole italic markdown
    *
@@ -163,7 +168,7 @@ export default class MDRegex {
 
   public static quote = new RegExp(quote, 'gm');
 
-  public static seperator = new RegExp(seperator, 'g');
+  public static separator = new RegExp(separator, 'g');
 
   // Functions
 
@@ -311,17 +316,17 @@ export default class MDRegex {
     });
   }
 
-  /** Replace markdown seperators with the given function
+  /** Replace markdown separators with the given function
    *
-   * @param text - The text to replace seperators in.
-   * @param replaceFn - The function to replace the seperators with.
+   * @param text - The text to replace separators in.
+   * @param replaceFn - The function to replace the separators with.
    */
-  public static replaceSeperator(
+  public static replaceSeparator(
     text: string,
-    replaceFn: (match: string, seperator: string) => string,
+    replaceFn: (match: string, separator: string) => string,
   ): string {
-    return text.replace(MDRegex.seperator, (match, seperator) => {
-      return replaceFn(match, seperator);
+    return text.replace(MDRegex.separator, (match, mdSeparator) => {
+      return replaceFn(match, mdSeparator);
     });
   }
 }

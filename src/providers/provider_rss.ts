@@ -1,6 +1,5 @@
 import Game from '../game';
 import Notification from '../notifications/notification';
-import NotificationElement from '../notifications/notification_element';
 import Provider from './provider';
 import { rss } from '../rss/rss';
 import PreProcessor from '../processors/pre_processor';
