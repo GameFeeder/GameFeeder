@@ -33,10 +33,10 @@ const helpCmd = new SimpleCommand(
   'Display a list of all available commands.',
   async (message) => {
     // Only show the commands the user has the role to execute.
-    const filteredCommands = await filterAsync(commands, async (command) =>
-      message.user.hasRole(message.channel, command.role),
-    );
-    const commandsList = await mapAsync(filteredCommands, async (command) => {
+    const filteredCommands = await filterAsync(commands, async (command) => {
+      return message.user.hasRole(message.channel, command.role);
+    });
+    const commandsList = filteredCommands.map((command) => {
       return command.channelHelp(message.channel, '- ');
     });
 
@@ -610,7 +610,7 @@ const prefixCmds: CommandGroup = new CommandGroup(
   (channel, prefix) => {
     const cmdPrefix = EscapeRegex(channel.getPrefix());
     const cmdLabels = prefixCmds.commands.map(
-      async (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
+      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
     );
     return cmdLabels.join('\n');
   },
