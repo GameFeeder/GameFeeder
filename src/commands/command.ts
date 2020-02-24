@@ -8,11 +8,11 @@ export default class Command {
   /** The description of the command. */
   public description: string;
   /** The label of the command trigger. Used to compose the help-command. */
-  public channelLabel: (channel: Channel) => Promise<string>;
+  public channelLabel: (channel: Channel) => string;
   /** The help string of the command. */
-  public channelHelp: (channel: Channel, prefix: string) => Promise<string>;
+  public channelHelp: (channel: Channel, prefix: string) => string;
   /** Get the RegExp for the given channel. */
-  public channelTrigger: (channel: Channel) => Promise<RegExp>;
+  public channelTrigger: (channel: Channel) => RegExp;
   /** The action function executing the command. */
   public action: (message: Message, match: RegExpMatchArray) => Promise<void>;
   /** The role required to execute the command. */
@@ -30,9 +30,9 @@ export default class Command {
   constructor(
     name: string,
     description: string,
-    channelLabel: (channel: Channel) => Promise<string>,
-    channelHelp: (channel: Channel, prefix: string) => Promise<string>,
-    channelTrigger: (channel: Channel) => Promise<RegExp>,
+    channelLabel: (channel: Channel) => string,
+    channelHelp: (channel: Channel, prefix: string) => string,
+    channelTrigger: (channel: Channel) => RegExp,
     action: (message: Message, match: RegExpMatchArray) => Promise<void>,
     role?: UserRole,
   ) {
@@ -73,8 +73,8 @@ export default class Command {
    *
    * @param channel - The channel to get the regex for.
    */
-  public async getRegExp(channel: Channel) {
-    const regexString = await this.channelTrigger(channel);
+  public getRegExp(channel: Channel): RegExp {
+    const regexString = this.channelTrigger(channel);
 
     return new RegExp(regexString);
   }

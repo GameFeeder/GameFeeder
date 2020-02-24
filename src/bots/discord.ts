@@ -38,18 +38,18 @@ export default class DiscordBot extends BotClient {
     return this.standardBot;
   }
 
-  public async getUserName(): Promise<string> {
-    if (!this.bot || !this.bot.user) {
+  public getUserName(): string {
+    if (!this.enabled || !this.userName) {
       return '?';
     }
-    return this.bot.user.username;
+    return this.userName;
   }
 
-  public async getUserTag(): Promise<string> {
-    if (!this.bot || !this.bot.user) {
+  public getUserTag(): string {
+    if (!this.enabled || !this.userTag) {
       return '?';
     }
-    return `<@!${this.bot.user.id}>`;
+    return this.userTag;
   }
 
   public async getUser(): Promise<User> {
@@ -267,6 +267,11 @@ export default class DiscordBot extends BotClient {
           await this.onRemoved(channel);
         }
       });
+
+      // Initialize user name and user tag
+      this.userName = this.bot.user.username;
+      this.userTag = `<@!${this.bot.user.id}>`;
+
       return true;
     }
 

@@ -12,9 +12,9 @@ export default class CommandGroup extends Command {
   constructor(
     name: string,
     description: string,
-    channelLabel: (channel: Channel) => Promise<string>,
-    channelHelp: (channel: Channel, prefix: string) => Promise<string>,
-    channelTrigger: (channel: Channel) => Promise<RegExp>,
+    channelLabel: (channel: Channel) => string,
+    channelHelp: (channel: Channel, prefix: string) => string,
+    channelTrigger: (channel: Channel) => RegExp,
     defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
     commands: Command[],
     role?: UserRole,
@@ -38,15 +38,15 @@ export default class CommandGroup extends Command {
         }
 
         // Find matching sub-command
-        const matchingCmd = this.commands.find(async (cmd) => {
-          const regex = await cmd.getRegExp(message.channel);
+        const matchingCmd = this.commands.find((cmd) => {
+          const regex = cmd.getRegExp(message.channel);
           // Test if the sub-command matches
           return regex.test(group);
         });
 
         if (matchingCmd) {
           // Match found, execute sub-command
-          const regex = await matchingCmd.getRegExp(message.channel);
+          const regex = matchingCmd.getRegExp(message.channel);
           const cmdMatch = regex.exec(group);
           // Execute the sub-command
           await matchingCmd.execute(message, cmdMatch);
