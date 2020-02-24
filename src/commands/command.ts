@@ -2,7 +2,7 @@ import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
 
-export default class Command {
+export default abstract class Command {
   /** The name of the command. */
   public name: string;
   /** The description of the command. */
@@ -78,4 +78,6 @@ export default class Command {
 
     return new RegExp(regexString);
   }
+
+  public abstract findCmdLabel(command: Command, channel: Channel): string;
 }

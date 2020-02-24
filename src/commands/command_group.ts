@@ -61,4 +61,20 @@ export default class CommandGroup extends Command {
     this.defaultAction = defaultAction;
     this.commands = commands;
   }
+
+  public findCmdLabel(command: Command, channel: Channel): string {
+    if (command.name === this.name) {
+      return this.channelLabel(channel);
+    }
+
+    const cmdLabel = this.commands
+      .map((cmd) => cmd.findCmdLabel(command, channel))
+      .find((label) => label);
+
+    if (cmdLabel) {
+      return `${this.channelLabel(channel)}${cmdLabel}`;
+    }
+
+    return undefined;
+  }
 }
