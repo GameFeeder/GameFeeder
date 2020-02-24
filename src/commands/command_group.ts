@@ -13,7 +13,7 @@ export default class CommandGroup extends Command {
     name: string,
     description: string,
     channelLabel: (channel: Channel) => string,
-    channelHelp: (channel: Channel, prefix: string) => string,
+    channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
     channelTrigger: (channel: Channel) => RegExp,
     defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
     commands: Command[],
@@ -76,5 +76,23 @@ export default class CommandGroup extends Command {
     }
 
     return undefined;
+  }
+
+  public aggregateCmds(role?: UserRole): Command[] {
+    const aggregates = this.commands
+      .filter((cmd) => {
+        switch (cmd.role) {
+          case UserRole.OWNER:
+            return role === UserRole.OWNER;
+          case UserRole.ADMIN:
+            return role === UserRole.OWNER || role === UserRole.ADMIN;
+          case UserRole.USER:
+            return true;
+          default:
+            return true;
+        }
+      })
+      .map((cmd) => cmd.aggregateCmds());
+    return [].concat(...aggregates);
   }
 }

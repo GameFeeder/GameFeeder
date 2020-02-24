@@ -6,7 +6,7 @@ import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
-import { filterAsync, mapAsync, naturalJoin } from '../util/util';
+import { mapAsync, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
 import CommandGroup from './command_group';
 import SimpleCommand from './simple_command';
@@ -20,7 +20,7 @@ const startCmd = new SimpleCommand('start', 'Get started with the GameFeeder.', 
   const version = ProjectManager.getVersionNumber();
   message.reply(
     `Welcome to the **${name}** (v${version})!\n` +
-      `Use \`${prefixCmds.findCmdLabel(
+      `Use \`${commands.findCmdLabel(
         helpCmd,
         message.channel,
       )}\` to display all available commands.\n` +
@@ -33,15 +33,10 @@ const helpCmd = new SimpleCommand(
   'help',
   'Display a list of all available commands.',
   async (message) => {
-    // Only show the commands the user has the role to execute.
-    const filteredCommands = await filterAsync(commands, async (command) => {
-      return message.user.hasRole(message.channel, command.role);
-    });
-    const commandsList = filteredCommands.map((command) => {
-      return command.channelHelp(message.channel, '- ');
-    });
-
-    const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
+    const helpMD = `You can use the following commands:\n${commands.channelHelp(
+      message.channel,
+      '- ',
+    )}`;
 
     message.reply(helpMD);
   },
@@ -76,14 +71,14 @@ const settingsCmd = new NoLabelCommand(
         : '> You are currently not subscribed to any games.';
 
     message.reply(
-      `You can use \`${prefixCmds.findCmdLabel(
+      `You can use \`${commands.findCmdLabel(
         prefixCmd,
         message.channel,
       )}\` to change the prefix the bot uses ` +
         `on this channel.\n` +
         `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-        `You can use \`${prefixCmds.findCmdLabel(subCmd, message.channel)}\` and ` +
-        `\`${prefixCmds.findCmdLabel(
+        `You can use \`${commands.findCmdLabel(subCmd, message.channel)}\` and ` +
+        `\`${commands.findCmdLabel(
           unsubCmd,
           message.channel,
         )}\` to change the games you are subscribed to.\n` +
@@ -114,7 +109,7 @@ const subCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to subscribe to.\n` +
-          `Try \`${prefixCmds.findCmdLabel(subCmd, message.channel)}\`.`,
+          `Try \`${commands.findCmdLabel(subCmd, message.channel)}\`.`,
       );
     }
 
@@ -186,7 +181,7 @@ const unsubCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to unsubscribe from.\n` +
-          `Try ${prefixCmds.findCmdLabel(unsubCmd, message.channel)}.`,
+          `Try ${commands.findCmdLabel(unsubCmd, message.channel)}.`,
       );
     }
 
@@ -336,7 +331,7 @@ const notifyAllCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${prefixCmds.findCmdLabel(notifyAllCmd, message.channel)}\`.`,
+          `Try \`${commands.findCmdLabel(notifyAllCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -366,7 +361,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${prefixCmds.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+          `Try \`${commands.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -374,7 +369,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide a game to notify the subs of.\n` +
-          `Try \`${prefixCmds.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+          `Try \`${commands.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -395,7 +390,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     // We didn't find the specified game
     message.reply(
       `I didn't find a game with the alias '${alias}'.\n` +
-        `Use \`${prefixCmds.findCmdLabel(
+        `Use \`${commands.findCmdLabel(
           gamesCmd,
           message.channel,
         )}\` to view a list of all available games.`,
@@ -565,13 +560,12 @@ const telegramCmdsCmd = new SimpleCommand(
   'telegramCmds',
   'Get the string to properly register the commands on Telegram.',
   async (message) => {
-    const cmds = commands.filter((command) => {
-      // Filter out owner commands
-      return command.role !== UserRole.OWNER;
-    });
+    const cmds = commands.aggregateCmds(UserRole.ADMIN);
+
     const cmdEntries = cmds.map((cmd) => {
       return `${cmd.name} - ${cmd.description}`;
     });
+
     // Block code format
     const telegramCmdStr = `\`\`\`\n${cmdEntries.join('\n')}\n\`\`\``;
 
@@ -604,7 +598,7 @@ const debugCmd = new SimpleCommand(
 );
 
 // All prefixed commands
-const prefixCmds: CommandGroup = new CommandGroup(
+const commands: CommandGroup = new CommandGroup(
   'prefixCmds',
   'All commands that need a prefix to be executed.',
   // Label
@@ -613,11 +607,22 @@ const prefixCmds: CommandGroup = new CommandGroup(
     return prefix;
   },
   // Help
-  (channel, prefix) => {
+  (channel, prefix, role) => {
     const cmdPrefix = EscapeRegex(channel.getPrefix());
-    const cmdLabels = prefixCmds.commands.map(
-      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
-    );
+    const cmdLabels = commands.commands
+      .filter((cmd) => {
+        switch (cmd.role) {
+          case UserRole.OWNER:
+            return role === UserRole.OWNER;
+          case UserRole.ADMIN:
+            return role === UserRole.OWNER || role === UserRole.ADMIN;
+          case UserRole.USER:
+            return true;
+          default:
+            return true;
+        }
+      })
+      .map((cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`);
     return cmdLabels.join('\n');
   },
   // Trigger
@@ -634,7 +639,7 @@ const prefixCmds: CommandGroup = new CommandGroup(
     const { group } = match.groups;
     await message.channel.bot.sendMessage(
       message.channel,
-      `I don't know a command named '${group}'.\nTry the \`${prefixCmds.findCmdLabel(
+      `I don't know a command named '${group}'.\nTry the \`${commands.findCmdLabel(
         helpCmd,
         message.channel,
       )}\` command to see a list of all commands available.`,
@@ -662,8 +667,5 @@ const prefixCmds: CommandGroup = new CommandGroup(
     telegramCmdsCmd,
   ],
 );
-
-/** The standard commands available on all bots. */
-const commands = [prefixCmds];
 
 export default commands;

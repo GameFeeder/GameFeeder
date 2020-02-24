@@ -42,4 +42,8 @@ export default class NoChannelCommand extends Command {
 
     return undefined;
   }
+
+  public aggregateCmds(): Command[] {
+    return [this];
+  }
 }

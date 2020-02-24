@@ -1,6 +1,7 @@
 import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
+import CommandGroup from './command_group';
 
 export default abstract class Command {
   /** The name of the command. */
@@ -10,7 +11,7 @@ export default abstract class Command {
   /** The label of the command trigger. Used to compose the help-command. */
   public channelLabel: (channel: Channel) => string;
   /** The help string of the command. */
-  public channelHelp: (channel: Channel, prefix: string) => string;
+  public channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string;
   /** Get the RegExp for the given channel. */
   public channelTrigger: (channel: Channel) => RegExp;
   /** The action function executing the command. */
@@ -31,7 +32,7 @@ export default abstract class Command {
     name: string,
     description: string,
     channelLabel: (channel: Channel) => string,
-    channelHelp: (channel: Channel, prefix: string) => string,
+    channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
     channelTrigger: (channel: Channel) => RegExp,
     action: (message: Message, match: RegExpMatchArray) => Promise<void>,
     role?: UserRole,
@@ -56,7 +57,9 @@ export default abstract class Command {
     if (await message.user.hasRole(message.channel, this.role)) {
       await this.action(message, match);
       const time = Date.now() - message.timestamp.valueOf();
-      bot.logger.debug(`Command '${this.name}' executed in ${time} ms.`);
+      if (!(this instanceof CommandGroup)) {
+        bot.logger.debug(`Command '${this.name}' executed in ${time} ms.`);
+      }
       return true;
     }
 
@@ -79,5 +82,13 @@ export default abstract class Command {
     return new RegExp(regexString);
   }
 
+  /** Tires to find the label of the given command.
+   *
+   * @param command - The command to find.
+   * @param channel - The channel to find the label for.
+   */
   public abstract findCmdLabel(command: Command, channel: Channel): string;
+
+  /** Aggregates all commands. */
+  public abstract aggregateCmds(role?: UserRole): Command[];
 }
