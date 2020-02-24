@@ -590,7 +590,7 @@ const debugCmd = new SimpleCommand(
 
     const debugStr =
       `**User info:**\n- ID: ${userID}\n- Role: ${userRole}\n` +
-      `**Channel info:**\n-ID: ${channelID}\n- Server members: ${serverMembers}\n` +
+      `**Channel info:**\n- ID: ${channelID}\n- Server members: ${serverMembers}\n` +
       `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
 
     message.reply(debugStr);
@@ -631,7 +631,7 @@ const commands: CommandGroup = new CommandGroup(
     const userTag = EscapeRegex(bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.getPrefix());
     return new RegExp(
-      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*)$`,
+      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*?)(\\s*${userTag})?\\s*$`,
     );
   },
   // Action

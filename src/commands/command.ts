@@ -1,7 +1,9 @@
+import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
 import CommandGroup from './command_group';
+import { regexToString } from '../util/util';
 
 export default abstract class Command {
   /** The name of the command. */
@@ -77,9 +79,9 @@ export default abstract class Command {
    * @param channel - The channel to get the regex for.
    */
   public getRegExp(channel: Channel): RegExp {
-    const regexString = this.channelTrigger(channel);
-
-    return new RegExp(regexString);
+    const regexString = regexToString(this.channelTrigger(channel));
+    // Allow the bot tag after every command
+    return new RegExp(`${regexString}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`);
   }
 
   /** Tires to find the label of the given command.
