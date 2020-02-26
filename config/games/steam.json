@@ -5,15 +5,17 @@
   "color": "#0B5A8E",
   "icon": "https://pbs.twimg.com/profile_images/887778636102721536/Nxgl7xz4_400x400.jpg",
   "providers": {
-    "reddit": {
-      "subreddit": "Steam",
-      "users": [
-        {
-          "name": "wickedplayer494",
-          "titleFilter": "update"
-        }
-      ]
-    },
+    "reddit": [
+      {
+        "subreddit": "Steam",
+        "users": [
+          {
+            "name": "wickedplayer494",
+            "titleFilter": "update"
+          }
+        ]
+      }
+    ],
     "rss": [
       {
         "label": "Steam Blog",

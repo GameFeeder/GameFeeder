@@ -5,10 +5,12 @@
   "color": "#9A4713",
   "icon": "http://icons.iconarchive.com/icons/papirus-team/papirus-apps/256/team-fortress-2-icon.png",
   "providers": {
-    "reddit": {
-      "subreddit": "tf2",
-      "users": []
-    },
+    "reddit": [
+      {
+        "subreddit": "tf2",
+        "users": []
+      }
+    ],
     "steam": {
       "appID": 440
     },

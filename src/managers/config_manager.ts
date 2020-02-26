@@ -7,7 +7,7 @@ export enum CONFIG {
 }
 
 /** The configuration settings for a bot. */
-export type bot_settings = {
+export type BotSettings = {
   /** Determines whether the bot starts automatically at the launch of the program.  */
   enabled: boolean;
   /** The default prefix the bot is using. */
@@ -19,25 +19,25 @@ export type bot_settings = {
 };
 
 /** The configuration settings for the bots. */
-export type bot_config = {
-  /** Access the bot_config of the bot with the given name. */
-  [botName: string]: bot_settings;
-  /** The bot_config of the Discord bot. */
-  discord: bot_settings;
-  /** The bot_config of the Telegram bot. */
-  telegram: bot_settings;
+export type BotConfig = {
+  /** Access the BotConfig of the bot with the given name. */
+  [botName: string]: BotSettings;
+  /** The BotConfig of the Discord bot. */
+  discord: BotSettings;
+  /** The BotConfig of the Telegram bot. */
+  telegram: BotSettings;
 };
 
 /** The configuration settings for the used APIs. */
-export type api_config = {
+export type APIConfig = {
   /** The configuration settings for the bots. */
-  bots: bot_config;
+  bots: BotConfig;
   /** The configuration settings for the reddit client. */
-  reddit: reddit_config;
+  reddit: RedditConfig;
 };
 
 /** The configuration settings for the reddit client. */
-export type reddit_config = {
+export type RedditConfig = {
   /** Determines wheather reddit posts should be processed. */
   enabled: boolean;
   /** The client id used by the reddit client. */
@@ -51,7 +51,7 @@ export type reddit_config = {
 };
 
 /** A reddit user. */
-export type reddit_user = {
+export type RedditUser = {
   /** The name of the reddit user. */
   name: string;
   /** The regex to filter the post tiles by. */
@@ -59,17 +59,17 @@ export type reddit_user = {
 };
 
 /** The reddit providers for a game. */
-export type reddit_providers = {
+export type RedditProvider = {
   /** The subreddit to search in. */
   subreddit: string;
   /** The relevant users in that subreddit. */
-  users: reddit_user[];
+  users: RedditUser[];
   /** URLs that should be filtered out. */
   urlFilters: string[];
 };
 
 /** An RSS provider. */
-export type rss_provider = {
+export type RSSProvider = {
   /** The name of the rss feed. */
   label: string;
   /** The URL of the rss feed. */
@@ -79,7 +79,7 @@ export type rss_provider = {
 };
 
 /** The Steam provider for a game. */
-export type steam_provider = {
+export type SteamProvider = {
   /** The ID of the Steam app. */
   appID: number;
   /** The relevant news feeds of the Steam app. */
@@ -95,7 +95,7 @@ export type telegramIVTemplate = {
 };
 
 /** The settings of a game. */
-export type game_settings = {
+export type GameSettings = {
   /** The internal name of the game. (Identification) */
   name: string;
   /** The human readable name of the game. */
@@ -108,19 +108,19 @@ export type game_settings = {
   icon: string;
   /** The providers of the game. */
   providers: {
-    /** The reddit providers of the game. */
-    reddit: reddit_providers;
     /** The Steam provider of the game. */
-    steam: steam_provider;
+    steam: SteamProvider;
+    /** The reddit providers of the game. */
+    reddit: RedditProvider[];
     /** The rss providers of the game. */
-    rss: rss_provider[];
+    rss: RSSProvider[];
   };
   /** The Telegram IV templates of the game. */
   telegramIVTemplates: telegramIVTemplate[];
 };
 
 /** The config of the updater. */
-export type updater_config = {
+export type UpdaterConfig = {
   /** The delay in seconds between each update. */
   updateDelaySec: number;
   /** The maximum amount of notifications to send at once (e.g. after a restart). */
@@ -163,7 +163,7 @@ export default class ConfigManager {
    *
    * @param file - The config file to parse.
    */
-  public static parseFile(file: CONFIG): any {
+  public static parseFile(file: CONFIG): object {
     return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
@@ -172,29 +172,29 @@ export default class ConfigManager {
    * @param file - THe config file to write to.
    * @param object - The object to write.
    */
-  public static writeObject(file: CONFIG, object: any): any {
+  public static writeObject(file: CONFIG, object: object): void {
     return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 
   // Config getters and setters
 
   /** Gets the API config object. */
-  public static getAPIConfig(): api_config {
-    return this.parseFile(CONFIG.API);
+  public static getAPIConfig(): APIConfig {
+    return this.parseFile(CONFIG.API) as APIConfig;
   }
 
   /** Sets the API config object. */
-  public static setAPIConfig(config: api_config): void {
+  public static setAPIConfig(config: APIConfig): void {
     return this.writeObject(CONFIG.API, config);
   }
 
   /** Gets the bot config object. */
-  public static getBotConfig(): bot_config {
+  public static getBotConfig(): BotConfig {
     return this.getAPIConfig().bots;
   }
 
   /** Sets the bot config object. */
-  public static setBotConfig(config: bot_config): void {
+  public static setBotConfig(config: BotConfig): void {
     const apiConfig = this.getAPIConfig();
     apiConfig.bots = config;
 
@@ -202,12 +202,12 @@ export default class ConfigManager {
   }
 
   /** Gets the reddit config object. */
-  public static getRedditConfig(): reddit_config {
+  public static getRedditConfig(): RedditConfig {
     return this.getAPIConfig().reddit;
   }
 
   /** Sets the reddit config object. */
-  public static setRedditConfig(config: reddit_config): void {
+  public static setRedditConfig(config: RedditConfig): void {
     const apiConfig = this.getAPIConfig();
     apiConfig.reddit = config;
 
@@ -215,13 +215,13 @@ export default class ConfigManager {
   }
 
   /** Gets the game config object. */
-  public static getGameConfig(): game_settings[] {
+  public static getGameConfig(): GameSettings[] {
     const gamesPath = this.basePath + this.gamesFolder;
     const gameSettingsFiles = FileManager.getFiles(gamesPath);
-    const gameConfig: game_settings[] = [];
+    const gameConfig: GameSettings[] = [];
 
     for (const file of gameSettingsFiles) {
-      const setting: game_settings = FileManager.parseFile(gamesPath, file);
+      const setting: GameSettings = FileManager.parseFile(gamesPath, file) as GameSettings;
       gameConfig.push(setting);
     }
 
@@ -229,12 +229,12 @@ export default class ConfigManager {
   }
 
   /** Gets the updater config object. */
-  public static getUpdaterConfig(): updater_config {
-    return this.parseFile(CONFIG.UPDATER);
+  public static getUpdaterConfig(): UpdaterConfig {
+    return this.parseFile(CONFIG.UPDATER) as UpdaterConfig;
   }
 
   /** Sets the updater config object. */
-  public static setUpdaterConfig(config: updater_config): void {
+  public static setUpdaterConfig(config: UpdaterConfig): void {
     this.writeObject(CONFIG.UPDATER, config);
   }
 }

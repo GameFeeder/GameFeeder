@@ -42,7 +42,7 @@ export default class FileManager {
    * @param path - The path of the file directory.
    * @param fileName - The name of the file to parse.
    */
-  public static parseFile(path: string, fileName: string): any {
+  public static parseFile(path: string, fileName: string): object {
     return JSON.parse(this.readFile(path, fileName));
   }
 
@@ -52,7 +52,7 @@ export default class FileManager {
    * @param fileName - The name of the file to write to.
    * @param object - The object to write to the file.
    */
-  public static writeObject(path: string, fileName: string, object: any): void {
+  public static writeObject(path: string, fileName: string, object: object): void {
     return this.writeFile(path, fileName, JSON.stringify(object, null, 2));
   }
 }

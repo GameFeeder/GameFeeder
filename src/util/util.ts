@@ -26,18 +26,18 @@ export async function filterAsync<T>(
   return array.filter((value, index) => filterMap[index]);
 }
 
-/** Joins the array with the seperator, but 'and' for the last item.
+/** Joins the array with the separator, but 'and' for the last item.
  *  E.g.: 'first, second and third'.
  */
-export function naturalJoin(array: string[], seperator?: string): string {
+export function naturalJoin(array: string[], separator?: string): string {
   if (!array || array.length === 0) {
     return '';
   }
   if (array.length === 1) {
     return array[0];
   }
-  const sep = seperator || ', ';
-  return array.slice(0, array.length - 1).join(sep) + ' and ' + array[array.length - 1];
+  const sep = separator || ', ';
+  return `${array.slice(0, array.length - 1).join(sep)} and ${array[array.length - 1]}`;
 }
 
 /** Utility functions for strings. */
@@ -54,7 +54,7 @@ export class StrUtil {
     return str;
   }
 
-  /**Limits the given string to the given maximum length naturally, by adding an indicator.
+  /** Limits the given string to the given maximum length naturally, by adding an indicator.
    * E.g. Text message => Text messa...
    *
    * @param str - The string to limit.
@@ -76,7 +76,7 @@ export class StrUtil {
 }
 
 export class ObjUtil {
-  public static keys(object: any): string[] {
+  public static keys(object: object): string[] {
     if (!(object instanceof Object)) {
       return [];
     }
@@ -89,7 +89,7 @@ export class ObjUtil {
    * @param object - The object to get the inner object of.
    * @param path - The path of the inner object.
    */
-  public static getInnerObject(object: any, path?: string[]): any {
+  public static getInnerObject(object: object, path?: string[]): object {
     if (!path || path.length === 0) {
       // _.get returns undefined in this case, so we needed a function for this
       return object;

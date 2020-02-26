@@ -2,29 +2,6 @@ import Notification from '../notifications/notification';
 import Game from '../game';
 import SteamProcessor from '../processors/steam_processor';
 
-/** News for a Steam app. */
-export default class SteamAppNews {
-  /** The ID of the app that the news are for. */
-  public appID: number;
-  /** The news items for the app. */
-  public newsItems: SteamNewsItem[];
-
-  constructor(response: SteamAppNewsResponse) {
-    this.appID = response.appnews.appid;
-    this.newsItems = response.appnews.newsitems
-      ? response.appnews.newsitems.map((newsitem) => new SteamNewsItem(newsitem))
-      : [];
-  }
-
-  /** Converts the steam app news to game notifications.
-   *
-   * @param game - The game to generate the notifications for.
-   */
-  public toGameNotifications(game: Game): Notification[] {
-    return this.newsItems.map((newsItem) => newsItem.toGameNotification(game));
-  }
-}
-
 /** A news item for a Steam app. */
 export class SteamNewsItem {
   /** The ID of the news item. */
@@ -78,6 +55,29 @@ export class SteamNewsItem {
       .withAuthor(this.author)
       .withContent(steamProcessor.process(this.contents))
       .withGameDefaults(game);
+  }
+}
+
+/** News for a Steam app. */
+export default class SteamAppNews {
+  /** The ID of the app that the news are for. */
+  public appID: number;
+  /** The news items for the app. */
+  public newsItems: SteamNewsItem[];
+
+  constructor(response: SteamAppNewsResponse) {
+    this.appID = response.appnews.appid;
+    this.newsItems = response.appnews.newsitems
+      ? response.appnews.newsitems.map((newsitem) => new SteamNewsItem(newsitem))
+      : [];
+  }
+
+  /** Converts the steam app news to game notifications.
+   *
+   * @param game - The game to generate the notifications for.
+   */
+  public toGameNotifications(game: Game): Notification[] {
+    return this.newsItems.map((newsItem) => newsItem.toGameNotification(game));
   }
 }
 

@@ -6,6 +6,7 @@ import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
 import Permissions from '../permissions';
+import { mapAsync } from '../util/util';
 
 export default abstract class BotClient {
   /** The internal name of the bot. */
@@ -147,25 +148,24 @@ export default abstract class BotClient {
     const subs = subscribers[this.name];
 
     // Check if the channel is already registered
-    for (let i = 0; i < subs.length; i++) {
-      const sub = subs[i];
-      if (channel.isEqual(sub.id)) {
-        // Unsubscribe
-        sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
+    const existingSubId = subs.findIndex((sub) => channel.isEqual(sub.id));
+    if (existingSubId >= 0) {
+      const sub = subs[existingSubId];
+      // Unsubscribe
+      sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 
-        // Remove unnecessary entries
-        if (sub.gameSubs.length === 0 && !sub.prefix) {
-          this.logger.debug('Removing unnecessary channel entry...');
-          subs.splice(i, 1);
-        } else {
-          subs[i] = sub;
-        }
-
-        // Save the changes
-        subscribers[this.name] = subs;
-        DataManager.setSubscriberData(subscribers);
-        return true;
+      // Remove unnecessary entries
+      if (sub.gameSubs.length === 0 && !sub.prefix) {
+        this.logger.debug('Removing unnecessary channel entry...');
+        subs.splice(existingSubId, 1);
+      } else {
+        subs[existingSubId] = sub;
       }
+
+      // Save the changes
+      subscribers[this.name] = subs;
+      DataManager.setSubscriberData(subscribers);
+      return true;
     }
     return false;
   }
@@ -179,37 +179,38 @@ export default abstract class BotClient {
     const subs = subscribers[this.name];
 
     // Check if the channel has an entry
-    for (let i = 0; i < subs.length; i++) {
-      const sub = subs[i];
-      if (channel.isEqual(sub.id)) {
-        // Remove the channel
-        subs.splice(i, 1);
+    const existingSubId = subs.findIndex((sub) => channel.isEqual(sub.id));
+    if (existingSubId >= 0) {
+      // Remove the channel
+      subs.splice(existingSubId, 1);
 
-        // Save the changes
-        subscribers[this.name] = subs;
-        DataManager.setSubscriberData(subscribers);
+      // Save the changes
+      subscribers[this.name] = subs;
+      DataManager.setSubscriberData(subscribers);
 
-        return true;
-      }
+      return true;
     }
     return false;
   }
 
   /** Removes the data of all channels without write permissions. */
   public async removeChannelsWithoutWritePermissions() {
+    const user = await this.getUser();
     const channels = this.getBotChannels();
-
+    const permissions = await mapAsync(channels, (channel) =>
+      this.getUserPermissions(user, channel),
+    );
     // Iterate through all the channels
     let removeCount = 0;
-    for (const channel of channels) {
-      const permissions = await this.getUserPermissions(await this.getUser(), channel);
-      if (!permissions.canWrite) {
+    channels.forEach((channel, index) => {
+      const channelPerms = permissions[index];
+      if (!channelPerms.canWrite) {
         // The bot can not write to this channel, remove channel data
         if (this.removeData(channel)) {
           removeCount += 1;
         }
       }
-    }
+    });
     if (removeCount > 0) {
       this.logger.warn(`Cleaning up ${removeCount} channel(s) without write access.`);
     }
