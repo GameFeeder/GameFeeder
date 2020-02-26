@@ -3,6 +3,7 @@ import BotClient from '../bots/bot';
 import Channel from '../channel';
 import { UserRole } from '../user';
 import Message from '../message';
+import NoChannelCommand from './no_channel_command';
 
 export default class CommandGroup extends Command {
   public regexStr: (bot: BotClient, channel: Channel) => Promise<string>;
@@ -62,24 +63,54 @@ export default class CommandGroup extends Command {
     this.commands = commands;
   }
 
-  public findCmdLabel(command: Command, channel: Channel): string {
+  /** Tries to find the label of the given command in this group.
+   *
+   * @param command - The command to search for.
+   * @param channel - The channel to get the label for.
+   *
+   * @returns The command label, or undefined, if the command could not be found.
+   */
+  public tryFindCmdLabel(command: Command, channel: Channel): string | undefined {
     if (command.name === this.name) {
       return this.channelLabel(channel);
     }
 
     const cmdLabel = this.commands
-      .map((cmd) => cmd.findCmdLabel(command, channel))
+      // Map to the label, if the command is included, or else undefined
+      .map((cmd) => {
+        if (cmd instanceof NoChannelCommand) {
+          if (cmd.name === command.name) {
+            // Command found, return the label
+            return cmd.channelLabel(channel);
+          }
+          // Not the command
+          return undefined;
+        }
+        if (cmd instanceof CommandGroup) {
+          // Try to find the command in the command group
+          return cmd.tryFindCmdLabel(command, channel);
+        }
+        // Unexpected command type
+        throw new Error('Unexpected command type while finding command label.');
+      })
+      // Try to find the label
       .find((label) => label);
 
     if (cmdLabel) {
+      // The command is included in the group, return it together with the group label
       return `${this.channelLabel(channel)}${cmdLabel}`;
     }
-
+    // The command is not included in the group
     return undefined;
   }
 
-  public aggregateCmds(role?: UserRole): Command[] {
+  /** Aggregate all commands included in this group and all sub-groups.
+   *
+   * @param role - The user role to filter the commands for.
+   */
+  public aggregateCmds(role?: UserRole): NoChannelCommand[] {
     const aggregates = this.commands
+      // Filter the commands by the provided role
       .filter((cmd) => {
         switch (cmd.role) {
           case UserRole.OWNER:
@@ -89,10 +120,23 @@ export default class CommandGroup extends Command {
           case UserRole.USER:
             return true;
           default:
+            // No role provided
             return true;
         }
       })
-      .map((cmd) => cmd.aggregateCmds());
+      .map((cmd) => {
+        if (cmd instanceof NoChannelCommand) {
+          // Wrap the command in an array
+          return [cmd];
+        }
+        if (cmd instanceof CommandGroup) {
+          // Aggregate all commands of the inner command group
+          return cmd.aggregateCmds();
+        }
+        // Unexpected Command type
+        throw new Error('Unexpected command type while aggregating commands.');
+      });
+    // Merge all aggregated commands to a single array
     return [].concat(...aggregates);
   }
 }

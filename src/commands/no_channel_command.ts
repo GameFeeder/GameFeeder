@@ -1,7 +1,6 @@
 import Command from './command';
 import Message from '../message';
 import { UserRole } from '../user';
-import Channel from '../channel';
 
 /** A command independant from the channel it's used on. */
 export default class NoChannelCommand extends Command {
@@ -33,17 +32,5 @@ export default class NoChannelCommand extends Command {
       action,
       role,
     );
-  }
-
-  public findCmdLabel(command: Command, channel: Channel): string {
-    if (this.name === command.name) {
-      return this.channelLabel(channel);
-    }
-
-    return undefined;
-  }
-
-  public aggregateCmds(): Command[] {
-    return [this];
   }
 }

@@ -20,7 +20,7 @@ const startCmd = new SimpleCommand('start', 'Get started with the GameFeeder.', 
   const version = ProjectManager.getVersionNumber();
   message.reply(
     `Welcome to the **${name}** (v${version})!\n` +
-      `Use \`${commands.findCmdLabel(
+      `Use \`${commands.tryFindCmdLabel(
         helpCmd,
         message.channel,
       )}\` to display all available commands.\n` +
@@ -71,14 +71,14 @@ const settingsCmd = new NoLabelCommand(
         : '> You are currently not subscribed to any games.';
 
     message.reply(
-      `You can use \`${commands.findCmdLabel(
+      `You can use \`${commands.tryFindCmdLabel(
         prefixCmd,
         message.channel,
       )}\` to change the prefix the bot uses ` +
         `on this channel.\n` +
         `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-        `You can use \`${commands.findCmdLabel(subCmd, message.channel)}\` and ` +
-        `\`${commands.findCmdLabel(
+        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
+        `\`${commands.tryFindCmdLabel(
           unsubCmd,
           message.channel,
         )}\` to change the games you are subscribed to.\n` +
@@ -109,7 +109,7 @@ const subCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to subscribe to.\n` +
-          `Try \`${commands.findCmdLabel(subCmd, message.channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(subCmd, message.channel)}\`.`,
       );
     }
 
@@ -181,7 +181,7 @@ const unsubCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide the name of the game you want to unsubscribe from.\n` +
-          `Try ${commands.findCmdLabel(unsubCmd, message.channel)}.`,
+          `Try ${commands.tryFindCmdLabel(unsubCmd, message.channel)}.`,
       );
     }
 
@@ -331,7 +331,7 @@ const notifyAllCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${commands.findCmdLabel(notifyAllCmd, message.channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyAllCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -361,7 +361,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!msg) {
       message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${commands.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -369,7 +369,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     if (!alias) {
       message.reply(
         `You need to provide a game to notify the subs of.\n` +
-          `Try \`${commands.findCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -390,7 +390,7 @@ const notifyGameSubsCmd = new NoChannelCommand(
     // We didn't find the specified game
     message.reply(
       `I didn't find a game with the alias '${alias}'.\n` +
-        `Use \`${commands.findCmdLabel(
+        `Use \`${commands.tryFindCmdLabel(
           gamesCmd,
           message.channel,
         )}\` to view a list of all available games.`,
@@ -639,7 +639,7 @@ const commands: CommandGroup = new CommandGroup(
     const { group } = match.groups;
     await message.channel.bot.sendMessage(
       message.channel,
-      `I don't know a command named '${group}'.\nTry the \`${commands.findCmdLabel(
+      `I don't know a command named '${group}'.\nTry the \`${commands.tryFindCmdLabel(
         helpCmd,
         message.channel,
       )}\` command to see a list of all commands available.`,

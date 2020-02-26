@@ -12,9 +12,9 @@ export default class Channel {
   /** The prefix the channel uses. */
   public prefix: string;
   /** Creates a new Channel. */
-  constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
+  constructor(id: string, bot: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
-    this.bot = client;
+    this.bot = bot;
     this.gameSubs = gameSubs || [];
     this.prefix = prefix != null ? prefix : '';
   }

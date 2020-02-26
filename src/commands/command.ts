@@ -83,14 +83,4 @@ export default abstract class Command {
     // Allow the bot tag after every command
     return new RegExp(`${regexString}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`);
   }
-
-  /** Tires to find the label of the given command.
-   *
-   * @param command - The command to find.
-   * @param channel - The channel to find the label for.
-   */
-  public abstract findCmdLabel(command: Command, channel: Channel): string;
-
-  /** Aggregates all commands. */
-  public abstract aggregateCmds(role?: UserRole): Command[];
 }
