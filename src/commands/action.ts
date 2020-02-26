@@ -2,15 +2,15 @@ import Command from './command';
 import Message from '../message';
 import { UserRole } from '../user';
 
-/** A command independant from the channel it's used on. */
-export default class NoChannelCommand extends Command {
-  /** Creates a new no-channel command.
+/** An action represents a command that is executed directly. */
+export default class Action extends Command {
+  /** Creates a new action.
    *
-   * @param name - The name and label of the command.
-   * @param description - The description of the command.
-   * @param trigger - The regex to trigger the command.
-   * @param action - The action to execute with the command.
-   * @param role - The required role to execute the command.
+   * @param name - The name and label of the action.
+   * @param description - The description of the action.
+   * @param trigger - The regex to trigger the action.
+   * @param action - The action to execute with the action.
+   * @param role - The required role to execute the action.
    */
   constructor(
     name: string,

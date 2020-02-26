@@ -5,6 +5,9 @@ import Message from '../message';
 import CommandGroup from './command_group';
 import { regexToString } from '../util/util';
 
+/**
+ * Represents a command that can be executed by the users on the given bot clients.
+ */
 export default abstract class Command {
   /** The name of the command. */
   public name: string;

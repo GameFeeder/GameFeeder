@@ -3,8 +3,12 @@ import BotClient from '../bots/bot';
 import Channel from '../channel';
 import { UserRole } from '../user';
 import Message from '../message';
-import NoChannelCommand from './no_channel_command';
+import Action from './action';
 
+/**
+ * A command group represents a collection of commands with a common prefix.
+ * E.g. all Dota 2 related commands could be collected in a Dota-CommandGroup with the common 'dota' prefix.
+ */
 export default class CommandGroup extends Command {
   public regexStr: (bot: BotClient, channel: Channel) => Promise<string>;
   public defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>;
@@ -78,7 +82,7 @@ export default class CommandGroup extends Command {
     const cmdLabel = this.commands
       // Map to the label, if the command is included, or else undefined
       .map((cmd) => {
-        if (cmd instanceof NoChannelCommand) {
+        if (cmd instanceof Action) {
           if (cmd.name === command.name) {
             // Command found, return the label
             return cmd.channelLabel(channel);
@@ -108,7 +112,7 @@ export default class CommandGroup extends Command {
    *
    * @param role - The user role to filter the commands for.
    */
-  public aggregateCmds(role?: UserRole): NoChannelCommand[] {
+  public aggregateCmds(role?: UserRole): Action[] {
     const aggregates = this.commands
       // Filter the commands by the provided role
       .filter((cmd) => {
@@ -125,7 +129,7 @@ export default class CommandGroup extends Command {
         }
       })
       .map((cmd) => {
-        if (cmd instanceof NoChannelCommand) {
+        if (cmd instanceof Action) {
           // Wrap the command in an array
           return [cmd];
         }

@@ -9,12 +9,12 @@ import Game from '../game';
 import { mapAsync, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
 import CommandGroup from './command_group';
-import SimpleCommand from './simple_command';
-import NoLabelCommand from './no_label_command';
-import NoChannelCommand from './no_channel_command';
+import SimpleAction from './simple_action';
+import NoLabelAction from './no_label_action';
+import Action from './action';
 
-// Start
-const startCmd = new SimpleCommand('start', 'Get started with the GameFeeder.', async (message) => {
+/** Start command, used as a welcome message. */
+const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', async (message) => {
   const name = ProjectManager.getName();
   const gitLink = ProjectManager.getURL();
   const version = ProjectManager.getVersionNumber();
@@ -28,8 +28,8 @@ const startCmd = new SimpleCommand('start', 'Get started with the GameFeeder.', 
   );
 });
 
-// Help
-const helpCmd = new SimpleCommand(
+/** Help command, used to display a list of all available commands. */
+const helpCmd = new SimpleAction(
   'help',
   'Display a list of all available commands.',
   async (message) => {
@@ -42,8 +42,8 @@ const helpCmd = new SimpleCommand(
   },
 );
 
-// About
-const aboutCmd = new NoLabelCommand(
+/** About command, display some info about the bot. */
+const aboutCmd = new NoLabelAction(
   'about',
   'Display info about the bot.',
   /^\s*(about)|(info)\s*$/,
@@ -57,8 +57,8 @@ const aboutCmd = new NoLabelCommand(
   },
 );
 
-// Settings
-const settingsCmd = new NoLabelCommand(
+/** Settings command, used to display an overview of the settings you can configure. */
+const settingsCmd = new NoLabelAction(
   'settings',
   'Display an overview of the settings you can configure for the bot.',
   /^\s*(settings)|(options)|(config)\s*$/,
@@ -87,16 +87,16 @@ const settingsCmd = new NoLabelCommand(
   },
 );
 
-// Games
-const gamesCmd = new SimpleCommand('games', 'Display all available games.', async (message) => {
+/** Games command, used to display a list of all games. */
+const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
   const gamesList = Game.getGames().map((game) => `- ${game.label}`);
   const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
   message.reply(gamesMD);
 });
 
-// Subscribe
-const subCmd = new NoChannelCommand(
+/** Subscribe command, used to subscribe to a game. */
+const subCmd = new Action(
   'subscribe',
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
@@ -167,8 +167,8 @@ const subCmd = new NoChannelCommand(
   UserRole.ADMIN,
 );
 
-// Unsubscribe
-const unsubCmd = new NoChannelCommand(
+/** Unsubscribe command, used to unsubscribe from a game. */
+const unsubCmd = new Action(
   'unsubscribe',
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
@@ -239,8 +239,8 @@ const unsubCmd = new NoChannelCommand(
   UserRole.ADMIN,
 );
 
-// Prefix
-const prefixCmd = new NoChannelCommand(
+/** Prefix command, used to change the prefix of the bot on that channel. */
+const prefixCmd = new Action(
   'prefix',
   `Change the bot's prefix used in this channel.`,
   'prefix <new prefix>',
@@ -317,8 +317,8 @@ const prefixCmd = new NoChannelCommand(
   UserRole.ADMIN,
 );
 
-// Notify All
-const notifyAllCmd = new NoChannelCommand(
+/**  Notify All command, used to manually send a notification to all subscribers. */
+const notifyAllCmd = new Action(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
@@ -346,8 +346,8 @@ const notifyAllCmd = new NoChannelCommand(
   UserRole.OWNER,
 );
 
-// Notify Game Subs
-const notifyGameSubsCmd = new NoChannelCommand(
+/**  Notify Game Subs command, used to manually send a notifications to the subs of a game. */
+const notifyGameSubsCmd = new Action(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
@@ -399,8 +399,8 @@ const notifyGameSubsCmd = new NoChannelCommand(
   UserRole.OWNER,
 );
 
-// Flip
-const flipCmd = new SimpleCommand(
+/** Flip command, used to flip a coin. */
+const flipCmd = new SimpleAction(
   'flip',
   'Flip a coin.',
   async (message) => {
@@ -420,8 +420,8 @@ const flipCmd = new SimpleCommand(
   UserRole.USER,
 );
 
-// Roll
-const rollCmd = new NoChannelCommand(
+/** Roll command, used to roll some dice. */
+const rollCmd = new Action(
   'roll',
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
@@ -486,8 +486,8 @@ const rollCmd = new NoChannelCommand(
   UserRole.USER,
 );
 
-// Stats
-const statsCmd = new NoLabelCommand(
+/** Stats command, used to display statistics about the bot. */
+const statsCmd = new NoLabelAction(
   'stats',
   'Display statistics about the bot.',
   /^\s*stat(istic)?s?\s*$/,
@@ -544,8 +544,8 @@ const statsCmd = new NoLabelCommand(
   UserRole.USER,
 );
 
-// Ping
-const pingCmd = new SimpleCommand(
+/** Ping command, used to determine the bot delay. */
+const pingCmd = new SimpleAction(
   'ping',
   'Test the delay of the bot.',
   async (message) => {
@@ -555,8 +555,8 @@ const pingCmd = new SimpleCommand(
   UserRole.USER,
 );
 
-// Telegram Cmds
-const telegramCmdsCmd = new SimpleCommand(
+/** TelegramCmds command, used to register the commands on Telegram. */
+const telegramCmdsCmd = new SimpleAction(
   'telegramCmds',
   'Get the string to properly register the commands on Telegram.',
   async (message) => {
@@ -574,8 +574,8 @@ const telegramCmdsCmd = new SimpleCommand(
   UserRole.OWNER,
 );
 
-// Debug
-const debugCmd = new SimpleCommand(
+/** Debug command, used to display debug information. */
+const debugCmd = new SimpleAction(
   'debug',
   'Display some useful debug information.',
   async (message) => {
@@ -597,7 +597,10 @@ const debugCmd = new SimpleCommand(
   },
 );
 
-// All prefixed commands
+/**
+ * The group containing all available commands.
+ * They share the channels prefix as prefix, e.g. '/' for Telegram.
+ */
 const commands: CommandGroup = new CommandGroup(
   'prefixCmds',
   'All commands that need a prefix to be executed.',
@@ -625,7 +628,7 @@ const commands: CommandGroup = new CommandGroup(
       .map((cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`);
     return cmdLabels.join('\n');
   },
-  // Trigger
+  // Trigger: The channels prefix, e.g. '/' for Telegram
   (channel) => {
     const bot = channel.bot;
     const userTag = EscapeRegex(bot.getUserTag());
@@ -634,7 +637,7 @@ const commands: CommandGroup = new CommandGroup(
       `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*?)(\\s*${userTag})?\\s*$`,
     );
   },
-  // Action
+  // Default action
   async (message, match) => {
     const { group } = match.groups;
     await message.channel.bot.sendMessage(
