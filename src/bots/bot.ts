@@ -320,7 +320,7 @@ export default abstract class BotClient {
   /** Called when the bot is removed from the given channel. */
   public async onRemoved(channel: Channel) {
     if (this.removeData(channel)) {
-      this.logger.debug(`Bot removed from channel, removing channel data.`);
+      this.logger.info(`Bot removed from channel, removing channel data.`);
     }
   }
 }
