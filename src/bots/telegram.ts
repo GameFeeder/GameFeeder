@@ -284,32 +284,7 @@ export default class TelegramBot extends BotClient {
       try {
         await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
       } catch (error) {
-        if (error.code === 'ETELEGRAM') {
-          const response = error.response.body;
-          const errorCode = response.error_code;
-          switch (errorCode) {
-            // Chat not found
-            case 400:
-              this.logger.warn(
-                `Failed to send notification to channel, error code 400. Removing channel data.`,
-              );
-              this.removeData(channel);
-              break;
-            // Bot is not a member of the channel chat or blocked by user
-            case 403:
-              this.logger.warn(
-                `Failed to send notification to channel, error code 403. Removing channel data.`,
-              );
-              this.removeData(channel);
-              break;
-            default:
-              this.logger.error(
-                `Failed to send notification to channel, error code ${errorCode}:\n${error}`,
-              );
-          }
-        } else {
-          this.logger.error(`Failed to send message to channel:\n${error}`);
-        }
+        this.handleNotificationError(error, channel);
       }
     } else {
       const link = message.title.link;
@@ -353,35 +328,41 @@ export default class TelegramBot extends BotClient {
           parse_mode: 'Markdown',
         });
       } catch (error) {
-        if (error.code === 'ETELEGRAM') {
-          const response = error.response.body;
-          const errorCode = response.error_code;
-          switch (errorCode) {
-            // Chat not found
-            case 400:
-              this.logger.warn(
-                `Failed to send notification to channel, error code 400. Removing channel data.`,
-              );
-              this.removeData(channel);
-              break;
-            // Bot is not a member of the channel chat or blocked by user
-            case 403:
-              this.logger.warn(
-                `Failed to send notification to channel, error code 403. Removing channel data.`,
-              );
-              this.removeData(channel);
-              break;
-            default:
-              this.logger.error(
-                `Failed to send notification to channel, error code ${errorCode}:\n${error}`,
-              );
-          }
-        } else {
-          this.logger.error(`Failed to send message to channel:\n${error}`);
-        }
+        this.handleNotificationError(error, channel);
       }
     }
     return true;
+  }
+
+  // TODO: Properly type the error
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private handleNotificationError(error: any, channel: Channel) {
+    if (error.code === 'ETELEGRAM') {
+      const response = error.response.body;
+      const errorCode = response.error_code;
+      switch (errorCode) {
+        // Chat not found
+        case 400:
+          this.logger.warn(
+            `Failed to send notification to channel, error code 400. Removing channel data.`,
+          );
+          this.removeData(channel);
+          break;
+        // Bot is not a member of the channel chat or blocked by user
+        case 403:
+          this.logger.warn(
+            `Failed to send notification to channel, error code 403. Removing channel data.`,
+          );
+          this.removeData(channel);
+          break;
+        default:
+          this.logger.error(
+            `Failed to send notification to channel, error code ${errorCode}:\n${error}`,
+          );
+      }
+    } else {
+      this.logger.error(`Failed to send message to channel:\n${error}`);
+    }
   }
 
   public static msgFromMarkdown(text: string): string {
