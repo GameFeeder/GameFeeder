@@ -97,7 +97,9 @@ export default class Updater {
       // Notify users
       for (const bot of getBots()) {
         for (const notification of notifications) {
-          bot.sendMessageToGameSubs(notification.game, notification);
+          // Temporary possible fix for telegram API limit
+          // eslint-disable-next-line no-await-in-loop
+          await bot.sendMessageToGameSubs(notification.game, notification);
         }
       }
       const notifyTime = Date.now() - endPollTime;
