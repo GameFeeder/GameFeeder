@@ -12,6 +12,26 @@ import CommandGroup from './command_group';
 import SimpleAction from './simple_action';
 import NoLabelAction from './no_label_action';
 import Action from './action';
+import Command from './command';
+
+/** Filters the given command array by the provided role. */
+export function filterByRole(commands: Command[], role: UserRole): Command[] {
+  return commands.filter((cmd) => {
+    switch (cmd.role) {
+      case UserRole.OWNER:
+        // Owner commands can only be executed by owners
+        return role === UserRole.OWNER;
+      case UserRole.ADMIN:
+        // Admin commands can only be executed by owners and admins
+        return role === UserRole.OWNER || role === UserRole.ADMIN;
+      case UserRole.USER:
+        // User commands can be executed by anyone
+        return true;
+      default:
+        return false;
+    }
+  });
+}
 
 /** Start command, used as a welcome message. */
 const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', async (message) => {

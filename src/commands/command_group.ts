@@ -4,6 +4,7 @@ import Channel from '../channel';
 import { UserRole } from '../user';
 import Message from '../message';
 import Action from './action';
+import { filterByRole } from './commands';
 
 /**
  * A command group represents a collection of commands with a common prefix.
@@ -113,33 +114,18 @@ export default class CommandGroup extends Command {
    * @param role - The user role to filter the commands for.
    */
   public aggregateCmds(role?: UserRole): Action[] {
-    const aggregates = this.commands
-      // Filter the commands by the provided role
-      .filter((cmd) => {
-        switch (cmd.role) {
-          case UserRole.OWNER:
-            return role === UserRole.OWNER;
-          case UserRole.ADMIN:
-            return role === UserRole.OWNER || role === UserRole.ADMIN;
-          case UserRole.USER:
-            return true;
-          default:
-            // No role provided
-            return true;
-        }
-      })
-      .map((cmd) => {
-        if (cmd instanceof Action) {
-          // Wrap the command in an array
-          return [cmd];
-        }
-        if (cmd instanceof CommandGroup) {
-          // Aggregate all commands of the inner command group
-          return cmd.aggregateCmds();
-        }
-        // Unexpected Command type
-        throw new Error('Unexpected command type while aggregating commands.');
-      });
+    const aggregates = filterByRole(this.commands, role || UserRole.OWNER).map((cmd) => {
+      if (cmd instanceof Action) {
+        // Wrap the command in an array
+        return [cmd];
+      }
+      if (cmd instanceof CommandGroup) {
+        // Aggregate all commands of the inner command group
+        return cmd.aggregateCmds();
+      }
+      // Unexpected Command type
+      throw new Error('Unexpected command type while aggregating commands.');
+    });
     // Merge all aggregated commands to a single array
     return [].concat(...aggregates);
   }
