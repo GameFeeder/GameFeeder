@@ -56,6 +56,7 @@ const helpCmd = new SimpleAction(
     const helpMD = `You can use the following commands:\n${commands.channelHelp(
       message.channel,
       '- ',
+      await message.user.getRole(message.channel),
     )}`;
 
     message.reply(helpMD);
@@ -632,20 +633,9 @@ const commands: CommandGroup = new CommandGroup(
   // Help
   (channel, prefix, role) => {
     const cmdPrefix = EscapeRegex(channel.getPrefix());
-    const cmdLabels = commands.commands
-      .filter((cmd) => {
-        switch (cmd.role) {
-          case UserRole.OWNER:
-            return role === UserRole.OWNER;
-          case UserRole.ADMIN:
-            return role === UserRole.OWNER || role === UserRole.ADMIN;
-          case UserRole.USER:
-            return true;
-          default:
-            return true;
-        }
-      })
-      .map((cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`);
+    const cmdLabels = filterByRole(commands.commands, role || UserRole.OWNER).map(
+      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
+    );
     return cmdLabels.join('\n');
   },
   // Trigger: The channels prefix, e.g. '/' for Telegram
