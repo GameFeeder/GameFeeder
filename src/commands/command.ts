@@ -76,6 +76,23 @@ export default abstract class Command {
     return false;
   }
 
+  /** Tests if the given message triggers the command.
+   *
+   * @param message - The message to test.
+   * @returns RegExpMatchArray, if the message matches the command trigger or undefined otherwise.
+   */
+  public test(message: Message): RegExpMatchArray | undefined {
+    const regex = this.getRegExp(message.channel);
+    const cmdMatch = regex.exec(message.content);
+
+    if (!cmdMatch) {
+      // The message does not match the command trigger
+      return undefined;
+    }
+
+    return cmdMatch;
+  }
+
   /** Gets the RegExp used to trigger the command
    *
    * @param channel - The channel to get the regex for.

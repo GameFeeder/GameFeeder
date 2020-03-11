@@ -43,22 +43,23 @@ export default class CommandGroup extends Command {
           return;
         }
 
+        // The message, but with the content that remains for the sub-commands
+        const newMessage = new Message(message.user, message.channel, group, message.timestamp);
+
         // Find matching sub-command
         const matchingCmd = this.commands.find((cmd) => {
-          const regex = cmd.getRegExp(message.channel);
           // Test if the sub-command matches
-          return regex.test(group);
+          return cmd.test(newMessage);
         });
 
         if (matchingCmd) {
           // Match found, execute sub-command
-          const regex = matchingCmd.getRegExp(message.channel);
-          const cmdMatch = regex.exec(group);
+          const cmdMatch = matchingCmd.test(newMessage);
           // Execute the sub-command
-          await matchingCmd.execute(message, cmdMatch);
+          await matchingCmd.execute(newMessage, cmdMatch);
         } else {
           // No match found, execute default action
-          this.defaultAction(message, match);
+          this.defaultAction(newMessage, match);
         }
       },
       role,
