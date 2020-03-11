@@ -3,7 +3,6 @@ import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
 import CommandGroup from './command_group';
-import { regexToString } from '../util/util';
 
 /**
  * Represents a command that can be executed by the users on the given bot clients.
@@ -82,8 +81,9 @@ export default abstract class Command {
    * @param channel - The channel to get the regex for.
    */
   public getRegExp(channel: Channel): RegExp {
-    const regexString = regexToString(this.channelTrigger(channel));
     // Allow the bot tag after every command
-    return new RegExp(`${regexString}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`);
+    return new RegExp(
+      `${this.channelTrigger(channel).source}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`,
+    );
   }
 }

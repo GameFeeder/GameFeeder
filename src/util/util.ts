@@ -40,11 +40,6 @@ export function naturalJoin(array: string[], separator?: string): string {
   return `${array.slice(0, array.length - 1).join(sep)} and ${array[array.length - 1]}`;
 }
 
-export function regexToString(regex: RegExp): string {
-  const reg = /\/(?<exp>.*)\//;
-  return reg.exec(`${regex}`).groups.exp;
-}
-
 /** Utility functions for strings. */
 export class StrUtil {
   /** Limits the given string to the given maximum length.
