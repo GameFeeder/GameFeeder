@@ -40,6 +40,10 @@ export default class CommandGroup extends Command {
         const { group } = match.groups;
 
         if (!group) {
+          this.defaultAction(
+            new Message(message.user, message.channel, '', message.timestamp),
+            match,
+          );
           return;
         }
 

@@ -369,11 +369,12 @@ const notifyAllCmd = new Action(
 );
 
 /**  Notify Game Subs command, used to manually send a notifications to the subs of a game. */
-const notifyGameSubsCmd = new Action(
+const notifyGameSubsCmd = new TwoPartCommand(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
-  /^\s*(notify(Game)?Subs)\s*(\((?<alias>.*)\))?\s*(?<msg>(?:.|\s)*)\s*$/,
+  /^\s*(notify(Game)?Subs)\s*(?<group>.*?)\s*$/,
+  /^\((?<alias>.*?)\)\s*(?<msg>(?:.|\s)*)$/,
   async (message, match) => {
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -416,6 +417,11 @@ const notifyGameSubsCmd = new Action(
           gamesCmd,
           message.channel,
         )}\` to view a list of all available games.`,
+    );
+  },
+  async (message) => {
+    message.reply(
+      `'${message.content}' is an invalid configuration. It must be in the form of '(<game name>) <message>'.`,
     );
   },
   UserRole.OWNER,
@@ -512,7 +518,7 @@ const rollCmd = new TwoPartCommand(
   // Default action
   async (message) => {
     message.reply(
-      `\`${message.content}\` is an invalid dice configuration. Try something like \`2 d20 +3\``,
+      `'${message.content}' is an invalid dice configuration. Try something like '2 d20 +3'.`,
     );
   },
   UserRole.USER,
