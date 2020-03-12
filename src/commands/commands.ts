@@ -13,6 +13,7 @@ import SimpleAction from './simple_action';
 import NoLabelAction from './no_label_action';
 import Action from './action';
 import Command from './command';
+import TwoPartCommand from './two_part_command';
 
 /** Filters the given command array by the provided role. */
 export function filterByRole(commands: Command[], role: UserRole): Command[] {
@@ -442,11 +443,15 @@ const flipCmd = new SimpleAction(
 );
 
 /** Roll command, used to roll some dice. */
-const rollCmd = new Action(
+const rollCmd = new TwoPartCommand(
   'roll',
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
-  /^\s*r(?:oll)?\s*(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?\s*$/,
+  // Group trigger
+  /^\s*r(?:oll)?\s*(?<group>.*?)\s*$/,
+  // Action trigger
+  /^(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?$/,
+  // Action
   async (message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
@@ -503,6 +508,12 @@ const rollCmd = new Action(
 
     // Notify user
     message.reply(`${text}:\n${resultStr}`);
+  },
+  // Default action
+  async (message) => {
+    message.reply(
+      `\`${message.content}\` is an invalid dice configuration. Try something like \`2 d20 +3\``,
+    );
   },
   UserRole.USER,
 );
