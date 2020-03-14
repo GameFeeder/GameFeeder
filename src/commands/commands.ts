@@ -344,8 +344,8 @@ const notifyAllCmd = new TwoPartCommand(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
-  /^\s*(notifyAll(Subs)?)\s*(?<group>(?:.|\s)+?)\s*$/,
-  /^(?<msg>(?:.|\s)*)$/,
+  /^\s*(notifyAll(Subs)?)(?<group>(?:.|\s)*?)$/,
+  /^\s+(?<msg>(?:.|\s)+?)\s*$/,
   async (message, match) => {
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
@@ -367,7 +367,13 @@ const notifyAllCmd = new TwoPartCommand(
     }
   },
   async (message) => {
-    message.reply(`You need to provide a message to send.`);
+    if (!message.content.trim()) {
+      message.reply(`You need to provide a message to send to the subscribers.`);
+    } else {
+      message.reply(
+        `'${message.content}' is an invalid message configuration. Try inserting a space between the command and the message.`,
+      );
+    }
   },
   UserRole.OWNER,
 );
@@ -377,8 +383,8 @@ const notifyGameSubsCmd = new TwoPartCommand(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
-  /^\s*(notify(Game)?Subs)\s*(?<group>.*?)\s*$/,
-  /^\((?<alias>.*?)\)\s*(?<msg>(?:.|\s)*)$/,
+  /^\s*(notify(Game)?Subs)(?<group>.*?)$/,
+  /^\s+\((?<alias>.*?)\)\s+(?<msg>(?:.|\s)*)\s*$/,
   async (message, match) => {
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -424,9 +430,16 @@ const notifyGameSubsCmd = new TwoPartCommand(
     );
   },
   async (message) => {
-    message.reply(
-      `'${message.content}' is an invalid configuration. It must be in the form of '(<game name>) <message>'.`,
-    );
+    if (!message.content.trim()) {
+      message.reply(
+        `You need to provide the game to notify the subscribers of as well as a message to send to them.\n` +
+          `Try the following format: '(<game name>) <message>'.`,
+      );
+    } else {
+      message.reply(
+        `'${message.content}' is an invalid configuration. It must be in the form of '(<game name>) <message>'.`,
+      );
+    }
   },
   UserRole.OWNER,
 );
