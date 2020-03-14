@@ -262,27 +262,20 @@ const unsubCmd = new Action(
 );
 
 /** Prefix command, used to change the prefix of the bot on that channel. */
-const prefixCmd = new Action(
+const prefixCmd = new TwoPartCommand(
   'prefix',
   `Change the bot's prefix used in this channel.`,
   'prefix <new prefix>',
-  /^\s*prefix(?<newPrefix>.*)\s*$/,
+  // Group trigger
+  /^\s*prefix(?<group>.*)$/,
+  // Actiont trigger
+  /^\s*(?<newPrefix>.+?)\s*$/,
+  // Action
   async (message, match) => {
     const bot = message.getBot();
     const channel = message.channel;
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
-
-    // Check if the user has provided a new prefix
-    if (!newPrefix) {
-      message.reply(
-        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-          `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n` +
-          `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default` +
-          `(\`${bot.prefix}\`).`,
-      );
-      return;
-    }
 
     // Check if the user wants to reset the prefix
     if (newPrefix === 'reset') {
@@ -336,6 +329,18 @@ const prefixCmd = new Action(
       DataManager.setSubscriberData(subscribers);
     }
   },
+  // Default action
+  async (message) => {
+    if (!message.content.trim()) {
+      const prefix = message.channel.getPrefix();
+      message.reply(
+        `The prefix currently used on this channel is \`${prefix}\`.\n` +
+          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
+          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
+          `(\`${message.getBot().prefix}\`).`,
+      );
+    }
+  },
   UserRole.ADMIN,
 );
 
@@ -344,8 +349,11 @@ const notifyAllCmd = new TwoPartCommand(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
+  // Group Trigger
   /^\s*(notifyAll(Subs)?)(?<group>(?:.|\s)*?)$/,
+  // Action Trigger
   /^\s+(?<msg>(?:.|\s)+?)\s*$/,
+  // Action
   async (message, match) => {
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
@@ -383,8 +391,11 @@ const notifyGameSubsCmd = new TwoPartCommand(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
+  // Group trigger
   /^\s*(notify(Game)?Subs)(?<group>.*?)$/,
+  // Action trigger
   /^\s+\((?<alias>.*?)\)\s+(?<msg>(?:.|\s)*)\s*$/,
+  // Action
   async (message, match) => {
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
@@ -429,6 +440,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
         )}\` to view a list of all available games.`,
     );
   },
+  // Default action
   async (message) => {
     if (!message.content.trim()) {
       message.reply(
@@ -661,12 +673,12 @@ const commands: CommandGroup = new CommandGroup(
   'All commands that need a prefix to be executed.',
   // Label
   (channel) => {
-    const prefix = EscapeRegex(channel.getPrefix());
+    const prefix = channel.getPrefix();
     return prefix;
   },
   // Help
   (channel, prefix, role) => {
-    const cmdPrefix = EscapeRegex(channel.getPrefix());
+    const cmdPrefix = channel.getPrefix();
     const cmdLabels = filterByRole(commands.commands, role || UserRole.OWNER).map(
       (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
     );
