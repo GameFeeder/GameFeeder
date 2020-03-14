@@ -340,11 +340,12 @@ const prefixCmd = new Action(
 );
 
 /**  Notify All command, used to manually send a notification to all subscribers. */
-const notifyAllCmd = new Action(
+const notifyAllCmd = new TwoPartCommand(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
-  /^\s*(notifyAll(Subs)?)\s*(?<msg>(?:.|\s)*)\s*$/,
+  /^\s*(notifyAll(Subs)?)\s*(?<group>(?:.|\s)+?)\s*$/,
+  /^(?<msg>(?:.|\s)*)$/,
   async (message, match) => {
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
@@ -364,6 +365,9 @@ const notifyAllCmd = new Action(
     for (const curBot of getBots()) {
       curBot.sendMessageToAllSubs(msg);
     }
+  },
+  async (message) => {
+    message.reply(`You need to provide a message to send.`);
   },
   UserRole.OWNER,
 );
