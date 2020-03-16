@@ -11,7 +11,6 @@ import ProjectManager from '../managers/project_manager';
 import CommandGroup from './command_group';
 import SimpleAction from './simple_action';
 import NoLabelAction from './no_label_action';
-import Action from './action';
 import Command from './command';
 import TwoPartCommand from './two_part_command';
 
@@ -179,12 +178,6 @@ const subCmd = new TwoPartCommand(
         `\nYou have already subscribed to ` +
         `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
     }
-    // Unknown aliases
-    if (invalidAliases.length > 0) {
-      msg +=
-        `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
-    }
 
     message.reply(msg);
   },
@@ -207,22 +200,24 @@ const subCmd = new TwoPartCommand(
 );
 
 /** Unsubscribe command, used to unsubscribe from a game. */
-const unsubCmd = new Action(
+const unsubCmd = new TwoPartCommand(
   'unsubscribe',
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
-  /^\s*unsub(scribe)?(?<alias>.*)\s*$/,
+  // Group trigger
+  /^\s*unsub(scribe)?(?<group>.*?)$/,
+  // Action trigger
+  new RegExp(
+    /^\s+/.source +
+      // One or multiple aliases seperated by commata, or 'all' to unsubscribe to all games
+      `(?<alias>(?:(?:${Game.getAliases().join('|')}), )*(?:${Game.getAliases().join('|')}))` +
+      /\s*$/.source,
+  ),
+  // Action
   async (message, match) => {
     const channel = message.channel;
     let { alias } = match.groups;
     alias = alias ? alias.trim() : '';
-
-    if (!alias) {
-      message.reply(
-        `You need to provide the name of the game you want to unsubscribe from.\n` +
-          `Try ${commands.tryFindCmdLabel(unsubCmd, message.channel)}.`,
-      );
-    }
 
     const aliases = alias.split(', ');
 
@@ -266,14 +261,23 @@ const unsubCmd = new Action(
         `\nYou have never subscribed to ` +
         `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
     }
-    // Unknown aliases
-    if (invalidAliases.length > 0) {
-      msg +=
-        `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
-    }
 
     message.reply(msg);
+  },
+  // Default action
+  async (message) => {
+    const games = Game.getGames();
+    const gameList = games.map((game) => `- ${game.label}`).join('\n');
+
+    if (!message.content.trim()) {
+      message.reply(
+        `You need to specify the game you want to unsubscribe from. The following are available:\n${gameList}`,
+      );
+    } else {
+      message.reply(
+        `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
+      );
+    }
   },
   UserRole.ADMIN,
 );
