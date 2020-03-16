@@ -118,22 +118,24 @@ const gamesCmd = new SimpleAction('games', 'Display all available games.', async
 });
 
 /** Subscribe command, used to subscribe to a game. */
-const subCmd = new Action(
+const subCmd = new TwoPartCommand(
   'subscribe',
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
-  /^\s*sub(scribe)?(?<alias>.*)\s*$/,
+  // Group trigger
+  /^\s*sub(scribe)?(?<group>.*?)$/,
+  // Action trigger
+  new RegExp(
+    /^\s+/.source +
+      // One or multiple aliases seperated by commata, or 'all' to subscribe to all games
+      `(?<alias>(?:(?:${Game.getAliases().join('|')}), )*(?:${Game.getAliases().join('|')}))` +
+      /\s*$/.source,
+  ),
+  // Action
   async (message, match) => {
     const channel = message.channel;
     let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
-
-    if (!alias) {
-      message.reply(
-        `You need to provide the name of the game you want to subscribe to.\n` +
-          `Try \`${commands.tryFindCmdLabel(subCmd, message.channel)}\`.`,
-      );
-    }
 
     const aliases = alias.split(', ');
 
@@ -185,6 +187,21 @@ const subCmd = new Action(
     }
 
     message.reply(msg);
+  },
+  // Default action
+  async (message) => {
+    const games = Game.getGames();
+    const gameList = games.map((game) => `- ${game.label}`).join('\n');
+
+    if (!message.content.trim()) {
+      message.reply(
+        `You need to specify the game you want to subscribe to. The following are available:\n${gameList}`,
+      );
+    } else {
+      message.reply(
+        `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
+      );
+    }
   },
   UserRole.ADMIN,
 );
