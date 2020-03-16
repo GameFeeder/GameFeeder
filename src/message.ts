@@ -28,6 +28,11 @@ export default class Message {
     this.timestamp = timestamp;
   }
 
+  /** Determines wheather the message does not have any content. */
+  public isEmpty(): boolean {
+    return !this.content?.trim();
+  }
+
   /** Gets the bot associated to this message. */
   public getBot(): BotClient {
     return this.channel.bot;

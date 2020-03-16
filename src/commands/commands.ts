@@ -186,7 +186,7 @@ const subCmd = new TwoPartCommand(
     const games = Game.getGames();
     const gameList = games.map((game) => `- ${game.label}`).join('\n');
 
-    if (!message.content.trim()) {
+    if (message.isEmpty()) {
       message.reply(
         `You need to specify the game you want to subscribe to. The following are available:\n${gameList}`,
       );
@@ -269,7 +269,7 @@ const unsubCmd = new TwoPartCommand(
     const games = Game.getGames();
     const gameList = games.map((game) => `- ${game.label}`).join('\n');
 
-    if (!message.content.trim()) {
+    if (message.isEmpty()) {
       message.reply(
         `You need to specify the game you want to unsubscribe from. The following are available:\n${gameList}`,
       );
@@ -352,7 +352,7 @@ const prefixCmd = new TwoPartCommand(
   },
   // Default action
   async (message) => {
-    if (!message.content.trim()) {
+    if (message.isEmpty()) {
       const prefix = message.channel.getPrefix();
       message.reply(
         `The prefix currently used on this channel is \`${prefix}\`.\n` +
@@ -396,7 +396,7 @@ const notifyAllCmd = new TwoPartCommand(
     }
   },
   async (message) => {
-    if (!message.content.trim()) {
+    if (message.isEmpty()) {
       message.reply(`You need to provide a message to send to the subscribers.`);
     } else {
       message.reply(
@@ -463,7 +463,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
   },
   // Default action
   async (message) => {
-    if (!message.content.trim()) {
+    if (message.isEmpty()) {
       message.reply(
         `You need to provide the game to notify the subscribers of as well as a message to send to them.\n` +
           `Try the following format: '(<game name>) <message>'.`,
