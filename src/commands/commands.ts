@@ -1,79 +1,89 @@
 // TODO: Revisit these overrides
 /* eslint-disable prefer-template */
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
-import Command from './command';
 import DataManager from '../managers/data_manager';
 import Game from '../game';
-import { filterAsync, mapAsync, naturalJoin } from '../util/util';
+import { mapAsync, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
+import CommandGroup from './command_group';
+import SimpleAction from './simple_action';
+import NoLabelAction from './no_label_action';
+import Command from './command';
+import TwoPartCommand from './two_part_command';
 
-// Start
-const startCmd = new Command(
-  'start',
-  'Get started with the GameFeeder.',
-  'start',
-  'start',
-  async (bot, message) => {
-    const name = ProjectManager.getName();
-    const gitLink = ProjectManager.getURL();
-    const version = ProjectManager.getVersionNumber();
-    bot.sendMessage(
-      message.channel,
-      `Welcome to the **${name}** (v${version})!\n` +
-        `Use \`${helpCmd.getTriggerLabel(message.channel)}\` to display all available commands.\n` +
-        `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
-    );
-  },
-);
+/** Filters the given command array by the provided role. */
+export function filterByRole(commands: Command[], role: UserRole): Command[] {
+  return commands.filter((cmd) => {
+    switch (cmd.role) {
+      case UserRole.OWNER:
+        // Owner commands can only be executed by owners
+        return role === UserRole.OWNER;
+      case UserRole.ADMIN:
+        // Admin commands can only be executed by owners and admins
+        return role === UserRole.OWNER || role === UserRole.ADMIN;
+      case UserRole.USER:
+        // User commands can be executed by anyone
+        return true;
+      default:
+        return false;
+    }
+  });
+}
 
-// Help
-const helpCmd = new Command(
+/** Start command, used as a welcome message. */
+const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', async (message) => {
+  const name = ProjectManager.getName();
+  const gitLink = ProjectManager.getURL();
+  const version = ProjectManager.getVersionNumber();
+  message.reply(
+    `Welcome to the **${name}** (v${version})!\n` +
+      `Use \`${commands.tryFindCmdLabel(
+        helpCmd,
+        message.channel,
+      )}\` to display all available commands.\n` +
+      `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+  );
+});
+
+/** Help command, used to display a list of all available commands. */
+const helpCmd = new SimpleAction(
   'help',
   'Display a list of all available commands.',
-  'help',
-  'help\\s*$',
-  async (bot, message) => {
-    // Only show the commands the user has the role to execute.
-    const filteredCommands = await filterAsync(commands, async (command) =>
-      message.user.hasRole(message.channel, command.role),
-    );
-    const commandsList = filteredCommands.map(
-      (command) =>
-        `- \`${message.channel.getPrefix()}${command.triggerLabel}\`: ${command.description}`,
-    );
+  async (message) => {
+    const helpMD = `You can use the following commands:\n${commands.channelHelp(
+      message.channel,
+      '- ',
+      await message.user.getRole(message.channel),
+    )}`;
 
-    const helpMD = `You can use the following commands:\n${commandsList.join('\n')}`;
-
-    bot.sendMessage(message.channel, helpMD);
+    message.reply(helpMD);
   },
 );
 
-// About
-const aboutCmd = new Command(
+/** About command, display some info about the bot. */
+const aboutCmd = new NoLabelAction(
   'about',
   'Display info about the bot.',
-  'about',
-  '(about)|(info)\\s*$',
-  async (bot, message) => {
+  /^\s*(about)|(info)\s*$/,
+  async (message) => {
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
-    bot.sendMessage(
-      message.channel,
+    message.reply(
       `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
 );
 
-// Settings
-const settingsCmd = new Command(
+/** Settings command, used to display an overview of the settings you can configure. */
+const settingsCmd = new NoLabelAction(
   'settings',
   'Display an overview of the settings you can configure for the bot.',
-  'settings',
-  '(settings)|(options)|(config)\\s*$',
-  async (bot, message) => {
+  /^\s*(settings)|(options)|(config)\s*$/,
+  async (message) => {
     const channel = message.channel;
     const gameStr =
       channel.gameSubs && channel.gameSubs.length > 0
@@ -81,50 +91,50 @@ const settingsCmd = new Command(
           `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
         : '> You are currently not subscribed to any games.';
 
-    bot.sendMessage(
-      channel,
-      `You can use \`${prefixCmd.getTriggerLabel(channel)}\` to change the prefix the bot uses ` +
+    message.reply(
+      `You can use \`${commands.tryFindCmdLabel(
+        prefixCmd,
+        message.channel,
+      )}\` to change the prefix the bot uses ` +
         `on this channel.\n` +
         `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-        `You can use \`${subCmd.getTriggerLabel(channel)}\` and ` +
-        `\`${unsubCmd.getTriggerLabel(channel)}\` to change the games you are subscribed to.\n` +
+        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
+        `\`${commands.tryFindCmdLabel(
+          unsubCmd,
+          message.channel,
+        )}\` to change the games you are subscribed to.\n` +
         gameStr,
     );
   },
 );
 
-// Games
-const gamesCmd = new Command(
-  'games',
-  'Display all available games.',
-  'games',
-  'games\\s*$',
-  async (bot, message) => {
-    const gamesList = Game.getGames().map((game) => `- ${game.label}`);
-    const gamesMD = `Available games:\n${gamesList.join('\n')}`;
+/** Games command, used to display a list of all games. */
+const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
+  const gamesList = Game.getGames().map((game) => `- ${game.label}`);
+  const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
-    bot.sendMessage(message.channel, gamesMD);
-  },
-);
+  message.reply(gamesMD);
+});
 
-// Subscribe
-const subCmd = new Command(
+/** Subscribe command, used to subscribe to a game. */
+const subCmd = new TwoPartCommand(
   'subscribe',
   `Subscribe to the given game's feed.`,
   'subscribe <game name>',
-  'sub(scribe)?(?<alias>.*)',
-  async (bot, message, match: any) => {
+  // Group trigger
+  /^\s*sub(scribe)?(?<group>.*?)$/,
+  // Action trigger
+  new RegExp(
+    /^\s+/.source +
+      // One or multiple aliases seperated by commata, or 'all' to subscribe to all games
+      `(?<alias>(?:(?:${Game.getAliases().join('|')}), )*(?:${Game.getAliases().join('|')}))` +
+      /\s*$/.source,
+  ),
+  // Action
+  async (message, match) => {
     const channel = message.channel;
     let alias: string = match.groups.alias;
     alias = alias ? alias.trim() : '';
-
-    if (!alias) {
-      bot.sendMessage(
-        channel,
-        `You need to provide the name of the game you want to subscribe to.\n` +
-          `Try \`${subCmd.getTriggerLabel(channel)}\`.`,
-      );
-    }
 
     const aliases = alias.split(', ');
 
@@ -149,7 +159,7 @@ const subCmd = new Command(
 
     // The map of which game is a new sub
     const gameMap = await mapAsync(aliasGames, async (game) => {
-      const isNew = await bot.addSubscriber(channel, game);
+      const isNew = await message.getBot().addSubscriber(channel, game);
       return { game, isNew };
     });
 
@@ -168,36 +178,46 @@ const subCmd = new Command(
         `\nYou have already subscribed to ` +
         `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
     }
-    // Unknown aliases
-    if (invalidAliases.length > 0) {
-      msg +=
-        `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
-    }
 
-    bot.sendMessage(channel, msg);
+    message.reply(msg);
+  },
+  // Default action
+  async (message) => {
+    const games = Game.getGames();
+    const gameList = games.map((game) => `- ${game.label}`).join('\n');
+
+    if (message.isEmpty()) {
+      message.reply(
+        `You need to specify the game you want to subscribe to. The following are available:\n${gameList}`,
+      );
+    } else {
+      message.reply(
+        `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
+      );
+    }
   },
   UserRole.ADMIN,
 );
 
-// Unsubscribe
-const unsubCmd = new Command(
+/** Unsubscribe command, used to unsubscribe from a game. */
+const unsubCmd = new TwoPartCommand(
   'unsubscribe',
   `Unsubscribe from the given game's feed`,
   'unsubscribe <game name>',
-  'unsub(scribe)?(?<alias>.*)',
-  async (bot, message, match: any) => {
+  // Group trigger
+  /^\s*unsub(scribe)?(?<group>.*?)$/,
+  // Action trigger
+  new RegExp(
+    /^\s+/.source +
+      // One or multiple aliases seperated by commata, or 'all' to unsubscribe to all games
+      `(?<alias>(?:(?:${Game.getAliases().join('|')}), )*(?:${Game.getAliases().join('|')}))` +
+      /\s*$/.source,
+  ),
+  // Action
+  async (message, match) => {
     const channel = message.channel;
     let { alias } = match.groups;
     alias = alias ? alias.trim() : '';
-
-    if (!alias) {
-      bot.sendMessage(
-        channel,
-        `You need to provide the name of the game you want to unsubscribe from.\n` +
-          `Try ${unsubCmd.getTriggerLabel(channel)}.`,
-      );
-    }
 
     const aliases = alias.split(', ');
 
@@ -222,7 +242,7 @@ const unsubCmd = new Command(
 
     // The map of which game is a new sub
     const gameMap = aliasGames.map((game) => {
-      const isNew = bot.removeSubscriber(channel, game);
+      const isNew = message.getBot().removeSubscriber(channel, game);
       return { game, isNew };
     });
 
@@ -241,40 +261,42 @@ const unsubCmd = new Command(
         `\nYou have never subscribed to ` +
         `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
     }
-    // Unknown aliases
-    if (invalidAliases.length > 0) {
-      msg +=
-        `\nWe don't know any game(s) with the alias(es) ` +
-        `${naturalJoin(invalidAliases.map((gameAlias) => `'${gameAlias}'`))}.`;
-    }
 
-    bot.sendMessage(channel, msg);
+    message.reply(msg);
+  },
+  // Default action
+  async (message) => {
+    const games = Game.getGames();
+    const gameList = games.map((game) => `- ${game.label}`).join('\n');
+
+    if (message.isEmpty()) {
+      message.reply(
+        `You need to specify the game you want to unsubscribe from. The following are available:\n${gameList}`,
+      );
+    } else {
+      message.reply(
+        `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
+      );
+    }
   },
   UserRole.ADMIN,
 );
 
-// Prefix
-const prefixCmd = new Command(
+/** Prefix command, used to change the prefix of the bot on that channel. */
+const prefixCmd = new TwoPartCommand(
   'prefix',
   `Change the bot's prefix used in this channel.`,
-  'prefix',
-  'prefix(?<newPrefix>.*)$',
-  async (bot, message, match: any) => {
+  'prefix <new prefix>',
+  // Group trigger
+  /^\s*prefix(?<group>.*)$/,
+  // Actiont trigger
+  /^\s*(?<newPrefix>.+?)\s*$/,
+  // Action
+  async (message, match) => {
+    const bot = message.getBot();
     const channel = message.channel;
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
-
-    // Check if the user has provided a new prefix
-    if (!newPrefix) {
-      bot.sendMessage(
-        channel,
-        `The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
-          `Use \`${channel.getPrefix()}prefix <new prefix>\` to use an other prefix.\n` +
-          `Use \`${channel.getPrefix()}prefix reset\` to reset the prefix to the default` +
-          `(\`${bot.prefix}\`).`,
-      );
-      return;
-    }
 
     // Check if the user wants to reset the prefix
     if (newPrefix === 'reset') {
@@ -328,67 +350,91 @@ const prefixCmd = new Command(
       DataManager.setSubscriberData(subscribers);
     }
   },
+  // Default action
+  async (message) => {
+    if (message.isEmpty()) {
+      const prefix = message.channel.getPrefix();
+      message.reply(
+        `The prefix currently used on this channel is \`${prefix}\`.\n` +
+          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
+          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
+          `(\`${message.getBot().prefix}\`).`,
+      );
+    }
+  },
   UserRole.ADMIN,
 );
 
-// Notify All
-const notifyAllCmd = new Command(
+/**  Notify All command, used to manually send a notification to all subscribers. */
+const notifyAllCmd = new TwoPartCommand(
   'notifyAll',
   'Notify all subscribed users.',
   'notifyAll <message>',
-  '(notifyAll(Subs)?)\\s*(?<msg>(?:.|\\s)*)$',
-  async (bot, message, match: any) => {
-    const channel = message.channel;
+  // Group Trigger
+  /^\s*(notifyAll(Subs)?)(?<group>(?:.|\s)*?)$/,
+  // Action Trigger
+  /^\s+(?<msg>(?:.|\s)+?)\s*$/,
+  // Action
+  async (message, match) => {
     let { msg } = match.groups;
     msg = msg ? msg.trim() : '';
 
     // Check if the user has provided a message
     if (!msg) {
-      bot.sendMessage(
-        channel,
+      message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${notifyAllCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyAllCmd, message.channel)}\`.`,
       );
       return;
     }
 
-    bot.sendMessage(channel, `Notifying all subs with:\n"${msg}"`);
+    message.reply(`Notifying all subs with:\n"${msg}"`);
 
     // Send the provided message to all subs
     for (const curBot of getBots()) {
       curBot.sendMessageToAllSubs(msg);
     }
   },
+  async (message) => {
+    if (message.isEmpty()) {
+      message.reply(`You need to provide a message to send to the subscribers.`);
+    } else {
+      message.reply(
+        `'${message.content}' is an invalid message configuration. Try inserting a space between the command and the message.`,
+      );
+    }
+  },
   UserRole.OWNER,
 );
 
-// Notify Game Subs
-const notifyGameSubsCmd = new Command(
+/**  Notify Game Subs command, used to manually send a notifications to the subs of a game. */
+const notifyGameSubsCmd = new TwoPartCommand(
   'notifyGameSubs',
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
-  '(notify(Game)?Subs)\\s*(\\((?<alias>.*)\\))?\\s*(?<msg>(?:.|\\s)*)\\s*$',
-  async (bot, message, match: any) => {
-    const channel = message.channel;
+  // Group trigger
+  /^\s*(notify(Game)?Subs)(?<group>.*?)$/,
+  // Action trigger
+  /^\s+\((?<alias>.*?)\)\s+(?<msg>(?:.|\s)*)\s*$/,
+  // Action
+  async (message, match) => {
     let { alias, msg } = match.groups;
     alias = alias ? alias.trim() : '';
     msg = msg ? msg.trim() : '';
 
     // Check if the user has provided a message
     if (!msg) {
-      bot.sendMessage(
-        channel,
+      message.reply(
         `You need to provide a message to send to everyone.\n` +
-          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
     // Check if the user has provided a game
     if (!alias) {
-      bot.sendMessage(
-        channel,
+      message.reply(
         `You need to provide a game to notify the subs of.\n` +
-          `Try \`${notifyGameSubsCmd.getTriggerLabel(channel)}\`.`,
+          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
       return;
     }
@@ -396,7 +442,7 @@ const notifyGameSubsCmd = new Command(
     // Try to find the game
     for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
-        bot.sendMessage(channel, `Notifying the subs of **${game.label}** with:\n"${msg}"`);
+        message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
         // Notify the game's subs
         for (const curBot of getBots()) {
           curBot.sendMessageToGameSubs(game, msg);
@@ -407,22 +453,35 @@ const notifyGameSubsCmd = new Command(
     }
 
     // We didn't find the specified game
-    bot.sendMessage(
-      channel,
+    message.reply(
       `I didn't find a game with the alias '${alias}'.\n` +
-        `Use \`${gamesCmd.getTriggerLabel(channel)}\` to view a list of all available games.`,
+        `Use \`${commands.tryFindCmdLabel(
+          gamesCmd,
+          message.channel,
+        )}\` to view a list of all available games.`,
     );
+  },
+  // Default action
+  async (message) => {
+    if (message.isEmpty()) {
+      message.reply(
+        `You need to provide the game to notify the subscribers of as well as a message to send to them.\n` +
+          `Try the following format: '(<game name>) <message>'.`,
+      );
+    } else {
+      message.reply(
+        `'${message.content}' is an invalid configuration. It must be in the form of '(<game name>) <message>'.`,
+      );
+    }
   },
   UserRole.OWNER,
 );
 
-// Flip
-const flipCmd = new Command(
+/** Flip command, used to flip a coin. */
+const flipCmd = new SimpleAction(
   'flip',
   'Flip a coin.',
-  'flip',
-  'flip',
-  async (bot, message) => {
+  async (message) => {
     const rnd = Math.random();
 
     let result;
@@ -434,18 +493,22 @@ const flipCmd = new Command(
     }
 
     // Notify the user
-    bot.sendMessage(message.channel, `Flipping a coin: **${result}**`);
+    message.reply(`Flipping a coin: **${result}**`);
   },
   UserRole.USER,
 );
 
-// Roll
-const rollCmd = new Command(
+/** Roll command, used to roll some dice. */
+const rollCmd = new TwoPartCommand(
   'roll',
   'Roll some dice.',
   'roll <dice count> <dice type> <modifier>',
-  'r(?:oll)?\\s*(?:(?<diceCountStr>\\d+)\\s*)?d(?<diceTypeStr>\\d+)(?:\\s*(?<modifierStr>(?:\\+|-)\\d+))?',
-  async (bot, message, match) => {
+  // Group trigger
+  /^\s*r(?:oll)?\s*(?<group>.*?)\s*$/,
+  // Action trigger
+  /^(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?$/,
+  // Action
+  async (message, match) => {
     const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
 
     let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
@@ -500,18 +563,23 @@ const rollCmd = new Command(
     }
 
     // Notify user
-    bot.sendMessage(message.channel, `${text}:\n${resultStr}`);
+    message.reply(`${text}:\n${resultStr}`);
+  },
+  // Default action
+  async (message) => {
+    message.reply(
+      `'${message.content}' is an invalid dice configuration. Try something like '2 d20 +3'.`,
+    );
   },
   UserRole.USER,
 );
 
-// Stats
-const statsCmd = new Command(
+/** Stats command, used to display statistics about the bot. */
+const statsCmd = new NoLabelAction(
   'stats',
   'Display statistics about the bot.',
-  'stats',
-  'stat(istic)?s?',
-  async (bot, message) => {
+  /^\s*stat(istic)?s?\s*$/,
+  async (message) => {
     const botStatStrings: string[] = [];
 
     let totalUserCount = 0;
@@ -559,91 +627,125 @@ const statsCmd = new Command(
       `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 
-    bot.sendMessage(message.channel, statString);
+    message.reply(statString);
   },
   UserRole.USER,
 );
 
-// Ping
-const pingCmd = new Command(
+/** Ping command, used to determine the bot delay. */
+const pingCmd = new SimpleAction(
   'ping',
   'Test the delay of the bot.',
-  'ping',
-  'ping',
-  async (bot, message) => {
+  async (message) => {
     const time = Date.now() - message.timestamp.valueOf();
-    bot.sendMessage(message.channel, `Pong! (${time} ms)`);
+    message.reply(`Pong! (${time} ms)`);
   },
   UserRole.USER,
 );
 
-// Telegram Cmds
-const telegramCmdsCmd = new Command(
+/** TelegramCmds command, used to register the commands on Telegram. */
+const telegramCmdsCmd = new SimpleAction(
   'telegramCmds',
   'Get the string to properly register the commands on Telegram.',
-  'telegramCmds',
-  'telegramCmds?',
-  async (bot, message) => {
-    const cmds = commands.filter((command) => {
-      // Filter out owner commands
-      return command.role !== UserRole.OWNER;
-    });
+  async (message) => {
+    const cmds = commands.aggregateCmds(UserRole.ADMIN);
+
     const cmdEntries = cmds.map((cmd) => {
-      return `${cmd.label} - ${cmd.description}`;
+      return `${cmd.name} - ${cmd.description}`;
     });
+
     // Block code format
     const telegramCmdStr = `\`\`\`\n${cmdEntries.join('\n')}\n\`\`\``;
 
-    bot.sendMessage(message.channel, telegramCmdStr);
+    message.reply(telegramCmdStr);
   },
   UserRole.OWNER,
 );
 
-// Debug
-const debugCmd = new Command(
+/** Debug command, used to display debug information. */
+const debugCmd = new SimpleAction(
   'debug',
   'Display some useful debug information.',
-  'debug',
-  'debug',
-  async (bot, message) => {
+  async (message) => {
+    const bot = message.getBot();
     // Aggregate debug info
     const userRole = await message.user.getRole(message.channel);
     const userID = message.user.id;
     const channelID = message.channel.id;
     const serverMembers = await bot.getChannelUserCount(message.channel);
-    const botTag = await bot.getUserTag();
+    const botTag = bot.getUserTag();
     const time = Date.now() - message.timestamp.valueOf();
 
     const debugStr =
       `**User info:**\n- ID: ${userID}\n- Role: ${userRole}\n` +
-      `**Channel info:**\n-ID: ${channelID}\n- Server members: ${serverMembers}\n` +
+      `**Channel info:**\n- ID: ${channelID}\n- Server members: ${serverMembers}\n` +
       `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
 
-    bot.sendMessage(message.channel, debugStr);
+    message.reply(debugStr);
   },
 );
 
-/** The standard commands available on all bots. */
-const commands = [
-  // User commands
-  startCmd,
-  helpCmd,
-  settingsCmd,
-  aboutCmd,
-  gamesCmd,
-  flipCmd,
-  rollCmd,
-  statsCmd,
-  pingCmd,
-  debugCmd,
-  // Admin commands
-  subCmd,
-  unsubCmd,
-  prefixCmd,
-  // Owner commands
-  notifyAllCmd,
-  notifyGameSubsCmd,
-  telegramCmdsCmd,
-];
+/**
+ * The group containing all available commands.
+ * They share the channels prefix as prefix, e.g. '/' for Telegram.
+ */
+const commands: CommandGroup = new CommandGroup(
+  'prefixCmds',
+  'All commands that need a prefix to be executed.',
+  // Label
+  (channel) => {
+    const prefix = channel.getPrefix();
+    return prefix;
+  },
+  // Help
+  (channel, prefix, role) => {
+    const cmdPrefix = channel.getPrefix();
+    const cmdLabels = filterByRole(commands.commands, role || UserRole.OWNER).map(
+      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
+    );
+    return cmdLabels.join('\n');
+  },
+  // Trigger: The channels prefix, e.g. '/' for Telegram
+  (channel) => {
+    const bot = channel.bot;
+    const userTag = EscapeRegex(bot.getUserTag());
+    const channelPrefix = EscapeRegex(channel.getPrefix());
+    return new RegExp(
+      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*?)(\\s*${userTag})?\\s*$`,
+    );
+  },
+  // Default action
+  async (message, match) => {
+    const { group } = match.groups;
+    await message.channel.bot.sendMessage(
+      message.channel,
+      `I don't know a command named '${group}'.\nTry the \`${commands.tryFindCmdLabel(
+        helpCmd,
+        message.channel,
+      )}\` command to see a list of all commands available.`,
+    );
+  },
+  [
+    // User commands
+    startCmd,
+    helpCmd,
+    settingsCmd,
+    aboutCmd,
+    gamesCmd,
+    flipCmd,
+    rollCmd,
+    statsCmd,
+    pingCmd,
+    debugCmd,
+    // Admin commands
+    subCmd,
+    unsubCmd,
+    prefixCmd,
+    // Owner commands
+    notifyAllCmd,
+    notifyGameSubsCmd,
+    telegramCmdsCmd,
+  ],
+);
 
 export default commands;

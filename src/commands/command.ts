@@ -1,102 +1,106 @@
 import EscapeRegex from 'escape-string-regexp';
-import BotClient from '../bots/bot';
 import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
+import CommandGroup from './command_group';
 
-export default class Command {
-  /** The label of the command. */
-  public label: string;
+/**
+ * Represents a command that can be executed by the users on the given bot clients.
+ */
+export default abstract class Command {
+  /** The name of the command. */
+  public name: string;
   /** The description of the command. */
   public description: string;
-  /** The label of the command trigger. Displayed in the help-command. */
-  public triggerLabel: string;
-  /** The RegExp string triggering the command. */
-  public trigger: string;
-  /** The callback function executing the command. */
-  public callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => Promise<void>;
-  /** Whether the command should use the bot prefix. */
-  public hasPrefix: boolean;
+  /** The label of the command trigger. Used to compose the help-command. */
+  public channelLabel: (channel: Channel) => string;
+  /** The help string of the command. */
+  public channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string;
+  /** Get the RegExp for the given channel. */
+  public channelTrigger: (channel: Channel) => RegExp;
+  /** The action function executing the command. */
+  public action: (message: Message, match: RegExpMatchArray) => Promise<void>;
   /** The role required to execute the command. */
   public role: UserRole;
 
-  /** Create a new command.
+  /** Creates a new command.
    *
-   * @param {string} label - The label of the command.
-   * @param {string} description - The description of the command.
-   * @param {string} triggerLabel - The label of the command trigger. Displayed in the help-command.
-   * @param {string} trigger - The RegExp string triggering the command.
-   * @param {Function} callback - The callback function executing the command.
-   * @param {UserRole} role - The role required to execute the command.
-   * @param {boolean} hasPrefix - Whether the command should use the bot prefix. Default is true.
+   * @param name - The name of the command.
+   * @param description - The description of the command.
+   * @param channelLabel - The label of the command trigger. Displayed in the help-command.
+   * @param channelTrigger - Get the RegExp for the given channel.
+   * @param action - The action function executing the command.
+   * @param role - The role required to execute the command.
    */
   constructor(
-    label: string,
+    name: string,
     description: string,
-    triggerLabel: string,
-    trigger: string,
-    callback: (bot: BotClient, message: Message, match: RegExpMatchArray) => Promise<void>,
+    channelLabel: (channel: Channel) => string,
+    channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
+    channelTrigger: (channel: Channel) => RegExp,
+    action: (message: Message, match: RegExpMatchArray) => Promise<void>,
     role?: UserRole,
-    hasPrefix?: boolean,
   ) {
-    this.label = label;
+    this.name = name;
     this.description = description;
-    this.triggerLabel = triggerLabel;
-    this.trigger = trigger;
-    this.callback = callback;
+    this.channelLabel = channelLabel;
+    this.channelHelp = channelHelp;
+    this.channelTrigger = channelTrigger;
+    this.action = action;
     this.role = role != null ? role : UserRole.USER;
-    this.hasPrefix = hasPrefix != null ? hasPrefix : true;
   }
   /** Tries to execute the command on the given channel.
    *
-   * @param bot - The BotClient to execute the command on.
-   * @param channel - The channel to execute the command on.
-   * @param user - The user trying to execute the command.
+   * @param message - The message triggering the command.
    * @param match - The RegExp match of the command trigger.
    */
-  public async execute(
-    bot: BotClient,
-    message: Message,
-    match: RegExpMatchArray,
-  ): Promise<boolean> {
+  public async execute(message: Message, match: RegExpMatchArray): Promise<boolean> {
     // Check if the user has the required role to execute the command.
+    const bot = message.channel.bot;
+
     if (await message.user.hasRole(message.channel, this.role)) {
-      await this.callback(bot, message, match);
+      await this.action(message, match);
       const time = Date.now() - message.timestamp.valueOf();
-      bot.logger.debug(`Command '${this.label}' executed in ${time} ms.`);
+      if (!(this instanceof CommandGroup)) {
+        bot.logger.debug(`Command '${this.name}' executed in ${time} ms.`);
+      }
       return true;
     }
-    bot.logger.debug(`Command: ${this.label}: ${this.role} role required.`);
+
+    bot.logger.debug(`Command: ${this.name}: ${this.role} role required.`);
     bot.sendMessage(
       message.channel,
       `You need the role '${this.role}' on this server to execute this command!`,
     );
+
     return false;
+  }
+
+  /** Tests if the given message triggers the command.
+   *
+   * @param message - The message to test.
+   * @returns RegExpMatchArray, if the message matches the command trigger or undefined otherwise.
+   */
+  public test(message: Message): RegExpMatchArray | undefined {
+    const regex = this.getRegExp(message.channel);
+    const cmdMatch = regex.exec(message.content);
+
+    if (!cmdMatch) {
+      // The message does not match the command trigger
+      return undefined;
+    }
+
+    return cmdMatch;
   }
 
   /** Gets the RegExp used to trigger the command
    *
-   * @param client - The BotChannel to trigger the command on.
+   * @param channel - The channel to get the regex for.
    */
-  public async getRegExp(channel: Channel) {
-    const bot = channel.client;
-    const userTag = EscapeRegex(await bot.getUserTag());
-    const channelPrefix = EscapeRegex(channel.getPrefix());
-    const prefix = this.hasPrefix
-      ? `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*`
-      : '';
-
-    const regexString = prefix + this.trigger;
-    return new RegExp(regexString);
-  }
-
-  /** Gets the complete trigger label in the given channel, e.g. '/subscribe'
-   *
-   * @param channel - The channel to get the trigger label in.
-   * @returns The complete trigger label, e.g. '/subscribe'
-   */
-  public getTriggerLabel(channel: Channel): string {
-    const prefixString = this.hasPrefix ? channel.getPrefix() : '';
-    return prefixString + this.triggerLabel;
+  public getRegExp(channel: Channel): RegExp {
+    // Allow the bot tag after every command
+    return new RegExp(
+      `${this.channelTrigger(channel).source}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`,
+    );
   }
 }

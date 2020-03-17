@@ -43,24 +43,18 @@ export default class TelegramBot extends BotClient {
     return this.standardBot;
   }
 
-  public async getUserName(): Promise<string> {
-    try {
-      const botUser = await this.bot.getMe();
-      return botUser.username;
-    } catch (error) {
-      this.logger.error(`Failed to get user name:\n${error}`);
-      throw error;
+  public getUserName(): string {
+    if (!this.enabled || !this.userName) {
+      return '?';
     }
+    return this.userName;
   }
 
-  public async getUserTag(): Promise<string> {
-    try {
-      const userName = await this.getUserName();
-      return `@${userName}`;
-    } catch (error) {
-      this.logger.error(`Failed to get user tag:\n${error}`);
-      throw error;
+  public getUserTag(): string {
+    if (!this.enabled || !this.userTag) {
+      return '?';
     }
+    return this.userTag;
   }
 
   public async getUser(): Promise<User> {
@@ -219,10 +213,10 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        await command.execute(this, message, regMatch);
+        await command.execute(message, regMatch);
       }
     } catch (error) {
-      this.logger.error(`Failed to execute command ${command.label}:\n${error}`);
+      this.logger.error(`Failed to execute command ${command.name}:\n${error}`);
     }
   }
 
@@ -250,6 +244,16 @@ export default class TelegramBot extends BotClient {
             await this.onRemoved(channel);
           }
         });
+
+        // Initialize user name and user tag
+        try {
+          const botUser = await this.bot.getMe();
+          this.userName = botUser.username;
+          this.userTag = `@${this.userName}`;
+        } catch (error) {
+          this.logger.error(`Failed to get user name and user tag:\n${error}`);
+        }
+
         return true;
       }
     } catch (error) {
