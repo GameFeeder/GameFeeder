@@ -6,15 +6,15 @@ export default class Channel {
   /** The unique ID of the channel. */
   public id: string;
   /** The BotClient this channel is used in. */
-  public client: BotClient;
+  public bot: BotClient;
   /** The games this channel is subscribed to. */
   public gameSubs: Game[];
   /** The prefix the channel uses. */
   public prefix: string;
   /** Creates a new Channel. */
-  constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
+  constructor(id: string, bot: BotClient, gameSubs?: Game[], prefix?: string) {
     this.id = id;
-    this.client = client;
+    this.bot = bot;
     this.gameSubs = gameSubs || [];
     this.prefix = prefix != null ? prefix : '';
   }
@@ -46,7 +46,7 @@ export default class Channel {
     if (this.prefix) {
       return this.prefix;
     }
-    return this.client.prefix;
+    return this.bot.prefix;
   }
 
   /** Gets the number of users in this channel
@@ -54,6 +54,6 @@ export default class Channel {
    * @returns The number of users in this channel
    */
   public async getUserCount(): Promise<number> {
-    return this.client.getChannelUserCount(this);
+    return this.bot.getChannelUserCount(this);
   }
 }

@@ -27,18 +27,17 @@ export default class Main {
     const bots = getBots();
 
     // Register the commands asynchronously
-    await mapAsync(commands, async (command) => {
-      mapAsync(bots, async (bot) => {
-        bot.registerCommand(command);
-      });
+    await mapAsync(bots, async (bot) => {
+      bot.registerCommand(commands);
     });
 
     const time = Date.now() - startTime;
+    const cmds = commands.aggregateCmds();
     const commandStr = naturalJoin(
-      commands.map((command) => command.label),
+      cmds.map((cmd) => cmd.name),
       ', ',
     );
-    Main.logger.info(`Registered ${commands.length} commands in ${time} ms:\n${commandStr}`);
+    Main.logger.info(`Registered ${cmds.length} commands in ${time} ms:\n${commandStr}`);
   }
 
   /** Starts the bots. */
@@ -49,7 +48,7 @@ export default class Main {
       if (bot.enabled) {
         const botStart = Date.now();
         if (await bot.start()) {
-          const userName = await bot.getUserName();
+          const userName = bot.getUserName();
           const botTime = Date.now() - botStart;
           bot.logger.info(`Started bot as @${userName} in ${botTime} ms.`);
         } else {

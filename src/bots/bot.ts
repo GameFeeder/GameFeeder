@@ -21,6 +21,10 @@ export default abstract class BotClient {
   public enabled: boolean;
   /** The logger used for this bot. */
   public logger: Logger;
+  /** The user tag of this bot */
+  public userTag: string;
+  /** The user name of this bot. */
+  public userName: string;
 
   /** Creates a new BotClient.
    *
@@ -43,13 +47,13 @@ export default abstract class BotClient {
    *
    * @return The username of the bot.
    */
-  public abstract async getUserName(): Promise<string>;
+  public abstract getUserName(): string;
 
   /** Gets the usertag of the bot. Used as prefix.
    *
    * @return The usertag of the bot.
    */
-  public abstract async getUserTag(): Promise<string>;
+  public abstract getUserTag(): string;
 
   /** Registers a bot command.
    *
