@@ -62,12 +62,16 @@ export default abstract class Command {
       await this.action(message, match);
       const time = Date.now() - message.timestamp.valueOf();
       if (!(this instanceof CommandGroup)) {
-        bot.logger.debug(`Command '${this.name}' executed in ${time} ms.`);
+        bot.logger.debug(
+          `Command '${this.name}' executed on channel ${message.channel.getLabel()} in ${time} ms.`,
+        );
       }
       return true;
     }
 
-    bot.logger.debug(`Command: ${this.name}: ${this.role} role required.`);
+    bot.logger.debug(
+      `Command ${this.name} on channel ${message.channel.getLabel()}: ${this.role} role required.`,
+    );
     bot.sendMessage(
       message.channel,
       `You need the role '${this.role}' on this server to execute this command!`,
