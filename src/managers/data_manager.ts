@@ -12,8 +12,10 @@ export type subscriber = {
   gameSubs: string[];
   /** The channel ID. */
   id: string;
-  /** The prefix the channel uses */
-  prefix: string;
+  /** The label of the channel. */
+  label?: string;
+  /** The prefix the channel uses. */
+  prefix?: string;
 };
 
 /** The data for the subscribers. */

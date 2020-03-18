@@ -307,7 +307,7 @@ const prefixCmd = new TwoPartCommand(
     const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
     if (!permissions.canWrite) {
       if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel, removing all data.`);
+        bot.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
       }
       return;
     }
@@ -326,7 +326,7 @@ const prefixCmd = new TwoPartCommand(
     if (existingChannelId >= 0) {
       const existingChannel = channels[existingChannelId];
       // Update prefix
-      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : '';
+      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : undefined;
 
       // Remove unnecessary entries
       if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
@@ -685,6 +685,164 @@ const debugCmd = new SimpleAction(
   },
 );
 
+/** Label command, used to change the label of the given channel. */
+const labelCmd = new TwoPartCommand(
+  'label',
+  `Change the channel's label for easier debugging.`,
+  'label <bot name> <channel id> <channel label>',
+  // Group trigger
+  /^\s*label(?<group>.*)$/,
+  // Action trigger
+  /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))\s+(?<channelLabel>.+?)\s*$/,
+  // Action
+  async (message, match) => {
+    const bot = message.getBot();
+    const { botName, channelID, channelLabel } = match.groups;
+
+    let channelBot = bot;
+    // Get the bot to find the channel on
+    if (botName) {
+      const findBot = getBots().find((client) => client.name === botName);
+
+      if (findBot) {
+        channelBot = findBot;
+      } else {
+        // Did not find the specified bot
+        const botList = getBots()
+          .map((client) => `- ${client.name}`)
+          .join('\n');
+
+        message.reply(
+          `'${botName}' is not an available bot! Try one of the following:\n${botList}`,
+        );
+      }
+    } else {
+      // No bot specified, take the bot that the message was written on
+      channelBot = bot;
+    }
+
+    let labelChannel = message.channel;
+
+    if (channelID === 'this') {
+      // Take this channel and this bot
+      channelBot = bot;
+    } else {
+      labelChannel = channelBot.getChannelByID(channelID);
+    }
+
+    let label = channelLabel.trim();
+
+    // Check if the user wants to reset the label
+    if (label === 'reset') {
+      label = undefined;
+      bot.sendMessage(
+        message.channel,
+        `Removing the label of channel ${labelChannel.id} on ${channelBot.name}.`,
+      );
+    } else {
+      bot.sendMessage(
+        message.channel,
+        `Changing the label of channel ${labelChannel.id} on ${channelBot.name} to '${label}'.`,
+      );
+    }
+
+    // Save locally
+    labelChannel.label = label;
+
+    // Save in the JSON file
+    const subscribers = DataManager.getSubscriberData();
+    const channels = subscribers[channelBot.name];
+
+    // Check if the channel is already registered
+    const existingChannelId = channels.findIndex((ch) => labelChannel.isEqual(ch.id));
+    if (existingChannelId >= 0) {
+      const existingChannel = channels[existingChannelId];
+      // Update label
+      existingChannel.label = label;
+
+      // Remove unnecessary entries
+      if (
+        existingChannel.gameSubs.length === 0 &&
+        !existingChannel.prefix &&
+        !existingChannel.label
+      ) {
+        channelBot.logger.debug(
+          `Removing unnecessary entry for channel ${labelChannel.getLabel()}...`,
+        );
+        channels.splice(existingChannelId, 1);
+      } else {
+        channels[existingChannelId] = existingChannel;
+      }
+      // Save changes
+      subscribers[channelBot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    } else {
+      // Add channel with the new label
+      channels.push({
+        gameSubs: [],
+        id: labelChannel.id,
+        label,
+      });
+      // Save the changes
+      subscribers[channelBot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    }
+  },
+  // Default action
+  async (message) => {
+    if (message.isEmpty()) {
+      const label = message.channel.label;
+
+      if (label) {
+        message.reply(
+          `The label currenctly used on this channel is '${label}'.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
+            `Use 'this' as channel id to change the label of this channel.`,
+        );
+      } else {
+        message.reply(
+          `This channel does not have a label.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
+            `Use 'this' as channel id to change the label of this channel.`,
+        );
+      }
+    } else {
+      // Check if an ID and bot has been specified
+      const channelIDMatch = /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))$/.exec(
+        message.content,
+      );
+      if (channelIDMatch) {
+        const channel = message.getBot().getChannelByID(channelIDMatch.groups.channelID);
+        const botName = channelIDMatch.groups.botName;
+
+        let channelBot = message.getBot();
+
+        if (botName) {
+          channelBot = getBots().find((client) => client.name === botName) ?? message.getBot();
+        }
+
+        const label = channel.label;
+
+        if (label) {
+          message.reply(
+            `The label currenctly used on channel ${channel.id} is '${label}'.\nYou can change its label by using ` +
+              `'${channelBot.name} ${channel.id} <channel label>' as command argument.`,
+          );
+        } else {
+          message.reply(
+            `Channel ${channel.id} does not have a label.\nYou can change the label of it by using ` +
+              `'${channelBot.name} ${channel.id} <channel label>' as command argument.`,
+          );
+        }
+      } else {
+        message.reply(
+          `'${message.content}' is an invalid configuration. Try to use '<bot name> <channel id> <channel label>'.\n` +
+            `Use 'this' as channel id to change the label of this channel.`,
+        );
+      }
+    }
+  },
+  UserRole.OWNER,
+);
+
 /**
  * The group containing all available commands.
  * They share the channels prefix as prefix, e.g. '/' for Telegram.
@@ -745,6 +903,7 @@ const commands: CommandGroup = new CommandGroup(
     notifyAllCmd,
     notifyGameSubsCmd,
     telegramCmdsCmd,
+    labelCmd,
   ],
 );
 
