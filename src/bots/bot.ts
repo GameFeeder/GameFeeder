@@ -159,7 +159,7 @@ export default abstract class BotClient {
       sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 
       // Remove unnecessary entries
-      if (sub.gameSubs.length === 0 && !sub.prefix) {
+      if (sub.gameSubs.length === 0 && !sub.prefix && !sub.label) {
         this.logger.debug(`Removing unnecessary entry for channel ${channel.getLabel()}...`);
         subs.splice(existingSubId, 1);
       } else {
