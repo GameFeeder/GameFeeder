@@ -103,7 +103,7 @@ export default abstract class BotClient {
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
-        this.logger.warn(`Can't write to channel, removing all data.`);
+        this.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
       }
       return false;
     }
@@ -160,7 +160,7 @@ export default abstract class BotClient {
 
       // Remove unnecessary entries
       if (sub.gameSubs.length === 0 && !sub.prefix) {
-        this.logger.debug('Removing unnecessary channel entry...');
+        this.logger.debug(`Removing unnecessary entry for channel ${channel.getLabel()}...`);
         subs.splice(existingSubId, 1);
       } else {
         subs[existingSubId] = sub;
@@ -266,6 +266,7 @@ export default abstract class BotClient {
           return Game.getGameByName(gameName);
         });
         channel.prefix = sub.prefix;
+        channel.label = sub.label;
         break;
       }
     }

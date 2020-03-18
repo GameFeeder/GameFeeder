@@ -307,7 +307,7 @@ const prefixCmd = new TwoPartCommand(
     const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
     if (!permissions.canWrite) {
       if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel, removing all data.`);
+        bot.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
       }
       return;
     }

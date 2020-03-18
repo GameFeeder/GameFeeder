@@ -63,6 +63,7 @@ export default class Channel {
 
   /** Returns the label and id of the channel. */
   public getLabel(): string {
-    return this.label ? `${this.label} (${this.id})` : this.id;
+    const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}-${this.id}`;
+    return this.label ? `'${this.label}' (${ID})` : ID;
   }
 }
