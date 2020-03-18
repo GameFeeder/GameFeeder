@@ -133,7 +133,7 @@ export default abstract class BotClient {
     channels.push({
       gameSubs: [game.name],
       id: channel.id,
-      prefix: '',
+      prefix: undefined,
     });
     // Save the changes
     subscribers[this.name] = channels;

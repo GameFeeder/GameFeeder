@@ -326,7 +326,7 @@ const prefixCmd = new TwoPartCommand(
     if (existingChannelId >= 0) {
       const existingChannel = channels[existingChannelId];
       // Update prefix
-      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : '';
+      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : undefined;
 
       // Remove unnecessary entries
       if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
