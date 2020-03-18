@@ -725,7 +725,6 @@ const labelCmd = new TwoPartCommand(
 
     if (channelID === 'this') {
       // Take this channel and this bot
-      labelChannel = message.channel;
       channelBot = bot;
     } else {
       labelChannel = channelBot.getChannelByID(channelID);
@@ -767,7 +766,9 @@ const labelCmd = new TwoPartCommand(
         !existingChannel.prefix &&
         !existingChannel.label
       ) {
-        channelBot.logger.debug('Removing unnecessary channel entry...');
+        channelBot.logger.debug(
+          `Removing unnecessary entry for channel ${labelChannel.getLabel()}...`,
+        );
         channels.splice(existingChannelId, 1);
       } else {
         channels[existingChannelId] = existingChannel;

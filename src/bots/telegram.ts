@@ -276,6 +276,21 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
+    // TODO: Fix permission check
+    // try {
+    //   const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    //   // Check if the bot can write to this channel
+    //   if (!permissions.canWrite) {
+    //     if (this.removeData(channel)) {
+    //       this.logger.warn(`Can't write to channel, removing all data.`);
+    //     }
+    //     return false;
+    //   }
+    // } catch (error) {
+    //   this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
+    //   return false;
+    // }
+
     let message = messageText;
     if (typeof message === 'string') {
       message = TelegramBot.msgFromMarkdown(message);
