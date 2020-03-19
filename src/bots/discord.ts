@@ -9,6 +9,7 @@ import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
+import ProjectManager from '../managers/project_manager';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -273,6 +274,20 @@ export default class DiscordBot extends BotClient {
       // Initialize user name and user tag
       this.userName = this.bot.user.username;
       this.userTag = `<@!${this.bot.user.id}>`;
+
+      // Setup presence
+      try {
+        this.bot.user.setPresence({
+          status: 'online',
+          activity: {
+            type: 'PLAYING',
+            name: `v${ProjectManager.getVersionNumber()}`,
+          },
+        });
+      } catch (error) {
+        this.logger.error(`Failed to setup bot presence:\n${error}`);
+        throw error;
+      }
 
       return true;
     }
