@@ -357,16 +357,16 @@ export default class TelegramBot extends BotClient {
         // Chat not found
         case 400:
           this.logger.warn(
-            `Failed to send notification to channel ${channel.getLabel()}, error code 400. Removing channel data.`,
+            `Failed to send notification to channel ${channel.getLabel()}, error code 400.`,
           );
-          this.removeData(channel);
+          // this.removeData(channel);
           break;
         // Bot is not a member of the channel chat or blocked by user
         case 403:
           this.logger.warn(
-            `Failed to send notification to channel ${channel.getLabel()}, error code 403. Removing channel data.`,
+            `Failed to send notification to channel ${channel.getLabel()}, error code 403.`,
           );
-          this.removeData(channel);
+          // this.removeData(channel);
           break;
         default:
           this.logger.error(
