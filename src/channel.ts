@@ -5,18 +5,21 @@ import Game from './game';
 export default class Channel {
   /** The unique ID of the channel. */
   public id: string;
+  /** The label of the channel (if specified). */
+  public label?: string;
   /** The BotClient this channel is used in. */
-  public client: BotClient;
+  public bot: BotClient;
   /** The games this channel is subscribed to. */
   public gameSubs: Game[];
   /** The prefix the channel uses. */
   public prefix: string;
   /** Creates a new Channel. */
-  constructor(id: string, client: BotClient, gameSubs?: Game[], prefix?: string) {
+  constructor(id: string, bot: BotClient, gameSubs?: Game[], prefix?: string, label?: string) {
     this.id = id;
-    this.client = client;
+    this.bot = bot;
     this.gameSubs = gameSubs || [];
-    this.prefix = prefix != null ? prefix : '';
+    this.prefix = prefix;
+    this.label = label;
   }
   /** Compares the channel to another channel.
    *
@@ -30,12 +33,13 @@ export default class Channel {
     return this.id === other.id;
   }
   public toJSON(): string {
+    const labelStr = this.label ? `, "label": "${this.label}"` : '';
+    const prefixStr = this.prefix ? `, "prefix": "${this.prefix}"` : '';
     return `{
-      "id": "${this.id}",
+      "id": "${this.id}"${labelStr},
       "gameSubs": [
         ${this.gameSubs.map((game) => game.name).join(', ')}
-      ],
-      "prefix": "${this.prefix}"
+      ]${prefixStr}
     }`;
   }
   /** Gets the prefix used in this channel
@@ -46,7 +50,7 @@ export default class Channel {
     if (this.prefix) {
       return this.prefix;
     }
-    return this.client.prefix;
+    return this.bot.prefix;
   }
 
   /** Gets the number of users in this channel
@@ -54,6 +58,12 @@ export default class Channel {
    * @returns The number of users in this channel
    */
   public async getUserCount(): Promise<number> {
-    return this.client.getChannelUserCount(this);
+    return this.bot.getChannelUserCount(this);
+  }
+
+  /** Returns the label and id of the channel. */
+  public getLabel(): string {
+    const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}-${this.id}`;
+    return this.label ? `'${this.label}' (${ID})` : ID;
   }
 }

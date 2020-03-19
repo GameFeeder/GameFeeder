@@ -85,6 +85,13 @@ export default class Game {
     return null;
   }
 
+  /** Returns an array of all available game aliases. */
+  public static getAliases(): string[] {
+    const games = this.getGames();
+    // Merge all game aliases in a single array and add the 'all' alias
+    return ['all'].concat(...games.map((game) => game.aliases));
+  }
+
   /** Returns the available games. */
   public static getGames(): Game[] {
     if (this.games) {

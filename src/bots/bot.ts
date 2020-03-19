@@ -21,6 +21,10 @@ export default abstract class BotClient {
   public enabled: boolean;
   /** The logger used for this bot. */
   public logger: Logger;
+  /** The user tag of this bot */
+  public userTag: string;
+  /** The user name of this bot. */
+  public userName: string;
 
   /** Creates a new BotClient.
    *
@@ -43,13 +47,13 @@ export default abstract class BotClient {
    *
    * @return The username of the bot.
    */
-  public abstract async getUserName(): Promise<string>;
+  public abstract getUserName(): string;
 
   /** Gets the usertag of the bot. Used as prefix.
    *
    * @return The usertag of the bot.
    */
-  public abstract async getUserTag(): Promise<string>;
+  public abstract getUserTag(): string;
 
   /** Registers a bot command.
    *
@@ -99,7 +103,7 @@ export default abstract class BotClient {
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
-        this.logger.warn(`Can't write to channel, removing all data.`);
+        this.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
       }
       return false;
     }
@@ -129,7 +133,7 @@ export default abstract class BotClient {
     channels.push({
       gameSubs: [game.name],
       id: channel.id,
-      prefix: '',
+      prefix: undefined,
     });
     // Save the changes
     subscribers[this.name] = channels;
@@ -155,8 +159,8 @@ export default abstract class BotClient {
       sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 
       // Remove unnecessary entries
-      if (sub.gameSubs.length === 0 && !sub.prefix) {
-        this.logger.debug('Removing unnecessary channel entry...');
+      if (sub.gameSubs.length === 0 && !sub.prefix && !sub.label) {
+        this.logger.debug(`Removing unnecessary entry for channel ${channel.getLabel()}...`);
         subs.splice(existingSubId, 1);
       } else {
         subs[existingSubId] = sub;
@@ -262,6 +266,7 @@ export default abstract class BotClient {
           return Game.getGameByName(gameName);
         });
         channel.prefix = sub.prefix;
+        channel.label = sub.label;
         break;
       }
     }

@@ -56,24 +56,25 @@ So far, we are providing the following commands:
 - The default prefix on Discord is `!`.
 - You can also use the bot's tag as prefix.
 
-| Command                                    | Role  | Summary                                                                         |
-| ------------------------------------------ | ----- | ------------------------------------------------------------------------------- |
-| `start`                                    | User  | Get started with the GameFeeder.                                                |
-| `help`                                     | User  | Display all available commands.                                                 |
-| `about`                                    | User  | Display information about this bot.                                             |
-| `settings`                                 | User  | Display an overview of the settings you can configure for the bot.              |
-| `games`                                    | User  | Display a list of all available games.                                          |
-| `stats`                                    | User  | Display some stats about the bot.                                               |
-| `ping`                                     | User  | Test the delay of the bot.                                                      |
-| `debug`                                    | User  | Display useful debug information.                                               |
-| `flip`                                     | User  | Flip a coin.                                                                    |
-| `roll <dice count> <dice type> <modifier>` | User  | Roll some dice.                                                                 |
-| `subscribe <game name>`                    | Admin | Subscribe to a game's feed.                                                     |
-| `unsubscribe <game name>`                  | Admin | Unsubscribe from a game's feed.                                                 |
-| `prefix <new prefix>`                      | Admin | Change the prefix the bot uses on this channel.                                 |
-| `notifyAll <message>`                      | Owner | Send a message to all subscribers.                                              |
-| `notifyGameSubs (<game name>) <message>`   | Owner | Send a message to all subscribers of a game.                                    |
-| `telegramCmds`                             | Owner | Simplifies the command registration on Telegram by printing the command string. |
+| Command                                         | Role  | Summary                                                                         |
+| ----------------------------------------------- | ----- | ------------------------------------------------------------------------------- |
+| `start`                                         | User  | Get started with the GameFeeder.                                                |
+| `help`                                          | User  | Display all available commands.                                                 |
+| `about`                                         | User  | Display information about this bot.                                             |
+| `settings`                                      | User  | Display an overview of the settings you can configure for the bot.              |
+| `games`                                         | User  | Display a list of all available games.                                          |
+| `stats`                                         | User  | Display some stats about the bot.                                               |
+| `ping`                                          | User  | Test the delay of the bot.                                                      |
+| `debug`                                         | User  | Display useful debug information.                                               |
+| `flip`                                          | User  | Flip a coin.                                                                    |
+| `roll <dice count> <dice type> <modifier>`      | User  | Roll some dice.                                                                 |
+| `subscribe <game name>`                         | Admin | Subscribe to a game's feed.                                                     |
+| `unsubscribe <game name>`                       | Admin | Unsubscribe from a game's feed.                                                 |
+| `prefix <new prefix>`                           | Admin | Change the prefix the bot uses on this channel.                                 |
+| `notifyAll <message>`                           | Owner | Send a message to all subscribers.                                              |
+| `notifyGameSubs (<game name>) <message>`        | Owner | Send a message to all subscribers of a game.                                    |
+| `telegramCmds`                                  | Owner | Simplifies the command registration on Telegram by printing the command string. |
+| `label <bot name> <channel id> <channel label>` | Owner | Set a label for the channel to simplify debugging.                              |
 
 **Note:** The messages in the notification commands should be provided in the raw markdown format, they will be reformatted for the different clients. Discord should be used for these commands, as some formatting information gets lost in Telegram (when Telegram uses the same format).
 
@@ -94,7 +95,7 @@ So far, we are supporting the following games:
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <strong align="left">Dota 2</strong> <img src="http://cdn.dota2.com/apps/dota2/images/reborn/day1/Dota2OrangeLogo.png" height="17px"/>
   - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/TheZett](https://www.reddit.com/user/TheZett/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
-  - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/MSTRMN_](https://www.reddit.com/user/MSTRMN_/posts/) on [/r/DotaPatches](https://www.reddit.com/r/DotaPatches/)
+  - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/MSTRMN\_](https://www.reddit.com/user/MSTRMN_/posts/) on [/r/DotaPatches](https://www.reddit.com/r/DotaPatches/)
   - Gamplay updates on the [Dota 2 patch page](https://www.dota2.com/patches)
   - Blog posts on the [Dota 2 Blog](http://blog.dota2.com/?l=english)
 - <strong align="left">Factorio</strong> <img src="https://wiki.factorio.com/images/Factorio-icon.png" height="17px"/>

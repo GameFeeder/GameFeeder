@@ -43,24 +43,18 @@ export default class TelegramBot extends BotClient {
     return this.standardBot;
   }
 
-  public async getUserName(): Promise<string> {
-    try {
-      const botUser = await this.bot.getMe();
-      return botUser.username;
-    } catch (error) {
-      this.logger.error(`Failed to get user name:\n${error}`);
-      throw error;
+  public getUserName(): string {
+    if (!this.enabled || !this.userName) {
+      return '?';
     }
+    return this.userName;
   }
 
-  public async getUserTag(): Promise<string> {
-    try {
-      const userName = await this.getUserName();
-      return `@${userName}`;
-    } catch (error) {
-      this.logger.error(`Failed to get user tag:\n${error}`);
-      throw error;
+  public getUserTag(): string {
+    if (!this.enabled || !this.userTag) {
+      return '?';
     }
+    return this.userTag;
   }
 
   public async getUser(): Promise<User> {
@@ -94,7 +88,7 @@ export default class TelegramBot extends BotClient {
         return UserRole.ADMIN;
       }
     } catch (error) {
-      this.logger.error(`Failed to get chat admins:\n${error}`);
+      this.logger.error(`Failed to get chat admins on channel ${channel.getLabel()}:\n${error}`);
     }
     // the user is just a regular user
     return UserRole.USER;
@@ -119,7 +113,9 @@ export default class TelegramBot extends BotClient {
               throw error;
           }
         }
-        this.logger.error(`Failed to get chat to check permissions:\n${error}`);
+        this.logger.error(
+          `Failed to get chat to check permissions on channel ${channel.getLabel()}:\n${error}`,
+        );
         throw error;
       });
       // Check for expected chat errors
@@ -128,7 +124,7 @@ export default class TelegramBot extends BotClient {
       }
       // Try to get chat member
       const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
-        this.logger.error(`Failed to get chat member:\n${error}`);
+        this.logger.error(`Failed to get chat member on channel ${channel.getLabel()}:\n${error}`);
         throw error;
       });
       // Check for expected chat member errors
@@ -159,7 +155,9 @@ export default class TelegramBot extends BotClient {
             : true
           : false);
     } catch (error) {
-      this.logger.error(`Failed to get user permissions due to unexpected error:\n${error}`);
+      this.logger.error(
+        `Failed to get user permissions due to unexpected error on channel ${channel.getLabel()}:\n${error}`,
+      );
       throw error;
     }
 
@@ -172,7 +170,9 @@ export default class TelegramBot extends BotClient {
     try {
       return (await this.bot.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
-      this.logger.error(`Failed to get chat member count for a channel:\n${error}`);
+      this.logger.error(
+        `Failed to get chat member count for channel ${channel.getLabel()}:\n${error}`,
+      );
       return 0;
     }
   }
@@ -201,8 +201,8 @@ export default class TelegramBot extends BotClient {
 
   /** Executes the given command if the message matches the regex. */
   private async onMessage(msg: TelegramAPI.Message, command: Command): Promise<void> {
+    const channel = this.getChannelByID(msg.chat.id.toString());
     try {
-      const channel = this.getChannelByID(msg.chat.id.toString());
       // Channel messages don't have an author, so we have to work around that
       const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
       // FIX: Properly identify the user key
@@ -219,10 +219,12 @@ export default class TelegramBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        await command.execute(this, message, regMatch);
+        await command.execute(message, regMatch);
       }
     } catch (error) {
-      this.logger.error(`Failed to execute command ${command.label}:\n${error}`);
+      this.logger.error(
+        `Failed to execute command ${command.name} on channel ${channel.getLabel()}:\n${error}`,
+      );
     }
   }
 
@@ -250,6 +252,16 @@ export default class TelegramBot extends BotClient {
             await this.onRemoved(channel);
           }
         });
+
+        // Initialize user name and user tag
+        try {
+          const botUser = await this.bot.getMe();
+          this.userName = botUser.username;
+          this.userTag = `@${this.userName}`;
+        } catch (error) {
+          this.logger.error(`Failed to get user name and user tag:\n${error}`);
+        }
+
         return true;
       }
     } catch (error) {
@@ -264,19 +276,20 @@ export default class TelegramBot extends BotClient {
   }
 
   public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
-    try {
-      const permissions = await this.getUserPermissions(await this.getUser(), channel);
-      // Check if the bot can write to this channel
-      if (!permissions.canWrite) {
-        if (this.removeData(channel)) {
-          this.logger.warn(`Can't write to channel, removing all data.`);
-        }
-        return false;
-      }
-    } catch (error) {
-      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
-      return false;
-    }
+    // TODO: Fix permission check
+    // try {
+    //   const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    //   // Check if the bot can write to this channel
+    //   if (!permissions.canWrite) {
+    //     if (this.removeData(channel)) {
+    //       this.logger.warn(`Can't write to channel, removing all data.`);
+    //     }
+    //     return false;
+    //   }
+    // } catch (error) {
+    //   this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
+    //   return false;
+    // }
 
     let message = messageText;
     if (typeof message === 'string') {
@@ -344,24 +357,24 @@ export default class TelegramBot extends BotClient {
         // Chat not found
         case 400:
           this.logger.warn(
-            `Failed to send notification to channel, error code 400. Removing channel data.`,
+            `Failed to send notification to channel ${channel.getLabel()}, error code 400. Removing channel data.`,
           );
           this.removeData(channel);
           break;
         // Bot is not a member of the channel chat or blocked by user
         case 403:
           this.logger.warn(
-            `Failed to send notification to channel, error code 403. Removing channel data.`,
+            `Failed to send notification to channel ${channel.getLabel()}, error code 403. Removing channel data.`,
           );
           this.removeData(channel);
           break;
         default:
           this.logger.error(
-            `Failed to send notification to channel, error code ${errorCode}:\n${error}`,
+            `Failed to send notification to channel ${channel.getLabel()}, error code ${errorCode}:\n${error}`,
           );
       }
     } else {
-      this.logger.error(`Failed to send message to channel:\n${error}`);
+      this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
     }
   }
 

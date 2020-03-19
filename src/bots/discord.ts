@@ -38,18 +38,18 @@ export default class DiscordBot extends BotClient {
     return this.standardBot;
   }
 
-  public async getUserName(): Promise<string> {
-    if (!this.bot || !this.bot.user) {
+  public getUserName(): string {
+    if (!this.enabled || !this.userName) {
       return '?';
     }
-    return this.bot.user.username;
+    return this.userName;
   }
 
-  public async getUserTag(): Promise<string> {
-    if (!this.bot || !this.bot.user) {
+  public getUserTag(): string {
+    if (!this.enabled || !this.userTag) {
       return '?';
     }
-    return `<@${this.bot.user.id}>`;
+    return this.userTag;
   }
 
   public async getUser(): Promise<User> {
@@ -169,12 +169,16 @@ export default class DiscordBot extends BotClient {
 
         return new Permissions(hasAccess, canWrite, canEdit, canPin);
       } catch (error) {
-        this.logger.error(`Failed to get permissions for text channel:\n${error}`);
+        this.logger.error(
+          `Failed to get permissions for text channel ${channel.getLabel()}:\n${error}`,
+        );
         throw error;
       }
     }
 
-    this.logger.error(`Unecpected Discord channel type: ${discordChannel}`);
+    this.logger.error(
+      `Unecpected Discord channel type for channel ${channel.getLabel()}: ${discordChannel}`,
+    );
     return new Permissions(false, false, false, false);
   }
 
@@ -196,7 +200,7 @@ export default class DiscordBot extends BotClient {
       const discordUser = discordChannel.members.get(user.id);
       canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
     } else {
-      this.logger.error(`Unecpected Discord channel type.`);
+      this.logger.error(`Unecpected Discord channel type for channel ${channel.getLabel()}.`);
       canEmbed = false;
     }
 
@@ -224,7 +228,7 @@ export default class DiscordBot extends BotClient {
       // If the regex matched, execute the handler function
       if (regMatch) {
         // Execute the command
-        command.execute(this, message, regMatch);
+        await command.execute(message, regMatch);
       }
     });
   }
@@ -267,6 +271,11 @@ export default class DiscordBot extends BotClient {
           await this.onRemoved(channel);
         }
       });
+
+      // Initialize user name and user tag
+      this.userName = this.bot.user.username;
+      this.userTag = `<@!${this.bot.user.id}>`;
+
       return true;
     }
 
@@ -283,12 +292,14 @@ export default class DiscordBot extends BotClient {
       const permissions = await this.getUserPermissions(await this.getUser(), channel);
       if (!permissions.canWrite) {
         if (this.removeData(channel)) {
-          this.logger.warn(`Can't write to channel, removing all data.`);
+          this.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
         }
         return false;
       }
     } catch (error) {
-      this.logger.error(`Failed to get user permissions while sending to channel:\n${error}`);
+      this.logger.error(
+        `Failed to get user permissions while sending to channel ${channel.getLabel()}:\n${error}`,
+      );
       return false;
     }
 
@@ -298,7 +309,7 @@ export default class DiscordBot extends BotClient {
       try {
         return await this.sendToChannel(channel, messageText);
       } catch (error) {
-        this.logger.error(`Failed to send message:\n${error}`);
+        this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
         return false;
       }
     }
@@ -310,7 +321,7 @@ export default class DiscordBot extends BotClient {
       try {
         return await this.sendToChannel(channel, '', embed);
       } catch (error) {
-        this.logger.error(`Failed to send message:\n${error}`);
+        this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
         return false;
       }
     }
@@ -320,7 +331,7 @@ export default class DiscordBot extends BotClient {
     try {
       return await this.sendToChannel(channel, messageText);
     } catch (error) {
-      this.logger.error(`Failed to send message:\n${error}`);
+      this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
       return false;
     }
   }
@@ -469,7 +480,7 @@ export default class DiscordBot extends BotClient {
     try {
       discordChannel = botChannels.get(channel.id);
     } catch (error) {
-      this.logger.error(`Failed to get discord channel:\n${error}`);
+      this.logger.error(`Failed to get discord channel ${channel.getLabel()}:\n${error}`);
       return false;
     }
 
@@ -485,7 +496,7 @@ export default class DiscordBot extends BotClient {
       } else {
         errorMsg = error.toString();
       }
-      this.logger.error(`Failed to send message to channel:\n${errorMsg}`);
+      this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${errorMsg}`);
       return false;
     };
 
@@ -503,7 +514,7 @@ export default class DiscordBot extends BotClient {
         return true;
       }
     } catch (error) {
-      this.logger.error(`Failed to send message to channel:\n${error}`);
+      this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
     }
     return false;
   }
