@@ -115,10 +115,8 @@ export default abstract class BotClient {
       const sub = channels[i];
       if (channel.isEqual(sub.id)) {
         // Check if the channel already subscribed to the game's feed
-        for (const gameName of sub.gameSubs) {
-          if (gameName === game.name) {
-            return false;
-          }
+        if (sub.gameSubs.find((gameName) => gameName === game.name)) {
+          return false;
         }
         // Add the game to the subscriptions
         sub.gameSubs.push(game.name);
