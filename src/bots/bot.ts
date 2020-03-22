@@ -155,7 +155,7 @@ export default abstract class BotClient {
     if (existingSubId >= 0) {
       const sub = subs[existingSubId];
 
-      // Check if the channel did not subscribed to the game's feed
+      // Check if the channel did not subscribe to the game's feed
       if (!sub.gameSubs.find((gameName) => gameName === game.name)) {
         return false;
       }
