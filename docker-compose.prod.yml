@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   bot:
+    container_name: gamefeeder
     image: gamefeeder/gamefeeder:latest
     volumes:
       - ./config:/app/config
