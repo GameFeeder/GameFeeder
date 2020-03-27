@@ -1,4 +1,4 @@
-import DiscordAPI, { DMChannel, GroupDMChannel, TextChannel } from 'discord.js';
+import DiscordAPI, { DMChannel, TextChannel, MessageEmbed } from 'discord.js';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -9,6 +9,7 @@ import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
+import ProjectManager from '../managers/project_manager';
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -58,7 +59,7 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
-    const discordChannel = this.bot.channels.get(channel.id);
+    const discordChannel = this.bot.channels.cache.get(channel.id);
 
     if (discordChannel instanceof DMChannel) {
       return 1;
@@ -66,9 +67,7 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof TextChannel) {
       return discordChannel.guild.memberCount - 1;
     }
-    if (discordChannel instanceof GroupDMChannel) {
-      return discordChannel.recipients.size - 1;
-    }
+    // Group DMs seem to be deprecated
     return 0;
   }
 
@@ -78,7 +77,7 @@ export default class DiscordBot extends BotClient {
     const seenGuilds = new Map<string, boolean>();
     // Only consider each guild once
     channels = channels.filter((channel) => {
-      const discordChannel = this.bot.channels.get(channel.id);
+      const discordChannel = this.bot.channels.cache.get(channel.id);
       if (discordChannel instanceof TextChannel) {
         const guildID = discordChannel.guild.id;
         const isDuplicate = seenGuilds.get(guildID);
@@ -97,7 +96,7 @@ export default class DiscordBot extends BotClient {
     const seenGuilds = new Map<string, boolean>();
     // Only consider each guild once
     channels = channels.filter((channel) => {
-      const discordChannel = this.bot.channels.get(channel.id);
+      const discordChannel = this.bot.channels.cache.get(channel.id);
       if (discordChannel instanceof TextChannel) {
         const guildID = discordChannel.guild.id;
         const isDuplicate = seenGuilds.get(guildID);
@@ -120,9 +119,9 @@ export default class DiscordBot extends BotClient {
       return UserRole.OWNER;
     }
 
-    const discordChannel = this.bot.channels.get(channel.id);
+    const discordChannel = this.bot.channels.cache.get(channel.id);
     // Check if the user has default admin rights
-    if (discordChannel instanceof DMChannel || discordChannel instanceof GroupDMChannel) {
+    if (discordChannel instanceof DMChannel) {
       return UserRole.ADMIN;
     }
     if (discordChannel instanceof TextChannel) {
@@ -144,7 +143,7 @@ export default class DiscordBot extends BotClient {
       throw new Error('Failed to get bot channels.');
     }
 
-    const discordChannel = this.bot.channels.get(channel.id);
+    const discordChannel = this.bot.channels.cache.get(channel.id);
 
     if (!discordChannel) {
       // The user has been kicked from the channel
@@ -162,7 +161,7 @@ export default class DiscordBot extends BotClient {
         const discordUser = discordChannel.members.get(user.id);
         const discordPermissions = discordChannel.permissionsFor(discordUser);
 
-        const hasAccess = discordPermissions.has(['VIEW_CHANNEL', 'READ_MESSAGES']);
+        const hasAccess = discordPermissions.has('VIEW_CHANNEL');
         const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
         const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
         const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
@@ -188,7 +187,7 @@ export default class DiscordBot extends BotClient {
    * @param channel - The channel to get the permission on.
    */
   public async canEmbed(user: User, channel: Channel): Promise<boolean> {
-    const discordChannel = this.bot.channels.get(channel.id);
+    const discordChannel = this.bot.channels.cache.get(channel.id);
 
     let canEmbed;
 
@@ -243,7 +242,7 @@ export default class DiscordBot extends BotClient {
 
         // Remove all channel data of that guild
         await mapAsync(channels, (channel) => {
-          const discordChannel = this.bot.channels.get(channel.id);
+          const discordChannel = this.bot.channels.cache.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data
             return this.onRemoved(channel);
@@ -275,6 +274,20 @@ export default class DiscordBot extends BotClient {
       // Initialize user name and user tag
       this.userName = this.bot.user.username;
       this.userTag = `<@!${this.bot.user.id}>`;
+
+      // Setup presence
+      try {
+        this.bot.user.setPresence({
+          status: 'online',
+          activity: {
+            type: 'PLAYING',
+            name: `v${ProjectManager.getVersionNumber()}`,
+          },
+        });
+      } catch (error) {
+        this.logger.error(`Failed to setup bot presence:\n${error}`);
+        throw error;
+      }
 
       return true;
     }
@@ -336,8 +349,8 @@ export default class DiscordBot extends BotClient {
     }
   }
 
-  public embedFromNotification(notification: Notification): DiscordAPI.RichEmbed {
-    const embed = new DiscordAPI.RichEmbed();
+  public embedFromNotification(notification: Notification): MessageEmbed {
+    const embed = new MessageEmbed();
     // Title
     if (notification.title) {
       const titleMD = DiscordBot.msgFromMarkdown(`#${notification.title.text}`, true);
@@ -473,12 +486,12 @@ export default class DiscordBot extends BotClient {
   private async sendToChannel(
     channel: Channel,
     text: string,
-    embed?: DiscordAPI.RichEmbed,
+    embed?: MessageEmbed,
   ): Promise<boolean> {
     const botChannels = this.bot.channels;
     let discordChannel;
     try {
-      discordChannel = botChannels.get(channel.id);
+      discordChannel = botChannels.cache.get(channel.id);
     } catch (error) {
       this.logger.error(`Failed to get discord channel ${channel.getLabel()}:\n${error}`);
       return false;
@@ -509,10 +522,7 @@ export default class DiscordBot extends BotClient {
         discordChannel.send(text, embed).catch(callback);
         return true;
       }
-      if (discordChannel instanceof GroupDMChannel) {
-        discordChannel.send(text, embed).catch(callback);
-        return true;
-      }
+      // Group DMs seem to be deprecated
     } catch (error) {
       this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
     }

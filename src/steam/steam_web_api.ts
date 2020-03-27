@@ -1,5 +1,4 @@
 import axios from 'axios';
-import circular from 'circular-json';
 import Logger from '../logger';
 import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 

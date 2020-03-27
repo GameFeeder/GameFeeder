@@ -114,12 +114,11 @@ export default abstract class BotClient {
     for (let i = 0; i < channels.length; i += 1) {
       const sub = channels[i];
       if (channel.isEqual(sub.id)) {
-        // Check if the channel already subscribed to the game's feed
-        for (const gameName of sub.gameSubs) {
-          if (gameName === game.name) {
-            return false;
-          }
+        // Check if the channel is already subscribed to the game's feed
+        if (sub.gameSubs.find((gameName) => gameName === game.name)) {
+          return false;
         }
+
         // Add the game to the subscriptions
         sub.gameSubs.push(game.name);
         channels[i] = sub;
@@ -155,6 +154,12 @@ export default abstract class BotClient {
     const existingSubId = subs.findIndex((sub) => channel.isEqual(sub.id));
     if (existingSubId >= 0) {
       const sub = subs[existingSubId];
+
+      // Check if the channel did not subscribe to the game's feed
+      if (!sub.gameSubs.find((gameName) => gameName === game.name)) {
+        return false;
+      }
+
       // Unsubscribe
       sub.gameSubs = sub.gameSubs.filter((gameName: string) => gameName !== game.name);
 

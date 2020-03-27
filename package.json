@@ -1,6 +1,6 @@
 {
   "name": "gamefeeder",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "repository": {
@@ -45,7 +45,7 @@
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.1.0",
     "eslint-config-prettier": "6.10.0",
-    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-import": "2.20.1",
     "eslint-plugin-jest": "23.8.2",
     "eslint-plugin-prettier": "3.1.2",
     "husky": "4.2.3",
@@ -56,7 +56,6 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@discordjs/uws": "10.149.0",
     "@types/axios": "^0.14.0",
     "@types/cheerio": "0.22.16",
     "@types/circular-json": "^0.4.0",
@@ -67,11 +66,11 @@
     "@types/node-telegram-bot-api": "0.40.2",
     "@types/request-promise-native": "1.0.17",
     "@types/showdown": "1.9.3",
+    "@types/ws": "7.2.3",
     "@types/xml2js": "0.4.5",
     "axios": "^0.19.2",
     "cheerio": "1.0.0-rc.3",
-    "circular-json": "^0.5.9",
-    "discord.js": "11.5.1",
+    "discord.js": "12.0.2",
     "escape-string-regexp": "2.0.0",
     "feed-read": "0.0.1",
     "fs": "0.0.1-security",
