@@ -1,15 +1,16 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: '<Your title>'
+title: "<Your title>"
 labels: bug
 assignees: ''
+
 ---
 
-**Describe the bug**
+**Description:**
 A clear and concise description of what the bug is and on which client it occurs.
 
-**To Reproduce**
+**To Reproduce:**
 Steps to reproduce the behavior:
 
 1. Set date to '...'
@@ -17,8 +18,8 @@ Steps to reproduce the behavior:
 3. ...
 4. See error
 
-**Expected behavior**
+**Expected behavior:**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+**Screenshots:**
 If applicable, add screenshots to help explain your problem.
