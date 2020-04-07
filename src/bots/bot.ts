@@ -296,7 +296,7 @@ export default abstract class BotClient {
    * @param  {string|Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToGameSubs(game: Game, message: string | Notification): void {
+  public async sendMessageToGameSubs(game: Game, message: string | Notification): Promise<void> {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (!game) {
@@ -305,10 +305,12 @@ export default abstract class BotClient {
     }
 
     if (subscribers) {
-      for (const channel of subscribers) {
-        if (channel.gameSubs && channel.gameSubs.includes(game.name)) {
-          const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-          this.sendMessage(new Channel(channel.id, this, gameSubs, channel.prefix), message);
+      for (const channelData of subscribers) {
+        if (channelData.gameSubs && channelData.gameSubs.includes(game.name)) {
+          const channel = this.getChannelByID(channelData.id);
+          // Temporary possible fix for telegram API limit
+          // eslint-disable-next-line no-await-in-loop
+          await this.sendMessage(channel, message);
         }
       }
     }
@@ -319,14 +321,16 @@ export default abstract class BotClient {
    * @param  {string|Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToAllSubs(message: string | Notification): void {
+  public async sendMessageToAllSubs(message: string | Notification): Promise<void> {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {
-      for (const channel of subscribers) {
-        if (channel.gameSubs && channel.gameSubs.length !== 0) {
-          const gameSubs = channel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-          this.sendMessage(new Channel(channel.id, this, gameSubs, channel.prefix), message);
+      for (const channelData of subscribers) {
+        if (channelData.gameSubs && channelData.gameSubs.length !== 0) {
+          const channel = this.getChannelByID(channelData.id);
+          // Temporary possible fix for telegram API limit
+          // eslint-disable-next-line no-await-in-loop
+          await this.sendMessage(channel, message);
         }
       }
     }
