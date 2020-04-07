@@ -11,12 +11,10 @@
         "users": []
       }
     ],
-    "rss": [
-      {
-        "label": "Steam Feed",
-        "url": "https://steamcommunity.com/games/427520/rss/",
-        "flavor": "steam"
-      }
-    ]
+    "steam": {
+      "appID": 427520,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
   }
 }

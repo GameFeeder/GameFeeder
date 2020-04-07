@@ -11,6 +11,9 @@
         "users": []
       }
     ],
+    "steam": {
+      "appID": 440
+    },
     "rss": [
       {
         "label": "Team Fortress 2 Blog",

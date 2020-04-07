@@ -78,6 +78,14 @@ export type RSSProvider = {
   flavor: string;
 };
 
+/** The Steam provider for a game. */
+export type SteamProvider = {
+  /** The ID of the Steam app. */
+  appID: number;
+  /** The relevant news feeds of the Steam app. */
+  feeds: string[];
+};
+
 /** A Telegram IV template. */
 export type telegramIVTemplate = {
   /** The domain to apply the IV template to. */
@@ -100,6 +108,8 @@ export type GameSettings = {
   icon: string;
   /** The providers of the game. */
   providers: {
+    /** The Steam provider of the game. */
+    steam: SteamProvider;
     /** The reddit providers of the game. */
     reddit: RedditProvider[];
     /** The rss providers of the game. */
