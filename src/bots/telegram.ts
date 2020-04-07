@@ -9,6 +9,7 @@ import MDRegex from '../util/regex';
 import { StrUtil, mapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
+import Game from '../game';
 
 // node-telegram-bot-api includes snake_case properties
 /* eslint-disable @typescript-eslint/camelcase */
@@ -177,16 +178,26 @@ export default class TelegramBot extends BotClient {
     }
   }
 
-  public async getUserCount(): Promise<number> {
+  public async getUserCount(game?: Game): Promise<number> {
     const channels = this.getBotChannels();
+
+    if (game) {
+      channels.filter((channel) => channel.gameSubs.includes(game));
+    }
+
     const userCounts = await mapAsync(channels, async (botChannel) => botChannel.getUserCount());
     const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
 
-  public async getChannelCount(): Promise<number> {
-    const botChannels = this.getBotChannels();
-    return botChannels.length;
+  public async getChannelCount(game?: Game): Promise<number> {
+    const channels = this.getBotChannels();
+
+    if (game) {
+      channels.filter((channel) => channel.gameSubs.includes(game));
+    }
+
+    return channels.length;
   }
 
   public async getOwners(): Promise<User[]> {

@@ -575,11 +575,25 @@ const rollCmd = new TwoPartCommand(
 );
 
 /** Stats command, used to display statistics about the bot. */
-const statsCmd = new NoLabelAction(
+const statsCmd = new TwoPartCommand(
   'stats',
   'Display statistics about the bot.',
-  /^\s*stat(istic)?s?\s*$/,
-  async (message) => {
+  'stats <game name (optional)>',
+  // Group trigger
+  /^\s*stat(istic)?s?\s*(?<group>.*?)\s*$/,
+  // Action trigger
+  new RegExp(
+    /^\s*/.source +
+      // A game alias
+      `(?<alias>(?:${Game.getAliases().join('|')}))` +
+      /\s*$/.source,
+  ),
+  async (message, match) => {
+    let { alias } = match.groups;
+    alias = alias ? alias.trim() : '';
+
+    const game = Game.getGamesByAlias(alias)[0];
+
     const botStatStrings: string[] = [];
 
     let totalUserCount = 0;
@@ -592,42 +606,88 @@ const statsCmd = new NoLabelAction(
       // Get statistics
       // TODO: Convert these awaits to a Promise.all()
       // eslint-disable-next-line no-await-in-loop
-      const channelCount = await myBot.getChannelCount();
+      const channelCount = await myBot.getChannelCount(game);
       // eslint-disable-next-line no-await-in-loop
-      const userCount = await myBot.getUserCount();
+      const userCount = await myBot.getUserCount(game);
 
       totalUserCount += userCount;
       totalChannelCount += channelCount;
 
-      const userString = userCount > 1 ? 'users' : 'user';
+      const userString = userCount > 1 ? 'subscribers' : 'subscriber';
       const channelString = channelCount > 1 ? 'servers' : 'server';
       botStatStrings.push(
         `     ${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
       );
     }
 
-    const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
+    const totalUserStr = totalUserCount > 1 ? 'subscribers' : 'subscriber';
     const totalChannelStr = totalChannelCount > 1 ? 'servers' : 'server';
 
     // Other stuff
     const name = ProjectManager.getName();
     const version = ProjectManager.getVersionNumber();
 
-    const gameCount = Game.getGames().length;
-    const clientCount = bots.length;
-    const clients = naturalJoin(
-      bots.map((_bot) => _bot.label),
-      ', ',
-    );
-
     const statString =
-      `**${name}** (v${version}) statistics:\n` +
-      `- **Games**: ${gameCount}\n` +
-      `- **Clients**: ${clientCount} (${clients})\n` +
-      `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
+      `**${name}** (v${version}) statistics for **${game.label}**:\n` +
+      `- **Subscribers**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 
     message.reply(statString);
+  },
+  async (message) => {
+    if (message.isEmpty()) {
+      // No game specified, display general stats
+      const botStatStrings: string[] = [];
+
+      let totalUserCount = 0;
+      let totalChannelCount = 0;
+
+      const bots = getBots();
+
+      // User and channel count
+      for (const myBot of bots) {
+        // Get statistics
+        // TODO: Convert these awaits to a Promise.all()
+        // eslint-disable-next-line no-await-in-loop
+        const channelCount = await myBot.getChannelCount();
+        // eslint-disable-next-line no-await-in-loop
+        const userCount = await myBot.getUserCount();
+
+        totalUserCount += userCount;
+        totalChannelCount += channelCount;
+
+        const userString = userCount > 1 ? 'users' : 'user';
+        const channelString = channelCount > 1 ? 'servers' : 'server';
+        botStatStrings.push(
+          `     ${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        );
+      }
+
+      const totalUserStr = totalUserCount > 1 ? 'users' : 'user';
+      const totalChannelStr = totalChannelCount > 1 ? 'servers' : 'server';
+
+      // Other stuff
+      const name = ProjectManager.getName();
+      const version = ProjectManager.getVersionNumber();
+
+      const gameCount = Game.getGames().length;
+      const clientCount = bots.length;
+      const clients = naturalJoin(
+        bots.map((_bot) => _bot.label),
+        ', ',
+      );
+
+      const statString =
+        `**${name}** (v${version}) statistics:\n` +
+        `- **Games**: ${gameCount}\n` +
+        `- **Clients**: ${clientCount} (${clients})\n` +
+        `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
+        botStatStrings.join('\n');
+
+      message.reply(statString);
+    } else {
+      message.reply(`'${message.content}' is an invalid game alias.`);
+    }
   },
   UserRole.USER,
 );
