@@ -63,7 +63,7 @@ So far, we are providing the following commands:
 | `about`                                         | User  | Display information about this bot.                                             |
 | `settings`                                      | User  | Display an overview of the settings you can configure for the bot.              |
 | `games`                                         | User  | Display a list of all available games.                                          |
-| `stats`                                         | User  | Display some stats about the bot.                                               |
+| `stats <game name (optional)>`                  | User  | Display some stats about the bot or a specific game.                            |
 | `ping`                                          | User  | Test the delay of the bot.                                                      |
 | `debug`                                         | User  | Display useful debug information.                                               |
 | `flip`                                          | User  | Flip a coin.                                                                    |
