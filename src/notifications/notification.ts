@@ -148,7 +148,7 @@ export default class Notification implements Comparable<Notification> {
     const authorText = this.author.text
       ? this.author.link
         ? ` - [${this.author.text}](${this.author.link})`
-        : this.author.text
+        : ` - ${this.author.text}`
       : '';
 
     const contentText = this.content ? `\n\n${this.content}` : '';
