@@ -36,6 +36,7 @@ export default class SteamWebAPI {
     };
 
     try {
+      // TODO: Fix that the formatting is currently lost when retrieving the content of the post
       const response = await this.instance.get('ISteamNews/GetNewsForApp/v2/', {
         params: newsOptions,
       });

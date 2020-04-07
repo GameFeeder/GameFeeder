@@ -1,6 +1,5 @@
 import Notification from '../notifications/notification';
 import Game from '../game';
-import SteamProcessor from '../processors/steam_processor';
 
 /** A news item for a Steam app. */
 export class SteamNewsItem {
@@ -49,12 +48,15 @@ export class SteamNewsItem {
    * @param game - The game to generate the notification for.
    */
   public toGameNotification(game: Game): Notification {
-    const steamProcessor = new SteamProcessor();
-    return new Notification(new Date(this.date * 1000))
-      .withTitle(this.title, this.url)
-      .withAuthor(this.author)
-      .withContent(steamProcessor.process(this.contents))
-      .withGameDefaults(game);
+    // const steamProcessor = new SteamProcessor();
+    return (
+      new Notification(new Date(this.date * 1000))
+        .withTitle(this.title, this.url)
+        .withAuthor(this.author)
+        // TODO: Fix the fomatting of the post content and reenable this line
+        // .withContent(steamProcessor.process(this.contents))
+        .withGameDefaults(game)
+    );
   }
 }
 
