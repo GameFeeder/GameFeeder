@@ -11,9 +11,12 @@ RUN yarn build
 
 FROM mhart/alpine-node:slim-12 AS production
 WORKDIR /app
-COPY ./package.json /app/
-COPY --from=build-dependencies /app/dist /app/dist
-COPY --from=production-dependencies /app/node_modules /app/node_modules
+COPY ./package.json .
+COPY --from=build-dependencies /app/dist ./dist
+COPY --from=production-dependencies /app/node_modules ./node_modules
+COPY ./config/games ./config/games
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
+# https://github.com/yagop/node-telegram-bot-api/issues/319
+ENV NTBA_FIX_319=WORKAROUND
 CMD ["node", "/app/dist/_main.js"]
