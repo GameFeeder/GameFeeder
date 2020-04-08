@@ -4,7 +4,8 @@ services:
     container_name: gamefeeder
     image: gamefeeder/gamefeeder:latest
     volumes:
-      - ./config:/app/config
+      - ./config/api_config.json:/app/config/api_config.json:ro
+      - ./config/updater_config.json:/app/config/updater_config.json:ro
       - ./data:/app/data
     restart: unless-stopped
     logging:
