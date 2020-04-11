@@ -17,7 +17,8 @@
       }
     ],
     "steam": {
-      "appID": 1046930
+      "appID": 1046930,
+      "feeds": ["steam_community_announcements"]
     },
     "rss": []
   }
