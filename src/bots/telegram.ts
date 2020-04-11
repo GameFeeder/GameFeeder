@@ -89,7 +89,7 @@ export default class TelegramBot extends BotClient {
         return UserRole.ADMIN;
       }
     } catch (error) {
-      this.logger.error(`Failed to get chat admins on channel ${channel.getLabel()}:\n${error}`);
+      this.logger.error(`Failed to get chat admins on channel ${channel.label}:\n${error}`);
     }
     // the user is just a regular user
     return UserRole.USER;
@@ -115,7 +115,7 @@ export default class TelegramBot extends BotClient {
           }
         }
         this.logger.error(
-          `Failed to get chat to check permissions on channel ${channel.getLabel()}:\n${error}`,
+          `Failed to get chat to check permissions on channel ${channel.label}:\n${error}`,
         );
         throw error;
       });
@@ -125,7 +125,7 @@ export default class TelegramBot extends BotClient {
       }
       // Try to get chat member
       const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
-        this.logger.error(`Failed to get chat member on channel ${channel.getLabel()}:\n${error}`);
+        this.logger.error(`Failed to get chat member on channel ${channel.label}:\n${error}`);
         throw error;
       });
       // Check for expected chat member errors
@@ -157,7 +157,7 @@ export default class TelegramBot extends BotClient {
           : false);
     } catch (error) {
       this.logger.error(
-        `Failed to get user permissions due to unexpected error on channel ${channel.getLabel()}:\n${error}`,
+        `Failed to get user permissions due to unexpected error on channel ${channel.label}:\n${error}`,
       );
       throw error;
     }
@@ -171,9 +171,7 @@ export default class TelegramBot extends BotClient {
     try {
       return (await this.bot.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
-      this.logger.error(
-        `Failed to get chat member count for channel ${channel.getLabel()}:\n${error}`,
-      );
+      this.logger.error(`Failed to get chat member count for channel ${channel.label}:\n${error}`);
       return 0;
     }
   }
@@ -234,7 +232,7 @@ export default class TelegramBot extends BotClient {
       }
     } catch (error) {
       this.logger.error(
-        `Failed to execute command ${command.name} on channel ${channel.getLabel()}:\n${error}`,
+        `Failed to execute command ${command.name} on channel ${channel.label}:\n${error}`,
       );
     }
   }
@@ -368,24 +366,24 @@ export default class TelegramBot extends BotClient {
         // Chat not found
         case 400:
           this.logger.warn(
-            `Failed to send notification to channel ${channel.getLabel()}, error code 400.`,
+            `Failed to send notification to channel ${channel.label}, error code 400.`,
           );
           // this.removeData(channel);
           break;
         // Bot is not a member of the channel chat or blocked by user
         case 403:
           this.logger.warn(
-            `Failed to send notification to channel ${channel.getLabel()}, error code 403.`,
+            `Failed to send notification to channel ${channel.label}, error code 403.`,
           );
           // this.removeData(channel);
           break;
         default:
           this.logger.error(
-            `Failed to send notification to channel ${channel.getLabel()}, error code ${errorCode}:\n${error}`,
+            `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
           );
       }
     } else {
-      this.logger.error(`Failed to send message to channel ${channel.getLabel()}:\n${error}`);
+      this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
     }
   }
 
