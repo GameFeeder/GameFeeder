@@ -97,7 +97,7 @@ const settingsCmd = new NoLabelAction(
         message.channel,
       )}\` to change the prefix the bot uses ` +
         `on this channel.\n` +
-        `> The prefix currently used on this channel is \`${channel.getPrefix()}\`.\n` +
+        `> The prefix currently used on this channel is \`${channel.prefix}\`.\n` +
         `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
         `\`${commands.tryFindCmdLabel(
           unsubCmd,
@@ -298,62 +298,21 @@ const prefixCmd = new TwoPartCommand(
     let { newPrefix } = match.groups;
     newPrefix = newPrefix ? newPrefix.trim() : '';
 
-    // Check if the user wants to reset the prefix
-    if (newPrefix === 'reset') {
-      newPrefix = bot.prefix;
-    }
-
     // Check if the bot can write to this channel
     const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
     if (!permissions.canWrite) {
       if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
+        bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
       }
       return;
     }
 
-    bot.sendMessage(channel, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
-
-    // Save locally
     channel.prefix = newPrefix;
-
-    // Save in the JSON file
-    const subscribers = DataManager.getSubscriberData();
-    const channels = subscribers[bot.name];
-
-    // Check if the channel is already registered
-    const existingChannelId = channels.findIndex((ch) => channel.isEqual(ch.id));
-    if (existingChannelId >= 0) {
-      const existingChannel = channels[existingChannelId];
-      // Update prefix
-      existingChannel.prefix = newPrefix !== bot.prefix ? newPrefix : undefined;
-
-      // Remove unnecessary entries
-      if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
-        bot.logger.debug('Removing unnecessary channel entry...');
-        channels.splice(existingChannelId, 1);
-      } else {
-        channels[existingChannelId] = existingChannel;
-      }
-      // Save changes
-      subscribers[bot.name] = channels;
-      DataManager.setSubscriberData(subscribers);
-    } else {
-      // Add channel with the new prefix
-      channels.push({
-        gameSubs: [],
-        id: channel.id,
-        prefix: newPrefix,
-      });
-      // Save the changes
-      subscribers[bot.name] = channels;
-      DataManager.setSubscriberData(subscribers);
-    }
   },
   // Default action
   async (message) => {
     if (message.isEmpty()) {
-      const prefix = message.channel.getPrefix();
+      const prefix = message.channel.prefix;
       message.reply(
         `The prefix currently used on this channel is \`${prefix}\`.\n` +
           `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
@@ -792,6 +751,7 @@ const labelCmd = new TwoPartCommand(
 
     let label = channelLabel.trim();
 
+    // TODO: Maybe these logs should also be part of channel.ts, not sure though
     // Check if the user wants to reset the label
     if (label === 'reset') {
       label = undefined;
@@ -806,47 +766,7 @@ const labelCmd = new TwoPartCommand(
       );
     }
 
-    // Save locally
     labelChannel.label = label;
-
-    // Save in the JSON file
-    const subscribers = DataManager.getSubscriberData();
-    const channels = subscribers[channelBot.name];
-
-    // Check if the channel is already registered
-    const existingChannelId = channels.findIndex((ch) => labelChannel.isEqual(ch.id));
-    if (existingChannelId >= 0) {
-      const existingChannel = channels[existingChannelId];
-      // Update label
-      existingChannel.label = label;
-
-      // Remove unnecessary entries
-      if (
-        existingChannel.gameSubs.length === 0 &&
-        !existingChannel.prefix &&
-        !existingChannel.label
-      ) {
-        channelBot.logger.debug(
-          `Removing unnecessary entry for channel ${labelChannel.getLabel()}...`,
-        );
-        channels.splice(existingChannelId, 1);
-      } else {
-        channels[existingChannelId] = existingChannel;
-      }
-      // Save changes
-      subscribers[channelBot.name] = channels;
-      DataManager.setSubscriberData(subscribers);
-    } else {
-      // Add channel with the new label
-      channels.push({
-        gameSubs: [],
-        id: labelChannel.id,
-        label,
-      });
-      // Save the changes
-      subscribers[channelBot.name] = channels;
-      DataManager.setSubscriberData(subscribers);
-    }
   },
   // Default action
   async (message) => {
@@ -912,12 +832,12 @@ const commands: CommandGroup = new CommandGroup(
   'All commands that need a prefix to be executed.',
   // Label
   (channel) => {
-    const prefix = channel.getPrefix();
+    const prefix = channel.prefix;
     return prefix;
   },
   // Help
   (channel, prefix, role) => {
-    const cmdPrefix = channel.getPrefix();
+    const cmdPrefix = channel.prefix;
     const cmdLabels = filterByRole(commands.commands, role || UserRole.OWNER).map(
       (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
     );
@@ -927,7 +847,7 @@ const commands: CommandGroup = new CommandGroup(
   (channel) => {
     const bot = channel.bot;
     const userTag = EscapeRegex(bot.getUserTag());
-    const channelPrefix = EscapeRegex(channel.getPrefix());
+    const channelPrefix = EscapeRegex(channel.prefix);
     return new RegExp(
       `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*?)(\\s*${userTag})?\\s*$`,
     );
