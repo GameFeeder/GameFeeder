@@ -103,7 +103,7 @@ export default abstract class BotClient {
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
-        this.logger.warn(`Can't write to channel ${channel.getLabel()}, removing all data.`);
+        this.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
       }
       return false;
     }
@@ -165,7 +165,7 @@ export default abstract class BotClient {
 
       // Remove unnecessary entries
       if (sub.gameSubs.length === 0 && !sub.prefix && !sub.label) {
-        this.logger.debug(`Removing unnecessary entry for channel ${channel.getLabel()}...`);
+        this.logger.debug(`Removing unnecessary entry for channel ${channel.label}...`);
         subs.splice(existingSubId, 1);
       } else {
         subs[existingSubId] = sub;
@@ -247,9 +247,9 @@ export default abstract class BotClient {
    */
   public getBotChannels(): Channel[] {
     return DataManager.getSubscriberData()[this.name].map(
-      (jsonChannel: { id: string; gameSubs: string[]; prefix: string }) => {
+      (jsonChannel: { id: string; gameSubs: string[]; prefix: string; label: string }) => {
         const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-        return new Channel(jsonChannel.id, this, subs, jsonChannel.prefix);
+        return new Channel(jsonChannel.id, this, subs, jsonChannel.prefix, jsonChannel.label);
       },
     );
   }
@@ -261,22 +261,24 @@ export default abstract class BotClient {
    */
   public getChannelByID(id: string): Channel {
     const channels = DataManager.getSubscriberData()[this.name];
-    const channel = new Channel(id, this);
 
+    let gameSubs: Game[] = [];
+    let prefix = ``;
+    let label = ``;
     // Check if the channel is already registered
     for (const sub of channels) {
-      if (channel.isEqual(sub.id)) {
+      if (String(id) === String(sub.id)) {
         // Update properties
-        channel.gameSubs = sub.gameSubs.map((gameName) => {
+        gameSubs = sub.gameSubs.map((gameName) => {
           return Game.getGameByName(gameName);
         });
-        channel.prefix = sub.prefix;
-        channel.label = sub.label;
+        prefix = sub.prefix;
+        label = sub.label;
         break;
       }
     }
 
-    return channel;
+    return new Channel(id, this, gameSubs, prefix, label);
   }
 
   /** Sends a message to a channel.
@@ -306,9 +308,8 @@ export default abstract class BotClient {
 
     if (subscribers) {
       for (const channelData of subscribers) {
-        if (channelData.gameSubs && channelData.gameSubs.includes(game.name)) {
+        if (channelData.gameSubs?.includes(game.name)) {
           const channel = this.getChannelByID(channelData.id);
-          // Temporary possible fix for telegram API limit
           // eslint-disable-next-line no-await-in-loop
           await this.sendMessage(channel, message);
         }
@@ -326,9 +327,8 @@ export default abstract class BotClient {
 
     if (subscribers) {
       for (const channelData of subscribers) {
-        if (channelData.gameSubs && channelData.gameSubs.length !== 0) {
+        if (channelData.gameSubs?.length !== 0) {
           const channel = this.getChannelByID(channelData.id);
-          // Temporary possible fix for telegram API limit
           // eslint-disable-next-line no-await-in-loop
           await this.sendMessage(channel, message);
         }

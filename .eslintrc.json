@@ -30,6 +30,7 @@
     ],
     "@typescript-eslint/explicit-function-return-type": "off",
     "class-methods-use-this": "off",
+    "no-underscore-dangle": ["warn", { "allowAfterThis": true }],
     "jest/no-disabled-tests": "warn",
     "jest/no-focused-tests": "error",
     "jest/no-identical-title": "error",

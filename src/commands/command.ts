@@ -63,14 +63,14 @@ export default abstract class Command {
       const time = Date.now() - message.timestamp.valueOf();
       if (!(this instanceof CommandGroup)) {
         bot.logger.debug(
-          `Command '${this.name}' executed on channel ${message.channel.getLabel()} in ${time} ms.`,
+          `Command '${this.name}' executed on channel ${message.channel.label} in ${time} ms.`,
         );
       }
       return true;
     }
 
     bot.logger.debug(
-      `Command ${this.name} on channel ${message.channel.getLabel()}: ${this.role} role required.`,
+      `Command ${this.name} on channel ${message.channel.label}: ${this.role} role required.`,
     );
     bot.sendMessage(
       message.channel,

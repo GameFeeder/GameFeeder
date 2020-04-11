@@ -1,25 +1,129 @@
 import BotClient from './bots/bot';
 import Game from './game';
+import DataManager from './managers/data_manager';
 
 /** A representation of a bot's channel. */
 export default class Channel {
   /** The unique ID of the channel. */
   public id: string;
+
   /** The label of the channel (if specified). */
-  public label?: string;
+  private _label?: string;
+  get label(): string {
+    const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
+    return this._label ? `'${this._label}' (${ID})` : ID;
+  }
+  set label(value: string) {
+    const newLabel = value;
+
+    // Save locally
+    this._label = newLabel;
+
+    // Save in the JSON file
+    const subscribers = DataManager.getSubscriberData();
+    const channels = subscribers[this.bot.name];
+
+    // Check if the channel is already registered
+    const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
+    if (existingChannelId >= 0) {
+      const existingChannel = channels[existingChannelId];
+      // Update label
+      existingChannel.label = newLabel;
+
+      // Remove unnecessary entries
+      if (
+        existingChannel.gameSubs.length === 0 &&
+        !existingChannel.prefix &&
+        !existingChannel.label
+      ) {
+        this.bot.logger.info(`Removing unnecessary entry for channel ${this.label}...`);
+        channels.splice(existingChannelId, 1);
+      } else {
+        channels[existingChannelId] = existingChannel;
+      }
+      // Save changes
+      subscribers[this.bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    } else {
+      // Add channel with the new label
+      channels.push({
+        gameSubs: [],
+        id: this.id,
+        label: newLabel,
+      });
+      // Save the changes
+      subscribers[this.bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    }
+  }
+
   /** The BotClient this channel is used in. */
   public bot: BotClient;
   /** The games this channel is subscribed to. */
   public gameSubs: Game[];
+
   /** The prefix the channel uses. */
-  public prefix: string;
+  private _prefix: string;
+  get prefix() {
+    if (this._prefix) {
+      return this._prefix;
+    }
+    return this.bot.prefix;
+  }
+  set prefix(value) {
+    let newPrefix = value;
+    // Check if the user wants to reset the prefix
+    this.bot.logger.debug(newPrefix);
+    if (newPrefix === 'reset') {
+      newPrefix = this.bot.prefix;
+    }
+
+    this.bot.sendMessage(this, `Changing the bot's prefix on this channel to \`${newPrefix}\`.`);
+
+    // Save locally
+    this._prefix = newPrefix;
+
+    // Save in the JSON file
+    const subscribers = DataManager.getSubscriberData();
+    const channels = subscribers[this.bot.name];
+
+    // Check if the channel is already registered
+    const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
+    if (existingChannelId >= 0) {
+      const existingChannel = channels[existingChannelId];
+      // Update prefix
+      existingChannel.prefix = newPrefix !== this.bot.prefix ? newPrefix : undefined;
+
+      // Remove unnecessary entries
+      if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
+        this.bot.logger.debug('Removing unnecessary channel entry...');
+        channels.splice(existingChannelId, 1);
+      } else {
+        channels[existingChannelId] = existingChannel;
+      }
+      // Save changes
+      subscribers[this.bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    } else {
+      // Add channel with the new prefix
+      channels.push({
+        gameSubs: [],
+        id: this.id,
+        prefix: newPrefix,
+      });
+      // Save the changes
+      subscribers[this.bot.name] = channels;
+      DataManager.setSubscriberData(subscribers);
+    }
+  }
+
   /** Creates a new Channel. */
   constructor(id: string, bot: BotClient, gameSubs?: Game[], prefix?: string, label?: string) {
     this.id = id;
     this.bot = bot;
     this.gameSubs = gameSubs || [];
-    this.prefix = prefix;
-    this.label = label;
+    this._prefix = prefix;
+    this._label = label;
   }
   /** Compares the channel to another channel.
    *
@@ -33,24 +137,14 @@ export default class Channel {
     return this.id === other.id;
   }
   public toJSON(): string {
-    const labelStr = this.label ? `, "label": "${this.label}"` : '';
-    const prefixStr = this.prefix ? `, "prefix": "${this.prefix}"` : '';
+    const labelStr = this._label ? `, "label": "${this._label}"` : '';
+    const prefixStr = this._prefix ? `, "prefix": "${this._prefix}"` : '';
     return `{
       "id": "${this.id}"${labelStr},
       "gameSubs": [
         ${this.gameSubs.map((game) => game.name).join(', ')}
       ]${prefixStr}
     }`;
-  }
-  /** Gets the prefix used in this channel
-   *
-   * @return The prefix used in this channel.
-   */
-  public getPrefix(): string {
-    if (this.prefix) {
-      return this.prefix;
-    }
-    return this.bot.prefix;
   }
 
   /** Gets the number of users in this channel
@@ -59,11 +153,5 @@ export default class Channel {
    */
   public async getUserCount(): Promise<number> {
     return this.bot.getChannelUserCount(this);
-  }
-
-  /** Returns the label and id of the channel. */
-  public getLabel(): string {
-    const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
-    return this.label ? `'${this.label}' (${ID})` : ID;
   }
 }
