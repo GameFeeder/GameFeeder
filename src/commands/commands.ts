@@ -712,19 +712,20 @@ const labelCmd = new TwoPartCommand(
   // Group trigger
   /^\s*label(?<group>.*)$/,
   // Action trigger
-  /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))\s+(?<channelLabel>.+?)\s*$/,
+  /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))\s+(?<desiredLabel>.+?)\s*$/,
   // Action
   async (message, match) => {
-    const bot = message.getBot();
-    const { botName, channelID, channelLabel } = match.groups;
+    const originBot = message.getBot();
+    const { botName, channelID, desiredLabel } = match.groups;
 
-    let channelBot = bot;
+    let targetBot = originBot;
+    let targetChannel = message.channel;
+
     // Get the bot to find the channel on
     if (botName) {
       const findBot = getBots().find((client) => client.name === botName);
-
       if (findBot) {
-        channelBot = findBot;
+        targetBot = findBot;
       } else {
         // Did not find the specified bot
         const botList = getBots()
@@ -734,48 +735,43 @@ const labelCmd = new TwoPartCommand(
         message.reply(
           `'${botName}' is not an available bot! Try one of the following:\n${botList}`,
         );
+        return;
       }
-    } else {
-      // No bot specified, take the bot that the message was written on
-      channelBot = bot;
     }
 
-    let labelChannel = message.channel;
-
-    if (channelID === 'this') {
-      // Take this channel and this bot
-      channelBot = bot;
-    } else {
-      labelChannel = channelBot.getChannelByID(channelID);
+    if (channelID !== 'this') {
+      targetChannel = targetBot.getChannelByID(channelID);
     }
 
-    let label = channelLabel.trim();
+    let label = desiredLabel.trim();
 
     // TODO: Maybe these logs should also be part of channel.ts, not sure though
     // Check if the user wants to reset the label
     if (label === 'reset') {
       label = undefined;
-      bot.sendMessage(
+      originBot.sendMessage(
         message.channel,
-        `Removing the label of channel ${labelChannel.id} on ${channelBot.name}.`,
+        `Removing the label of channel ${targetChannel.id} on ${targetBot.name}.`,
       );
     } else {
-      bot.sendMessage(
+      originBot.sendMessage(
         message.channel,
-        `Changing the label of channel ${labelChannel.id} on ${channelBot.name} to '${label}'.`,
+        `Changing the label of channel ${targetChannel.id} on ${targetBot.name} to '${label}'.`,
       );
     }
 
-    labelChannel.label = label;
+    const oldLabel = targetChannel.label;
+    targetChannel.label = label;
+    originBot.logger.debug(`Changed label of ${oldLabel} to ${targetChannel.label}`);
   },
   // Default action
   async (message) => {
     if (message.isEmpty()) {
-      const label = message.channel.label;
+      const hasLabel = message.channel.hasLabel();
 
-      if (label) {
+      if (hasLabel) {
         message.reply(
-          `The label currenctly used on this channel is '${label}'.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
+          `The label currenctly used on this channel is '${message.channel.label}'.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
             `Use 'this' as channel id to change the label of this channel.`,
         );
       } else {

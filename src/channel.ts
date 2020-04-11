@@ -154,4 +154,8 @@ export default class Channel {
   public async getUserCount(): Promise<number> {
     return this.bot.getChannelUserCount(this);
   }
+
+  hasLabel() {
+    return !!this._label;
+  }
 }
