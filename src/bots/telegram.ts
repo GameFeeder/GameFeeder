@@ -362,8 +362,9 @@ export default class TelegramBot extends BotClient {
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to add message for channel ${channel.label} in the queue, error: ${err}. \
-        This is most likely because the bot has been blocked, disabling subscriber.`,
+        `Failed to add message for channel ${channel.label} in the queue. \
+        \n - Error: ${err}. \
+        \n - This is most likely because the bot has been blocked, disabling subscriber.`,
       );
       channel.disabled = true;
       return false;
