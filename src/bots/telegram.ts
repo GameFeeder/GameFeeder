@@ -1,4 +1,5 @@
 import TelegramAPI from 'node-telegram-bot-api';
+import Queue from 'smart-request-balancer';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -14,10 +15,13 @@ import Game from '../game';
 // node-telegram-bot-api includes snake_case properties
 /* eslint-disable @typescript-eslint/camelcase */
 
+const MAX_SEND_MESSAGE_RETRIES = 5;
+
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
   private bot: TelegramAPI;
   private token: string;
+  private queue: Queue;
   private channelAuthorID = '-322';
 
   constructor(prefix: string, token: string, autostart: boolean) {
@@ -26,6 +30,23 @@ export default class TelegramBot extends BotClient {
     // Set up the bot
     this.token = token;
     this.bot = new TelegramAPI(token, { polling: false });
+    // TODO: Fix rules to actually reflect usage
+    this.queue = new Queue({
+      rules: {
+        notitificationMessage: {
+          // Rule for sending private message via telegram API
+          rate: 1, // one message
+          limit: 1, // per second
+          priority: 2,
+        },
+        normalMessage: {
+          // Rule for sending group message via telegram API
+          rate: 20, // 20 messages
+          limit: 60, // per minute,
+          priority: 2,
+        },
+      },
+    });
   }
 
   public static getBot(): TelegramBot {
@@ -212,6 +233,8 @@ export default class TelegramBot extends BotClient {
   private async onMessage(msg: TelegramAPI.Message, command: Command): Promise<void> {
     const channel = this.getChannelByID(msg.chat.id.toString());
     try {
+      // Re-enable the channel if disabled, since it is now active
+      channel.disabled = false;
       // Channel messages don't have an author, so we have to work around that
       const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
       // FIX: Properly identify the user key
@@ -284,7 +307,35 @@ export default class TelegramBot extends BotClient {
     this.isRunning = false;
   }
 
-  public async sendMessage(channel: Channel, messageText: string | Notification): Promise<boolean> {
+  public async sendMessage(
+    channel: Channel,
+    messageText: string | Notification,
+    retryAttempt = 0,
+  ): Promise<boolean> {
+    try {
+      const rule = messageText instanceof Notification ? 'notitificationMessage' : 'normalMessage';
+      await this.queue.request(
+        () => this.sendMessageInstantly(channel, messageText, retryAttempt),
+        channel.id,
+        rule,
+      );
+      return true;
+    } catch (err) {
+      this.logger.error(`Failed to add message for channel ${channel.label} in the queue`);
+      return false;
+    }
+  }
+
+  private async sendMessageInstantly(
+    channel: Channel,
+    messageText: string | Notification,
+    retryAttempt = 0,
+  ): Promise<boolean> {
+    if (channel.disabled) {
+      // TODO: Make this a debug log once verified to be working properly
+      this.logger.info(`Skipping message for disabled channel ${channel.label}`);
+      return false;
+    }
     // TODO: Fix permission check
     // try {
     //   const permissions = await this.getUserPermissions(await this.getUser(), channel);
@@ -300,17 +351,15 @@ export default class TelegramBot extends BotClient {
     //   return false;
     // }
 
-    let message = messageText;
+    // Set up the message
+    const message = messageText;
+    let text = '';
+    let options = {};
     if (typeof message === 'string') {
-      message = TelegramBot.msgFromMarkdown(message);
-      try {
-        await this.bot.sendMessage(channel.id, message, { parse_mode: 'Markdown' });
-      } catch (error) {
-        this.handleNotificationError(error, channel);
-      }
+      text = TelegramBot.msgFromMarkdown(message);
+      options = { parse_mode: 'Markdown' };
     } else {
       const link = message.title.link;
-      let text = '';
       let templateFound = false;
 
       const templates = message.game.telegramIVTemplates;
@@ -344,14 +393,31 @@ export default class TelegramBot extends BotClient {
       // 2048 is the maximum notification length
       text = StrUtil.naturalLimit(text, 2048);
 
-      try {
-        await this.bot.sendMessage(channel.id, text, {
-          disable_web_page_preview: !templateFound,
-          parse_mode: 'Markdown',
-        });
-      } catch (error) {
-        this.handleNotificationError(error, channel);
+      options = {
+        disable_web_page_preview: !templateFound,
+        parse_mode: 'Markdown',
+      };
+    }
+    // Send the message
+    try {
+      await this.bot.sendMessage(channel.id, text, options);
+    } catch (error) {
+      // Log the appropriate error
+      this.handleNotificationError(error, channel);
+      if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
+        this.logger.info(
+          `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
+        );
+        this.sendMessage(channel, messageText, retryAttempt + 1);
+        return false;
       }
+
+      // Disable the channel that failed.
+      this.logger.warn(
+        `Max retries reached; Disabling failed channel ${channel.label} to avoid future errors until active again.`,
+      );
+      channel.disabled = true;
+      return false;
     }
     return true;
   }
@@ -394,7 +460,7 @@ export default class TelegramBot extends BotClient {
     let markdown = text;
 
     // Links
-    markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
+    markdown = MDRegex.replaceLinkImage(markdown, (_unusedText, label, linkUrl, imageUrl) => {
       let newLabel = label || 'Link';
       // Remove nested formatting
       newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
@@ -408,7 +474,7 @@ export default class TelegramBot extends BotClient {
     });
 
     // Images
-    markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
+    markdown = MDRegex.replaceImageLink(markdown, (_unusedText, label, imageUrl, linkUrl) => {
       let newLabel = label || 'Image';
       // Remove nested formatting
       newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
@@ -422,27 +488,27 @@ export default class TelegramBot extends BotClient {
     });
 
     // Italic
-    markdown = MDRegex.replaceItalic(markdown, (_, italicText) => {
+    markdown = MDRegex.replaceItalic(markdown, (_unusedText, italicText) => {
       return `_${italicText}_`;
     });
 
     // Bold
-    markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
+    markdown = MDRegex.replaceBold(markdown, (_unusedText, boldText) => {
       return `*${boldText}*`;
     });
 
     // Lists
-    markdown = MDRegex.replaceList(markdown, (_, listElement) => {
+    markdown = MDRegex.replaceList(markdown, (_unusedText, listElement) => {
       return `- ${listElement}`;
     });
 
     // Blockquotes
-    markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
+    markdown = MDRegex.replaceQuote(markdown, (_unusedText, quoteText) => {
       return `"${quoteText}"`;
     });
 
     // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_, headerText) => {
+    markdown = MDRegex.replaceHeader(markdown, (_unusedText, headerText) => {
       return `\n\n*${headerText}*\n`;
     });
 

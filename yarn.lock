@@ -4750,6 +4750,14 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
+smart-request-balancer@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/smart-request-balancer/-/smart-request-balancer-2.1.1.tgz#c6ed666a8dfed2bb0a338cd2cba9aff7526ffcb9"
+  integrity sha512-4AnMhV4amviBUGKeACOricuj4dhihf2P9Z/s3+cvZ3kjFxUwEV74JL9JTdK3/7Im84cC3J9ANeg+sUjSv0buxQ==
+  dependencies:
+    debug "^4.1.1"
+    uuid "^3.3.2"
+
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
@@ -5109,6 +5117,11 @@ throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
+
+throttled-queue@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/throttled-queue/-/throttled-queue-1.0.7.tgz#da7ed6702941993044a1c5fd2ac3a58582dd2977"
+  integrity sha512-/HT49S7m+NvdyJMoMRzIYlawKjeHn8jEc8TZaGmFi5IBu09hIiU/QoP1zcrB9X2qsVC11PgfRfqd8zEQs7PlEA==
 
 through@^2.3.6:
   version "2.3.8"

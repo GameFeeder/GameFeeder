@@ -117,13 +117,49 @@ export default class Channel {
     }
   }
 
+  // Disabled channels won't receive automatic updates
+  private _disabled: boolean;
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(value) {
+    // Save locally
+    this._disabled = value;
+
+    // Save in the JSON file
+    const subscribers = DataManager.getSubscriberData();
+    const channels = subscribers[this.bot.name];
+
+    // Check if the channel is already registered
+    const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
+    if (existingChannelId < 0) {
+      this.bot.logger.error(`Can't disable channel ${this.label}, not found in subscribers.`);
+    }
+    const existingChannel = channels[existingChannelId];
+
+    // Update prefix
+    existingChannel.disabled = value;
+
+    // Save the changes
+    subscribers[this.bot.name] = channels;
+    DataManager.setSubscriberData(subscribers);
+  }
+
   /** Creates a new Channel. */
-  constructor(id: string, bot: BotClient, gameSubs?: Game[], prefix?: string, label?: string) {
+  constructor(
+    id: string,
+    bot: BotClient,
+    gameSubs?: Game[],
+    prefix?: string,
+    label?: string,
+    disabled = false,
+  ) {
     this.id = id;
     this.bot = bot;
     this.gameSubs = gameSubs || [];
     this._prefix = prefix;
     this._label = label;
+    this._disabled = disabled;
   }
   /** Compares the channel to another channel.
    *
