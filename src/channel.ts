@@ -137,8 +137,12 @@ export default class Channel {
     }
     const existingChannel = channels[existingChannelId];
 
-    // Update prefix
+    // Update status
     existingChannel.disabled = value;
+    // Delete disabled = false entries to save space
+    if (value === false) {
+      delete existingChannel.disabled;
+    }
 
     // Save the changes
     subscribers[this.bot.name] = channels;
