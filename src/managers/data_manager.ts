@@ -7,7 +7,7 @@ export enum DATA {
 }
 
 /** The data for one subscribing channel. */
-export type subscriber = {
+export type Subscriber = {
   /** The names of the games the channel subscribed to. */
   gameSubs: string[];
   /** The channel ID. */
@@ -16,15 +16,17 @@ export type subscriber = {
   label?: string;
   /** The prefix the channel uses. */
   prefix?: string;
+  /** Disabled subscribers won't receive automatic updates. */
+  disabled?: boolean;
 };
 
 /** The data for the subscribers. */
 export type SubscriberData = {
-  [index: string]: subscriber[];
+  [index: string]: Subscriber[];
   /** The discord subs. */
-  discord: subscriber[];
+  discord: Subscriber[];
   /** The telegram subs. */
-  telegram: subscriber[];
+  telegram: Subscriber[];
 };
 
 /** The data for the updater. */

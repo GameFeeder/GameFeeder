@@ -1,7 +1,7 @@
 import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
-import DataManager from '../managers/data_manager';
+import DataManager, { Subscriber } from '../managers/data_manager';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
@@ -246,12 +246,17 @@ export default abstract class BotClient {
    * @returns The channels subscribed to this bot client.
    */
   public getBotChannels(): Channel[] {
-    return DataManager.getSubscriberData()[this.name].map(
-      (jsonChannel: { id: string; gameSubs: string[]; prefix: string; label: string }) => {
-        const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
-        return new Channel(jsonChannel.id, this, subs, jsonChannel.prefix, jsonChannel.label);
-      },
-    );
+    return DataManager.getSubscriberData()[this.name].map((jsonChannel: Subscriber) => {
+      const subs = jsonChannel.gameSubs.map((gameName) => Game.getGameByName(gameName));
+      return new Channel(
+        jsonChannel.id,
+        this,
+        subs,
+        jsonChannel.prefix,
+        jsonChannel.label,
+        jsonChannel.disabled,
+      );
+    });
   }
 
   /** Gets a BotChannel by its ID.
@@ -265,6 +270,7 @@ export default abstract class BotClient {
     let gameSubs: Game[] = [];
     let prefix = ``;
     let label = ``;
+    let disabled = false;
     // Check if the channel is already registered
     for (const sub of channels) {
       if (String(id) === String(sub.id)) {
@@ -274,11 +280,12 @@ export default abstract class BotClient {
         });
         prefix = sub.prefix;
         label = sub.label;
+        disabled = sub.disabled;
         break;
       }
     }
 
-    return new Channel(id, this, gameSubs, prefix, label);
+    return new Channel(id, this, gameSubs, prefix, label, disabled);
   }
 
   /** Sends a message to a channel.
