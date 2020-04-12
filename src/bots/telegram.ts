@@ -15,6 +15,15 @@ import Game from '../game';
 // node-telegram-bot-api includes snake_case properties
 /* eslint-disable @typescript-eslint/camelcase */
 
+enum MessageType {
+  notification = 'notification',
+  command = 'command',
+}
+enum ChatType {
+  private = 'private',
+  group = 'group',
+}
+
 const MAX_SEND_MESSAGE_RETRIES = 5;
 
 export default class TelegramBot extends BotClient {
@@ -22,6 +31,7 @@ export default class TelegramBot extends BotClient {
   private bot: TelegramAPI;
   private token: string;
   private queue: Queue;
+  private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
 
   constructor(prefix: string, token: string, autostart: boolean) {
@@ -30,23 +40,44 @@ export default class TelegramBot extends BotClient {
     // Set up the bot
     this.token = token;
     this.bot = new TelegramAPI(token, { polling: false });
-    // TODO: Fix rules to actually reflect usage
     this.queue = new Queue({
       rules: {
-        notitificationMessage: {
-          // Rule for sending private message via telegram API
+        notificationPrivate: {
+          // Rule for sending notification messages to individuals
           rate: 1, // one message
           limit: 1, // per second
           priority: 2,
         },
-        normalMessage: {
-          // Rule for sending group message via telegram API
+        notificationGroup: {
+          // Rule for sending notification messages to groups
           rate: 20, // 20 messages
           limit: 60, // per minute,
           priority: 2,
         },
+        commandPrivate: {
+          // Rule for replying to individual chat commands
+          rate: 1, // one message
+          limit: 1, // per second
+          priority: 1,
+        },
+        commandGroup: {
+          // Rule for replying to group chat commands
+          rate: 20, // 20 messages
+          limit: 60, // per minute,
+          priority: 1,
+        },
       },
     });
+    this.ruleNames = {
+      notification: {
+        private: 'notificationPrivate',
+        group: 'notificationGroup',
+      },
+      command: {
+        private: 'commandPrivate',
+        group: 'commandGroup',
+      },
+    };
   }
 
   public static getBot(): TelegramBot {
@@ -313,7 +344,16 @@ export default class TelegramBot extends BotClient {
     retryAttempt = 0,
   ): Promise<boolean> {
     try {
-      const rule = messageText instanceof Notification ? 'notitificationMessage' : 'normalMessage';
+      if (channel.disabled) {
+        // TODO: Make this a debug log once verified to be working properly
+        this.logger.info(`Not adding message to queue for disabled channel ${channel.label}`);
+        return false;
+      }
+      const chat = await this.bot.getChat(channel.id);
+      const messageType: MessageType =
+        messageText instanceof Notification ? MessageType.notification : MessageType.command;
+      const chatType: ChatType = chat.type === 'private' ? ChatType.private : ChatType.group;
+      const rule = this.ruleNames[messageType][chatType];
       await this.queue.request(
         () => this.sendMessageInstantly(channel, messageText, retryAttempt),
         channel.id,
@@ -321,7 +361,11 @@ export default class TelegramBot extends BotClient {
       );
       return true;
     } catch (err) {
-      this.logger.error(`Failed to add message for channel ${channel.label} in the queue`);
+      this.logger.error(
+        `Failed to add message for channel ${channel.label} in the queue, error: ${err}. \
+        This is most likely because the bot has been blocked, disabling subscriber.`,
+      );
+      channel.disabled = true;
       return false;
     }
   }
