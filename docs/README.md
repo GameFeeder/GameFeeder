@@ -1,4 +1,5 @@
 ![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
+![Release](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)
 
 # GameFeeder <!-- omit in toc -->
 
