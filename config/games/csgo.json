@@ -3,7 +3,7 @@
   "label": "CS:GO",
   "aliases": ["counter strike", "global offensive", "csgo", "cs:go"],
   "color": "#000000",
-  "icon": "http://media.steampowered.com/apps/csgo/blog/images/tags/csgo_blog_tag.png",
+  "icon": "https://i.imgur.com/2ONuRD3.png",
   "providers": {
     "reddit": [
       {
