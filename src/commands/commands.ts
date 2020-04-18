@@ -372,7 +372,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
   'Notify all subs of a game.',
   'notifyGameSubs (<game name>) <message>',
   // Group trigger
-  /^\s*(notify(Game)?Subs)(?<group>.*?)$/,
+  /^\s*(notify(Game)?Subs)(?<group>(?:.|\s)*?)$/,
   // Action trigger
   /^\s+\((?<alias>.*?)\)\s+(?<msg>(?:.|\s)*)\s*$/,
   // Action
@@ -845,7 +845,7 @@ const commands: CommandGroup = new CommandGroup(
     const userTag = EscapeRegex(bot.getUserTag());
     const channelPrefix = EscapeRegex(channel.prefix);
     return new RegExp(
-      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>.*?)(\\s*${userTag})?\\s*$`,
+      `^\\s*((${userTag})|((${channelPrefix})(\\s*${userTag})?)|((${bot.prefix})\\s*(${userTag})))\\s*(?<group>(?:.|\\s)*?)(\\s*${userTag})?\\s*$`,
     );
   },
   // Default action
