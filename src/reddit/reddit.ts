@@ -3,6 +3,7 @@ import ConfigManager from '../managers/config_manager';
 import ProjectManager from '../managers/project_manager';
 import Logger from '../logger';
 import RedditPost from './reddit_post';
+import { StrUtil } from '../util/util';
 
 let reddit: Snoowrap;
 let isInit = false;
@@ -77,7 +78,12 @@ export default class Reddit {
       const submissions = await reddit.getSubreddit(subreddit).getNew({ limit: 50 });
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
     } catch (error) {
-      Reddit.logger.error(`Failed to get submissions on /r/${subreddit}:\n${error}`);
+      Reddit.logger.error(
+        `Failed to get submissions on /r/${subreddit}:\n${StrUtil.naturalLimit(
+          error.toString(),
+          5000,
+        )}`,
+      );
     }
     return posts;
   }
@@ -94,7 +100,9 @@ export default class Reddit {
       const submissions = await reddit.getUser(user).getSubmissions();
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
     } catch (error) {
-      Reddit.logger.error(`Failed to get submissions by /r/${user}:\n${error}`);
+      Reddit.logger.error(
+        `Failed to get submissions by /r/${user}:\n${StrUtil.naturalLimit(error.toString(), 5000)}`,
+      );
     }
     return posts;
   }
