@@ -4,7 +4,6 @@
 import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
-import DataManager from '../managers/data_manager';
 import Game from '../game';
 import { mapAsync, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
