@@ -1,6 +1,5 @@
 import Logger from './logger';
 import getBots from './bots/bots';
-import commands from './commands/commands';
 import Updater from './updater';
 import InitManager from './managers/init_manager';
 import ProjectManager from './managers/project_manager';
@@ -23,6 +22,7 @@ export default class Main {
 
   /** Registers the bot commands. */
   public static async registerCommands() {
+    const commands = (await import('./commands/commands')).default;
     const startTime = Date.now();
     const bots = getBots();
 
