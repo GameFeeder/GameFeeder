@@ -69,7 +69,7 @@ export default class DotaProvider extends Provider {
     const $ = pageDoc;
 
     // This has to be a named function to set new `this` scope
-    // eslint-disable-next-line func-names
+    // eslint-disable-next-line func-names, prettier/prettier
     $('#PatchSelector option').each(function() {
       const option = $(this).val();
       // botLogger.info(option);
