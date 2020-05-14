@@ -133,7 +133,7 @@ export default class Channel {
     // Check if the channel is already registered
     const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
     if (existingChannelId < 0) {
-      this.bot.logger.error(`Can't disable channel ${this.label}, not found in subscribers.`);
+      return;
     }
     const existingChannel = channels[existingChannelId];
 
