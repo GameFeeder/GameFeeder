@@ -92,7 +92,7 @@ So far, we are supporting the following games:
 
 - <strong align="left">Artifact</strong> <img src="https://i.imgur.com/DblOFap.png" height="17px"/>
   - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/Artifact](https://www.reddit.com/r/Artifact/)
-  - Posts on the [Steam feed](https://steamcommunity.com/games/583950/announcements)
+  - Posts on the [Steam feed](https://steamcommunity.com/games/1269260/announcements)
 - <strong align="left">CS:GO</strong> <img src="https://i.imgur.com/2ONuRD3.png" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
   - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
