@@ -1,0 +1,22 @@
+{
+  "name": "satisfactory",
+  "label": "Satisfactory",
+  "aliases": ["satisfactory"],
+  "color": "#283b4e",
+  "icon": "https://i.imgur.com/RgtzvdT.png",
+  "telegramIVTemplates": [],
+  "providers": {
+    "reddit": [
+      {
+        "urlFilters": [],
+        "subreddit": "SatisfactoryGame",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 526870,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
