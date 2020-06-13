@@ -103,6 +103,8 @@ So far, we are supporting the following games:
   - Blog posts on the [Dota 2 Blog](http://blog.dota2.com/?l=english)
 - <strong align="left">Factorio</strong> <img src="https://i.imgur.com/7D0A9eT.png" height="17px"/>
   - Posts on the [Steam feed](https://steamcommunity.com/games/427520/announcements)
+- <strong align="left">Satisfactory</strong> <img src="https://i.imgur.com/RgtzvdT.png" height="17px"/>
+  - Posts on the [Steam feed](https://steamcommunity.com/games/526870/announcements)
 - <strong align="left">Steam</strong> <img src="https://i.imgur.com/QbzZxrC.png" height="17px"/>
   - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
   - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
