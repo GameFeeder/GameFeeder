@@ -17,7 +17,7 @@ export default class Main {
     InitManager.initAll();
     await Main.registerCommands();
     await Main.startBots();
-    await Main.startUpdater();
+    await Main.startUpdaters();
   }
 
   /** Registers the bot commands. */
@@ -62,12 +62,16 @@ export default class Main {
     Main.logger.info(`Started bots in ${time} ms.`);
   }
 
-  /** Starts the updater. */
-  public static async startUpdater() {
-    if (Updater.getUpdater().enabled) {
-      Updater.getUpdater().start();
-      Updater.logger.info('Started updater.');
-    }
+  /** Starts the updaters. */
+  public static async startUpdaters() {
+    const updaters = Updater.getUpdaters();
+
+    updaters.forEach((updater) => {
+      if (updater.enabled) {
+        updater.start();
+        updater.logger.info('Started updater.');
+      }
+    });
   }
 }
 

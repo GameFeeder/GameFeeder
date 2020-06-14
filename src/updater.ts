@@ -7,9 +7,10 @@ import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
 
 export default class Updater {
-  private static updater: Updater;
+  private static updaters: Updater[];
 
-  public static logger = new Logger('Updater');
+  public logger: Logger;
+  public providerKey: string;
   public enabled: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
@@ -22,7 +23,9 @@ export default class Updater {
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor() {
+  constructor(providerKey: string) {
+    this.providerKey = providerKey;
+    this.logger = new Logger(`Updater (${this.providerKey})`);
     const updaterConfig = ConfigManager.getUpdaterConfig();
     const updaterData = DataManager.getUpdaterData();
 
@@ -33,11 +36,11 @@ export default class Updater {
     this.enabled = updaterConfig.enabled;
     this.autosave = updaterConfig.autosave;
   }
-  public static getUpdater(): Updater {
-    if (!this.updater) {
-      this.updater = new Updater();
+  public static getUpdaters(): Updater[] {
+    if (!this.updaters) {
+      this.updaters = [new Updater('steam'), new Updater('rss'), new Updater('dota')];
     }
-    return this.updater;
+    return this.updaters;
   }
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
@@ -87,7 +90,7 @@ export default class Updater {
 
       const endPollTime = Date.now();
       const pollTime = endPollTime - startTime;
-      Updater.logger.info(
+      this.logger.info(
         `Found ${notifications.length} posts in ${pollTime} ms. Notifying channels...`,
       );
 
@@ -103,10 +106,10 @@ export default class Updater {
         }
       }
       const notifyTime = Date.now() - endPollTime;
-      Updater.logger.info(`Notified channels in ${notifyTime} ms.`);
+      this.logger.info(`Notified channels in ${notifyTime} ms.`);
     }
     const updateTime = Date.now() - startTime;
-    Updater.logger.debug(`Finished update cycle in ${updateTime} ms.`);
+    this.logger.debug(`Finished update cycle in ${updateTime} ms.`);
   }
 
   /** Get the updates for the specified game.
@@ -115,14 +118,9 @@ export default class Updater {
    */
   public async updateGame(game: Game): Promise<Notification[]> {
     const gameStartTime = Date.now();
-    // Get provider notifications concurrently
-    const handles = game.providers.map((provider) =>
-      provider.getNotifications(this.lastUpdate, this.limit),
-    );
-
-    // Combine the provider notifications
-    const providerNotifications = await Promise.all(handles);
-    let gameNotifications: Notification[] = [].concat(...providerNotifications);
+    // Get provider notifications
+    let gameNotifications =
+      (await game.providers[this.providerKey]?.getNotifications(this.lastUpdate, this.limit)) ?? [];
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
@@ -130,9 +128,7 @@ export default class Updater {
 
       const gameEndTime = Date.now();
       const gameTime = Math.abs(gameStartTime - gameEndTime);
-      Updater.logger.info(
-        `Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`,
-      );
+      this.logger.info(`Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`);
     }
     return gameNotifications;
   }
@@ -168,7 +164,7 @@ export default class Updater {
         this.updateHealthcheck();
       }
     } catch (error) {
-      Updater.logger.error(`Update loop failed:\n${error}`);
+      this.logger.error(`Update loop failed:\n${error}`);
     } finally {
       if (this.doUpdates) {
         // Update again after the delay

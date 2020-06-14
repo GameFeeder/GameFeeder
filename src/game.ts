@@ -7,6 +7,10 @@ import DotaProvider from './providers/dota_provider';
 import TelegramIVTemplate from './telegram_iv_template';
 import SteamProvider from './providers/steam_provider';
 
+export type Providers = {
+  [index: string]: Provider;
+};
+
 /** A representation of a game. */
 export default class Game {
   private static games: Game[];
@@ -22,7 +26,7 @@ export default class Game {
   /** The game icon. */
   public icon: string;
   /** The game providers. */
-  public providers: Provider[];
+  public providers: Providers;
   /** The Telegram IV templates. */
   public telegramIVTemplates: TelegramIVTemplate[];
 
@@ -38,7 +42,7 @@ export default class Game {
     label: string,
     color: string,
     icon: string,
-    providers: Provider[],
+    providers: Providers,
     telegramIVTemplates: TelegramIVTemplate[],
   ) {
     this.name = name;
@@ -113,40 +117,36 @@ export default class Game {
         gameSettings.label,
         gameSettings.color,
         gameSettings.icon,
-        null,
+        {},
         telegramIVtemplates,
       );
 
-      // Add providers
-      const providers: Provider[] = [];
-
       // Reddit providers
-      if (gameSettings.providers.reddit) {
-        gameSettings.providers.reddit.forEach((redditProvider) => {
-          if (redditProvider.users) {
-            const subreddit = redditProvider.subreddit;
-            const users: RedditUser[] = redditProvider.users;
-            const redditUsers = users.map(
-              (user) => new RedditUserProvider(user.name, user.titleFilter),
-            );
-            const urlFilters = redditProvider.urlFilters ? redditProvider.urlFilters : [];
-            providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
-          }
-        });
-      }
+      // if (gameSettings.providers.reddit) {
+      //   gameSettings.providers.reddit.forEach((redditProvider) => {
+      //     if (redditProvider.users) {
+      //       const subreddit = redditProvider.subreddit;
+      //       const users: RedditUser[] = redditProvider.users;
+      //       const redditUsers = users.map(
+      //         (user) => new RedditUserProvider(user.name, user.titleFilter),
+      //       );
+      //       const urlFilters = redditProvider.urlFilters ? redditProvider.urlFilters : [];
+      //       providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
+      //     }
+      //   });
+      // }
 
       // Blog providers
       if (gameSettings.providers.rss) {
         for (const blog of gameSettings.providers.rss) {
-          providers.push(new RSSProvider(blog.url, blog.label, game, blog.flavor));
+          game.providers.rss = new RSSProvider(blog.url, blog.label, game, blog.flavor);
         }
       }
       // Steam providers
       if (gameSettings.providers.steam) {
         const steamSettings = gameSettings.providers.steam;
-        providers.push(new SteamProvider(steamSettings.appID, steamSettings.feeds, game));
+        game.providers.steam = new SteamProvider(steamSettings.appID, steamSettings.feeds, game);
       }
-      game.providers = providers;
 
       games.push(game);
     }
@@ -156,7 +156,7 @@ export default class Game {
     // Unique providers
     for (const game of games) {
       if (game.name === 'dota') {
-        game.providers.push(new DotaProvider());
+        game.providers.dota = new DotaProvider();
       }
     }
 
