@@ -1,6 +1,30 @@
-{
-  "updateDelaySec": 10,
-  "limit": 3,
-  "enabled": true,
-  "autosave": true
-}
+[
+  {
+    "key": "reddit",
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  {
+    "key": "steam",
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  {
+    "key": "rss",
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  {
+    "key": "dota",
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  }
+]

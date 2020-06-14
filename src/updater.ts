@@ -10,7 +10,7 @@ export default class Updater {
   private static updaters: Updater[];
 
   public logger: Logger;
-  public providerKey: string;
+  public key: string;
   public enabled: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
@@ -23,22 +23,37 @@ export default class Updater {
   /** Creates a new Updater.
    * @param {number} updateDelaySec - The initial delay in seconds.
    */
-  constructor(providerKey: string) {
-    this.providerKey = providerKey;
-    this.logger = new Logger(`Updater (${this.providerKey})`);
-    const updaterConfig = ConfigManager.getUpdaterConfig();
-    const updaterData = DataManager.getUpdaterData();
+  constructor(key: string, enabled: boolean, autosave: boolean, delaySec: number, limit: number) {
+    this.key = key;
+    this.logger = new Logger(`Updater (${this.key})`);
 
-    this.setDelaySec(updaterConfig.updateDelaySec);
-    this.limit = updaterConfig.limit;
-    this.lastUpdate = updaterData.lastUpdate ? new Date(updaterData.lastUpdate) : new Date();
+    const data = DataManager.getUpdaterData(this.key);
+
+    if (!data) throw Error(`No data object initialized for updater '${this.key}'`);
+
+    this.setDelaySec(delaySec);
+    this.limit = limit;
+    this.lastUpdate = data.lastUpdate ? new Date(data.lastUpdate) : new Date();
     this.doUpdates = false;
-    this.enabled = updaterConfig.enabled;
-    this.autosave = updaterConfig.autosave;
+    this.enabled = enabled;
+    this.autosave = autosave;
   }
   public static getUpdaters(): Updater[] {
     if (!this.updaters) {
-      this.updaters = [new Updater('steam'), new Updater('rss'), new Updater('dota')];
+      const updaterConfig = ConfigManager.getUpdatersConfig();
+
+      const updaters = updaterConfig.map(
+        (config) =>
+          new Updater(
+            config.key,
+            config.enabled,
+            config.autosave,
+            config.updateDelaySec,
+            config.limit,
+          ),
+      );
+
+      this.updaters = updaters;
     }
     return this.updaters;
   }
@@ -120,7 +135,7 @@ export default class Updater {
     const gameStartTime = Date.now();
     // Get provider notifications
     let gameNotifications =
-      (await game.providers[this.providerKey]?.getNotifications(this.lastUpdate, this.limit)) ?? [];
+      (await game.providers[this.key]?.getNotifications(this.lastUpdate, this.limit)) ?? [];
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
@@ -136,20 +151,20 @@ export default class Updater {
   public saveDate(date: Date): void {
     this.lastUpdate = date;
     if (this.autosave) {
-      const data = DataManager.getUpdaterData();
+      const data = DataManager.getUpdaterData(this.key);
       data.lastUpdate = date.toISOString();
-      DataManager.setUpdaterData(data);
+      DataManager.setUpdaterData(this.key, data);
     }
   }
 
   public loadDate(): void {
-    this.lastUpdate = new Date(DataManager.getUpdaterData().lastUpdate);
+    this.lastUpdate = new Date(DataManager.getUpdaterData(this.key).lastUpdate);
   }
 
   public updateHealthcheck(): void {
-    const data = DataManager.getUpdaterData();
+    const data = DataManager.getUpdaterData(this.key);
     data.healthcheckTimestamp = new Date().toISOString();
-    DataManager.setUpdaterData(data);
+    DataManager.setUpdaterData(this.key, data);
   }
 
   /** Updates in the specified time interval.

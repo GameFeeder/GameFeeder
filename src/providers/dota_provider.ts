@@ -8,13 +8,14 @@ import ConfigManager from '../managers/config_manager';
 import Logger from '../logger';
 
 export default class DotaProvider extends Provider {
+  public static key = 'dota';
   public static logger = new Logger('Dota Provider');
   public lastPatch: string;
 
   constructor() {
     super(`http://www.dota2.com/patches/`, `Gameplay Patch`, Game.getGameByName('dota'));
 
-    this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
+    this.lastPatch = DataManager.getUpdaterData(DotaProvider.key).lastVersion;
   }
 
   public async getNotifications(): Promise<Notification[]> {
@@ -55,11 +56,13 @@ export default class DotaProvider extends Provider {
     this.lastPatch = lastPatch;
 
     // If enabled, save the date in the data file.
-    const updaterConfig = ConfigManager.getUpdaterConfig();
+    const updaterConfig = ConfigManager.getUpdatersConfig().find(
+      (config) => config.key === DotaProvider.key,
+    );
     if (updaterConfig.autosave) {
-      const updaterData = DataManager.getUpdaterData();
-      updaterData.lastDotaPatch = lastPatch;
-      DataManager.setUpdaterData(updaterData);
+      const updaterData = DataManager.getUpdaterData(DotaProvider.key);
+      updaterData.lastVersion = lastPatch;
+      DataManager.setUpdaterData(DotaProvider.key, updaterData);
     }
   }
 
@@ -70,7 +73,7 @@ export default class DotaProvider extends Provider {
 
     // This has to be a named function to set new `this` scope
     // eslint-disable-next-line func-names, prettier/prettier
-    $('#PatchSelector option').each(function() {
+    $('#PatchSelector option').each(function () {
       const option = $(this).val();
       // botLogger.info(option);
       if (option !== 'Select an Update...') {

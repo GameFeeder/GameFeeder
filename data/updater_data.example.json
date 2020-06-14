@@ -1,5 +1,19 @@
 {
-  "lastUpdate": "2019-03-10",
-  "lastDotaPatch": "7.22c",
-  "healthcheckTimestamp": ""
+  "reddit": {
+    "lastUpdate": "2019-03-10",
+    "healthcheckTimestamp": ""
+  },
+  "steam": {
+    "lastUpdate": "2019-03-10",
+    "healthcheckTimestamp": ""
+  },
+  "rss": {
+    "lastUpdate": "2019-03-10",
+    "healthcheckTimestamp": ""
+  },
+  "dota": {
+    "lastUpdate": "2019-03-10",
+    "lastVersion": "7.26b",
+    "healthcheckTimestamp": ""
+  }
 }

@@ -29,12 +29,16 @@ export type SubscriberData = {
   telegram: Subscriber[];
 };
 
+export type UpdatersData = {
+  [index: string]: UpdaterData;
+};
+
 /** The data for the updater. */
 export type UpdaterData = {
   /** The time of the last update. */
   lastUpdate: string;
-  /** The version string of the last dota patch. */
-  lastDotaPatch: string;
+  /** The version string of the last patch. */
+  lastVersion?: string;
   /** Timestamp of the last update cycle run */
   healthcheckTimestamp: string;
 };
@@ -93,13 +97,25 @@ export default class DataManager {
     this.writeObject(DATA.SUBS, data);
   }
 
-  /** Gets the updater data as an object. */
-  public static getUpdaterData(): UpdaterData {
-    return this.parseFile(DATA.UPDATER) as UpdaterData;
+  /** Gets the data of all updaters as an object. */
+  public static getUpdatersData(): UpdatersData {
+    return this.parseFile(DATA.UPDATER) as UpdatersData;
   }
 
-  /** Sets the updater data. */
-  public static setUpdaterData(data: UpdaterData): void {
+  /** Gets the data of an updater as an object. */
+  public static getUpdaterData(key: string): UpdaterData {
+    return this.getUpdatersData()[key];
+  }
+
+  /** Sets the data of all updaters. */
+  public static setUpdatersData(data: UpdatersData): void {
     this.writeObject(DATA.UPDATER, data);
+  }
+
+  /** Sets the data of an updater. */
+  public static setUpdaterData(key: string, data: UpdaterData): void {
+    const updatersData = this.getUpdatersData();
+    updatersData[key] = data;
+    this.setUpdatersData(updatersData);
   }
 }
