@@ -1,11 +1,12 @@
 import ConfigManager, { RedditUser } from './managers/config_manager';
 import Provider from './providers/provider';
 import RSSProvider from './providers/rss_provider';
-import RedditProvider from './providers/reddit_provider';
+import SubredditProvider from './providers/subreddit_provider';
 import RedditUserProvider from './reddit/reddit_user';
 import DotaProvider from './providers/dota_provider';
 import TelegramIVTemplate from './telegram_iv_template';
 import SteamProvider from './providers/steam_provider';
+import RedditProvider from './providers/reddit_provider';
 
 export type Providers = {
   [index: string]: Provider;
@@ -122,19 +123,23 @@ export default class Game {
       );
 
       // Reddit providers
-      // if (gameSettings.providers.reddit) {
-      //   gameSettings.providers.reddit.forEach((redditProvider) => {
-      //     if (redditProvider.users) {
-      //       const subreddit = redditProvider.subreddit;
-      //       const users: RedditUser[] = redditProvider.users;
-      //       const redditUsers = users.map(
-      //         (user) => new RedditUserProvider(user.name, user.titleFilter),
-      //       );
-      //       const urlFilters = redditProvider.urlFilters ? redditProvider.urlFilters : [];
-      //       providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
-      //     }
-      //   });
-      // }
+      if (gameSettings.providers.reddit) {
+        const subredditProviders: SubredditProvider[] = [];
+        gameSettings.providers.reddit.forEach((subredditConfig) => {
+          if (subredditConfig.users) {
+            const subreddit = subredditConfig.subreddit;
+            const users: RedditUser[] = subredditConfig.users;
+            const redditUsers = users.map(
+              (user) => new RedditUserProvider(user.name, user.titleFilter),
+            );
+            const urlFilters = subredditConfig.urlFilters ? subredditConfig.urlFilters : [];
+            subredditProviders.push(
+              new SubredditProvider(redditUsers, subreddit, urlFilters, game),
+            );
+          }
+        });
+        game.providers.reddit = new RedditProvider(subredditProviders, game);
+      }
 
       // Blog providers
       if (gameSettings.providers.rss) {

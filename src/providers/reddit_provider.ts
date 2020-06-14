@@ -1,43 +1,29 @@
-import Snoowrap from 'snoowrap';
-import Game from '../game';
-import Notification from '../notifications/notification';
 import Provider from './provider';
-import Reddit from '../reddit/reddit';
-import RedditUserProvider from '../reddit/reddit_user';
-import { sortLimitEnd } from '../util/comparable';
+import SubredditProvider from './subreddit_provider';
+import Game from '../game';
 import { mapAsync } from '../util/util';
+import Notification from '../notifications/notification';
+import { sortLimitEnd } from '../util/comparable';
 
 export default class RedditProvider extends Provider {
-  public users: RedditUserProvider[];
-  public subreddit: string;
-  public urlFilters: string[];
-  public reddit: Snoowrap;
+  public subredditProviders: SubredditProvider[];
 
-  constructor(users: RedditUserProvider[], subreddit: string, urlFilters: string[], game: Game) {
-    super(`https://www.reddit.com/r/${subreddit}`, `/r/${subreddit}`, game);
-    this.subreddit = subreddit;
-    this.urlFilters = urlFilters;
-    this.users = users;
-    Reddit.init();
+  constructor(subredditProviders: SubredditProvider[], game: Game) {
+    super(`https://www.reddit.com`, `Reddit`, game);
+    this.subredditProviders = subredditProviders;
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
-    const userNotifications = await mapAsync(this.users, async (user) => {
-      let userPosts = await Reddit.getUserPosts(user.name);
-      // Filter out irrelevant posts
-      userPosts = userPosts.filter((post) => {
-        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
-        const isCorrectSub = post.isCorrectSub(this.subreddit);
-        return isValid && isCorrectSub;
-      });
-      return userPosts.map((post) => post.toGameNotification(this.game));
-    });
+    // Get the notifications from each subreddit asynchronously
+    const subredditNotifications = await mapAsync(this.subredditProviders, (subreddit) =>
+      subreddit.getNotifications(date, limit),
+    );
 
-    // Combine the user notifications
-    let notifications = [].concat(...userNotifications);
-    // Limit the length
+    // Merge the results
+    let notifications = [].concat(...subredditNotifications);
     notifications = sortLimitEnd(notifications, limit);
 
+    // Merge the results
     return notifications;
   }
 }
