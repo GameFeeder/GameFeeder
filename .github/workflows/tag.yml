@@ -1,4 +1,4 @@
-name: tag-flow
+name: tag
 
 on:
   push:
