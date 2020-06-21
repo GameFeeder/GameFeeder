@@ -1,8 +1,13 @@
-![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
-![Release](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)
-![Docker image size](https://img.shields.io/docker/image-size/gamefeeder/gamefeeder/latest)
+
+
 
 # GameFeeder <!-- omit in toc -->
+[![Release version](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)](https://github.com/GameFeeder/GameFeeder/releases)
+[![Docker image size](https://img.shields.io/docker/image-size/gamefeeder/gamefeeder/latest)](https://hub.docker.com/r/gamefeeder/gamefeeder/tags)
+[![GitHub](https://img.shields.io/github/license/GameFeeder/GameFeeder)](https://github.com/GameFeeder/GameFeeder/blob/master/LICENSE)
+[![Build status](https://github.com/GameFeeder/GameFeeder/workflows/build/badge.svg)](https://github.com/GameFeeder/GameFeeder/actions?query=workflow%3Abuild)
+[![Lint status](https://github.com/GameFeeder/GameFeeder/workflows/lint/badge.svg)](https://github.com/GameFeeder/GameFeeder/actions?query=workflow%3Alint)
+[![Test status](https://github.com/GameFeeder/GameFeeder/workflows/test/badge.svg)](https://github.com/GameFeeder/GameFeeder/actions?query=workflow%3Atest)
 
 You can use this bot to get notified about updates and blog posts for multiple games. With the commands you can modify which notifications you want to receive.
 
