@@ -2,7 +2,7 @@
 ![Release](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)
 ![Docker image size](https://img.shields.io/docker/image-size/gamefeeder/gamefeeder/latest)
 
-# GameFeeder <!-- omit in toc -->
+# <img src="https://i.imgur.com/rI0M22B.png" height="32px"/> GameFeeder <!-- omit in toc -->
 
 You can use this bot to get notified about updates and blog posts for multiple games. With the commands you can modify which notifications you want to receive.
 
