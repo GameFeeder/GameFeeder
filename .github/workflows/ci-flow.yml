@@ -13,13 +13,13 @@ jobs:
         run: docker build . --target=workspace -t workspace
 
       - name: Check for code style & formatting
-        run: docker run init workspace yarn lint
+        run: docker run --init workspace yarn lint
 
       - name: Run typescript compiler
-        run: docker run init workspace yarn build
+        run: docker run --init workspace yarn build
 
       - name: Run the tests
-        run: docker run init workspace yarn test
+        run: docker run --init workspace yarn test
 
         env:
           CI: true
