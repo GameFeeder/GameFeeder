@@ -6,20 +6,30 @@ jobs:
   CI:
     runs-on: ubuntu-18.04
 
-    steps:
-      - uses: actions/checkout@v1
+    strategy:
+      matrix:
+        node-version: [12.18.1]
 
-      - name: Build the workspace image
-        run: docker build . --target=workspace -t workspace
+    steps:
+      - name: Checkout the source code
+        uses: actions/checkout@v1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn install
 
       - name: Check for code style & formatting
-        run: docker run --init workspace yarn lint
+        run: yarn lint
 
       - name: Run typescript compiler
-        run: docker run --init workspace yarn build
+        run: yarn build
 
       - name: Run the tests
-        run: docker run --init workspace yarn test
+        run: yarn test
 
         env:
           CI: true
