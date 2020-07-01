@@ -1,4 +1,4 @@
-import { mapAsync, filterAsync, naturalJoin, ObjUtil, StrUtil } from './util';
+import { mapAsync, filterAsync, naturalJoin, ObjUtil, StrUtil } from '../src/util/util';
 
 describe('Util', () => {
   describe('map async', () => {

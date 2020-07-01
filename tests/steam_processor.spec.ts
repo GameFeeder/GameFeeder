@@ -1,4 +1,4 @@
-import SteamProcessor from './steam_processor';
+import SteamProcessor from '../src/processors/steam_processor';
 
 describe('Steam processor', () => {
   describe('processing', () => {
