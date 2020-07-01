@@ -79,5 +79,14 @@
     "snoowrap": "1.21.0",
     "turndown": "6.0.0",
     "winston": "3.2.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
   }
 }
