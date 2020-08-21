@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 // TODO: Revisit these overrides
 /* eslint-disable prefer-template */
 /* eslint-disable @typescript-eslint/no-use-before-define */

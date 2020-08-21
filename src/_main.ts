@@ -9,7 +9,7 @@ export default class Main {
   public static logger = new Logger('Main');
 
   /** Registers the commands, starts the bots and the updater. */
-  public static async start() {
+  public static async start(): Promise<void> {
     Main.logger.info(
       `Starting main in ${ProjectManager.getEnvironment()} mode,` +
         ` v${ProjectManager.getVersionNumber()}.`,
@@ -21,7 +21,7 @@ export default class Main {
   }
 
   /** Registers the bot commands. */
-  public static async registerCommands() {
+  public static async registerCommands(): Promise<void> {
     const commands = (await import('./commands/commands')).default;
     const startTime = Date.now();
     const bots = getBots();
@@ -41,7 +41,7 @@ export default class Main {
   }
 
   /** Starts the bots. */
-  public static async startBots() {
+  public static async startBots(): Promise<void> {
     const startTime = Date.now();
     // Start bots
     await mapAsync(getBots(), async (bot) => {
@@ -63,7 +63,7 @@ export default class Main {
   }
 
   /** Starts the updater. */
-  public static async startUpdater() {
+  public static async startUpdater(): Promise<void> {
     if (Updater.getUpdater().enabled) {
       Updater.getUpdater().start();
       Updater.logger.info('Started updater.');

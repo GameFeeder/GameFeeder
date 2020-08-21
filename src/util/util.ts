@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+export type JSONObj = Record<string, unknown> | string[];
+
 /** Applies a function on every array element.
  *
  * @param array - The array to apply the function to.
@@ -76,7 +78,7 @@ export class StrUtil {
 }
 
 export class ObjUtil {
-  public static keys(object: object): string[] {
+  public static keys(object: JSONObj): string[] {
     if (!(object instanceof Object)) {
       return [];
     }
@@ -89,7 +91,7 @@ export class ObjUtil {
    * @param object - The object to get the inner object of.
    * @param path - The path of the inner object.
    */
-  public static getInnerObject(object: object, path?: string[]): object {
+  public static getInnerObject(object: JSONObj, path?: string[]): JSONObj {
     if (!path || path.length === 0) {
       // _.get returns undefined in this case, so we needed a function for this
       return object;
