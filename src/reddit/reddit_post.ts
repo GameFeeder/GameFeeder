@@ -79,7 +79,7 @@ export default class RedditPost {
   }
 
   /** Determines if the post is 'valid' and should be send to the users. */
-  public isValid(date: Date, titleFilter: RegExp, urlFilters: string[]) {
+  public isValid(date: Date, titleFilter: RegExp, urlFilters: string[]): boolean {
     return (
       this.isNew(date) &&
       this.hasValidTitle(titleFilter) &&

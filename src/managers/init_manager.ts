@@ -15,7 +15,7 @@ export default class InitManager {
    *
    * @param fileName - The name of the example file to get the file name of.
    */
-  public static getExampleFileName(fileName: string) {
+  public static getExampleFileName(fileName: string): string {
     return fileName + this.exampleExt;
   }
 
@@ -23,7 +23,7 @@ export default class InitManager {
    *
    * @param fileName - The name of the user file to get the file name of.
    */
-  public static getUserFileName(fileName: string) {
+  public static getUserFileName(fileName: string): string {
     return fileName + this.userExt;
   }
 
@@ -154,7 +154,11 @@ export default class InitManager {
     return this.addMissingUserFiles(dataPath);
   }
 
-  public static getMissingKeys(reference: object, object: object, path?: string[]): string[][] {
+  public static getMissingKeys(
+    reference: Record<string, unknown>,
+    object: Record<string, unknown>,
+    path?: string[],
+  ): string[][] {
     const refTarget = ObjUtil.getInnerObject(reference, path);
     const objTarget = ObjUtil.getInnerObject(object, path);
 
@@ -177,9 +181,9 @@ export default class InitManager {
   }
 
   public static addMissingKeys(
-    reference: object,
-    object: object,
-  ): { object: object; keys: string[][] } {
+    reference: Record<string, unknown>,
+    object: Record<string, unknown>,
+  ): { object: Record<string, unknown>; keys: string[][] } {
     const missing = this.getMissingKeys(reference, object);
     let newObj = object;
 
@@ -191,7 +195,7 @@ export default class InitManager {
     return { object: newObj, keys: missing };
   }
 
-  public static addMissingUserKeys(path: string) {
+  public static addMissingUserKeys(path: string): void {
     const exampleFiles = this.getExampleFiles(path);
     const userFiles = this.getUserFiles(path);
 
@@ -217,18 +221,18 @@ export default class InitManager {
     }
   }
 
-  public static addMissingUserConfigKeys() {
+  public static addMissingUserConfigKeys(): void {
     const configPath = ConfigManager.basePath;
     return this.addMissingUserKeys(configPath);
   }
 
-  public static addMissingUserDataKeys() {
+  public static addMissingUserDataKeys(): void {
     const configPath = DataManager.basePath;
     return this.addMissingUserKeys(configPath);
   }
 
   /** Initializes and validates all config and data files. */
-  public static initAll() {
+  public static initAll(): void {
     this.addMissingUserConfigKeys();
     this.addMissingUserDataKeys();
     this.addMissingUserConfigs();

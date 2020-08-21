@@ -203,7 +203,7 @@ export default abstract class BotClient {
   }
 
   /** Removes the data of all channels without write permissions. */
-  public async removeChannelsWithoutWritePermissions() {
+  public async removeChannelsWithoutWritePermissions(): Promise<void> {
     const user = await this.getUser();
     const channels = this.getBotChannels();
     const permissions = await mapAsync(channels, (channel) =>
@@ -344,7 +344,7 @@ export default abstract class BotClient {
   }
 
   /** Called when the bot is removed from the given channel. */
-  public async onRemoved(channel: Channel) {
+  public async onRemoved(channel: Channel): Promise<void> {
     if (this.removeData(channel)) {
       this.logger.info(`Bot removed from channel, removing channel data.`);
     }

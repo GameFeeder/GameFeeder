@@ -12,9 +12,6 @@ import Message from '../message';
 import Permissions from '../permissions';
 import Game from '../game';
 
-// node-telegram-bot-api includes snake_case properties
-/* eslint-disable @typescript-eslint/camelcase */
-
 enum MessageType {
   notification = 'notification',
   command = 'command',

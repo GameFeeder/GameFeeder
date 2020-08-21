@@ -24,7 +24,7 @@ export default class RSSItem implements Comparable<RSSItem> {
     this.feed = feed;
   }
 
-  public compareTo(other: RSSItem) {
+  public compareTo(other: RSSItem): -1 | 0 | 1 {
     if (this.timestamp < other.timestamp) {
       return -1;
     }
