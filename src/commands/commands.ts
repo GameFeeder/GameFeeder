@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 // TODO: Revisit these overrides
 /* eslint-disable prefer-template */
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
