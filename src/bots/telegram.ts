@@ -284,7 +284,7 @@ export default class TelegramBot extends BotClient {
       const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
       // FIX: Properly identify the user key
       const user = new User(this, userID);
-      const content = msg.text;
+      const content = msg.text ?? '';
       // Convert from Unix time to date
       const timeNumber = Math.min(Date.now(), msg.date * 1000 + 500);
       const timestamp = new Date(timeNumber);
@@ -333,7 +333,7 @@ export default class TelegramBot extends BotClient {
         // Initialize user name and user tag
         try {
           const botUser = await this.bot.getMe();
-          this.userName = botUser.username;
+          this.userName = botUser.username ?? '';
           this.userTag = `@${this.userName}`;
         } catch (error) {
           this.logger.error(`Failed to get user name and user tag:\n${error}`);
