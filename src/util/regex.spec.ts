@@ -8,7 +8,7 @@ import MDRegex from './regex';
  * @param testStr - The string to test the regExp with.
  * @param results - The expected results of the match.
  */
-function testRegExp(regExp: RegExp, testStr: string, results: string[]) {
+function testRegExp(regExp: RegExp, testStr: string, results: Array<string | undefined>) {
   const match = regExp.exec(testStr);
 
   if (results.length === 0) {
