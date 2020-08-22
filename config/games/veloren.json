@@ -1,0 +1,21 @@
+{
+  "name": "veloren",
+  "label": "Veloren",
+  "aliases": ["veloren"],
+  "color": "#3083a6",
+  "icon": "https://veloren.net/Logo_Square.png",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "Veloren",
+        "users": []
+      }
+    ],
+    "rss": [
+      {
+        "label": "Veloren Blog",
+        "url": "https://veloren.net/rss.xml"
+      }
+    ]
+  }
+}
