@@ -28,6 +28,13 @@ export async function filterAsync<T>(
   return array.filter((value, index) => filterMap[index]);
 }
 
+export function matchGroups(match: RegExpMatchArray): { [key: string]: string } {
+  if (!match.groups) {
+    throw new Error('Missing RegExp match groups');
+  }
+  return match.groups;
+}
+
 /**
  * Merges an array of arrays into a single array.
  * @param arrays - The arrays to merge.

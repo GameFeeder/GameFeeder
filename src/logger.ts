@@ -34,7 +34,7 @@ export class MainLogger {
    * @param  {string} message - The message to debug-log.
    * @returns void
    */
-  public debug(message: string, label?: string | null): void {
+  public debug(message?: string, label?: string | null): void {
     this.logger.debug({ message, label });
   }
 
@@ -43,7 +43,7 @@ export class MainLogger {
    * @param  {string} message - The message to info-log.
    * @returns void
    */
-  public info(message: string, label?: string | null): void {
+  public info(message?: string, label?: string | null): void {
     this.logger.info({ message, label });
   }
 
@@ -52,7 +52,7 @@ export class MainLogger {
    * @param  {string} message - The message to warn-log.
    * @returns void
    */
-  public warn(message: string, label?: string | null): void {
+  public warn(message?: string, label?: string | null): void {
     this.logger.warn({ message, label });
   }
 
@@ -61,7 +61,7 @@ export class MainLogger {
    * @param  {string} message - The message to error-log.
    * @returns void
    */
-  public error(message: string, label?: string | null): void {
+  public error(message?: string, label?: string | null): void {
     this.logger.error({ message, label });
   }
 }
@@ -87,7 +87,7 @@ export default class Logger {
    * @param  {string} message - The message to debug-log.
    * @returns void
    */
-  public debug(message: string): void {
+  public debug(message?: string): void {
     mainLogger.debug(message, this.label);
   }
 
@@ -96,7 +96,7 @@ export default class Logger {
    * @param  {string} message - The message to info-log.
    * @returns void
    */
-  public info(message: string): void {
+  public info(message?: string): void {
     mainLogger.info(message, this.label);
   }
 
@@ -105,7 +105,7 @@ export default class Logger {
    * @param  {string} message - The message to warn-log.
    * @returns void
    */
-  public warn(message: string): void {
+  public warn(message?: string): void {
     mainLogger.warn(message, this.label);
   }
 
@@ -114,7 +114,7 @@ export default class Logger {
    * @param  {string} message - The message to error-log.
    * @returns void
    */
-  public error(message: string): void {
+  public error(message?: string): void {
     mainLogger.error(message, this.label);
   }
 }

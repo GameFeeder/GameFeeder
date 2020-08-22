@@ -5,7 +5,7 @@ import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import Game from '../game';
-import { mapAsync, naturalJoin } from '../util/util';
+import { mapAsync, matchGroups, naturalJoin } from '../util/util';
 import ProjectManager from '../managers/project_manager';
 import CommandGroup from './command_group';
 import SimpleAction from './simple_action';
@@ -132,7 +132,7 @@ const subCmd = new TwoPartCommand(
   // Action
   async (message, match) => {
     const channel = message.channel;
-    let alias: string = match.groups.alias;
+    let { alias } = matchGroups(match);
     alias = alias ? alias.trim() : '';
 
     const aliases = alias.split(', ');
@@ -215,7 +215,7 @@ const unsubCmd = new TwoPartCommand(
   // Action
   async (message, match) => {
     const channel = message.channel;
-    let { alias } = match.groups;
+    let { alias } = matchGroups(match);
     alias = alias ? alias.trim() : '';
 
     const aliases = alias.split(', ');
@@ -294,7 +294,7 @@ const prefixCmd = new TwoPartCommand(
   async (message, match) => {
     const bot = message.getBot();
     const channel = message.channel;
-    let { newPrefix } = match.groups;
+    let { newPrefix } = matchGroups(match);
     newPrefix = newPrefix ? newPrefix.trim() : '';
 
     // Check if the bot can write to this channel
@@ -334,7 +334,7 @@ const notifyAllCmd = new TwoPartCommand(
   /^\s+(?<msg>(?:.|\s)+?)\s*$/,
   // Action
   async (message, match) => {
-    let { msg } = match.groups;
+    let { msg } = matchGroups(match);
     msg = msg ? msg.trim() : '';
 
     // Check if the user has provided a message
@@ -376,7 +376,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
   /^\s+\((?<alias>.*?)\)\s+(?<msg>(?:.|\s)*)\s*$/,
   // Action
   async (message, match) => {
-    let { alias, msg } = match.groups;
+    let { alias, msg } = matchGroups(match);
     alias = alias ? alias.trim() : '';
     msg = msg ? msg.trim() : '';
 
@@ -467,7 +467,7 @@ const rollCmd = new TwoPartCommand(
   /^(?:(?<diceCountStr>\d+)\s*)?d(?<diceTypeStr>\d+)(?:\s*(?<modifierStr>(?:\+|-)\d+))?$/,
   // Action
   async (message, match) => {
-    const { diceCountStr, diceTypeStr, modifierStr } = match.groups;
+    const { diceCountStr, diceTypeStr, modifierStr } = matchGroups(match);
 
     let diceCount = diceCountStr ? parseInt(diceCountStr, 10) : 1;
     if (diceCount <= 0) {
@@ -547,7 +547,7 @@ const statsCmd = new TwoPartCommand(
       /\s*$/.source,
   ),
   async (message, match) => {
-    let { alias } = match.groups;
+    let { alias } = matchGroups(match);
     alias = alias ? alias.trim() : '';
 
     const game = Game.getGamesByAlias(alias)[0];
@@ -715,7 +715,7 @@ const labelCmd = new TwoPartCommand(
   // Action
   async (message, match) => {
     const originBot = message.getBot();
-    const { botName, channelID, desiredLabel } = match.groups;
+    const { botName, channelID, desiredLabel } = matchGroups(match);
 
     let targetBot = originBot;
     let targetChannel = message.channel;
@@ -742,7 +742,7 @@ const labelCmd = new TwoPartCommand(
       targetChannel = targetBot.getChannelByID(channelID);
     }
 
-    let label = desiredLabel.trim();
+    let label: string | undefined = desiredLabel.trim();
 
     // TODO: Maybe these logs should also be part of channel.ts, not sure though
     // Check if the user wants to reset the label
@@ -785,8 +785,9 @@ const labelCmd = new TwoPartCommand(
         message.content,
       );
       if (channelIDMatch) {
-        const channel = message.getBot().getChannelByID(channelIDMatch.groups.channelID);
-        const botName = channelIDMatch.groups.botName;
+        const channelIDGroups = matchGroups(channelIDMatch);
+        const channel = message.getBot().getChannelByID(channelIDGroups.channelID);
+        const botName = channelIDGroups.botName;
 
         let channelBot = message.getBot();
 
@@ -849,7 +850,7 @@ const commands: CommandGroup = new CommandGroup(
   },
   // Default action
   async (message, match) => {
-    const { group } = match.groups;
+    const { group } = matchGroups(match);
     await message.channel.bot.sendMessage(
       message.channel,
       `I don't know a command named '${group}'.\nTry the \`${commands.tryFindCmdLabel(
