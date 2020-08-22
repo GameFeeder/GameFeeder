@@ -145,10 +145,11 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
-    let hasAccess;
-    let canWrite;
-    let canEdit;
-    let canPin;
+    // Default values if the permissions can't be checked
+    let hasAccess = false;
+    let canWrite = false;
+    let canEdit = false;
+    let canPin = false;
 
     try {
       // Try to get chat
@@ -182,26 +183,42 @@ export default class TelegramBot extends BotClient {
         return new Permissions(false, false, false, false);
       }
 
-      hasAccess = !(chatMember.status === 'left' || chatMember.status === 'kicked');
+      // Chat type
+      const isChannel = chat.type === 'channel';
+      const isGroup = chat.type === 'group';
+      const isSuperGroup = chat.type === 'supergroup';
+
+      // Member status
+      const isAdmin = chatMember.status === 'administrator';
+      const isRestricted = chatMember.status === 'restricted';
+      const hasLeft = chatMember.status === 'left';
+      const isKicked = chatMember.status === 'kicked';
+
+      // Permissions
+      const canPostMsg = chatMember.can_post_messages ?? false;
+      const canSendMsg = chatMember.can_send_messages ?? false;
+      const canEditMsg = chatMember.can_edit_messages ?? false;
+      const canPinMsg = chatMember.can_pin_messages ?? false;
+
+      hasAccess = !(hasLeft || isKicked);
       canWrite =
         hasAccess &&
-        (chat.type === 'channel'
+        (isChannel
           ? // In channels the user must be an admin to write and have posting permissions
-            chatMember.status === 'administrator' && chatMember.can_post_messages
+            isAdmin && canPostMsg
           : // If the user is restricted, check permissions, else he can send messages
-          chatMember.status === 'restricted'
-          ? chatMember.can_send_messages
+          isRestricted
+          ? canSendMsg
           : true);
       // If the user is an admin, check permissions, else he cannot edit
-      canEdit =
-        hasAccess && (chatMember.status === 'administrator' ? chatMember.can_edit_messages : false);
+      canEdit = hasAccess && (isAdmin ? canEditMsg : false);
       canPin =
         hasAccess &&
         // Groups and supergroups only
-        (chat.type === 'group' || chat.type === 'supergroup'
+        (isGroup || isSuperGroup
           ? // Check if the permission is restricted
-            chatMember.status === 'restricted' || chatMember.status === 'administrator'
-            ? chatMember.can_pin_messages
+            isRestricted || isAdmin
+            ? canPinMsg
             : true
           : false);
     } catch (error) {
