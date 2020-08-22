@@ -282,13 +282,16 @@ export default class DiscordBot extends BotClient {
         }
       });
 
+      const user = this.bot.user;
+      if (!user) this.logger.error('Bot user not found');
+
       // Initialize user name and user tag
-      this.userName = this.bot.user.username;
-      this.userTag = `<@!${this.bot.user.id}>`;
+      this.userName = user?.username ?? 'UNKNOWN';
+      this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
 
       // Setup presence
       try {
-        this.bot.user.setPresence({
+        this.bot.user?.setPresence({
           status: 'online',
           activity: {
             type: 'PLAYING',
@@ -514,12 +517,8 @@ export default class DiscordBot extends BotClient {
 
     // TODO: Fix this unknown
     const callback = (error: Error | unknown) => {
-      let errorMsg;
-      if (error instanceof Error) {
-        errorMsg = `${error.name}: ${error.message}`;
-      } else {
-        errorMsg = error.toString();
-      }
+      const errorMsg = error instanceof Error ? `${error.name}: ${error.message}` : 'UNKNOWN ERROR';
+
       this.logger.error(`Failed to send message to channel ${channel.label}:\n${errorMsg}`);
       return false;
     };
