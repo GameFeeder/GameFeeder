@@ -22,9 +22,9 @@ export default abstract class BotClient {
   /** The logger used for this bot. */
   public logger: Logger;
   /** The user tag of this bot */
-  public userTag: string;
+  public userTag?: string;
   /** The user name of this bot. */
-  public userName: string;
+  public userName?: string;
 
   /** Creates a new BotClient.
    *
@@ -268,9 +268,9 @@ export default abstract class BotClient {
     const channels = DataManager.getSubscriberData()[this.name];
 
     let gameSubs: Game[] = [];
-    let prefix = ``;
-    let label = ``;
-    let disabled = false;
+    let prefix: string | undefined = '';
+    let label: string | undefined = '';
+    let disabled: boolean | undefined = false;
     // Check if the channel is already registered
     for (const sub of channels) {
       if (String(id) === String(sub.id)) {
