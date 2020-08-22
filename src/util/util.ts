@@ -31,7 +31,7 @@ export async function filterAsync<T>(
 /** Joins the array with the separator, but 'and' for the last item.
  *  E.g.: 'first, second and third'.
  */
-export function naturalJoin(array: string[], separator?: string): string {
+export function naturalJoin(array?: string[], separator?: string): string {
   if (!array || array.length === 0) {
     return '';
   }
