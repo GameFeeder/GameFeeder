@@ -55,8 +55,11 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getUser(): Promise<User> {
-    const userID = this.bot.user.id;
-    return new User(this, userID);
+    const userID = this.bot.user?.id;
+
+    if (!userID) this.logger.error('Bot user not found.');
+
+    return new User(this, userID ?? '-1');
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
@@ -140,7 +143,7 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
-      if (discordUser.hasPermission(8)) {
+      if (discordUser?.hasPermission(8)) {
         return UserRole.ADMIN;
       }
     }
@@ -172,7 +175,12 @@ export default class DiscordBot extends BotClient {
       try {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
+
+        if (!discordUser) return new Permissions(false, false, false, false);
+
         const discordPermissions = discordChannel.permissionsFor(discordUser);
+
+        if (!discordPermissions) return new Permissions(false, false, false, false);
 
         const hasAccess = discordPermissions.has('VIEW_CHANNEL');
         const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
@@ -208,7 +216,9 @@ export default class DiscordBot extends BotClient {
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
+      canEmbed = discordUser
+        ? discordChannel.permissionsFor(discordUser)?.has('EMBED_LINKS') ?? false
+        : false;
     } else {
       this.logger.error(`Unecpected Discord channel type for channel ${channel.label}.`);
       canEmbed = false;
