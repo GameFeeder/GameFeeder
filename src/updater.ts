@@ -26,7 +26,7 @@ export default class Updater {
     const updaterConfig = ConfigManager.getUpdaterConfig();
     const updaterData = DataManager.getUpdaterData();
 
-    this.setDelaySec(updaterConfig.updateDelaySec);
+    this.updateDelayMs = this.getDelaySec(updaterConfig.updateDelaySec);
     this.limit = updaterConfig.limit;
     this.lastUpdate = updaterData.lastUpdate ? new Date(updaterData.lastUpdate) : new Date();
     this.doUpdates = false;
@@ -39,23 +39,11 @@ export default class Updater {
     }
     return this.updater;
   }
-  /** Sets the update interval in milliseconds.
-   * @param {number} delayMs - The delay in milliseconds.
-   */
-  public setDelayMs(delayMs: number): void {
-    this.updateDelayMs = delayMs;
-  }
-  /** Sets the update interval in seconds.
+  /** Gets the update interval in seconds.
    * @param {number} delaySec - The delay in seconds.
    */
-  public setDelaySec(delaySec: number): void {
-    this.updateDelayMs = delaySec * 1000;
-  }
-  /** Sets the update interval in minutes.
-   * @param {number} delayMin - The delay in minutes.
-   */
-  public setDelayMin(delayMin: number): void {
-    this.updateDelayMs = delayMin * 60000;
+  public getDelaySec(delaySec: number): number {
+    return delaySec * 1000;
   }
   /** Starts the updater.
    * @returns {Promise<void>}
