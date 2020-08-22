@@ -113,6 +113,7 @@ So far, we are supporting the following games:
 - <strong align="left">Dota Underlords</strong> <img src="https://i.imgur.com/gaYsZ7Z.png" height="17px"/>
   - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
   - Posts on the [Steam feed](https://steamcommunity.com/app/1046930/allnews/)
+- <strong align="left">Veloren</strong> <img src="https://veloren.net/Logo_Square.png" height="17px"/>
 
 ### Contributing
 
