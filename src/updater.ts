@@ -5,6 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
+import { merge } from './util/util';
 
 export default class Updater {
   private static updater: Updater;
@@ -67,7 +68,7 @@ export default class Updater {
 
     // Combine the game notifications
     const gameNotifications = await Promise.all(handles);
-    let notifications: Notification[] = [].concat(...gameNotifications);
+    let notifications = merge(gameNotifications);
 
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
@@ -110,7 +111,7 @@ export default class Updater {
 
     // Combine the provider notifications
     const providerNotifications = await Promise.all(handles);
-    let gameNotifications: Notification[] = [].concat(...providerNotifications);
+    let gameNotifications = merge(providerNotifications);
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications

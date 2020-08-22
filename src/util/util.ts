@@ -28,6 +28,16 @@ export async function filterAsync<T>(
   return array.filter((value, index) => filterMap[index]);
 }
 
+/**
+ * Merges an array of arrays into a single array.
+ * @param arrays - The arrays to merge.
+ */
+export function merge<T>(arrays: T[][]): T[] {
+  // Needed for correct typing
+  const start: T[] = [];
+  return start.concat(...arrays);
+}
+
 /** Joins the array with the separator, but 'and' for the last item.
  *  E.g.: 'first, second and third'.
  */
