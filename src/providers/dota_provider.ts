@@ -6,6 +6,7 @@ import Notification from '../notifications/notification';
 import DataManager from '../managers/data_manager';
 import ConfigManager from '../managers/config_manager';
 import Logger from '../logger';
+import NotificationBuilder from '../notifications/notification_builder';
 
 export default class DotaProvider extends Provider {
   public static logger = new Logger('Dota Provider');
@@ -39,10 +40,11 @@ export default class DotaProvider extends Provider {
 
       // Convert the patches to notifications
       notifications = newPatches.map((value) => {
-        return new Notification()
+        return new NotificationBuilder()
           .withGameDefaults(this.game)
           .withTitle(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`)
-          .withAuthor('Dota 2');
+          .withAuthor('Dota 2')
+          .build();
       });
     } catch (error) {
       this.logger.error(`Dota updates page parsing failed, error: ${error.substring(0, 120)}`);
