@@ -6,7 +6,7 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
-import { StrUtil, mapAsync } from '../util/util';
+import { StrUtil, mapAsync, optMapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
@@ -262,7 +262,7 @@ export default class DiscordBot extends BotClient {
         const channels = this.getBotChannels();
 
         // Remove all channel data of that guild
-        await mapAsync(channels, (channel) => {
+        await optMapAsync(channels, (channel) => {
           const discordChannel = this.bot.channels.cache.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data

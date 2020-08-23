@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export type JSONObj = Record<string, unknown> | string[];
 
-/** Applies a function on every array element.
+/** Applies an async function on every array element.
  *
  * @param array - The array to apply the function to.
  * @param callbackfn - The function to apply to the array elements.
@@ -13,6 +13,20 @@ export function mapAsync<T, U>(
   callbackfn: (value: T, index: number, array: T[]) => Promise<U>,
 ): Promise<U[]> {
   return Promise.all(array.map(callbackfn));
+}
+
+/** Applies an async function on every array element.
+ *
+ * @param array - The array to apply the function to.
+ * @param callbackfn - The function to apply to the array elements.
+ * @returns The array produced by the map function.
+ */
+export function optMapAsync<T, U>(
+  array: T[],
+  callbackfn: (value: T, index: number, array: T[]) => Promise<U> | undefined,
+): Promise<U[]> {
+  const handles = array.map(callbackfn).filter((handle) => handle !== undefined) as Promise<U>[];
+  return Promise.all(handles);
 }
 
 /** Filters the given array with an async function
