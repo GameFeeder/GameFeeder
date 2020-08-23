@@ -12,7 +12,7 @@ export default class Notification implements Comparable<Notification> {
   /** The title of the notification. */
   public title: NotificationElement;
   /** The content of the notification. */
-  public content: string;
+  public content?: string;
   /** The author of the notification. */
   public author?: NotificationElement;
   /** The color of the notification. */
@@ -29,7 +29,7 @@ export default class Notification implements Comparable<Notification> {
     timestamp: Date,
     game: Game,
     title: NotificationElement,
-    content: string,
+    content?: string,
     author?: NotificationElement,
     color?: string,
     thumbnail?: string,

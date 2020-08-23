@@ -137,7 +137,6 @@ export default class NotificationBuilder {
     if (this.timestamp === undefined) throw new Error('Missing timestamp');
     if (this.game === undefined) throw new Error('Missing game');
     if (this.title === undefined) throw new Error('Missing title');
-    if (this.content === undefined) throw new Error('Missing content');
 
     return new Notification(
       this.timestamp,
