@@ -430,7 +430,7 @@ export default class TelegramBot extends BotClient {
           templateFound = true;
           const titleText = `[${message.title.text}](${templateLink})`;
 
-          if (message.author.text) {
+          if (message.author?.text) {
             const authorText = message.author.link
               ? `[${message.author.text}](${message.author.link})`
               : message.author.text;

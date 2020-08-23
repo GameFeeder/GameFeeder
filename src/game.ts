@@ -74,15 +74,15 @@ export default class Game {
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
-   * @returns The game with this name or null.
+   * @returns The game with this name.
    */
-  public static getGameByName(name: string): Game | null {
+  public static getGameByName(name: string): Game {
     for (const game of this.getGames()) {
       if (game.name === name) {
         return game;
       }
     }
-    return null;
+    throw new Error(`Failed to find game with name '${name}'`);
   }
 
   /** Returns an array of all available game aliases. */

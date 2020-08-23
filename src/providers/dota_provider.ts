@@ -13,7 +13,10 @@ export default class DotaProvider extends Provider {
   public lastPatch: string;
 
   constructor() {
-    super(`http://www.dota2.com/patches/`, `Gameplay Patch`, Game.getGameByName('dota'));
+    const dota = Game.getGameByName('dota');
+    if (!dota) throw new Error('Could not find Dota 2 game.');
+
+    super(`http://www.dota2.com/patches/`, `Gameplay Patch`, dota);
 
     this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
   }
