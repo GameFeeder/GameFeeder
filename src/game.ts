@@ -74,9 +74,9 @@ export default class Game {
   /** Gets a game by its name.
    *
    * @param name - The name of the game.
-   * @returns The game with this name.
+   * @returns The game with this name or null.
    */
-  public static getGameByName(name: string): Game {
+  public static getGameByName(name: string): Game | null {
     for (const game of this.getGames()) {
       if (game.name === name) {
         return game;
@@ -113,7 +113,7 @@ export default class Game {
         gameSettings.label,
         gameSettings.color,
         gameSettings.icon,
-        null,
+        [],
         telegramIVtemplates,
       );
 
