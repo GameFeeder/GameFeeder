@@ -1,0 +1,32 @@
+{
+  "name": "civ6",
+  "label": "Sid Meier's Civilization VI",
+  "aliases": [
+    "sid meier's civilization vi",
+    "sid meiers civilization vi",
+    "sid meier's civilization 6",
+    "sid meiers civilization 6",
+    "cilization",
+    "cililization vi",
+    "civilization 6",
+    "civ",
+    "civ6",
+    "civ 6",
+    "civ vi"
+  ],
+  "color": "#7e2f08",
+  "icon": "https://imgur.com/jKlh55f.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "civ6",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 289070,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
