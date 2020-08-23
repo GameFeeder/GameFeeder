@@ -73,11 +73,11 @@ export default class DotaProvider extends Provider {
     const patchList: string[] = [];
     const $ = pageDoc;
 
-    // This has to be a named function to set new `this` scope
-    // eslint-disable-next-line func-names, prettier/prettier
-    $('#PatchSelector option').each(function() {
-      const option = $(this).val();
-      // botLogger.info(option);
+    // Get all options of the patch selector
+    $('#PatchSelector option').each((_index, element) => {
+      const option = $(element).val();
+
+      // Remove the default option
       if (option !== 'Select an Update...') {
         patchList.push(option);
       }
