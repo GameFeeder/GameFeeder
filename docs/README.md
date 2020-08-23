@@ -91,30 +91,14 @@ So far, we are providing the following commands:
 So far, we are supporting the following games:
 
 - <strong align="left">Artifact</strong> <img src="https://i.imgur.com/DblOFap.png" height="17px"/>
-  - Reddit posts by [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/Artifact](https://www.reddit.com/r/Artifact/)
-  - Posts on the [Steam feed](https://steamcommunity.com/games/1269260/announcements)
 - <strong align="left">CS:GO</strong> <img src="https://i.imgur.com/2ONuRD3.png" height="17px"/>
-  - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/csgo](https://www.reddit.com/r/csgo/)
-  - Posts on the [CS:GO blog](https://blog.counter-strike.net/)
 - <strong align="left">Dota 2</strong> <img src="https://i.imgur.com/aRVbvDh.png" height="17px"/>
-  - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/TheZett](https://www.reddit.com/user/TheZett/posts/) and [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/DotA2](https://www.reddit.com/r/DotA2/)
-  - Reddit posts by [/u/Kappa_Man](https://www.reddit.com/user/Kappa_Man/posts/), [/u/Magesunite](https://www.reddit.com/user/Magesunite/posts/) and [/u/MSTRMN\_](https://www.reddit.com/user/MSTRMN_/posts/) on [/r/DotaPatches](https://www.reddit.com/r/DotaPatches/)
-  - Gamplay updates on the [Dota 2 patch page](https://www.dota2.com/patches)
-  - Blog posts on the [Dota 2 Blog](http://blog.dota2.com/?l=english)
 - <strong align="left">Dota Underlords</strong> <img src="https://i.imgur.com/gaYsZ7Z.png" height="17px"/>
-  - Reddit posts by [/u/wykrhm](https://www.reddit.com/user/wykrhm/posts/) on [/r/underlords](https://www.reddit.com/r/underlords/)
-  - Posts on the [Steam feed](https://steamcommunity.com/app/1046930/allnews/)
 - <strong align="left">Factorio</strong> <img src="https://i.imgur.com/7D0A9eT.png" height="17px"/>
-  - Posts on the [Steam feed](https://steamcommunity.com/games/427520/announcements)
 - <strong align="left">Satisfactory</strong> <img src="https://i.imgur.com/RgtzvdT.png" height="17px"/>
-  - Posts on the [Steam feed](https://steamcommunity.com/games/526870/announcements)
 - <strong align="left">Steam</strong> <img src="https://i.imgur.com/QbzZxrC.png" height="17px"/>
-  - Reddit posts by [/u/wickedplayer494](https://www.reddit.com/user/wickedplayer494/posts/) on [/r/Steam](https://www.reddit.com/r/Steam/)
-  - Posts on the [Steam blog](https://steamcommunity.com/app/593110/announcements/)
 - <strong align="left">Team Fortress 2</strong> <img src="https://i.imgur.com/zaQObOc.png" height="17px"/>
-  - Posts on the [TF2 blog](http://www.teamfortress.com/?tab=blog)
 - <strong align="left">Veloren</strong> <img src="https://veloren.net/Logo_Square.png" height="17px"/>
-  - Posts on the [Veloren feed](https://veloren.net/rss.xml)
 
 ### Contributing
 
