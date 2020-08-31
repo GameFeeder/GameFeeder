@@ -268,9 +268,10 @@ export default abstract class BotClient {
     const channels = DataManager.getSubscriberData()[this.name];
 
     let gameSubs: Game[] = [];
-    let prefix: string | undefined = '';
-    let label: string | undefined = '';
-    let disabled: boolean | undefined = false;
+    let prefix: string | undefined;
+    let label: string | undefined;
+    let disabled: boolean | undefined;
+
     // Check if the channel is already registered
     for (const sub of channels) {
       if (String(id) === String(sub.id)) {
