@@ -5,6 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
+import { mapAsync } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -38,43 +39,49 @@ export default class Updater {
     this.enabled = enabled;
     this.autosave = autosave;
   }
+
   public static getUpdaters(): Updater[] {
     if (!this.updaters) {
-      const updaterConfig = ConfigManager.getUpdatersConfig().updaters;
+      const updaterConfig = ConfigManager.getUpdatersConfig();
 
-      const updaters = updaterConfig.map(
-        (config) =>
-          new Updater(
-            config.key,
-            config.enabled,
-            config.autosave,
-            config.updateDelaySec,
-            config.limit,
-          ),
-      );
+      // Convert the configurations to updaters
+      const updaters: Updater[] = Object.keys(updaterConfig).map((key) => {
+        const config = updaterConfig[key];
+        return new Updater(
+          key,
+          config.enabled,
+          config.autosave,
+          config.updateDelaySec,
+          config.limit,
+        );
+      });
 
       this.updaters = updaters;
     }
     return this.updaters;
   }
+
   /** Sets the update interval in milliseconds.
    * @param {number} delayMs - The delay in milliseconds.
    */
   public setDelayMs(delayMs: number): void {
     this.updateDelayMs = delayMs;
   }
+
   /** Sets the update interval in seconds.
    * @param {number} delaySec - The delay in seconds.
    */
   public setDelaySec(delaySec: number): void {
     this.updateDelayMs = delaySec * 1000;
   }
+
   /** Sets the update interval in minutes.
    * @param {number} delayMin - The delay in minutes.
    */
   public setDelayMin(delayMin: number): void {
     this.updateDelayMs = delayMin * 60000;
   }
+
   /** Starts the updater.
    * @returns {Promise<void>}
    */
@@ -82,21 +89,22 @@ export default class Updater {
     this.doUpdates = true;
     this.updateLoop();
   }
+
   /** Stops the updater.
    * @returns {void}
    */
   public stop(): void {
     this.doUpdates = false;
   }
+
   /** Run an update cycle. */
   public async update(): Promise<void> {
     const startTime = Date.now();
 
     // Get game notifications concurrently
-    const handles = Game.getGames().map((game) => this.updateGame(game));
+    const gameNotifications = await mapAsync(Game.getGames(), (game) => this.updateGame(game));
 
     // Combine the game notifications
-    const gameNotifications = await Promise.all(handles);
     let notifications: Notification[] = [].concat(...gameNotifications);
 
     if (notifications.length > 0) {
@@ -145,6 +153,7 @@ export default class Updater {
       const gameTime = Math.abs(gameStartTime - gameEndTime);
       this.logger.info(`Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`);
     }
+
     return gameNotifications;
   }
 

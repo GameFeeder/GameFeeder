@@ -120,14 +120,10 @@ export type GameSettings = {
 };
 
 /** The config of all updaters */
-export type UpdatersConfig = {
-  updaters: UpdaterConfig[];
-};
+export type UpdatersConfig = Record<string, UpdaterConfig>;
 
 /** The config of an updater. */
 export type UpdaterConfig = {
-  /** The key of the updater. */
-  key: string;
   /** The delay in seconds between each update. */
   updateDelaySec: number;
   /** The maximum amount of notifications to send at once (e.g. after a restart). */

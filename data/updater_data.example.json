@@ -1,19 +1,19 @@
 {
   "reddit": {
-    "lastUpdate": "2019-03-10",
+    "lastUpdate": "2020-08-01",
     "healthcheckTimestamp": ""
   },
   "steam": {
-    "lastUpdate": "2019-03-10",
+    "lastUpdate": "2020-08-01",
     "healthcheckTimestamp": ""
   },
   "rss": {
-    "lastUpdate": "2019-03-10",
+    "lastUpdate": "2020-08-01",
     "healthcheckTimestamp": ""
   },
   "dota": {
-    "lastUpdate": "2019-03-10",
-    "lastVersion": "7.26b",
+    "lastUpdate": "2020-08-01",
+    "lastVersion": "7.27c",
     "healthcheckTimestamp": ""
   }
 }

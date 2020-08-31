@@ -1,32 +1,26 @@
 {
-  "updaters": [
-    {
-      "key": "reddit",
-      "updateDelaySec": 10,
-      "limit": 3,
-      "enabled": true,
-      "autosave": true
-    },
-    {
-      "key": "steam",
-      "updateDelaySec": 10,
-      "limit": 3,
-      "enabled": true,
-      "autosave": true
-    },
-    {
-      "key": "rss",
-      "updateDelaySec": 10,
-      "limit": 3,
-      "enabled": true,
-      "autosave": true
-    },
-    {
-      "key": "dota",
-      "updateDelaySec": 10,
-      "limit": 3,
-      "enabled": true,
-      "autosave": true
-    }
-  ]
+  "reddit": {
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  "steam": {
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  "rss": {
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  },
+  "dota": {
+    "updateDelaySec": 10,
+    "limit": 3,
+    "enabled": true,
+    "autosave": true
+  }
 }
