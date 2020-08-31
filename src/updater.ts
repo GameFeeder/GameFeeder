@@ -5,6 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
+import { mergeArrays } from './util/util';
 
 export default class Updater {
   private static updater: Updater;
@@ -26,7 +27,7 @@ export default class Updater {
     const updaterConfig = ConfigManager.getUpdaterConfig();
     const updaterData = DataManager.getUpdaterData();
 
-    this.setDelaySec(updaterConfig.updateDelaySec);
+    this.updateDelayMs = this.getDelaySec(updaterConfig.updateDelaySec);
     this.limit = updaterConfig.limit;
     this.lastUpdate = updaterData.lastUpdate ? new Date(updaterData.lastUpdate) : new Date();
     this.doUpdates = false;
@@ -39,23 +40,11 @@ export default class Updater {
     }
     return this.updater;
   }
-  /** Sets the update interval in milliseconds.
-   * @param {number} delayMs - The delay in milliseconds.
-   */
-  public setDelayMs(delayMs: number): void {
-    this.updateDelayMs = delayMs;
-  }
-  /** Sets the update interval in seconds.
+  /** Gets the update interval in seconds.
    * @param {number} delaySec - The delay in seconds.
    */
-  public setDelaySec(delaySec: number): void {
-    this.updateDelayMs = delaySec * 1000;
-  }
-  /** Sets the update interval in minutes.
-   * @param {number} delayMin - The delay in minutes.
-   */
-  public setDelayMin(delayMin: number): void {
-    this.updateDelayMs = delayMin * 60000;
+  public getDelaySec(delaySec: number): number {
+    return delaySec * 1000;
   }
   /** Starts the updater.
    * @returns {Promise<void>}
@@ -79,7 +68,7 @@ export default class Updater {
 
     // Combine the game notifications
     const gameNotifications = await Promise.all(handles);
-    let notifications: Notification[] = [].concat(...gameNotifications);
+    let notifications = mergeArrays(gameNotifications);
 
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
@@ -122,7 +111,7 @@ export default class Updater {
 
     // Combine the provider notifications
     const providerNotifications = await Promise.all(handles);
-    let gameNotifications: Notification[] = [].concat(...providerNotifications);
+    let gameNotifications = mergeArrays(providerNotifications);
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications

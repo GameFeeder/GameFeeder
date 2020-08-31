@@ -41,7 +41,8 @@
     "max-classes-per-file": "off",
     "no-nested-ternary": "off",
     "no-restricted-syntax": "off",
-    "prefer-destructuring": "off"
+    "prefer-destructuring": "off",
+    "curly": ["error", "all"]
   },
   "settings": {
     "import/resolver": {

@@ -2,6 +2,7 @@ import Snoowrap from 'snoowrap';
 import Notification from '../notifications/notification';
 import Reddit from './reddit';
 import Game from '../game';
+import NotificationBuilder from '../notifications/notification_builder';
 
 /** A post made on reddit. */
 export default class RedditPost {
@@ -67,7 +68,7 @@ export default class RedditPost {
     const crosspostRegex = /^\/r\/.*/;
     // Crossposts have a relative url, e.g. '/r/DotA2/comments/...'
     const url = crosspostRegex.test(this.url) ? `https://www.reddit.com${this.url}` : this.url;
-    return new Notification(this.timestamp)
+    return new NotificationBuilder(this.timestamp)
       .withTitle(this.title, url)
       .withContent(this.content)
       .withAuthor(
@@ -75,7 +76,8 @@ export default class RedditPost {
         `https://www.reddit.com/user/${this.user}`,
         'https://www.redditstatic.com/new-icon.png',
       )
-      .withGameDefaults(game);
+      .withGameDefaults(game)
+      .build();
   }
 
   /** Determines if the post is 'valid' and should be send to the users. */
