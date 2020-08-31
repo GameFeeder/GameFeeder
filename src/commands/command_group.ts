@@ -4,7 +4,7 @@ import { UserRole } from '../user';
 import Message from '../message';
 import Action from './action';
 import { filterByRole } from './commands';
-import { merge } from '../util/util';
+import { mergeArrays } from '../util/util';
 
 /**
  * A command group represents a collection of commands with a common prefix.
@@ -136,6 +136,6 @@ export default class CommandGroup extends Command {
       throw new Error('Unexpected command type while aggregating commands.');
     });
     // Merge all aggregated commands to a single array
-    return merge(aggregates);
+    return mergeArrays(aggregates);
   }
 }

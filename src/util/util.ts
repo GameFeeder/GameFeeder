@@ -53,7 +53,7 @@ export function matchGroups(match: RegExpMatchArray): { [key: string]: string } 
  * Merges an array of arrays into a single array.
  * @param arrays - The arrays to merge.
  */
-export function merge<T>(arrays: T[][]): T[] {
+export function mergeArrays<T>(arrays: T[][]): T[] {
   // Needed for correct typing
   const start: T[] = [];
   return start.concat(...arrays);

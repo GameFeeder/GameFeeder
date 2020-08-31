@@ -4,7 +4,7 @@ import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
 import { sortLimitEnd } from '../util/comparable';
-import { mapAsync, merge } from '../util/util';
+import { mapAsync, mergeArrays } from '../util/util';
 
 export default class RedditProvider extends Provider {
   public users: RedditUserProvider[];
@@ -36,7 +36,7 @@ export default class RedditProvider extends Provider {
     });
 
     // Combine the user notifications
-    let notifications = merge(userNotifications);
+    let notifications = mergeArrays(userNotifications);
     // Limit the length
     notifications = sortLimitEnd(notifications, limit);
 
