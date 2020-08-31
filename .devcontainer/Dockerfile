@@ -21,6 +21,7 @@ RUN apt-get update \
     #
     # Verify git and needed tools are installed
     && apt-get install -y git procps \
+    && git config --global core.editor "code -w" \
     #
     # Remove outdated yarn from /opt and install via package 
     # so it can be easily updated via apt-get upgrade yarn
