@@ -6,7 +6,7 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
-import { StrUtil, mapAsync } from '../util/util';
+import { StrUtil, mapAsync, optMapAsync } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
@@ -55,7 +55,12 @@ export default class DiscordBot extends BotClient {
   }
 
   public async getUser(): Promise<User> {
-    const userID = this.bot.user.id;
+    const userID = this.bot.user?.id;
+
+    if (!userID) {
+      throw new Error('Discord bot user not found.');
+    }
+
     return new User(this, userID);
   }
 
@@ -140,7 +145,7 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
-      if (discordUser.hasPermission(8)) {
+      if (discordUser?.hasPermission(8)) {
         return UserRole.ADMIN;
       }
     }
@@ -148,12 +153,12 @@ export default class DiscordBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
     const channels = this.bot.channels;
 
     if (!channels) {
       // This probably means that the Discord API is down
-      throw new Error('Failed to get bot channels.');
+      return undefined;
     }
 
     const discordChannel = this.bot.channels.cache.get(channel.id);
@@ -172,7 +177,16 @@ export default class DiscordBot extends BotClient {
       try {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
+
+        if (!discordUser) {
+          return undefined;
+        }
+
         const discordPermissions = discordChannel.permissionsFor(discordUser);
+
+        if (!discordPermissions) {
+          return undefined;
+        }
 
         const hasAccess = discordPermissions.has('VIEW_CHANNEL');
         const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
@@ -189,7 +203,8 @@ export default class DiscordBot extends BotClient {
     this.logger.error(
       `Unecpected Discord channel type for channel ${channel.label}: ${discordChannel}`,
     );
-    return new Permissions(false, false, false, false);
+
+    return undefined;
   }
 
   /** Determines if the user can send embedded links.
@@ -208,7 +223,9 @@ export default class DiscordBot extends BotClient {
     } else if (discordChannel instanceof TextChannel) {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
-      canEmbed = discordChannel.permissionsFor(discordUser).has('EMBED_LINKS');
+      canEmbed = discordUser
+        ? discordChannel.permissionsFor(discordUser)?.has('EMBED_LINKS') ?? false
+        : false;
     } else {
       this.logger.error(`Unecpected Discord channel type for channel ${channel.label}.`);
       canEmbed = false;
@@ -252,7 +269,7 @@ export default class DiscordBot extends BotClient {
         const channels = this.getBotChannels();
 
         // Remove all channel data of that guild
-        await mapAsync(channels, (channel) => {
+        await optMapAsync(channels, (channel) => {
           const discordChannel = this.bot.channels.cache.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data
@@ -282,13 +299,18 @@ export default class DiscordBot extends BotClient {
         }
       });
 
+      const user = this.bot.user;
+      if (!user) {
+        this.logger.error('Bot user not found');
+      }
+
       // Initialize user name and user tag
-      this.userName = this.bot.user.username;
-      this.userTag = `<@!${this.bot.user.id}>`;
+      this.userName = user?.username ?? 'UNKNOWN';
+      this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
 
       // Setup presence
       try {
-        this.bot.user.setPresence({
+        this.bot.user?.setPresence({
           status: 'online',
           activity: {
             type: 'PLAYING',
@@ -314,6 +336,14 @@ export default class DiscordBot extends BotClient {
     try {
       // Check if the bot can write to this channel
       const permissions = await this.getUserPermissions(await this.getUser(), channel);
+
+      if (!permissions) {
+        this.logger.error(
+          `Failed to get user permissions while sending to channel ${channel.label}`,
+        );
+        return false;
+      }
+
       if (!permissions.canWrite) {
         if (this.removeData(channel)) {
           this.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
@@ -514,12 +544,8 @@ export default class DiscordBot extends BotClient {
 
     // TODO: Fix this unknown
     const callback = (error: Error | unknown) => {
-      let errorMsg;
-      if (error instanceof Error) {
-        errorMsg = `${error.name}: ${error.message}`;
-      } else {
-        errorMsg = error.toString();
-      }
+      const errorMsg = error instanceof Error ? `${error.name}: ${error.message}` : 'UNKNOWN ERROR';
+
       this.logger.error(`Failed to send message to channel ${channel.label}:\n${errorMsg}`);
       return false;
     };

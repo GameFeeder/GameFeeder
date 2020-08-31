@@ -6,13 +6,20 @@ import Notification from '../notifications/notification';
 import DataManager from '../managers/data_manager';
 import ConfigManager from '../managers/config_manager';
 import Logger from '../logger';
+import NotificationBuilder from '../notifications/notification_builder';
 
 export default class DotaProvider extends Provider {
   public static logger = new Logger('Dota Provider');
   public lastPatch: string;
 
   constructor() {
-    super(`http://www.dota2.com/patches/`, `Gameplay Patch`, Game.getGameByName('dota'));
+    const dota = Game.getGameByName('dota');
+
+    if (!dota) {
+      throw new Error('Could not find Dota 2 game.');
+    }
+
+    super(`http://www.dota2.com/patches/`, `Gameplay Patch`, dota);
 
     this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
   }
@@ -39,10 +46,11 @@ export default class DotaProvider extends Provider {
 
       // Convert the patches to notifications
       notifications = newPatches.map((value) => {
-        return new Notification()
+        return new NotificationBuilder()
           .withGameDefaults(this.game)
           .withTitle(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`)
-          .withAuthor('Dota 2');
+          .withAuthor('Dota 2')
+          .build();
       });
     } catch (error) {
       this.logger.error(`Dota updates page parsing failed, error: ${error.substring(0, 120)}`);
@@ -68,11 +76,11 @@ export default class DotaProvider extends Provider {
     const patchList: string[] = [];
     const $ = pageDoc;
 
-    // This has to be a named function to set new `this` scope
-    // eslint-disable-next-line func-names, prettier/prettier
-    $('#PatchSelector option').each(function() {
-      const option = $(this).val();
-      // botLogger.info(option);
+    // Get all options of the patch selector
+    $('#PatchSelector option').each((_index, element) => {
+      const option = $(element).val();
+
+      // Remove the default option
       if (option !== 'Select an Update...') {
         patchList.push(option);
       }

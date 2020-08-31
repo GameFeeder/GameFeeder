@@ -30,11 +30,11 @@ export default class RSS {
       const feed = await this.parser.parseURL(url);
 
       const converter = new TurndownService();
-      for (const item of feed.items) {
+      for (const item of feed.items ?? []) {
         const creator = item.creator || '';
         const link = item.link || '';
         let content = item.content || '';
-        const postDate = new Date(item.isoDate) || new Date();
+        const postDate = item.isoDate ? new Date(item.isoDate) : new Date();
 
         // Apply pre-processing
         for (const processor of preProcessors) {
@@ -42,7 +42,7 @@ export default class RSS {
         }
 
         // Convert to markdown
-        const title = converter.turndown(item.title);
+        const title = item.title ? converter.turndown(item.title) : '';
         content = converter.turndown(content);
 
         if (title && content) {

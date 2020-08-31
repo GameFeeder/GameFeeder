@@ -22,9 +22,9 @@ export default abstract class BotClient {
   /** The logger used for this bot. */
   public logger: Logger;
   /** The user tag of this bot */
-  public userTag: string;
+  public userTag?: string;
   /** The user name of this bot. */
-  public userName: string;
+  public userName?: string;
 
   /** Creates a new BotClient.
    *
@@ -83,8 +83,12 @@ export default abstract class BotClient {
    *
    * @param user - The user to get the permissions of.
    * @param channel - The channel to get the permissions on.
+   * @returns The permissions of the user or undefined, if no permissions could be retrieved.
    */
-  public abstract async getUserPermissions(user: User, channel: Channel): Promise<Permissions>;
+  public abstract async getUserPermissions(
+    user: User,
+    channel: Channel,
+  ): Promise<Permissions | undefined>;
 
   /** Gets a list of the owners of the bot.
    *
@@ -101,12 +105,19 @@ export default abstract class BotClient {
   public async addSubscriber(channel: Channel, game: Game): Promise<boolean> {
     // Check if the bot can write to this channel
     const permissions = await this.getUserPermissions(await this.getUser(), channel);
+
+    if (!permissions) {
+      this.logger.error('Failed to get user permissions');
+      return false;
+    }
+
     if (!permissions.canWrite) {
       if (this.removeData(channel)) {
         this.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
       }
       return false;
     }
+
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.name];
 
@@ -213,7 +224,12 @@ export default abstract class BotClient {
     let removeCount = 0;
     channels.forEach((channel, index) => {
       const channelPerms = permissions[index];
-      if (!channelPerms.canWrite) {
+
+      if (!channelPerms) {
+        this.logger.error(
+          `Failed to get user permissions while removing channels for channel ${channel.label}`,
+        );
+      } else if (!channelPerms.canWrite) {
         // The bot can not write to this channel, remove channel data
         if (this.removeData(channel)) {
           removeCount += 1;
@@ -268,9 +284,10 @@ export default abstract class BotClient {
     const channels = DataManager.getSubscriberData()[this.name];
 
     let gameSubs: Game[] = [];
-    let prefix = ``;
-    let label = ``;
-    let disabled = false;
+    let prefix: string | undefined;
+    let label: string | undefined;
+    let disabled: boolean | undefined;
+
     // Check if the channel is already registered
     for (const sub of channels) {
       if (String(id) === String(sub.id)) {

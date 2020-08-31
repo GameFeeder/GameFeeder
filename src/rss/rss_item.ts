@@ -6,7 +6,7 @@ export default class RSSItem implements Comparable<RSSItem> {
   public link: string;
   public content: string;
   public timestamp: Date;
-  public feed: { name: string; source: string; link: string };
+  public feed: { name?: string; source?: string; link?: string };
 
   constructor(
     title: string,
@@ -14,7 +14,7 @@ export default class RSSItem implements Comparable<RSSItem> {
     link: string,
     content: string,
     timestamp: Date,
-    feed: { name: string; source: string; link: string },
+    feed: { name?: string; source?: string; link?: string },
   ) {
     this.title = title;
     this.author = author;
