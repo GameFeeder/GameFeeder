@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
 // https://github.com/microsoft/vscode-dev-containers/tree/master/containers/typescript-node-lts
 {
-	"name": "Node.js (latest LTS) & TypeScript",
+	"name": "GameFeederDev",
 	"dockerFile": "Dockerfile",
 
 	// Uncomment the next line if you want to publish any ports.
@@ -17,6 +17,8 @@
 	// "runArgs": [ "-u", "1000" ],
 
 	"extensions": [
-		"ms-vscode.vscode-typescript-tslint-plugin"
+		"dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "yzhang.markdown-all-in-one",
 	]
 }
