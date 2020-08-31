@@ -144,7 +144,7 @@ export default class TelegramBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
     // Default values if the permissions can't be checked
     let hasAccess = false;
     let canWrite = false;
@@ -171,7 +171,7 @@ export default class TelegramBot extends BotClient {
       });
       // Check for expected chat errors
       if (!chat) {
-        return new Permissions(false, false, false, false);
+        return undefined;
       }
       // Try to get chat member
       const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
@@ -180,7 +180,7 @@ export default class TelegramBot extends BotClient {
       });
       // Check for expected chat member errors
       if (!chatMember) {
-        return new Permissions(false, false, false, false);
+        return undefined;
       }
 
       // Chat type

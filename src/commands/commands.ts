@@ -299,6 +299,14 @@ const prefixCmd = new TwoPartCommand(
 
     // Check if the bot can write to this channel
     const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
+
+    if (!permissions) {
+      bot.logger.error(
+        `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
+      );
+      return;
+    }
+
     if (!permissions.canWrite) {
       if (bot.removeData(channel)) {
         bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);

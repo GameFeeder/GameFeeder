@@ -153,12 +153,12 @@ export default class DiscordBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
     const channels = this.bot.channels;
 
     if (!channels) {
       // This probably means that the Discord API is down
-      throw new Error('Failed to get bot channels.');
+      return undefined;
     }
 
     const discordChannel = this.bot.channels.cache.get(channel.id);
@@ -179,13 +179,13 @@ export default class DiscordBot extends BotClient {
         const discordUser = discordChannel.members.get(user.id);
 
         if (!discordUser) {
-          return new Permissions(false, false, false, false);
+          return undefined;
         }
 
         const discordPermissions = discordChannel.permissionsFor(discordUser);
 
         if (!discordPermissions) {
-          return new Permissions(false, false, false, false);
+          return undefined;
         }
 
         const hasAccess = discordPermissions.has('VIEW_CHANNEL');
@@ -203,7 +203,8 @@ export default class DiscordBot extends BotClient {
     this.logger.error(
       `Unecpected Discord channel type for channel ${channel.label}: ${discordChannel}`,
     );
-    return new Permissions(false, false, false, false);
+
+    return undefined;
   }
 
   /** Determines if the user can send embedded links.
@@ -335,6 +336,14 @@ export default class DiscordBot extends BotClient {
     try {
       // Check if the bot can write to this channel
       const permissions = await this.getUserPermissions(await this.getUser(), channel);
+
+      if (!permissions) {
+        this.logger.error(
+          `Failed to get user permissions while sending to channel ${channel.label}`,
+        );
+        return false;
+      }
+
       if (!permissions.canWrite) {
         if (this.removeData(channel)) {
           this.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
