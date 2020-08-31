@@ -1,6 +1,7 @@
 import Game from '../game';
 import NotificationElement from './notification_element';
 import Notification from './notification';
+import { assertIsDefined } from '../util/util';
 
 /** A representation of a bot notification. */
 export default class NotificationBuilder {
@@ -134,15 +135,9 @@ export default class NotificationBuilder {
   /** Converts the builder to a notification. */
   public build(): Notification {
     // Check for required parameters
-    if (this.timestamp === undefined) {
-      throw new Error('Missing timestamp');
-    }
-    if (this.game === undefined) {
-      throw new Error('Missing game');
-    }
-    if (this.title === undefined) {
-      throw new Error('Missing title');
-    }
+    assertIsDefined(this.timestamp);
+    assertIsDefined(this.game);
+    assertIsDefined(this.title);
 
     return new Notification(
       this.timestamp,
