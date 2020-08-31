@@ -178,11 +178,15 @@ export default class DiscordBot extends BotClient {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
 
-        if (!discordUser) return new Permissions(false, false, false, false);
+        if (!discordUser) {
+          return new Permissions(false, false, false, false);
+        }
 
         const discordPermissions = discordChannel.permissionsFor(discordUser);
 
-        if (!discordPermissions) return new Permissions(false, false, false, false);
+        if (!discordPermissions) {
+          return new Permissions(false, false, false, false);
+        }
 
         const hasAccess = discordPermissions.has('VIEW_CHANNEL');
         const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
@@ -295,7 +299,9 @@ export default class DiscordBot extends BotClient {
       });
 
       const user = this.bot.user;
-      if (!user) this.logger.error('Bot user not found');
+      if (!user) {
+        this.logger.error('Bot user not found');
+      }
 
       // Initialize user name and user tag
       this.userName = user?.username ?? 'UNKNOWN';

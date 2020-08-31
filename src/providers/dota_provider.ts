@@ -14,7 +14,10 @@ export default class DotaProvider extends Provider {
 
   constructor() {
     const dota = Game.getGameByName('dota');
-    if (!dota) throw new Error('Could not find Dota 2 game.');
+
+    if (!dota) {
+      throw new Error('Could not find Dota 2 game.');
+    }
 
     super(`http://www.dota2.com/patches/`, `Gameplay Patch`, dota);
 
