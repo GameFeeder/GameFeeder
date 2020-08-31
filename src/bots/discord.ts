@@ -57,9 +57,11 @@ export default class DiscordBot extends BotClient {
   public async getUser(): Promise<User> {
     const userID = this.bot.user?.id;
 
-    if (!userID) this.logger.error('Bot user not found.');
+    if (!userID) {
+      throw new Error('Discord bot user not found.');
+    }
 
-    return new User(this, userID ?? '-1');
+    return new User(this, userID);
   }
 
   public async getChannelUserCount(channel: Channel): Promise<number> {
