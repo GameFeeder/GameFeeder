@@ -12,9 +12,6 @@ import Message from '../message';
 import Permissions from '../permissions';
 import Game from '../game';
 
-// node-telegram-bot-api includes snake_case properties
-/* eslint-disable @typescript-eslint/camelcase */
-
 enum MessageType {
   notification = 'notification',
   command = 'command',
@@ -402,6 +399,7 @@ export default class TelegramBot extends BotClient {
     let options = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
+      // Snakecase used by Telegram API
       options = { parse_mode: 'Markdown' };
     } else {
       const link = message.title.link;
@@ -438,6 +436,7 @@ export default class TelegramBot extends BotClient {
       // 2048 is the maximum notification length
       text = StrUtil.naturalLimit(text, 2048);
 
+      // Snakecase used by Telegram API
       options = {
         disable_web_page_preview: !templateFound,
         parse_mode: 'Markdown',

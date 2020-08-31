@@ -123,7 +123,7 @@ export default class Notification implements Comparable<Notification> {
    *
    * @param timestamp - The new timestamp of the notification.
    */
-  public withTimestamp(timestamp: Date) {
+  public withTimestamp(timestamp: Date): Notification {
     this.timestamp = timestamp;
     return this;
   }

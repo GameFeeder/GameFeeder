@@ -1,15 +1,17 @@
-FROM node:12-alpine AS production-dependencies
+FROM node:12.18.3-alpine3.12 AS production-dependencies
 WORKDIR /app
 COPY ./package.json ./yarn.lock /app/
 RUN yarn install --frozen-lockfile --production
 
 # Bring only devDependencies
-FROM production-dependencies AS build-dependencies
-COPY . /app
+FROM production-dependencies AS workspace
 RUN yarn install --frozen-lockfile
+COPY . .
+
+FROM workspace AS build-dependencies
 RUN yarn build
 
-FROM mhart/alpine-node:slim-12 AS production
+FROM node:12.18.3-alpine3.12 AS production
 WORKDIR /app
 COPY ./package.json .
 COPY --from=build-dependencies /app/dist ./dist

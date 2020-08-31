@@ -56,7 +56,7 @@ export default class DotaProvider extends Provider {
     this.lastPatch = lastPatch;
 
     // If enabled, save the date in the data file.
-    const updaterConfig = ConfigManager.getUpdatersConfig().find(
+    const updaterConfig = ConfigManager.getUpdatersConfig().updaters.find(
       (config) => config.key === DotaProvider.key,
     );
     if (updaterConfig.autosave) {

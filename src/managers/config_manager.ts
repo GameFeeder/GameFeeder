@@ -120,7 +120,9 @@ export type GameSettings = {
 };
 
 /** The config of all updaters */
-export type UpdatersConfig = UpdaterConfig[];
+export type UpdatersConfig = {
+  updaters: UpdaterConfig[];
+};
 
 /** The config of an updater. */
 export type UpdaterConfig = {
@@ -168,7 +170,7 @@ export default class ConfigManager {
    *
    * @param file - The config file to parse.
    */
-  public static parseFile(file: CONFIG): object {
+  public static parseFile(file: CONFIG): Record<string, unknown> {
     return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
@@ -177,7 +179,7 @@ export default class ConfigManager {
    * @param file - THe config file to write to.
    * @param object - The object to write.
    */
-  public static writeObject(file: CONFIG, object: object): void {
+  public static writeObject(file: CONFIG, object: Record<string, unknown>): void {
     return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 

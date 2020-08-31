@@ -1,0 +1,26 @@
+{
+  "name": "pubg",
+  "label": "PLAYERUNKNOWN'S BATTLEGROUNDS",
+  "aliases": [
+    "playerunknown's battlegrounds",
+    "playerunknowns battlegrounds",
+    "pubattlegrounds",
+    "battlegrounds",
+    "pubg"
+  ],
+  "color": "#fad234",
+  "icon": "https://imgur.com/Emx9o83.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "PUBATTLEGROUNDS",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 578080,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}

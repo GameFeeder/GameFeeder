@@ -55,7 +55,7 @@ export default class Game {
     this.telegramIVTemplates = telegramIVTemplates;
   }
 
-  public hasAlias(aliasText: string) {
+  public hasAlias(aliasText: string): boolean {
     // Ignore casing
     const alias = aliasText.toLocaleLowerCase();
 

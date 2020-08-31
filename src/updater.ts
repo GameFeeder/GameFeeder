@@ -40,7 +40,7 @@ export default class Updater {
   }
   public static getUpdaters(): Updater[] {
     if (!this.updaters) {
-      const updaterConfig = ConfigManager.getUpdatersConfig();
+      const updaterConfig = ConfigManager.getUpdatersConfig().updaters;
 
       const updaters = updaterConfig.map(
         (config) =>

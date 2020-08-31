@@ -64,13 +64,13 @@ export default class Channel {
 
   /** The prefix the channel uses. */
   private _prefix: string;
-  get prefix() {
+  get prefix(): string {
     if (this._prefix) {
       return this._prefix;
     }
     return this.bot.prefix;
   }
-  set prefix(value) {
+  set prefix(value: string) {
     let newPrefix = value;
     // Check if the user wants to reset the prefix
     this.bot.logger.debug(newPrefix);
@@ -119,10 +119,10 @@ export default class Channel {
 
   // Disabled channels won't receive automatic updates
   private _disabled: boolean;
-  get disabled() {
+  get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value) {
+  set disabled(value: boolean) {
     // Save locally
     this._disabled = value;
 
@@ -195,7 +195,7 @@ export default class Channel {
     return this.bot.getChannelUserCount(this);
   }
 
-  hasLabel() {
+  hasLabel(): boolean {
     return !!this._label;
   }
 }

@@ -72,7 +72,7 @@ export default class DataManager {
    *
    * @param file - The file to parse.
    */
-  private static parseFile(file: DATA): object {
+  private static parseFile(file: DATA): Record<string, unknown> {
     return FileManager.parseFile(this.basePath, this.getFileName(file));
   }
 
@@ -81,7 +81,7 @@ export default class DataManager {
    * @param file - The file to write to.
    * @param object - The object to write to the file.
    */
-  private static writeObject(file: DATA, object: object): void {
+  private static writeObject(file: DATA, object: Record<string, unknown>): void {
     return FileManager.writeObject(this.basePath, this.getFileName(file), object);
   }
 
