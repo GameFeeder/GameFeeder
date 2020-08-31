@@ -1,24 +1,28 @@
 {
   "reddit": {
-    "updateDelaySec": 10,
+    "gameInterval": 5,
+    "cycleInterval": 30,
     "limit": 3,
     "enabled": true,
     "autosave": true
   },
   "steam": {
-    "updateDelaySec": 10,
+    "gameInterval": 5,
+    "cycleInterval": 30,
     "limit": 3,
     "enabled": true,
     "autosave": true
   },
   "rss": {
-    "updateDelaySec": 10,
+    "gameInterval": 2,
+    "cycleInterval": 60,
     "limit": 3,
     "enabled": true,
     "autosave": true
   },
   "dota": {
-    "updateDelaySec": 10,
+    "gameInterval": 0,
+    "cycleInterval": 60,
     "limit": 3,
     "enabled": true,
     "autosave": true

@@ -15,16 +15,25 @@ export default class Updater {
   public enabled: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
-  /** The update interval in milliseconds */
-  private updateDelayMs: number;
+  /** The delay in milliseconds between each game within an update cycle. */
+  private gameIntervalMs: number;
+  /** The delay in milliseconds between each update cycle. */
+  private cyleIntervalMs: number;
   private lastUpdate: Date;
   private limit: number;
   private autosave: boolean;
 
   /** Creates a new Updater.
-   * @param {number} updateDelaySec - The initial delay in seconds.
+   * @param {number} cyleInterval - The initial delay in seconds.
    */
-  constructor(key: string, enabled: boolean, autosave: boolean, delaySec: number, limit: number) {
+  constructor(
+    key: string,
+    enabled: boolean,
+    autosave: boolean,
+    gameInterval: number,
+    cycleInterval: number,
+    limit: number,
+  ) {
     this.key = key;
     this.logger = new Logger(`Updater (${this.key})`);
 
@@ -32,7 +41,8 @@ export default class Updater {
 
     if (!data) throw Error(`No data object initialized for updater '${this.key}'`);
 
-    this.setDelaySec(delaySec);
+    this.gameIntervalMs = gameInterval * 1000;
+    this.cyleIntervalMs = cycleInterval * 1000;
     this.limit = limit;
     this.lastUpdate = data.lastUpdate ? new Date(data.lastUpdate) : new Date();
     this.doUpdates = false;
@@ -51,7 +61,8 @@ export default class Updater {
           key,
           config.enabled,
           config.autosave,
-          config.updateDelaySec,
+          config.gameInterval,
+          config.cycleInterval,
           config.limit,
         );
       });
@@ -59,27 +70,6 @@ export default class Updater {
       this.updaters = updaters;
     }
     return this.updaters;
-  }
-
-  /** Sets the update interval in milliseconds.
-   * @param {number} delayMs - The delay in milliseconds.
-   */
-  public setDelayMs(delayMs: number): void {
-    this.updateDelayMs = delayMs;
-  }
-
-  /** Sets the update interval in seconds.
-   * @param {number} delaySec - The delay in seconds.
-   */
-  public setDelaySec(delaySec: number): void {
-    this.updateDelayMs = delaySec * 1000;
-  }
-
-  /** Sets the update interval in minutes.
-   * @param {number} delayMin - The delay in minutes.
-   */
-  public setDelayMin(delayMin: number): void {
-    this.updateDelayMs = delayMin * 60000;
   }
 
   /** Starts the updater.
@@ -194,7 +184,7 @@ export default class Updater {
         // Update again after the delay
         setTimeout(() => {
           this.updateLoop();
-        }, this.updateDelayMs);
+        }, this.cyleIntervalMs);
       }
     }
   }

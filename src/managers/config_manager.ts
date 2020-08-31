@@ -124,8 +124,10 @@ export type UpdatersConfig = Record<string, UpdaterConfig>;
 
 /** The config of an updater. */
 export type UpdaterConfig = {
-  /** The delay in seconds between each update. */
-  updateDelaySec: number;
+  /** The delay in seconds between each game within an update cycle. */
+  gameInterval: number;
+  /** The delay in seconds between each update cycle. */
+  cycleInterval: number;
   /** The maximum amount of notifications to send at once (e.g. after a restart). */
   limit: number;
   /** Determines whether the updater should start automatically. */
