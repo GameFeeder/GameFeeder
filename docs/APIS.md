@@ -2,6 +2,32 @@
 
 This documents aims to collect information about the APIs that we use for the bot.
 
+## Telegram Bot API
+
+The [Telegram Bot API](https://core.telegram.org/bots/api) is used to interact with Telegram.
+
+### Rate Limit
+
+The rate limit is partially specified in the [FAQ](https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this).
+
+Sending messages inside a particular chat (bursts allowed):
+
+| Day    | Hour  | Minute | Second |
+| ------ | ----- | ------ | ------ |
+| 86,400 | 3,600 | 60     | **1**  |
+
+Sending bulk notifications to multiple users (should be spread out):
+
+| Day       | Hour    | Minute | Second |
+| --------- | ------- | ------ | ------ |
+| 2,592,000 | 108,000 | 1,800  | **30** |
+
+Sending messages to the same group:
+
+| Day    | Hour  | Minute | Second |
+| ------ | ----- | ------ | ------ |
+| 28,800 | 1,200 | **20** | 0.3    |
+
 ## Steam Web API
 
 The [Steam Web API](https://steamcommunity.com/dev) is used to retrieve updates posted to Steam.
