@@ -1,6 +1,17 @@
-# APIs
+# APIs <!-- omit in toc -->
 
 This documents aims to collect information about the APIs that we use for the bot.
+
+## Contents <!-- omit in toc -->
+
+- [Telegram Bot API](#telegram-bot-api)
+  - [Rate Limit](#rate-limit)
+- [Discord Bot API](#discord-bot-api)
+  - [Rate Limit](#rate-limit-1)
+- [Steam Web API](#steam-web-api)
+  - [Rate Limit](#rate-limit-2)
+- [Reddit API](#reddit-api)
+  - [Rate Limit](#rate-limit-3)
 
 ## Telegram Bot API
 
@@ -27,6 +38,15 @@ Sending messages to the same group:
 | Day    | Hour  | Minute | Second |
 | ------ | ----- | ------ | ------ |
 | 28,800 | 1,200 | **20** | 0.3    |
+
+## Discord Bot API
+
+The [Discord Bot API](https://discord.com/developers/docs/intro) is used to interact with Discord.
+
+### Rate Limit
+
+The rate limit is specified in the [Developer Documentation](https://discord.com/developers/docs/topics/rate-limits).
+They are sent in the API response headers.
 
 ## Steam Web API
 
