@@ -5,7 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
-import { mapAsync, mergeArrays } from './util/util';
+import { mapAsync, mergeArrays, sleep } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -93,8 +93,17 @@ export default class Updater {
   public async update(): Promise<void> {
     const startTime = Date.now();
 
-    // Get game notifications concurrently
-    const gameNotifications = await mapAsync(Game.getGames(), (game) => this.updateGame(game));
+    // Get game notifications
+    const gameNotifications = await mapAsync(Game.getGames(), async (game, index, games) => {
+      const updates = await this.updateGame(game);
+
+      // If there are more games in this update cycle, delay them by the specified amount
+      if (index < games.length - 1) {
+        await sleep(this.gameIntervalMs);
+      }
+
+      return updates;
+    });
 
     // Combine the game notifications
     let notifications: Notification[] = mergeArrays(gameNotifications);
