@@ -20,8 +20,8 @@ describe('Util', () => {
   });
 
   describe('natural join', () => {
-    test('null', () => {
-      const testArray: string[] = null;
+    test('undefined', () => {
+      const testArray = undefined;
       const result = naturalJoin(testArray);
       expect(result).toEqual('');
     });

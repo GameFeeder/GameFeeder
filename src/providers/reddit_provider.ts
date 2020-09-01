@@ -1,9 +1,9 @@
 import Provider from './provider';
 import SubredditProvider from './subreddit_provider';
 import Game from '../game';
-import { mapAsync } from '../util/util';
 import Notification from '../notifications/notification';
 import { sortLimitEnd } from '../util/comparable';
+import { mapAsync, mergeArrays } from '../util/util';
 
 export default class RedditProvider extends Provider {
   public subredditProviders: SubredditProvider[];
@@ -20,7 +20,7 @@ export default class RedditProvider extends Provider {
     );
 
     // Merge the results
-    let notifications = [].concat(...subredditNotifications);
+    let notifications = mergeArrays(subredditNotifications);
     notifications = sortLimitEnd(notifications, limit);
 
     // Merge the results

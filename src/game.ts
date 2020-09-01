@@ -87,7 +87,7 @@ export default class Game {
         return game;
       }
     }
-    return null;
+    throw new Error(`Failed to find game with name '${name}'`);
   }
 
   /** Returns an array of all available game aliases. */

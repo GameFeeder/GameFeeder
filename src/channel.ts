@@ -9,11 +9,11 @@ export default class Channel {
 
   /** The label of the channel (if specified). */
   private _label?: string;
-  get label(): string {
+  get label(): string | undefined {
     const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
     return this._label ? `'${this._label}' (${ID})` : ID;
   }
-  set label(value: string) {
+  set label(value: string | undefined) {
     const newLabel = value;
 
     // Save locally
@@ -63,7 +63,7 @@ export default class Channel {
   public gameSubs: Game[];
 
   /** The prefix the channel uses. */
-  private _prefix: string;
+  private _prefix: string | undefined;
   get prefix(): string {
     if (this._prefix) {
       return this._prefix;

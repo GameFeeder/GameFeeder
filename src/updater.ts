@@ -5,7 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sort, sortLimitEnd } from './util/comparable';
-import { mapAsync } from './util/util';
+import { mapAsync, mergeArrays } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -39,7 +39,9 @@ export default class Updater {
 
     const data = DataManager.getUpdaterData(this.key);
 
-    if (!data) throw Error(`No data object initialized for updater '${this.key}'`);
+    if (!data) {
+      throw Error(`No data object initialized for updater '${this.key}'`);
+    }
 
     this.gameIntervalMs = gameInterval * 1000;
     this.cyleIntervalMs = cycleInterval * 1000;
@@ -95,7 +97,7 @@ export default class Updater {
     const gameNotifications = await mapAsync(Game.getGames(), (game) => this.updateGame(game));
 
     // Combine the game notifications
-    let notifications: Notification[] = [].concat(...gameNotifications);
+    let notifications: Notification[] = mergeArrays(gameNotifications);
 
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.

@@ -27,8 +27,8 @@ export default class TelegramIVTemplate {
    *
    * @param url - The URL to test the IV template with.
    */
-  public testUrl(url: string): string {
-    if (url.includes(this.domain)) {
+  public testUrl(url?: string): string {
+    if (url?.includes(this.domain)) {
       return this.getIVUrl(url);
     }
     return '';
