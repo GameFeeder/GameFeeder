@@ -17,10 +17,6 @@ export default class RedditProvider extends Provider {
     );
 
     // Merge the results
-    let notifications = mergeArrays(subredditNotifications);
-    notifications = sortLimitEnd(notifications, limit);
-
-    // Merge the results
-    return notifications;
+    return sortLimitEnd(mergeArrays(subredditNotifications), limit);
   }
 }
