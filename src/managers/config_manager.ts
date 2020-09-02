@@ -119,10 +119,15 @@ export type GameSettings = {
   telegramIVTemplates: telegramIVTemplate[];
 };
 
-/** The config of the updater. */
+/** The config of all updaters */
+export type UpdatersConfig = Record<string, UpdaterConfig>;
+
+/** The config of an updater. */
 export type UpdaterConfig = {
-  /** The delay in seconds between each update. */
-  updateDelaySec: number;
+  /** The delay in seconds between each game within an update cycle. */
+  gameInterval: number;
+  /** The delay in seconds between each update cycle. */
+  cycleInterval: number;
   /** The maximum amount of notifications to send at once (e.g. after a restart). */
   limit: number;
   /** Determines whether the updater should start automatically. */
@@ -229,12 +234,12 @@ export default class ConfigManager {
   }
 
   /** Gets the updater config object. */
-  public static getUpdaterConfig(): UpdaterConfig {
-    return this.parseFile(CONFIG.UPDATER) as UpdaterConfig;
+  public static getUpdatersConfig(): UpdatersConfig {
+    return this.parseFile(CONFIG.UPDATER) as UpdatersConfig;
   }
 
   /** Sets the updater config object. */
-  public static setUpdaterConfig(config: UpdaterConfig): void {
+  public static setUpdatersConfig(config: UpdatersConfig): void {
     this.writeObject(CONFIG.UPDATER, config);
   }
 }
