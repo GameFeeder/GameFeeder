@@ -41,6 +41,7 @@
     "max-classes-per-file": "off",
     "no-nested-ternary": "off",
     "no-restricted-syntax": "off",
+    "no-useless-constructor": "off",
     "prefer-destructuring": "off",
     "curly": ["error", "all"]
   },

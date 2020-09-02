@@ -1,12 +1,15 @@
 import Logger from '../logger';
 
 export default class RedditUserProvider {
-  public name: string;
   public titleFilter: RegExp;
   public static logger = new Logger('Reddit User');
 
-  constructor(name: string, titleFilter?: string | RegExp) {
-    this.name = name;
+  /**
+   * Creates an instance of RedditUserProvider.
+   * @param name Reddit username
+   * @param titleFilter Used on post titles to only accept updates
+   */
+  constructor(public name: string, titleFilter?: string | RegExp) {
     if (typeof titleFilter === 'string' || titleFilter instanceof String) {
       this.titleFilter = new RegExp(titleFilter);
     } else if (titleFilter instanceof RegExp) {

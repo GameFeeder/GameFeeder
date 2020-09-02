@@ -6,11 +6,8 @@ import { sortLimitEnd } from '../util/comparable';
 import { mapAsync, mergeArrays } from '../util/util';
 
 export default class RedditProvider extends Provider {
-  public subredditProviders: SubredditProvider[];
-
-  constructor(subredditProviders: SubredditProvider[], game: Game) {
+  constructor(public subredditProviders: SubredditProvider[], game: Game) {
     super(`https://www.reddit.com`, `Reddit`, game);
-    this.subredditProviders = subredditProviders;
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
