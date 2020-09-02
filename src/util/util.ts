@@ -110,7 +110,7 @@ export class StrUtil {
    * @param indicator - The indicator to use when the string is too long.
    */
   public static naturalLimit(str: string, limit: number, indicator?: string): string {
-    const newIndicator = indicator == null ? '...' : indicator;
+    const newIndicator = indicator ?? '...';
 
     if (newIndicator.length > limit) {
       throw new Error('The indicator must not be longer than the limit.');
