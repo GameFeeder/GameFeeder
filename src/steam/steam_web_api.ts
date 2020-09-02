@@ -2,6 +2,9 @@ import axios from 'axios';
 import Logger from '../logger';
 import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 
+/** The timeout duration in ms for all API requests. */
+const REQUEST_TIMEOUT = 5000;
+
 /** A wrapper around the Steam Web API.
  *
  * Documentation: https://partner.steamgames.com/doc/webapi_overview
@@ -10,7 +13,7 @@ export default class SteamWebAPI {
   public static logger = new Logger('SteamWebAPI');
   public static instance = axios.create({
     baseURL: 'https://api.steampowered.com/',
-    timeout: 5000,
+    timeout: REQUEST_TIMEOUT,
     responseType: 'json',
   });
 
