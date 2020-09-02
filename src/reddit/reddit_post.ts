@@ -6,19 +6,6 @@ import NotificationBuilder from '../notifications/notification_builder';
 
 /** A post made on reddit. */
 export default class RedditPost {
-  /** The title of the post. */
-  public title: string;
-  /** The URL of the post. */
-  public url: string;
-  /** The content of the post. */
-  public content: string;
-  /** The name of the subreddit the post was submitted in. */
-  public subreddit: string;
-  /** The name of the user that submitted the post. */
-  public user: string;
-  /** The time the post was created at. */
-  public timestamp: Date;
-
   /**
    *
    * @param title - The title of the post.
@@ -29,20 +16,13 @@ export default class RedditPost {
    * @param timestamp - The time the post was created at.
    */
   constructor(
-    title: string,
-    url: string,
-    content: string,
-    subreddit: string,
-    user: string,
-    timestamp: Date,
-  ) {
-    this.title = title;
-    this.url = url;
-    this.content = content;
-    this.subreddit = subreddit;
-    this.user = user;
-    this.timestamp = timestamp;
-  }
+    public title: string,
+    public url: string,
+    public content: string,
+    public subreddit: string,
+    public user: string,
+    public timestamp: Date,
+  ) {}
 
   /** Create a reddit post from a Snoowrap reddit submission.
    *

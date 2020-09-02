@@ -5,13 +5,8 @@ import { sortLimitEnd } from '../util/comparable';
 import SteamWebAPI from '../steam/steam_web_api';
 
 export default class SteamProvider extends Provider {
-  public appID: number;
-  public feeds: string[];
-
-  constructor(appID: number, feeds: string[], game: Game) {
+  constructor(public appID: number, public feeds: string[], game: Game) {
     super(`https://steamcommunity.com/games/${appID}/announcements`, `App ${appID}`, game);
-    this.appID = appID;
-    this.feeds = feeds;
   }
 
   public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {

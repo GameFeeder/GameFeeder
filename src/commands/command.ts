@@ -8,21 +8,6 @@ import CommandGroup from './command_group';
  * Represents a command that can be executed by the users on the given bot clients.
  */
 export default abstract class Command {
-  /** The name of the command. */
-  public name: string;
-  /** The description of the command. */
-  public description: string;
-  /** The label of the command trigger. Used to compose the help-command. */
-  public channelLabel: (channel: Channel) => string;
-  /** The help string of the command. */
-  public channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string;
-  /** Get the RegExp for the given channel. */
-  public channelTrigger: (channel: Channel) => RegExp;
-  /** The action function executing the command. */
-  public action: (message: Message, match: RegExpMatchArray) => Promise<void>;
-  /** The role required to execute the command. */
-  public role: UserRole;
-
   /** Creates a new command.
    *
    * @param name - The name of the command.
@@ -33,22 +18,14 @@ export default abstract class Command {
    * @param role - The role required to execute the command.
    */
   constructor(
-    name: string,
-    description: string,
-    channelLabel: (channel: Channel) => string,
-    channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
-    channelTrigger: (channel: Channel) => RegExp,
-    action: (message: Message, match: RegExpMatchArray) => Promise<void>,
-    role?: UserRole,
-  ) {
-    this.name = name;
-    this.description = description;
-    this.channelLabel = channelLabel;
-    this.channelHelp = channelHelp;
-    this.channelTrigger = channelTrigger;
-    this.action = action;
-    this.role = role != null ? role : UserRole.USER;
-  }
+    public name: string,
+    public description: string,
+    public channelLabel: (channel: Channel) => string,
+    public channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
+    public channelTrigger: (channel: Channel) => RegExp,
+    public action: (message: Message, match: RegExpMatchArray) => Promise<void>,
+    public role: UserRole = UserRole.USER,
+  ) {}
   /** Tries to execute the command on the given channel.
    *
    * @param message - The message triggering the command.

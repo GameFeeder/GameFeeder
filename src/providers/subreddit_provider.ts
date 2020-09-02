@@ -7,15 +7,13 @@ import { sortLimitEnd } from '../util/comparable';
 import { mapAsync, mergeArrays } from '../util/util';
 
 export default class SubredditProvider extends Provider {
-  public users: RedditUserProvider[];
-  public subreddit: string;
-  public urlFilters: string[];
-
-  constructor(users: RedditUserProvider[], subreddit: string, urlFilters: string[], game: Game) {
+  constructor(
+    public users: RedditUserProvider[],
+    public subreddit: string,
+    public urlFilters: string[],
+    game: Game,
+  ) {
     super(`https://www.reddit.com/r/${subreddit}`, `/r/${subreddit}`, game);
-    this.subreddit = subreddit;
-    this.urlFilters = urlFilters;
-    this.users = users;
     Reddit.init();
   }
 

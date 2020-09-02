@@ -1,28 +1,23 @@
 import Comparable from '../util/comparable';
 
 export default class RSSItem implements Comparable<RSSItem> {
-  public title: string;
-  public author: string;
-  public link: string;
-  public content: string;
-  public timestamp: Date;
-  public feed: { name?: string; source?: string; link?: string };
-
+  /**
+   * Creates an instance of RSSItem.
+   * @param title RSS item title
+   * @param author RSS item author
+   * @param link RSS item source url
+   * @param content RSS item body
+   * @param timestamp RSS item timestamp
+   * @param feed RSS item source feed
+   */
   constructor(
-    title: string,
-    author: string,
-    link: string,
-    content: string,
-    timestamp: Date,
-    feed: { name?: string; source?: string; link?: string },
-  ) {
-    this.title = title;
-    this.author = author;
-    this.link = link;
-    this.content = content;
-    this.timestamp = timestamp;
-    this.feed = feed;
-  }
+    public title: string,
+    public author: string,
+    public link: string,
+    public content: string,
+    public timestamp: Date,
+    public feed: { name?: string; source?: string; link?: string },
+  ) {}
 
   public compareTo(other: RSSItem): -1 | 0 | 1 {
     if (this.timestamp < other.timestamp) {

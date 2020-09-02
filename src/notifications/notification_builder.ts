@@ -19,17 +19,13 @@ export default class NotificationBuilder {
   public thumbnail?: string;
   /** The (big) image of the notification. */
   public image?: string;
-  /** The timestamp of the notification. */
-  public timestamp: Date;
   /** The footer of the notification. */
   public footer?: NotificationElement;
 
   /** Creates a new Notification builder.
    * @param timestamp - The timestamp of the notification (default: now).
    */
-  constructor(timestamp?: Date) {
-    this.timestamp = timestamp || new Date();
-  }
+  constructor(public timestamp: Date = new Date()) {}
 
   /** Changes the content of the notification.
    *

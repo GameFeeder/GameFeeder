@@ -9,16 +9,8 @@ import Permissions from '../permissions';
 import { mapAsync } from '../util/util';
 
 export default abstract class BotClient {
-  /** The internal name of the bot. */
-  public name: string;
-  /** The human-readable label of the bot. */
-  public label: string;
-  /** The prefix to use for commands. */
-  public prefix: string;
   /** Indicator whether the bot is currently running. */
   public isRunning: boolean;
-  /** Indicates whether the bot should be started automatically. */
-  public enabled: boolean;
   /** The logger used for this bot. */
   public logger: Logger;
   /** The user tag of this bot */
@@ -31,15 +23,15 @@ export default abstract class BotClient {
    * @param  {string} name - The internal name of the bot.
    * @param  {string} label - The human-readable label of the bot.
    * @param  {string} prefix - The prefix to use for commands.
-   * @param {boolean} autostart - Indicates whether the bot should be started automatically.
+   * @param {boolean} enabled - Indicates whether the bot should be started automatically.
    */
-  constructor(name: string, label: string, prefix: string, autostart: boolean) {
-    this.name = name;
-    this.label = label;
-    this.prefix = prefix;
-    this.enabled = autostart;
+  constructor(
+    public name: string,
+    public label: string,
+    public prefix: string,
+    public enabled: boolean,
+  ) {
     this.isRunning = false;
-
     this.logger = new Logger(label);
   }
 

@@ -11,8 +11,6 @@ export default class Updater {
   private static updaters: Updater[];
 
   public logger: Logger;
-  public key: string;
-  public enabled: boolean;
   /** Determines if the auto updating is set to on or off. */
   private doUpdates: boolean;
   /** The delay in milliseconds between each game within an update cycle. */
@@ -20,21 +18,24 @@ export default class Updater {
   /** The delay in milliseconds between each update cycle. */
   private cyleIntervalMs: number;
   private lastUpdate: Date;
-  private limit: number;
-  private autosave: boolean;
 
-  /** Creates a new Updater.
-   * @param {number} cyleInterval - The initial delay in seconds.
+  /**
+   * Creates an instance of Updater.
+   * @param key Id of the updater
+   * @param enabled Whether the specific updater loop should run or not
+   * @param autosave Whether the specific updater should save the new data on each loop
+   * @param limit Numver of notifications to generate per loop
+   * @param gameInterval Time between update checks in milliseconds
+   * @param cycleInterval Time between loop end and loop begin in milliseconds
    */
   constructor(
-    key: string,
-    enabled: boolean,
-    autosave: boolean,
+    public key: string,
+    public enabled: boolean,
+    private autosave: boolean,
+    private limit: number,
     gameInterval: number,
     cycleInterval: number,
-    limit: number,
   ) {
-    this.key = key;
     this.logger = new Logger(`Updater (${this.key})`);
 
     const data = DataManager.getUpdaterData(this.key);
@@ -45,11 +46,8 @@ export default class Updater {
 
     this.gameIntervalMs = gameInterval * 1000;
     this.cyleIntervalMs = cycleInterval * 1000;
-    this.limit = limit;
     this.lastUpdate = data.lastUpdate ? new Date(data.lastUpdate) : new Date();
     this.doUpdates = false;
-    this.enabled = enabled;
-    this.autosave = autosave;
   }
 
   public static getUpdaters(): Updater[] {

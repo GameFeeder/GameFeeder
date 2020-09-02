@@ -5,47 +5,29 @@ import { StrUtil } from '../util/util';
 
 /** A representation of a bot notification. */
 export default class Notification implements Comparable<Notification> {
-  /** The timestamp of the notification. */
-  public timestamp: Date;
-  /** The game the notification is for. */
-  public game: Game;
-  /** The title of the notification. */
-  public title: NotificationElement;
-  /** The content of the notification. */
-  public content?: string;
-  /** The author of the notification. */
-  public author?: NotificationElement;
-  /** The color of the notification. */
-  public color?: string;
-  /** The (small) thumbnail of the notification. */
-  public thumbnail?: string;
-  /** The (big) image of the notification. */
-  public image?: string;
-  /** The footer of the notification. */
-  public footer?: NotificationElement;
-
-  /** Creates a new Notification. */
+  /**
+   * Creates a new Notification.
+   * @param timestamp The timestamp of the notification.
+   * @param game The game the notification is for.
+   * @param title The title of the notification.
+   * @param content The content of the notification.
+   * @param author The author of the notification.
+   * @param color The color of the notification.
+   * @param thumbnail The (small) thumbnail of the notification.
+   * @param image The (big) image of the notification.
+   * @param footer The footer of the notification.
+   */
   constructor(
-    timestamp: Date,
-    game: Game,
-    title: NotificationElement,
-    content?: string,
-    author?: NotificationElement,
-    color?: string,
-    thumbnail?: string,
-    image?: string,
-    footer?: NotificationElement,
-  ) {
-    this.timestamp = timestamp;
-    this.game = game;
-    this.title = title;
-    this.author = author;
-    this.content = content;
-    this.color = color;
-    this.thumbnail = thumbnail;
-    this.image = image;
-    this.footer = footer;
-  }
+    public timestamp: Date,
+    public game: Game,
+    public title: NotificationElement,
+    public content?: string,
+    public author?: NotificationElement,
+    public color?: string,
+    public thumbnail?: string,
+    public image?: string,
+    public footer?: NotificationElement,
+  ) {}
 
   public compareTo(other: Notification): -1 | 0 | 1 {
     if (this.timestamp < other.timestamp) {
