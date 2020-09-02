@@ -27,7 +27,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
     "test": "jest --coverage",
-    "coverage": "jest --collectCoverageFrom=src/**.ts --coverage src",
+    "coverage": "jest --coverage",
     "watch": "tsc --watch"
   },
   "husky": {
@@ -79,5 +79,25 @@
     "snoowrap": "1.21.0",
     "turndown": "6.0.0",
     "winston": "3.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "preset": "ts-jest",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/",
+      "/tests/",
+      "/docs/",
+      "/data/",
+      "/config/",
+      "/@types/",
+      ".vscode",
+      ".github",
+      ".devcontainer"
+    ]
   }
 }

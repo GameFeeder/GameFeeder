@@ -1,4 +1,4 @@
-import InitManager from './init_manager';
+import InitManager from '../src/managers/init_manager';
 
 describe('Init manager', () => {
   describe('missing keys', () => {

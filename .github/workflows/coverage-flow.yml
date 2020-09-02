@@ -1,0 +1,32 @@
+name: coverage
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  codecov:
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        node-version: [12.18.1]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Determine test coverage
+        run: yarn coverage
+
+      - name: Upload coverage to codecov
+        run: bash <(curl -s https://codecov.io/bash)
