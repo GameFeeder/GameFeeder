@@ -109,16 +109,16 @@ export class StrUtil {
    * @param limit - The maximum length of the string.
    * @param indicator - The indicator to use when the string is too long.
    */
-  public static naturalLimit(str: string, limit: number, indicator?: string): string {
-    const newIndicator = indicator == null ? '...' : indicator;
-
-    if (newIndicator.length > limit) {
+  public static naturalLimit(str: string, limit: number, indicator = '...'): string {
+    if (indicator.length > limit) {
       throw new Error('The indicator must not be longer than the limit.');
     }
+
     if (str.length > limit) {
-      const cutStr = this.limit(str, limit - newIndicator.length);
-      return cutStr + newIndicator;
+      const cutStr = this.limit(str, limit - indicator.length);
+      return cutStr + indicator;
     }
+
     return str;
   }
 }
