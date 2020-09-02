@@ -137,12 +137,12 @@ export default class Channel {
 
   /**
    * Creates an instance of Channel.
-   * @param {string} id The unique ID of the channel
-   * @param {BotClient} bot The BotClient this channel is used in.
-   * @param {Game[]} [gameSubs] The games this channel is subscribed to.
-   * @param {string} [prefix] The prefix the channel uses.
-   * @param {string} [label] The label of the channel (if specified).
-   * @param {boolean} [disabled=false] Disabled channels won't receive automatic updates.
+   * @param id The unique ID of the channel
+   * @param bot The BotClient this channel is used in.
+   * @param gameSubs The games this channel is subscribed to.
+   * @param prefix The prefix the channel uses.
+   * @param label The label of the channel (if specified).
+   * @param disabled Disabled channels won't receive automatic updates.
    */
   constructor(
     public id: string,
