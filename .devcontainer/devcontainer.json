@@ -3,9 +3,10 @@
 	"dockerFile": "Dockerfile",
 	"postCreateCommand": "yarn install",
 	"extensions": [
+		"ban.spellright",
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode",
+		"mutantdino.resourcemonitor",
 		"yzhang.markdown-all-in-one",
-		"ban.spellright"
 	]
 }

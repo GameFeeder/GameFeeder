@@ -9,5 +9,9 @@
     "spellright.language": [
         "en"
     ],
-    "diffEditor.ignoreTrimWhitespace": false
+    "diffEditor.ignoreTrimWhitespace": false,
+    "files.exclude": {
+        "node_modules": true,
+        "yarn.lock": true
+    }
 }
