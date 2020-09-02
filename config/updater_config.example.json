@@ -1,29 +1,29 @@
 {
   "reddit": {
-    "gameInterval": 5,
-    "cycleInterval": 30,
-    "limit": 3,
+    "gameInterval": 1,
+    "cycleInterval": 20,
+    "limit": 2,
     "enabled": true,
     "autosave": true
   },
   "steam": {
-    "gameInterval": 5,
-    "cycleInterval": 30,
-    "limit": 3,
+    "gameInterval": 1,
+    "cycleInterval": 10,
+    "limit": 2,
     "enabled": true,
     "autosave": true
   },
   "rss": {
-    "gameInterval": 2,
+    "gameInterval": 0,
     "cycleInterval": 60,
-    "limit": 3,
+    "limit": 2,
     "enabled": true,
     "autosave": true
   },
   "dota": {
     "gameInterval": 0,
     "cycleInterval": 60,
-    "limit": 3,
+    "limit": 2,
     "enabled": true,
     "autosave": true
   }
