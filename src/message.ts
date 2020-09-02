@@ -5,15 +5,6 @@ import Notification from './notifications/notification';
 
 /** A message sent to one of the bots. */
 export default class Message {
-  /** The user who sent the message. */
-  public user: User;
-  /** The channel the message was sent on. */
-  public channel: Channel;
-  /** The content of the message. */
-  public content: string;
-  /** The time the message was sent at. */
-  public timestamp: Date;
-
   /** Creates a new message.
    *
    * @param user - The user who sent the message.
@@ -21,12 +12,12 @@ export default class Message {
    * @param content - The content of the message.
    * @param timestamp - The time the message was sent at.
    */
-  constructor(user: User, channel: Channel, content: string, timestamp: Date) {
-    this.user = user;
-    this.channel = channel;
-    this.content = content;
-    this.timestamp = timestamp;
-  }
+  constructor(
+    public user: User,
+    public channel: Channel,
+    public content: string,
+    public timestamp: Date,
+  ) {}
 
   /** Determines wheather the message does not have any content. */
   public isEmpty(): boolean {

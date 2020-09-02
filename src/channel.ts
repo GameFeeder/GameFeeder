@@ -4,11 +4,6 @@ import DataManager from './managers/data_manager';
 
 /** A representation of a bot's channel. */
 export default class Channel {
-  /** The unique ID of the channel. */
-  public id: string;
-
-  /** The label of the channel (if specified). */
-  private _label?: string;
   get label(): string | undefined {
     const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
     return this._label ? `'${this._label}' (${ID})` : ID;
@@ -57,13 +52,6 @@ export default class Channel {
     }
   }
 
-  /** The BotClient this channel is used in. */
-  public bot: BotClient;
-  /** The games this channel is subscribed to. */
-  public gameSubs: Game[];
-
-  /** The prefix the channel uses. */
-  private _prefix: string | undefined;
   get prefix(): string {
     if (this._prefix) {
       return this._prefix;
@@ -117,8 +105,6 @@ export default class Channel {
     }
   }
 
-  // Disabled channels won't receive automatic updates
-  private _disabled: boolean;
   get disabled(): boolean {
     return this._disabled;
   }
@@ -149,22 +135,24 @@ export default class Channel {
     DataManager.setSubscriberData(subscribers);
   }
 
-  /** Creates a new Channel. */
+  /**
+   * Creates an instance of Channel.
+   * @param {string} id The unique ID of the channel
+   * @param {BotClient} bot The BotClient this channel is used in.
+   * @param {Game[]} [gameSubs] The games this channel is subscribed to.
+   * @param {string} [prefix] The prefix the channel uses.
+   * @param {string} [label] The label of the channel (if specified).
+   * @param {boolean} [disabled=false] Disabled channels won't receive automatic updates.
+   * @memberof Channel
+   */
   constructor(
-    id: string,
-    bot: BotClient,
-    gameSubs?: Game[],
-    prefix?: string,
-    label?: string,
-    disabled = false,
-  ) {
-    this.id = id;
-    this.bot = bot;
-    this.gameSubs = gameSubs || [];
-    this._prefix = prefix;
-    this._label = label;
-    this._disabled = disabled;
-  }
+    public id: string,
+    public bot: BotClient,
+    public gameSubs: Game[] = [],
+    private _prefix?: string,
+    private _label?: string,
+    private _disabled = false,
+  ) {}
   /** Compares the channel to another channel.
    *
    * @param  {IBotChannel} other - The other channel to compare to.

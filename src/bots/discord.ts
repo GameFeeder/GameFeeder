@@ -15,13 +15,11 @@ import Game from '../game';
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
-  private token: string;
 
-  constructor(prefix: string, token: string, autostart: boolean) {
+  constructor(prefix: string, private token: string, autostart: boolean) {
     super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot
-    this.token = token;
     this.bot = new DiscordAPI.Client();
   }
 

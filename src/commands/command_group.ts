@@ -11,17 +11,14 @@ import { mergeArrays } from '../util/util';
  * E.g. all Dota 2 related commands could be collected in a Dota-CommandGroup with the common 'dota' prefix.
  */
 export default class CommandGroup extends Command {
-  public defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>;
-  public commands: Command[];
-
   constructor(
     name: string,
     description: string,
     channelLabel: (channel: Channel) => string,
     channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
     channelTrigger: (channel: Channel) => RegExp,
-    defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
-    commands: Command[],
+    public defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
+    public commands: Command[],
     role?: UserRole,
   ) {
     super(
@@ -72,9 +69,6 @@ export default class CommandGroup extends Command {
       },
       role,
     );
-
-    this.defaultAction = defaultAction;
-    this.commands = commands;
   }
 
   /** Tries to find the label of the given command in this group.

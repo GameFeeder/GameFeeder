@@ -15,15 +15,13 @@ export enum UserRole {
 /** Represents a user of a bot. */
 export default class User {
   public static logger = new Logger('User');
-  /** The bot the user is associated to. */
-  public bot: BotClient;
-  /** The unique ID of the user. */
-  public id: string;
-  /** Create a new BotUser.
-   *
-   * @param id - The ID of the BotUser.
+  /**
+   * Create a new BotUser.
+   * @param {BotClient} bot The bot the user is associated to.
+   * @param {string} id The ID of the BotUser.
+   * @memberof User
    */
-  constructor(bot: BotClient, id: string) {
+  constructor(public bot: BotClient, public id: string) {
     this.bot = bot;
     this.id = id;
   }
