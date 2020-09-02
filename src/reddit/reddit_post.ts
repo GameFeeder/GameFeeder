@@ -81,7 +81,7 @@ export default class RedditPost {
   }
 
   /** Determines if the post is 'valid' and should be send to the users. */
-  public isValid(date: Date, titleFilter: RegExp, urlFilters: string[]): boolean {
+  public isValid(date?: Date, titleFilter?: RegExp, urlFilters?: string[]): boolean {
     return (
       this.isNew(date) &&
       this.hasValidTitle(titleFilter) &&
@@ -91,7 +91,11 @@ export default class RedditPost {
   }
 
   /** Checks if the url is already covered by other providers. */
-  public isNewSource(urlFilters: string[]): boolean {
+  public isNewSource(urlFilters?: string[]): boolean {
+    if (!urlFilters) {
+      return true;
+    }
+
     let isNewSource = true;
     for (const filter of urlFilters) {
       const alreadyCovered = new RegExp(filter).test(this.url);
@@ -103,12 +107,20 @@ export default class RedditPost {
   }
 
   /** Checks the title to determine if the post is an update. */
-  public hasValidTitle(titleFilter: RegExp): boolean {
+  public hasValidTitle(titleFilter?: RegExp): boolean {
+    if (!titleFilter) {
+      return true;
+    }
+
     return titleFilter.test(this.title);
   }
 
   /** Checks if the submission is new. */
-  public isNew(date: Date): boolean {
+  public isNew(date?: Date): boolean {
+    if (!date) {
+      return true;
+    }
+
     return this.timestamp > date;
   }
 

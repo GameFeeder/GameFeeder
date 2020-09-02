@@ -7,8 +7,10 @@ import DataManager from '../managers/data_manager';
 import ConfigManager from '../managers/config_manager';
 import Logger from '../logger';
 import NotificationBuilder from '../notifications/notification_builder';
+import { assertIsDefined } from '../util/util';
 
 export default class DotaProvider extends Provider {
+  public static key = 'dota';
   public static logger = new Logger('Dota Provider');
   public lastPatch: string;
 
@@ -21,7 +23,9 @@ export default class DotaProvider extends Provider {
 
     super(`http://www.dota2.com/patches/`, `Gameplay Patch`, dota);
 
-    this.lastPatch = DataManager.getUpdaterData().lastDotaPatch;
+    const lastPatch = DataManager.getUpdaterData(DotaProvider.key).lastVersion;
+    assertIsDefined(lastPatch);
+    this.lastPatch = lastPatch;
   }
 
   public async getNotifications(): Promise<Notification[]> {
@@ -63,11 +67,19 @@ export default class DotaProvider extends Provider {
     this.lastPatch = lastPatch;
 
     // If enabled, save the date in the data file.
-    const updaterConfig = ConfigManager.getUpdaterConfig();
+    const updaterConfig = ConfigManager.getUpdatersConfig()[DotaProvider.key];
+
+    if (!updaterConfig) {
+      this.logger.error(
+        `Failed to update patch number: Updater config '${DotaProvider.key}' not found.`,
+      );
+      return;
+    }
+
     if (updaterConfig.autosave) {
-      const updaterData = DataManager.getUpdaterData();
-      updaterData.lastDotaPatch = lastPatch;
-      DataManager.setUpdaterData(updaterData);
+      const updaterData = DataManager.getUpdaterData(DotaProvider.key);
+      updaterData.lastVersion = lastPatch;
+      DataManager.setUpdaterData(DotaProvider.key, updaterData);
     }
   }
 

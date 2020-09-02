@@ -3,6 +3,13 @@ import { AssertionError } from 'assert';
 
 export type JSONObj = Record<string, unknown> | string[];
 
+/** Delays the execution by the specified amount of milliseconds. */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 /** Asserts that val is defined, i.e. not undefined or null. */
 export function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
