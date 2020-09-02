@@ -1,4 +1,4 @@
-import FileManager from './file_manager';
+import FileManager from '../src/managers/file_manager';
 
 describe('File manager', () => {
   describe('get file path', () => {
