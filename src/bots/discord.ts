@@ -12,6 +12,13 @@ import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
 import Game from '../game';
 
+/** The maximum amount of characters allowed in the title of embeds. */
+const EMBED_TITLE_LIMIT = 256;
+/** The amount of characters needed to format an H1 text. */
+const HEADER_FORMAT_CHARS = 4 * 2;
+/** The maximum amount of characters allowed in the content of embeds. */
+const EMBED_CONTENT_LIMIT = 2048;
+
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
@@ -392,8 +399,15 @@ export default class DiscordBot extends BotClient {
     const embed = new MessageEmbed();
     // Title
     if (notification.title) {
-      const titleMD = DiscordBot.msgFromMarkdown(`#${notification.title.text}`, true);
+      // Respect title character limits
+      const limitedTitle = StrUtil.naturalLimit(
+        notification.title.text,
+        EMBED_TITLE_LIMIT - HEADER_FORMAT_CHARS,
+      );
+
+      const titleMD = DiscordBot.msgFromMarkdown(`#${limitedTitle}`, true).trim();
       embed.setTitle(titleMD);
+
       if (notification.title.link) {
         embed.setURL(notification.title.link);
       }
@@ -414,8 +428,8 @@ export default class DiscordBot extends BotClient {
     // Description
     if (notification.content) {
       const descriptionMD = DiscordBot.msgFromMarkdown(notification.content, true);
-      // 2048 is the maximum notification length
-      embed.setDescription(StrUtil.naturalLimit(descriptionMD, 2048));
+      // Respect the content character limit
+      embed.setDescription(StrUtil.naturalLimit(descriptionMD, EMBED_CONTENT_LIMIT));
     }
     // Footer
     if (notification.footer) {
