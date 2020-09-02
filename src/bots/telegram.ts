@@ -26,16 +26,14 @@ const MAX_SEND_MESSAGE_RETRIES = 5;
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
   private bot: TelegramAPI;
-  private token: string;
   private queue: Queue;
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
 
-  constructor(prefix: string, token: string, autostart: boolean) {
+  constructor(prefix: string, private token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
 
     // Set up the bot
-    this.token = token;
     this.bot = new TelegramAPI(token, { polling: false });
     this.queue = new Queue({
       rules: {

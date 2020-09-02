@@ -16,44 +16,25 @@ export type Providers = {
 export default class Game {
   private static games: Game[];
 
-  /** The internal name of the game. */
-  public name: string;
-  /** The aliases the game uses. */
-  public aliases: string[];
-  /** The human-formatted label of the game. */
-  public label: string;
-  /** The color representing the game. */
-  public color: string;
-  /** The game icon. */
-  public icon: string;
-  /** The game providers. */
-  public providers: Providers;
-  /** The Telegram IV templates. */
-  public telegramIVTemplates: TelegramIVTemplate[];
-
-  /** Creates a new Game.
-   *
-   * @param  {string} name - The internal name of the game.
-   * @param  {string[]} aliases - The aliases the game uses.
-   * @param  {string} label - The human-formatted label of the game.
+  /**
+   * Creates an instance of Game.
+   * @param name The internal name of the game.
+   * @param aliases The aliases the game uses.
+   * @param label The human-formatted label of the game.
+   * @param color The color representing the game.
+   * @param icon The game icon.
+   * @param providers The game providers.
+   * @param telegramIVTemplates The Telegram IV templates.
    */
   constructor(
-    name: string,
-    aliases: string[],
-    label: string,
-    color: string,
-    icon: string,
-    providers: Providers,
-    telegramIVTemplates: TelegramIVTemplate[],
-  ) {
-    this.name = name;
-    this.aliases = aliases;
-    this.label = label;
-    this.color = color;
-    this.icon = icon;
-    this.providers = providers;
-    this.telegramIVTemplates = telegramIVTemplates;
-  }
+    public name: string,
+    public aliases: string[],
+    public label: string,
+    public color: string,
+    public icon: string,
+    public providers: Providers,
+    public telegramIVTemplates: TelegramIVTemplate[],
+  ) {}
 
   public hasAlias(aliasText: string): boolean {
     // Ignore casing

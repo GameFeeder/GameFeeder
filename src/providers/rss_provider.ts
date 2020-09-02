@@ -7,13 +7,11 @@ import SteamProcessor from '../processors/steam_processor';
 import NotificationBuilder from '../notifications/notification_builder';
 
 export default class RSSProvider extends Provider {
-  public flavor?: string;
   public preProcessors: PreProcessor[];
 
-  constructor(url: string, label: string, game: Game, flavor?: string) {
+  constructor(url: string, label: string, game: Game, public flavor?: string) {
     super(url, label, game);
 
-    this.flavor = flavor;
     this.preProcessors = [];
 
     // Add pre-processors
