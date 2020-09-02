@@ -1,7 +1,15 @@
 {
   "name": "csgo",
-  "label": "CS:GO",
-  "aliases": ["counter strike", "global offensive", "csgo", "cs:go"],
+  "label": "Counter-Strike: Global Offensive",
+  "aliases": [
+    "counter-strike: global offensive",
+    "counter strike global offensive",
+    "counter-strike",
+    "counter strike",
+    "global offensive",
+    "csgo",
+    "cs:go"
+  ],
   "color": "#000000",
   "icon": "https://i.imgur.com/2ONuRD3.png",
   "providers": {

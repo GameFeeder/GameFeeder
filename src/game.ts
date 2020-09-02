@@ -1,56 +1,42 @@
 import ConfigManager, { RedditUser } from './managers/config_manager';
 import Provider from './providers/provider';
 import RSSProvider from './providers/rss_provider';
-import RedditProvider from './providers/reddit_provider';
+import SubredditProvider from './providers/subreddit_provider';
 import RedditUserProvider from './reddit/reddit_user';
 import DotaProvider from './providers/dota_provider';
 import TelegramIVTemplate from './telegram_iv_template';
 import SteamProvider from './providers/steam_provider';
+import RedditProvider from './providers/reddit_provider';
+
+export type Providers = {
+  [index: string]: Provider;
+};
 
 /** A representation of a game. */
 export default class Game {
   private static games: Game[];
 
-  /** The internal name of the game. */
-  public name: string;
-  /** The aliases the game uses. */
-  public aliases: string[];
-  /** The human-formatted label of the game. */
-  public label: string;
-  /** The color representing the game. */
-  public color: string;
-  /** The game icon. */
-  public icon: string;
-  /** The game providers. */
-  public providers: Provider[];
-  /** The Telegram IV templates. */
-  public telegramIVTemplates: TelegramIVTemplate[];
-
-  /** Creates a new Game.
-   *
-   * @param  {string} name - The internal name of the game.
-   * @param  {string[]} aliases - The aliases the game uses.
-   * @param  {string} label - The human-formatted label of the game.
+  /**
+   * Creates an instance of Game.
+   * @param name The internal name of the game.
+   * @param aliases The aliases the game uses.
+   * @param label The human-formatted label of the game.
+   * @param color The color representing the game.
+   * @param icon The game icon.
+   * @param providers The game providers.
+   * @param telegramIVTemplates The Telegram IV templates.
    */
   constructor(
-    name: string,
-    aliases: string[],
-    label: string,
-    color: string,
-    icon: string,
-    providers: Provider[],
-    telegramIVTemplates: TelegramIVTemplate[],
-  ) {
-    this.name = name;
-    this.aliases = aliases;
-    this.label = label;
-    this.color = color;
-    this.icon = icon;
-    this.providers = providers;
-    this.telegramIVTemplates = telegramIVTemplates;
-  }
+    public name: string,
+    public aliases: string[],
+    public label: string,
+    public color: string,
+    public icon: string,
+    public providers: Providers,
+    public telegramIVTemplates: TelegramIVTemplate[],
+  ) {}
 
-  public hasAlias(aliasText: string) {
+  public hasAlias(aliasText: string): boolean {
     // Ignore casing
     const alias = aliasText.toLocaleLowerCase();
 
@@ -82,7 +68,7 @@ export default class Game {
         return game;
       }
     }
-    return null;
+    throw new Error(`Failed to find game with name '${name}'`);
   }
 
   /** Returns an array of all available game aliases. */
@@ -113,40 +99,40 @@ export default class Game {
         gameSettings.label,
         gameSettings.color,
         gameSettings.icon,
-        null,
+        {},
         telegramIVtemplates,
       );
 
-      // Add providers
-      const providers: Provider[] = [];
-
       // Reddit providers
       if (gameSettings.providers.reddit) {
-        gameSettings.providers.reddit.forEach((redditProvider) => {
-          if (redditProvider.users) {
-            const subreddit = redditProvider.subreddit;
-            const users: RedditUser[] = redditProvider.users;
+        const subredditProviders: SubredditProvider[] = [];
+        gameSettings.providers.reddit.forEach((subredditConfig) => {
+          if (subredditConfig.users) {
+            const subreddit = subredditConfig.subreddit;
+            const users: RedditUser[] = subredditConfig.users;
             const redditUsers = users.map(
               (user) => new RedditUserProvider(user.name, user.titleFilter),
             );
-            const urlFilters = redditProvider.urlFilters ? redditProvider.urlFilters : [];
-            providers.push(new RedditProvider(redditUsers, subreddit, urlFilters, game));
+            const urlFilters = subredditConfig.urlFilters ? subredditConfig.urlFilters : [];
+            subredditProviders.push(
+              new SubredditProvider(redditUsers, subreddit, urlFilters, game),
+            );
           }
         });
+        game.providers.reddit = new RedditProvider(subredditProviders, game);
       }
 
       // Blog providers
       if (gameSettings.providers.rss) {
         for (const blog of gameSettings.providers.rss) {
-          providers.push(new RSSProvider(blog.url, blog.label, game, blog.flavor));
+          game.providers.rss = new RSSProvider(blog.url, blog.label, game, blog.flavor);
         }
       }
       // Steam providers
       if (gameSettings.providers.steam) {
         const steamSettings = gameSettings.providers.steam;
-        providers.push(new SteamProvider(steamSettings.appID, steamSettings.feeds, game));
+        game.providers.steam = new SteamProvider(steamSettings.appID, steamSettings.feeds, game);
       }
-      game.providers = providers;
 
       games.push(game);
     }
@@ -156,7 +142,7 @@ export default class Game {
     // Unique providers
     for (const game of games) {
       if (game.name === 'dota') {
-        game.providers.push(new DotaProvider());
+        game.providers.dota = new DotaProvider();
       }
     }
 

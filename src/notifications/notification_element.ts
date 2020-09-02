@@ -1,11 +1,9 @@
 export default class NotificationElement {
-  public text: string;
-  public link?: string;
-  public icon?: string;
-
-  constructor(text: string, link?: string, icon?: string) {
-    this.text = text;
-    this.link = link;
-    this.icon = icon;
-  }
+  /**
+   * Creates an instance of a NotificationElement.
+   * @param text The body of the notification element
+   * @param link The source of the notification element
+   * @param icon The icon of the notification element
+   */
+  constructor(public text: string, public link?: string, public icon?: string) {}
 }

@@ -4,16 +4,11 @@ import DataManager from './managers/data_manager';
 
 /** A representation of a bot's channel. */
 export default class Channel {
-  /** The unique ID of the channel. */
-  public id: string;
-
-  /** The label of the channel (if specified). */
-  private _label?: string;
-  get label(): string {
+  get label(): string | undefined {
     const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
     return this._label ? `'${this._label}' (${ID})` : ID;
   }
-  set label(value: string) {
+  set label(value: string | undefined) {
     const newLabel = value;
 
     // Save locally
@@ -57,20 +52,13 @@ export default class Channel {
     }
   }
 
-  /** The BotClient this channel is used in. */
-  public bot: BotClient;
-  /** The games this channel is subscribed to. */
-  public gameSubs: Game[];
-
-  /** The prefix the channel uses. */
-  private _prefix: string;
-  get prefix() {
+  get prefix(): string {
     if (this._prefix) {
       return this._prefix;
     }
     return this.bot.prefix;
   }
-  set prefix(value) {
+  set prefix(value: string) {
     let newPrefix = value;
     // Check if the user wants to reset the prefix
     this.bot.logger.debug(newPrefix);
@@ -117,12 +105,10 @@ export default class Channel {
     }
   }
 
-  // Disabled channels won't receive automatic updates
-  private _disabled: boolean;
-  get disabled() {
+  get disabled(): boolean {
     return this._disabled;
   }
-  set disabled(value) {
+  set disabled(value: boolean) {
     // Save locally
     this._disabled = value;
 
@@ -149,22 +135,23 @@ export default class Channel {
     DataManager.setSubscriberData(subscribers);
   }
 
-  /** Creates a new Channel. */
+  /**
+   * Creates an instance of Channel.
+   * @param id The unique ID of the channel
+   * @param bot The BotClient this channel is used in.
+   * @param gameSubs The games this channel is subscribed to.
+   * @param prefix The prefix the channel uses.
+   * @param label The label of the channel (if specified).
+   * @param disabled Disabled channels won't receive automatic updates.
+   */
   constructor(
-    id: string,
-    bot: BotClient,
-    gameSubs?: Game[],
-    prefix?: string,
-    label?: string,
-    disabled = false,
-  ) {
-    this.id = id;
-    this.bot = bot;
-    this.gameSubs = gameSubs || [];
-    this._prefix = prefix;
-    this._label = label;
-    this._disabled = disabled;
-  }
+    public id: string,
+    public bot: BotClient,
+    public gameSubs: Game[] = [],
+    private _prefix?: string,
+    private _label?: string,
+    private _disabled = false,
+  ) {}
   /** Compares the channel to another channel.
    *
    * @param  {IBotChannel} other - The other channel to compare to.
@@ -195,7 +182,7 @@ export default class Channel {
     return this.bot.getChannelUserCount(this);
   }
 
-  hasLabel() {
+  hasLabel(): boolean {
     return !!this._label;
   }
 }

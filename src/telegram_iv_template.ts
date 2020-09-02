@@ -1,19 +1,11 @@
 /** A representation of a Telegram IV template. */
 export default class TelegramIVTemplate {
-  /** The domain of the Telegram IV template. */
-  public domain: string;
-  /** The hash of the Telegram IV template. */
-  public templateHash: string;
-
   /** Creates a new Telegram IV template.
    *
    * @param domain - The domain of the Telegram IV template.
    * @param templateHash - The hash of the Telegram IV template.
    */
-  constructor(domain: string, templateHash: string) {
-    this.domain = domain;
-    this.templateHash = templateHash;
-  }
+  constructor(public domain: string, public templateHash: string) {}
 
   /** Gets the instant view URL from the URL.
    *
@@ -27,8 +19,8 @@ export default class TelegramIVTemplate {
    *
    * @param url - The URL to test the IV template with.
    */
-  public testUrl(url: string): string {
-    if (url.includes(this.domain)) {
+  public testUrl(url?: string): string {
+    if (url?.includes(this.domain)) {
       return this.getIVUrl(url);
     }
     return '';

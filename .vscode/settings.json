@@ -1,14 +1,4 @@
 {
-    "cSpell.words": [
-        "csgo",
-        "dota",
-        "reddit",
-        "sub",
-        "subreddit",
-        "unsub",
-        "unsubscription",
-        "usertag"
-    ],
     "editor.tabSize": 2,
     "files.eol": "\n",
     "spellright.documentTypes": [
@@ -18,5 +8,10 @@
     ],
     "spellright.language": [
         "en"
-    ]
+    ],
+    "diffEditor.ignoreTrimWhitespace": false,
+    "files.exclude": {
+        "node_modules": true,
+        "yarn.lock": true
+    }
 }

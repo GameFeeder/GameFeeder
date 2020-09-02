@@ -2,22 +2,10 @@ import Snoowrap from 'snoowrap';
 import Notification from '../notifications/notification';
 import Reddit from './reddit';
 import Game from '../game';
+import NotificationBuilder from '../notifications/notification_builder';
 
 /** A post made on reddit. */
 export default class RedditPost {
-  /** The title of the post. */
-  public title: string;
-  /** The URL of the post. */
-  public url: string;
-  /** The content of the post. */
-  public content: string;
-  /** The name of the subreddit the post was submitted in. */
-  public subreddit: string;
-  /** The name of the user that submitted the post. */
-  public user: string;
-  /** The time the post was created at. */
-  public timestamp: Date;
-
   /**
    *
    * @param title - The title of the post.
@@ -28,20 +16,13 @@ export default class RedditPost {
    * @param timestamp - The time the post was created at.
    */
   constructor(
-    title: string,
-    url: string,
-    content: string,
-    subreddit: string,
-    user: string,
-    timestamp: Date,
-  ) {
-    this.title = title;
-    this.url = url;
-    this.content = content;
-    this.subreddit = subreddit;
-    this.user = user;
-    this.timestamp = timestamp;
-  }
+    public title: string,
+    public url: string,
+    public content: string,
+    public subreddit: string,
+    public user: string,
+    public timestamp: Date,
+  ) {}
 
   /** Create a reddit post from a Snoowrap reddit submission.
    *
@@ -67,7 +48,7 @@ export default class RedditPost {
     const crosspostRegex = /^\/r\/.*/;
     // Crossposts have a relative url, e.g. '/r/DotA2/comments/...'
     const url = crosspostRegex.test(this.url) ? `https://www.reddit.com${this.url}` : this.url;
-    return new Notification(this.timestamp)
+    return new NotificationBuilder(this.timestamp)
       .withTitle(this.title, url)
       .withContent(this.content)
       .withAuthor(
@@ -75,11 +56,12 @@ export default class RedditPost {
         `https://www.reddit.com/user/${this.user}`,
         'https://www.redditstatic.com/new-icon.png',
       )
-      .withGameDefaults(game);
+      .withGameDefaults(game)
+      .build();
   }
 
   /** Determines if the post is 'valid' and should be send to the users. */
-  public isValid(date: Date, titleFilter: RegExp, urlFilters: string[]) {
+  public isValid(date?: Date, titleFilter?: RegExp, urlFilters?: string[]): boolean {
     return (
       this.isNew(date) &&
       this.hasValidTitle(titleFilter) &&
@@ -89,7 +71,11 @@ export default class RedditPost {
   }
 
   /** Checks if the url is already covered by other providers. */
-  public isNewSource(urlFilters: string[]): boolean {
+  public isNewSource(urlFilters?: string[]): boolean {
+    if (!urlFilters) {
+      return true;
+    }
+
     let isNewSource = true;
     for (const filter of urlFilters) {
       const alreadyCovered = new RegExp(filter).test(this.url);
@@ -101,12 +87,20 @@ export default class RedditPost {
   }
 
   /** Checks the title to determine if the post is an update. */
-  public hasValidTitle(titleFilter: RegExp): boolean {
+  public hasValidTitle(titleFilter?: RegExp): boolean {
+    if (!titleFilter) {
+      return true;
+    }
+
     return titleFilter.test(this.title);
   }
 
   /** Checks if the submission is new. */
-  public isNew(date: Date): boolean {
+  public isNew(date?: Date): boolean {
+    if (!date) {
+      return true;
+    }
+
     return this.timestamp > date;
   }
 

@@ -1,6 +1,23 @@
 import _ from 'lodash';
+import { AssertionError } from 'assert';
 
-/** Applies a function on every array element.
+export type JSONObj = Record<string, unknown> | string[];
+
+/** Delays the execution by the specified amount of milliseconds. */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/** Asserts that val is defined, i.e. not undefined or null. */
+export function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
+  if (val === undefined || val === null) {
+    throw new AssertionError({ message: `Expected 'val' to be defined, but received ${val}` });
+  }
+}
+
+/** Applies an async function on every array element.
  *
  * @param array - The array to apply the function to.
  * @param callbackfn - The function to apply to the array elements.
@@ -11,6 +28,20 @@ export function mapAsync<T, U>(
   callbackfn: (value: T, index: number, array: T[]) => Promise<U>,
 ): Promise<U[]> {
   return Promise.all(array.map(callbackfn));
+}
+
+/** Applies an async function on every array element.
+ *
+ * @param array - The array to apply the function to.
+ * @param callbackfn - The function to apply to the array elements.
+ * @returns The array produced by the map function.
+ */
+export function optMapAsync<T, U>(
+  array: T[],
+  callbackfn: (value: T, index: number, array: T[]) => Promise<U> | undefined,
+): Promise<U[]> {
+  const handles = array.map(callbackfn).filter((handle) => handle !== undefined) as Promise<U>[];
+  return Promise.all(handles);
 }
 
 /** Filters the given array with an async function
@@ -26,10 +57,27 @@ export async function filterAsync<T>(
   return array.filter((value, index) => filterMap[index]);
 }
 
+export function matchGroups(match: RegExpMatchArray): { [key: string]: string } {
+  if (!match.groups) {
+    throw new Error('Missing RegExp match groups');
+  }
+  return match.groups;
+}
+
+/**
+ * Merges an array of arrays into a single array.
+ * @param arrays - The arrays to merge.
+ */
+export function mergeArrays<T>(arrays: T[][]): T[] {
+  // Needed for correct typing
+  const start: T[] = [];
+  return start.concat(...arrays);
+}
+
 /** Joins the array with the separator, but 'and' for the last item.
  *  E.g.: 'first, second and third'.
  */
-export function naturalJoin(array: string[], separator?: string): string {
+export function naturalJoin(array?: string[], separator?: string): string {
   if (!array || array.length === 0) {
     return '';
   }
@@ -61,22 +109,22 @@ export class StrUtil {
    * @param limit - The maximum length of the string.
    * @param indicator - The indicator to use when the string is too long.
    */
-  public static naturalLimit(str: string, limit: number, indicator?: string): string {
-    const newIndicator = indicator == null ? '...' : indicator;
-
-    if (newIndicator.length > limit) {
+  public static naturalLimit(str: string, limit: number, indicator = '...'): string {
+    if (indicator.length > limit) {
       throw new Error('The indicator must not be longer than the limit.');
     }
+
     if (str.length > limit) {
-      const cutStr = this.limit(str, limit - newIndicator.length);
-      return cutStr + newIndicator;
+      const cutStr = this.limit(str, limit - indicator.length);
+      return cutStr + indicator;
     }
+
     return str;
   }
 }
 
 export class ObjUtil {
-  public static keys(object: object): string[] {
+  public static keys(object: JSONObj): string[] {
     if (!(object instanceof Object)) {
       return [];
     }
@@ -89,7 +137,7 @@ export class ObjUtil {
    * @param object - The object to get the inner object of.
    * @param path - The path of the inner object.
    */
-  public static getInnerObject(object: object, path?: string[]): object {
+  public static getInnerObject(object: JSONObj, path?: string[]): JSONObj {
     if (!path || path.length === 0) {
       // _.get returns undefined in this case, so we needed a function for this
       return object;

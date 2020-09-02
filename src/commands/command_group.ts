@@ -1,28 +1,24 @@
 import Command from './command';
-import BotClient from '../bots/bot';
 import Channel from '../channel';
 import { UserRole } from '../user';
 import Message from '../message';
 import Action from './action';
 import { filterByRole } from './commands';
+import { mergeArrays } from '../util/util';
 
 /**
  * A command group represents a collection of commands with a common prefix.
  * E.g. all Dota 2 related commands could be collected in a Dota-CommandGroup with the common 'dota' prefix.
  */
 export default class CommandGroup extends Command {
-  public regexStr: (bot: BotClient, channel: Channel) => Promise<string>;
-  public defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>;
-  public commands: Command[];
-
   constructor(
     name: string,
     description: string,
     channelLabel: (channel: Channel) => string,
     channelHelp: (channel: Channel, prefix: string, role?: UserRole) => string,
     channelTrigger: (channel: Channel) => RegExp,
-    defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
-    commands: Command[],
+    public defaultAction: (message: Message, match: RegExpMatchArray) => Promise<void>,
+    public commands: Command[],
     role?: UserRole,
   ) {
     super(
@@ -58,7 +54,12 @@ export default class CommandGroup extends Command {
 
         if (matchingCmd) {
           // Match found, execute sub-command
+          // TODO: Reuse the match from the previous test
           const cmdMatch = matchingCmd.test(newMessage);
+          if (!cmdMatch) {
+            // This should never happen, as the command already matched the message
+            throw new Error('Unreachable state');
+          }
           // Execute the sub-command
           await matchingCmd.execute(newMessage, cmdMatch);
         } else {
@@ -68,9 +69,6 @@ export default class CommandGroup extends Command {
       },
       role,
     );
-
-    this.defaultAction = defaultAction;
-    this.commands = commands;
   }
 
   /** Tries to find the label of the given command in this group.
@@ -132,6 +130,6 @@ export default class CommandGroup extends Command {
       throw new Error('Unexpected command type while aggregating commands.');
     });
     // Merge all aggregated commands to a single array
-    return [].concat(...aggregates);
+    return mergeArrays(aggregates);
   }
 }

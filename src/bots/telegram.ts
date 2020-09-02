@@ -12,9 +12,6 @@ import Message from '../message';
 import Permissions from '../permissions';
 import Game from '../game';
 
-// node-telegram-bot-api includes snake_case properties
-/* eslint-disable @typescript-eslint/camelcase */
-
 enum MessageType {
   notification = 'notification',
   command = 'command',
@@ -29,16 +26,14 @@ const MAX_SEND_MESSAGE_RETRIES = 5;
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
   private bot: TelegramAPI;
-  private token: string;
   private queue: Queue;
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
 
-  constructor(prefix: string, token: string, autostart: boolean) {
+  constructor(prefix: string, private token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
 
     // Set up the bot
-    this.token = token;
     this.bot = new TelegramAPI(token, { polling: false });
     this.queue = new Queue({
       rules: {
@@ -147,11 +142,12 @@ export default class TelegramBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
-    let hasAccess;
-    let canWrite;
-    let canEdit;
-    let canPin;
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
+    // Default values if the permissions can't be checked
+    let hasAccess = false;
+    let canWrite = false;
+    let canEdit = false;
+    let canPin = false;
 
     try {
       // Try to get chat
@@ -173,7 +169,7 @@ export default class TelegramBot extends BotClient {
       });
       // Check for expected chat errors
       if (!chat) {
-        return new Permissions(false, false, false, false);
+        return undefined;
       }
       // Try to get chat member
       const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
@@ -182,29 +178,45 @@ export default class TelegramBot extends BotClient {
       });
       // Check for expected chat member errors
       if (!chatMember) {
-        return new Permissions(false, false, false, false);
+        return undefined;
       }
 
-      hasAccess = !(chatMember.status === 'left' || chatMember.status === 'kicked');
+      // Chat type
+      const isChannel = chat.type === 'channel';
+      const isGroup = chat.type === 'group';
+      const isSuperGroup = chat.type === 'supergroup';
+
+      // Member status
+      const isAdmin = chatMember.status === 'administrator';
+      const isRestricted = chatMember.status === 'restricted';
+      const hasLeft = chatMember.status === 'left';
+      const isKicked = chatMember.status === 'kicked';
+
+      // Permissions
+      const canPostMsg = chatMember.can_post_messages ?? false;
+      const canSendMsg = chatMember.can_send_messages ?? false;
+      const canEditMsg = chatMember.can_edit_messages ?? false;
+      const canPinMsg = chatMember.can_pin_messages ?? false;
+
+      hasAccess = !(hasLeft || isKicked);
       canWrite =
         hasAccess &&
-        (chat.type === 'channel'
+        (isChannel
           ? // In channels the user must be an admin to write and have posting permissions
-            chatMember.status === 'administrator' && chatMember.can_post_messages
+            isAdmin && canPostMsg
           : // If the user is restricted, check permissions, else he can send messages
-          chatMember.status === 'restricted'
-          ? chatMember.can_send_messages
+          isRestricted
+          ? canSendMsg
           : true);
       // If the user is an admin, check permissions, else he cannot edit
-      canEdit =
-        hasAccess && (chatMember.status === 'administrator' ? chatMember.can_edit_messages : false);
+      canEdit = hasAccess && (isAdmin ? canEditMsg : false);
       canPin =
         hasAccess &&
         // Groups and supergroups only
-        (chat.type === 'group' || chat.type === 'supergroup'
+        (isGroup || isSuperGroup
           ? // Check if the permission is restricted
-            chatMember.status === 'restricted' || chatMember.status === 'administrator'
-            ? chatMember.can_pin_messages
+            isRestricted || isAdmin
+            ? canPinMsg
             : true
           : false);
     } catch (error) {
@@ -270,7 +282,7 @@ export default class TelegramBot extends BotClient {
       const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
       // FIX: Properly identify the user key
       const user = new User(this, userID);
-      const content = msg.text;
+      const content = msg.text ?? '';
       // Convert from Unix time to date
       const timeNumber = Math.min(Date.now(), msg.date * 1000 + 500);
       const timestamp = new Date(timeNumber);
@@ -319,7 +331,7 @@ export default class TelegramBot extends BotClient {
         // Initialize user name and user tag
         try {
           const botUser = await this.bot.getMe();
-          this.userName = botUser.username;
+          this.userName = botUser.username ?? '';
           this.userTag = `@${this.userName}`;
         } catch (error) {
           this.logger.error(`Failed to get user name and user tag:\n${error}`);
@@ -402,6 +414,7 @@ export default class TelegramBot extends BotClient {
     let options = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
+      // Snakecase used by Telegram API
       options = { parse_mode: 'Markdown' };
     } else {
       const link = message.title.link;
@@ -416,7 +429,7 @@ export default class TelegramBot extends BotClient {
           templateFound = true;
           const titleText = `[${message.title.text}](${templateLink})`;
 
-          if (message.author.text) {
+          if (message.author?.text) {
             const authorText = message.author.link
               ? `[${message.author.text}](${message.author.link})`
               : message.author.text;
@@ -438,6 +451,7 @@ export default class TelegramBot extends BotClient {
       // 2048 is the maximum notification length
       text = StrUtil.naturalLimit(text, 2048);
 
+      // Snakecase used by Telegram API
       options = {
         disable_web_page_preview: !templateFound,
         parse_mode: 'Markdown',

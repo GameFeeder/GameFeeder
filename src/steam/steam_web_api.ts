@@ -10,7 +10,7 @@ export default class SteamWebAPI {
   public static logger = new Logger('SteamWebAPI');
   public static instance = axios.create({
     baseURL: 'https://api.steampowered.com/',
-    timeout: 1000,
+    timeout: 5000,
     responseType: 'json',
   });
 

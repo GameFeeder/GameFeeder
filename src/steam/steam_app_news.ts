@@ -1,5 +1,6 @@
 import Notification from '../notifications/notification';
 import Game from '../game';
+import NotificationBuilder from '../notifications/notification_builder';
 
 /** A news item for a Steam app. */
 export class SteamNewsItem {
@@ -50,12 +51,13 @@ export class SteamNewsItem {
   public toGameNotification(game: Game): Notification {
     // const steamProcessor = new SteamProcessor();
     return (
-      new Notification(new Date(this.date * 1000))
+      new NotificationBuilder(new Date(this.date * 1000))
         .withTitle(this.title, this.url)
         .withAuthor(this.author)
         // TODO: Fix the fomatting of the post content and reenable this line
         // .withContent(steamProcessor.process(this.contents))
         .withGameDefaults(game)
+        .build()
     );
   }
 }
@@ -104,6 +106,8 @@ export type SteamNewsItemResponse = {
   /** The URL of the news item. */
   url: string;
   /** Determines if the URL is external. */
+  // SteamWebAPI snakecase
+  // eslint-disable-next-line camelcase
   is_external_url: boolean;
   /** The name of the author of the news item. */
   author: string;
@@ -116,6 +120,8 @@ export type SteamNewsItemResponse = {
   /** The name of the feed this item was posted to. */
   feedname: string;
   /** The type of the feed this item was posted to. */
+  // SteamWebAPI snakecase
+  // eslint-disable-next-line camelcase
   feed_type: number;
   /** The ID of the app these news are from. */
   appid: number;
