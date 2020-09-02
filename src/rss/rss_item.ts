@@ -1,6 +1,15 @@
 import Comparable from '../util/comparable';
 
 export default class RSSItem implements Comparable<RSSItem> {
+  /**
+   * Creates an instance of RSSItem.
+   * @param title RSS item title
+   * @param author RSS item author
+   * @param link RSS item source url
+   * @param content RSS item body
+   * @param timestamp RSS item timestamp
+   * @param feed RSS item source feed
+   */
   constructor(
     public title: string,
     public author: string,

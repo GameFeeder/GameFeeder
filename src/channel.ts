@@ -143,7 +143,6 @@ export default class Channel {
    * @param {string} [prefix] The prefix the channel uses.
    * @param {string} [label] The label of the channel (if specified).
    * @param {boolean} [disabled=false] Disabled channels won't receive automatic updates.
-   * @memberof Channel
    */
   constructor(
     public id: string,

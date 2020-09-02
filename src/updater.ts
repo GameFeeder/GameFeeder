@@ -21,13 +21,12 @@ export default class Updater {
 
   /**
    * Creates an instance of Updater.
-   * @param {string} key
-   * @param {boolean} enabled
-   * @param {boolean} autosave
-   * @param {number} limit
-   * @param {number} gameInterval
-   * @param {number} cycleInterval
-   * @memberof Updater
+   * @param key Id of the updater
+   * @param enabled Whether the specific updater loop should run or not
+   * @param autosave Whether the specific updater should save the new data on each loop
+   * @param limit Numver of notifications to generate per loop
+   * @param gameInterval Time between update checks in milliseconds
+   * @param cycleInterval Time between loop end and loop begin in milliseconds
    */
   constructor(
     public key: string,
@@ -37,7 +36,6 @@ export default class Updater {
     gameInterval: number,
     cycleInterval: number,
   ) {
-    this.key = key;
     this.logger = new Logger(`Updater (${this.key})`);
 
     const data = DataManager.getUpdaterData(this.key);

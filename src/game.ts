@@ -18,14 +18,13 @@ export default class Game {
 
   /**
    * Creates an instance of Game.
-   * @param {string} name The internal name of the game.
-   * @param {string[]} aliases The aliases the game uses.
-   * @param {string} label The human-formatted label of the game.
-   * @param {string} color The color representing the game.
-   * @param {string} icon The game icon.
-   * @param {Providers} providers The game providers.
-   * @param {TelegramIVTemplate[]} telegramIVTemplates The Telegram IV templates.
-   * @memberof Game
+   * @param name The internal name of the game.
+   * @param aliases The aliases the game uses.
+   * @param label The human-formatted label of the game.
+   * @param color The color representing the game.
+   * @param icon The game icon.
+   * @param providers The game providers.
+   * @param telegramIVTemplates The Telegram IV templates.
    */
   constructor(
     public name: string,

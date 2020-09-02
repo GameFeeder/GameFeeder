@@ -7,16 +7,15 @@ import { StrUtil } from '../util/util';
 export default class Notification implements Comparable<Notification> {
   /**
    * Creates a new Notification.
-   * @param {Date} timestamp The timestamp of the notification.
-   * @param {Game} game The game the notification is for.
-   * @param {NotificationElement} title The title of the notification.
-   * @param {string} [content] The content of the notification.
-   * @param {NotificationElement} [author] The author of the notification.
-   * @param {string} [color] The color of the notification.
-   * @param {string} [thumbnail] The (small) thumbnail of the notification.
-   * @param {string} [image] The (big) image of the notification.
-   * @param {NotificationElement} [footer] The footer of the notification.
-   * @memberof Notification
+   * @param timestamp The timestamp of the notification.
+   * @param game The game the notification is for.
+   * @param title The title of the notification.
+   * @param content The content of the notification.
+   * @param author The author of the notification.
+   * @param color The color of the notification.
+   * @param thumbnail The (small) thumbnail of the notification.
+   * @param image The (big) image of the notification.
+   * @param footer The footer of the notification.
    */
   constructor(
     public timestamp: Date,

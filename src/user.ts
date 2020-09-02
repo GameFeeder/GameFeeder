@@ -17,14 +17,10 @@ export default class User {
   public static logger = new Logger('User');
   /**
    * Create a new BotUser.
-   * @param {BotClient} bot The bot the user is associated to.
-   * @param {string} id The ID of the BotUser.
-   * @memberof User
+   * @param bot The bot the user is associated to.
+   * @param id The ID of the BotUser.
    */
-  constructor(public bot: BotClient, public id: string) {
-    this.bot = bot;
-    this.id = id;
-  }
+  constructor(public bot: BotClient, public id: string) {}
   /** Get's the user's role on the given channel.
    *
    * @param channel - The channel to get the role on.
