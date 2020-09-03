@@ -1,9 +1,9 @@
-import BotClient from '../bots/bot';
-import Channel from '../channel';
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Permissions from '../permissions';
-import User, { UserRole } from '../user';
+import BotClient from '../../src/bots/bot';
+import Channel from '../../src/channel';
+import Game from '../../src/game';
+import Notification from '../../src/notifications/notification';
+import Permissions from '../../src/permissions';
+import User, { UserRole } from '../../src/user';
 
 jest.mock('request-promise-native');
 

@@ -1,4 +1,4 @@
-import RedditUserProvider from './reddit_user';
+import RedditUserProvider from '../src/reddit/reddit_user';
 
 describe('RedditUserProvider', () => {
   test('should create a user without a filter', () => {

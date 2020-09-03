@@ -1,4 +1,4 @@
-import RSSItem from './rss_item';
+import RSSItem from '../src/rss/rss_item';
 
 const timeout = (ms: number) => new Promise((res) => setTimeout(res, ms));
 describe('RSSItem', () => {

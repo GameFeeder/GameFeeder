@@ -1,4 +1,4 @@
-import SteamWebAPI from './steam_web_api';
+import SteamWebAPI from '../src/steam/steam_web_api';
 
 jest.mock('axios');
 

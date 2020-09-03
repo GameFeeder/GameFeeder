@@ -1,5 +1,5 @@
-import User, { UserRole } from './user';
-import Channel from './channel';
+import User, { UserRole } from '../src/user';
+import Channel from '../src/channel';
 import MockBot from './__mocks__/mockBot';
 
 let testUser: User;

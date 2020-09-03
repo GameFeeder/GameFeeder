@@ -1,6 +1,4 @@
-import RedditPost from './reddit_post';
-import Game from '../game';
-import Notification from '../notifications/notification';
+import RedditPost from '../src/reddit/reddit_post';
 
 jest.mock('request-promise-native');
 
@@ -14,29 +12,6 @@ describe('Name of the group', () => {
     'testUser',
     now,
   );
-  test('should convert to game notification', () => {
-    const testGame = new Game(
-      'testGameName',
-      ['test', 'testGame', 'TG'],
-      'TestGameLabel',
-      '#000000',
-      'https://i.imgur.com/aRVbvDh.png',
-      [],
-      [],
-    );
-
-    const expectedNotif = new Notification(now)
-      .withTitle(testPost.title, testPost.url)
-      .withContent(testPost.content)
-      .withAuthor(
-        `/u/testUser`,
-        `https://www.reddit.com/user/testUser`,
-        'https://www.redditstatic.com/new-icon.png',
-      )
-      .withGameDefaults(testGame);
-
-    expect(testPost.toGameNotification(testGame)).toEqual(expectedNotif);
-  });
 
   test('should check if its a new source', () => {
     expect(testPost.isNewSource(['test.url.com'])).toBeFalsy();

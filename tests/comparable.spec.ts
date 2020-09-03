@@ -1,4 +1,4 @@
-import Comparable, * as comparable from './comparable';
+import Comparable, * as comparable from '../src/util/comparable';
 
 class TestComparable implements Comparable<TestComparable> {
   value: number;

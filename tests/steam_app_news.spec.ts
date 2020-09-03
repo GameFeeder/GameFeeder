@@ -2,9 +2,8 @@ import SteamAppNews, {
   SteamNewsItem,
   SteamNewsItemResponse,
   SteamAppNewsResponse,
-} from './steam_app_news';
-import Game from '../game';
-import Notification from '../notifications/notification';
+} from '../src/steam/steam_app_news';
+import Game from '../src/game';
 
 jest.mock('request-promise-native');
 
@@ -30,21 +29,10 @@ describe('Steam App News', () => {
     'TestGameLabel',
     '#000000',
     'https://i.imgur.com/aRVbvDh.png',
-    [],
+    {},
     [],
   );
   const testNewsItem = new SteamNewsItem(testResp);
-
-  const expectedNotif = new Notification(new Date(now.valueOf() * 1000))
-    .withTitle(testResp.title, testResp.url)
-    .withAuthor(testResp.author)
-    .withGameDefaults(testGame);
-
-  describe('SteamNewsItem', () => {
-    test('should convert news item to game notification', () => {
-      expect(testNewsItem.toGameNotification(testGame)).toEqual(expectedNotif);
-    });
-  });
 
   describe('SteamAppNews', () => {
     test('should handle no news', () => {
@@ -72,7 +60,6 @@ describe('Steam App News', () => {
       const testAppNews = new SteamAppNews(testNewsResponse);
       expect(testAppNews.appID).toBe(testNewsResponse.appnews.appid);
       expect(testAppNews.newsItems).toEqual([testNewsItem]);
-      expect(testAppNews.toGameNotifications(testGame)).toEqual([expectedNotif]);
     });
   });
 });
