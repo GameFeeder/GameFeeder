@@ -23,6 +23,7 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "jest"],
+  "ignorePatterns": ["@types/**", "coverage/**", "dist/**", "node_modules/**"],
   "rules": {
     "import/extensions": [
       "error",
