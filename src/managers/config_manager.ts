@@ -28,14 +28,6 @@ export type BotConfig = {
   telegram: BotSettings;
 };
 
-/** The configuration settings for the used APIs. */
-export type APIConfig = {
-  /** The configuration settings for the bots. */
-  bots: BotConfig;
-  /** The configuration settings for the reddit client. */
-  reddit: RedditConfig;
-};
-
 /** The configuration settings for the reddit client. */
 export type RedditConfig = {
   /** Determines wheather reddit posts should be processed. */
@@ -48,6 +40,14 @@ export type RedditConfig = {
   refreshToken: string;
   /** The user name of the bot owner. */
   userName: string;
+};
+
+/** The configuration settings for the used APIs. */
+export type APIConfig = {
+  /** The configuration settings for the bots. */
+  bots: BotConfig;
+  /** The configuration settings for the reddit client. */
+  reddit: RedditConfig;
 };
 
 /** A reddit user. */
@@ -119,9 +119,6 @@ export type GameSettings = {
   telegramIVTemplates: telegramIVTemplate[];
 };
 
-/** The config of all updaters */
-export type UpdatersConfig = Record<string, UpdaterConfig>;
-
 /** The config of an updater. */
 export type UpdaterConfig = {
   /** The delay in seconds between each game within an update cycle. */
@@ -135,6 +132,9 @@ export type UpdaterConfig = {
   /** Determines whether the bot saves the update parameters (disable for testing). */
   autosave: boolean;
 };
+
+/** The config of all updaters */
+export type UpdatersConfig = Record<string, UpdaterConfig>;
 
 /** The class that handles the config files. */
 export default class ConfigManager {
