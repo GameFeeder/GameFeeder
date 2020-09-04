@@ -3,6 +3,50 @@ import Game from '../game';
 import NotificationBuilder from '../notifications/notification_builder';
 
 /** A news item for a Steam app. */
+export type SteamNewsItemResponse = {
+  /** The ID of the news item. */
+  gid: number;
+  /** The title of the news item. */
+  title: string;
+  /** The URL of the news item. */
+  url: string;
+  /** Determines if the URL is external. */
+  // SteamWebAPI snakecase
+  // eslint-disable-next-line camelcase
+  is_external_url: boolean;
+  /** The name of the author of the news item. */
+  author: string;
+  /** The contents of the news item. */
+  contents: string;
+  /** The label of the feed this item was posted to. */
+  feedlabel: string;
+  /** The date of the news item (Unix time). */
+  date: number;
+  /** The name of the feed this item was posted to. */
+  feedname: string;
+  /** The type of the feed this item was posted to. */
+  // SteamWebAPI snakecase
+  // eslint-disable-next-line camelcase
+  feed_type: number;
+  /** The ID of the app these news are from. */
+  appid: number;
+  /** The tags of this news item. */
+  tags: string[];
+};
+
+/** News for a Steam app. */
+export type SteamAppNewsResponse = {
+  appnews: {
+    /** The ID of the app that the news are for. */
+    appid: number;
+    /** The news items for the app. */
+    newsitems: SteamNewsItemResponse[];
+    /** The total number of news items. */
+    count: number;
+  };
+};
+
+/** A news item for a Steam app. */
 export class SteamNewsItem {
   /** The ID of the news item. */
   public gID: number;
@@ -84,47 +128,3 @@ export default class SteamAppNews {
     return this.newsItems.map((newsItem) => newsItem.toGameNotification(game));
   }
 }
-
-/** News for a Steam app. */
-export type SteamAppNewsResponse = {
-  appnews: {
-    /** The ID of the app that the news are for. */
-    appid: number;
-    /** The news items for the app. */
-    newsitems: SteamNewsItemResponse[];
-    /** The total number of news items. */
-    count: number;
-  };
-};
-
-/** A news item for a Steam app. */
-export type SteamNewsItemResponse = {
-  /** The ID of the news item. */
-  gid: number;
-  /** The title of the news item. */
-  title: string;
-  /** The URL of the news item. */
-  url: string;
-  /** Determines if the URL is external. */
-  // SteamWebAPI snakecase
-  // eslint-disable-next-line camelcase
-  is_external_url: boolean;
-  /** The name of the author of the news item. */
-  author: string;
-  /** The contents of the news item. */
-  contents: string;
-  /** The label of the feed this item was posted to. */
-  feedlabel: string;
-  /** The date of the news item (Unix time). */
-  date: number;
-  /** The name of the feed this item was posted to. */
-  feedname: string;
-  /** The type of the feed this item was posted to. */
-  // SteamWebAPI snakecase
-  // eslint-disable-next-line camelcase
-  feed_type: number;
-  /** The ID of the app these news are from. */
-  appid: number;
-  /** The tags of this news item. */
-  tags: string[];
-};
