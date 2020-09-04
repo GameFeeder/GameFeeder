@@ -2,7 +2,6 @@ import Game from '../src/game';
 
 jest.mock('request-promise-native');
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe('Game', () => {
   let testGame: Game;
 

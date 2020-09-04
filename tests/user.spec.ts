@@ -5,7 +5,6 @@ import MockBot from './__mocks__/mockBot';
 let testUser: User;
 let testChannel: Channel;
 
-// eslint-disable-next-line jest/no-focused-tests
 describe('User', () => {
   beforeAll(() => {
     const mockBot = new MockBot();
