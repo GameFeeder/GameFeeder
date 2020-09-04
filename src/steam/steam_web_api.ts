@@ -5,6 +5,19 @@ import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 /** The timeout duration in ms for all API requests. */
 const REQUEST_TIMEOUT = 5000;
 
+export type SteamNewsOptions = {
+  /** AppID to retrieve news for. */
+  appid: number;
+  /** Maximum length for the content to return, if this is 0 the full content is returned, if it's less then a blurb is generated to fit. */
+  maxlength?: number;
+  /** Retrieve posts earlier than this date (unix epoch timestamp). */
+  enddate?: number;
+  /** Number of posts to retrieve (default 20). */
+  count?: number;
+  /** Comma-seperated list of feed names to return news for. */
+  feeds?: string;
+};
+
 /** A wrapper around the Steam Web API.
  *
  * Documentation: https://partner.steamgames.com/doc/webapi_overview
@@ -53,16 +66,3 @@ export default class SteamWebAPI {
     }
   }
 }
-
-export type SteamNewsOptions = {
-  /** AppID to retrieve news for. */
-  appid: number;
-  /** Maximum length for the content to return, if this is 0 the full content is returned, if it's less then a blurb is generated to fit. */
-  maxlength?: number;
-  /** Retrieve posts earlier than this date (unix epoch timestamp). */
-  enddate?: number;
-  /** Number of posts to retrieve (default 20). */
-  count?: number;
-  /** Comma-seperated list of feed names to return news for. */
-  feeds?: string;
-};
