@@ -48,13 +48,7 @@ export default class Game {
       return true;
     }
 
-    for (const entry of this.aliases) {
-      if (entry === alias) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.aliases.map((a) => a.toLocaleLowerCase()).includes(alias);
   }
 
   /** Gets a game by its name.
