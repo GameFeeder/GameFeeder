@@ -4,7 +4,7 @@ import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
-import { sort, sortLimitEnd, mapAsync, mergeArrays } from './util/array_util';
+import { sort, sortLimitEnd } from './util/array_util';
 import { sleep } from './util/util';
 
 export default class Updater {
@@ -91,19 +91,25 @@ export default class Updater {
     const startTime = Date.now();
 
     // Get game notifications
-    const gameNotifications = await mapAsync(Game.getGames(), async (game, index, games) => {
-      const updates = await this.updateGame(game);
+    let notifications = await Game.getGames().reduce(
+      async (prevUpdatesHandle: Promise<Notification[]>, game: Game, index) => {
+        // Wait for the previous game update to finish
+        const prevUpdates = await prevUpdatesHandle;
 
-      // If there are more games in this update cycle, delay them by the specified amount
-      if (index < games.length - 1) {
-        await sleep(this.gameIntervalMs);
-      }
+        // If this is not the first game, delay the update
+        if (index !== 0) {
+          await sleep(this.gameIntervalMs);
+        }
 
-      return updates;
-    });
+        // Get the updates for the current game
+        const curUpdates = await this.updateGame(game);
 
-    // Combine the game notifications
-    let notifications: Notification[] = mergeArrays(gameNotifications);
+        // Combine the updates
+        const updates = prevUpdates.concat(curUpdates);
+        return updates;
+      },
+      Promise.resolve([]),
+    );
 
     if (notifications.length > 0) {
       // Sort the notifications by their date, from old to new.
