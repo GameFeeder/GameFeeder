@@ -2,7 +2,7 @@ version: '3.3'
 services:
   bot:
     container_name: gamefeeder
-    image: gamefeeder/gamefeeder:latest
+    image: docker.pkg.github.com/GameFeeder/GameFeeder/gamefeeder:latest
     volumes:
       - ./config/api_config.json:/app/config/api_config.json:ro
       - ./config/updater_config.json:/app/config/updater_config.json:ro
