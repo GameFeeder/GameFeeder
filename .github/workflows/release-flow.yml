@@ -18,5 +18,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           repository: GameFeeder/GameFeeder/gamefeeder
+          target: production
           tag_with_ref: true
           tags: latest
