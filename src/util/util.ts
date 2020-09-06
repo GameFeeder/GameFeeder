@@ -11,9 +11,10 @@ export function sleep(ms: number): Promise<void> {
 }
 
 /** Asserts that val is defined, i.e. not undefined or null. */
-export function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
+export function assertIsDefined<T>(val: T, errorMsg?: string): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
-    throw new AssertionError({ message: `Expected 'val' to be defined, but received ${val}` });
+    const message = errorMsg ?? `Expected 'val' to be defined, but received ${val}`;
+    throw new AssertionError({ message });
   }
 }
 

@@ -5,7 +5,7 @@ import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
 import { sortLimitEnd } from './util/array_util';
-import { sleep, assertIsDefined } from './util/util';
+import { sleep } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -116,10 +116,13 @@ export default class Updater {
     const pollStartTime = Date.now();
 
     const provider = game.providers[this.key];
-    assertIsDefined(provider);
+
+    if (!provider) {
+      return [];
+    }
 
     // Get provider notifications
-    let gameNotifications = (await provider.getNotifications(this, this.limit)) ?? [];
+    let gameNotifications = await provider.getNotifications(this, this.limit);
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
