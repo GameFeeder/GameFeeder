@@ -6,7 +6,7 @@ import Updater from '../updater';
 
 export default abstract class Provider {
   public logger: Logger;
-  public updateTimetamp?: Date;
+  public updateTimestamp?: Date;
   public updateVersion?: string;
 
   /**
@@ -28,13 +28,22 @@ export default abstract class Provider {
    * @param version The version name of the update.
    */
   public saveUpdate(updater: Updater, timestamp: Date, version?: string): void {
-    this.updateTimetamp = timestamp;
+    // Cache the values
+    this.updateTimestamp = timestamp;
     this.updateVersion = version;
 
+    // If autosave is enabled, the values also get saved to the data files
     if (updater.autosave) {
       const data = DataManager.getUpdaterData(updater.key);
-      data.lastUpdate[this.game.name].timestamp = timestamp.toISOString();
-      data.lastUpdate[this.game.name].version = version;
+      const lastUpdate = data.lastUpdate[this.game.name] ?? {};
+      lastUpdate.timestamp = timestamp.toISOString();
+
+      if (version) {
+        lastUpdate.version = version;
+      }
+
+      data.lastUpdate[this.game.name] = lastUpdate;
+
       DataManager.setUpdaterData(updater.key, data);
     }
   }
@@ -44,8 +53,24 @@ export default abstract class Provider {
    * @param updater The updater to get the last update for.
    */
   public getLastUpdateTimestamp(updater: Updater): Date {
+    // If a value is cached, return it
+    if (this.updateTimestamp) {
+      return this.updateTimestamp;
+    }
+
+    // Otherwise, load the value from the data files
     const data = DataManager.getUpdaterData(updater.key);
-    return new Date(data.lastUpdate[this.game.name].timestamp);
+    const timestamp = data.lastUpdate[this.game.name]?.timestamp;
+
+    if (timestamp) {
+      return new Date(timestamp);
+    }
+
+    // If no timestamp is saved yet, save the current one and return it
+    const date = new Date();
+    this.saveUpdate(updater, date);
+
+    return date;
   }
 
   /**
@@ -53,7 +78,15 @@ export default abstract class Provider {
    * @param updater The updater to get the last update for.
    */
   public getLastUpdateVersion(updater: Updater): string | undefined {
+    // If a value is cached, return it
+    if (this.updateVersion) {
+      return this.updateVersion;
+    }
+
+    // Otherwise, load the value from the data files
     const data = DataManager.getUpdaterData(updater.key);
-    return data.lastUpdate[this.game.name].version;
+    const version = data.lastUpdate[this.game.name]?.version;
+
+    return version;
   }
 }

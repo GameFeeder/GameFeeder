@@ -40,7 +40,7 @@ export type UpdaterData = {
     /** The data of the last update for the specified game. */
     [index: string]: {
       /** The timestamp of the last update. */
-      timestamp: string;
+      timestamp?: string;
       /** The version of the last update. */
       version?: string;
     };
