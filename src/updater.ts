@@ -4,8 +4,8 @@ import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
-import { sort, sortLimitEnd } from './util/array_util';
-import { sleep } from './util/util';
+import { sortLimitEnd } from './util/array_util';
+import { sleep, assertIsDefined } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -91,49 +91,21 @@ export default class Updater {
     const startTime = Date.now();
 
     // Get game notifications
-    let notifications = await Game.getGames().reduce(
-      async (prevUpdatesHandle: Promise<Notification[]>, game: Game, index) => {
-        // Wait for the previous game update to finish
-        const prevUpdates = await prevUpdatesHandle;
+    await Game.getGames().reduce(async (prevUpdatesHandle: Promise<void>, game: Game, index) => {
+      // Wait for the previous game update to finish
+      await prevUpdatesHandle;
 
-        // If this is not the first game, delay the update
-        if (index !== 0) {
-          await sleep(this.gameIntervalMs);
-        }
-
-        // Get the updates for the current game
-        const curUpdates = await this.updateGame(game);
-
-        // Combine the updates
-        const updates = prevUpdates.concat(curUpdates);
-        return updates;
-      },
-      Promise.resolve([]),
-    );
-
-    if (notifications.length > 0) {
-      // Sort the notifications by their date, from old to new.
-      notifications = sort(notifications);
-
-      const endPollTime = Date.now();
-      const pollTime = endPollTime - startTime;
-      this.logger.info(
-        `Found ${notifications.length} posts in ${pollTime} ms. Notifying channels...`,
-      );
-
-      // Notify users
-      for (const bot of getBots()) {
-        for (const notification of notifications) {
-          // Temporary possible fix for telegram API limit
-          // eslint-disable-next-line no-await-in-loop
-          await bot.sendMessageToGameSubs(notification.game, notification);
-        }
+      // If this is not the first game, delay the update
+      if (index !== 0) {
+        await sleep(this.gameIntervalMs);
       }
-      const notifyTime = Date.now() - endPollTime;
-      this.logger.info(`Notified channels in ${notifyTime} ms.`);
-    }
-    const updateTime = Date.now() - startTime;
-    this.logger.debug(`Finished update cycle in ${updateTime} ms.`);
+
+      // Get the updates for the current game
+      await this.updateGame(game);
+    }, Promise.resolve());
+
+    const updateDuration = Date.now() - startTime;
+    this.logger.debug(`Finished update cycle in ${updateDuration} ms.`);
   }
 
   /** Get the updates for the specified game.
@@ -141,19 +113,35 @@ export default class Updater {
    * @param game - The game to get the updates for.
    */
   public async updateGame(game: Game): Promise<Notification[]> {
-    const gameStartTime = Date.now();
+    const pollStartTime = Date.now();
+
+    const provider = game.providers[this.key];
+    assertIsDefined(provider);
 
     // Get provider notifications
-    const provider = game.providers[this.key];
-    let gameNotifications = (await provider?.getNotifications(this, this.limit)) ?? [];
+    let gameNotifications = (await provider.getNotifications(this, this.limit)) ?? [];
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
       gameNotifications = sortLimitEnd(gameNotifications, this.limit);
 
-      const gameEndTime = Date.now();
-      const gameTime = Math.abs(gameStartTime - gameEndTime);
-      this.logger.info(`Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`);
+      const pollEndTime = Date.now();
+      const pollDuration = Math.abs(pollStartTime - pollEndTime);
+
+      // Notify users
+      for (const bot of getBots()) {
+        for (const notification of gameNotifications) {
+          // Temporary possible fix for telegram API limit
+          // eslint-disable-next-line no-await-in-loop
+          await bot.sendMessageToGameSubs(notification.game, notification);
+        }
+      }
+
+      const notifyDuration = Date.now() - pollEndTime;
+
+      this.logger.info(
+        `Found ${gameNotifications.length} ${game.label} posts in ${pollDuration} ms, notified subs in ${notifyDuration} ms.`,
+      );
     }
 
     return gameNotifications;
