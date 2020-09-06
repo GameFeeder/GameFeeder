@@ -29,10 +29,6 @@ export type SubscriberData = {
   telegram: Subscriber[];
 };
 
-export type UpdatersData = {
-  [index: string]: UpdaterData;
-};
-
 /** The data for the updater. */
 export type UpdaterData = {
   /** The data of the last update. */
@@ -47,6 +43,10 @@ export type UpdaterData = {
   };
   /** Timestamp of the last update cycle run */
   healthcheckTimestamp: string;
+};
+
+export type UpdatersData = {
+  [index: string]: UpdaterData;
 };
 
 /** The class managing the data files. */
