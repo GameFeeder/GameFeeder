@@ -3,7 +3,7 @@ import Notification from '../notifications/notification';
 import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
-import { sortLimitEnd } from '../util/comparable';
+import { sortLimitEnd } from '../util/array_util';
 import { mapAsync, mergeArrays } from '../util/util';
 import Updater from '../updater';
 

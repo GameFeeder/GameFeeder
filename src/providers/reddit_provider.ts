@@ -2,7 +2,7 @@ import Provider from './provider';
 import SubredditProvider from './subreddit_provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
-import { sortLimitEnd } from '../util/comparable';
+import { sortLimitEnd } from '../util/array_util';
 import { mapAsync, mergeArrays } from '../util/util';
 import Updater from '../updater';
 

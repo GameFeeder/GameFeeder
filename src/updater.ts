@@ -4,7 +4,7 @@ import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
-import { sort, sortLimitEnd } from './util/comparable';
+import { sort, sortLimitEnd } from './util/array_util';
 import { mapAsync, mergeArrays, sleep } from './util/util';
 
 export default class Updater {
@@ -55,13 +55,14 @@ export default class Updater {
       // Convert the configurations to updaters
       const updaters: Updater[] = Object.keys(updaterConfig).map((key) => {
         const config = updaterConfig[key];
+
         return new Updater(
           key,
           config.enabled,
           config.autosave,
+          config.limit,
           config.gameInterval,
           config.cycleInterval,
-          config.limit,
         );
       });
 
@@ -135,9 +136,10 @@ export default class Updater {
    */
   public async updateGame(game: Game): Promise<Notification[]> {
     const gameStartTime = Date.now();
+
     // Get provider notifications
-    let gameNotifications =
-      (await game.providers[this.key]?.getNotifications(this, this.limit)) ?? [];
+    const provider = game.providers[this.key];
+    let gameNotifications = (await provider?.getNotifications(this, this.limit)) ?? [];
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications

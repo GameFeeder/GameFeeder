@@ -1,13 +1,13 @@
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Provider from './provider';
-import { sortLimitEnd } from '../util/comparable';
+import { sortLimitEnd } from '../util/array_util';
 import SteamWebAPI from '../steam/steam_web_api';
 import Updater from '../updater';
 
 export default class SteamProvider extends Provider {
   constructor(public appID: number, public feeds: string[], game: Game) {
-    super(`https://steamcommunity.com/games/${appID}/announcements`, `App ${appID}`, game);
+    super(`https://steamcommunity.com/games/${appID}/announcements`, `Steam App ${appID}`, game);
   }
 
   public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
