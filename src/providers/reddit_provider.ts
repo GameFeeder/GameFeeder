@@ -2,8 +2,8 @@ import Provider from './provider';
 import SubredditProvider from './subreddit_provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
-import { sortLimitEnd } from '../util/array_util';
-import { mapAsync, mergeArrays } from '../util/util';
+import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
+
 import Updater from '../updater';
 
 export default class RedditProvider extends Provider {

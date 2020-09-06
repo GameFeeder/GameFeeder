@@ -3,8 +3,8 @@ import Notification from '../notifications/notification';
 import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
-import { sortLimitEnd } from '../util/array_util';
-import { mapAsync, mergeArrays } from '../util/util';
+import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
+
 import Updater from '../updater';
 
 export default class SubredditProvider extends Provider {

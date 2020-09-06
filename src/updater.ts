@@ -4,8 +4,8 @@ import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
-import { sort, sortLimitEnd } from './util/array_util';
-import { mapAsync, mergeArrays, sleep } from './util/util';
+import { sort, sortLimitEnd, mapAsync, mergeArrays } from './util/array_util';
+import { sleep } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];

@@ -6,7 +6,7 @@ import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
 import Permissions from '../permissions';
-import { mapAsync } from '../util/util';
+import { mapAsync } from '../util/array_util';
 
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */

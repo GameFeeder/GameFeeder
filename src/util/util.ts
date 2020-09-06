@@ -17,75 +17,11 @@ export function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
   }
 }
 
-/** Applies an async function on every array element.
- *
- * @param array - The array to apply the function to.
- * @param callbackfn - The function to apply to the array elements.
- * @returns The array produced by the map function.
- */
-export function mapAsync<T, U>(
-  array: T[],
-  callbackfn: (value: T, index: number, array: T[]) => Promise<U>,
-): Promise<U[]> {
-  return Promise.all(array.map(callbackfn));
-}
-
-/** Applies an async function on every array element.
- *
- * @param array - The array to apply the function to.
- * @param callbackfn - The function to apply to the array elements.
- * @returns The array produced by the map function.
- */
-export function optMapAsync<T, U>(
-  array: T[],
-  callbackfn: (value: T, index: number, array: T[]) => Promise<U> | undefined,
-): Promise<U[]> {
-  const handles = array.map(callbackfn).filter((handle) => handle !== undefined) as Promise<U>[];
-  return Promise.all(handles);
-}
-
-/** Filters the given array with an async function
- *
- * @param array - The array to filter.
- * @param callbackfn - The function to filter the array with.
- */
-export async function filterAsync<T>(
-  array: T[],
-  callbackfn: (value: T, index: number, array: T[]) => Promise<boolean>,
-): Promise<T[]> {
-  const filterMap = await mapAsync(array, callbackfn);
-  return array.filter((value, index) => filterMap[index]);
-}
-
 export function matchGroups(match: RegExpMatchArray): { [key: string]: string } {
   if (!match.groups) {
     throw new Error('Missing RegExp match groups');
   }
   return match.groups;
-}
-
-/**
- * Merges an array of arrays into a single array.
- * @param arrays - The arrays to merge.
- */
-export function mergeArrays<T>(arrays: T[][]): T[] {
-  // Needed for correct typing
-  const start: T[] = [];
-  return start.concat(...arrays);
-}
-
-/** Joins the array with the separator, but 'and' for the last item.
- *  E.g.: 'first, second and third'.
- */
-export function naturalJoin(array?: string[], separator?: string): string {
-  if (!array || array.length === 0) {
-    return '';
-  }
-  if (array.length === 1) {
-    return array[0];
-  }
-  const sep = separator || ', ';
-  return `${array.slice(0, array.length - 1).join(sep)} and ${array[array.length - 1]}`;
 }
 
 /** Utility functions for strings. */
