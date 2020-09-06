@@ -4,16 +4,17 @@ import Game from '../game';
 import Notification from '../notifications/notification';
 import { sortLimitEnd } from '../util/comparable';
 import { mapAsync, mergeArrays } from '../util/util';
+import Updater from '../updater';
 
 export default class RedditProvider extends Provider {
   constructor(public subredditProviders: SubredditProvider[], game: Game) {
     super(`https://www.reddit.com`, `Reddit`, game);
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
+  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
     // Get the notifications from each subreddit asynchronously
     const subredditNotifications = await mapAsync(this.subredditProviders, (subreddit) =>
-      subreddit.getNotifications(date, limit),
+      subreddit.getNotifications(updater, limit),
     );
 
     // Merge the results

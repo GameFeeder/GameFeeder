@@ -17,7 +17,6 @@ export default class Updater {
   private gameIntervalMs: number;
   /** The delay in milliseconds between each update cycle. */
   private cyleIntervalMs: number;
-  private lastUpdate: Date;
 
   /**
    * Creates an instance of Updater.
@@ -31,7 +30,7 @@ export default class Updater {
   constructor(
     public key: string,
     public enabled: boolean,
-    private autosave: boolean,
+    public autosave: boolean,
     private limit: number,
     gameInterval: number,
     cycleInterval: number,
@@ -46,7 +45,6 @@ export default class Updater {
 
     this.gameIntervalMs = gameInterval * 1000;
     this.cyleIntervalMs = cycleInterval * 1000;
-    this.lastUpdate = data.lastUpdate ? new Date(data.lastUpdate) : new Date();
     this.doUpdates = false;
   }
 
@@ -116,9 +114,6 @@ export default class Updater {
         `Found ${notifications.length} posts in ${pollTime} ms. Notifying channels...`,
       );
 
-      // Update time
-      this.saveDate(notifications[notifications.length - 1].timestamp);
-
       // Notify users
       for (const bot of getBots()) {
         for (const notification of notifications) {
@@ -142,7 +137,7 @@ export default class Updater {
     const gameStartTime = Date.now();
     // Get provider notifications
     let gameNotifications =
-      (await game.providers[this.key]?.getNotifications(this.lastUpdate, this.limit)) ?? [];
+      (await game.providers[this.key]?.getNotifications(this, this.limit)) ?? [];
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
@@ -154,19 +149,6 @@ export default class Updater {
     }
 
     return gameNotifications;
-  }
-
-  public saveDate(date: Date): void {
-    this.lastUpdate = date;
-    if (this.autosave) {
-      const data = DataManager.getUpdaterData(this.key);
-      data.lastUpdate = date.toISOString();
-      DataManager.setUpdaterData(this.key, data);
-    }
-  }
-
-  public loadDate(): void {
-    this.lastUpdate = new Date(DataManager.getUpdaterData(this.key).lastUpdate);
   }
 
   public updateHealthcheck(): void {

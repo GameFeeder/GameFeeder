@@ -3,13 +3,14 @@ import Notification from '../notifications/notification';
 import Provider from './provider';
 import { sortLimitEnd } from '../util/comparable';
 import SteamWebAPI from '../steam/steam_web_api';
+import Updater from '../updater';
 
 export default class SteamProvider extends Provider {
   constructor(public appID: number, public feeds: string[], game: Game) {
     super(`https://steamcommunity.com/games/${appID}/announcements`, `App ${appID}`, game);
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
+  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
     if (!this.feeds || this.feeds.length === 0) {
       return [];
     }
@@ -27,10 +28,10 @@ export default class SteamProvider extends Provider {
       // Convert to notifications
       let notifications = steamNews.toGameNotifications(this.game);
 
-      if (date) {
+      if (this.getLastUpdateTimestamp(updater)) {
         // Filter out outdated posts
         notifications = notifications.filter((notification) => {
-          return notification.timestamp > date;
+          return notification.timestamp > this.getLastUpdateTimestamp(updater);
         });
       }
 

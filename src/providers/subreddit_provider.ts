@@ -5,6 +5,7 @@ import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
 import { sortLimitEnd } from '../util/comparable';
 import { mapAsync, mergeArrays } from '../util/util';
+import Updater from '../updater';
 
 export default class SubredditProvider extends Provider {
   constructor(
@@ -17,12 +18,16 @@ export default class SubredditProvider extends Provider {
     Reddit.init();
   }
 
-  public async getNotifications(date?: Date, limit?: number): Promise<Notification[]> {
+  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
     const userNotifications = await mapAsync(this.users, async (user) => {
       let userPosts = await Reddit.getUserPosts(user.name);
       // Filter out irrelevant posts
       userPosts = userPosts.filter((post) => {
-        const isValid = post.isValid(date, user.titleFilter, this.urlFilters);
+        const isValid = post.isValid(
+          this.getLastUpdateTimestamp(updater),
+          user.titleFilter,
+          this.urlFilters,
+        );
         const isCorrectSub = post.isCorrectSub(this.subreddit);
 
         return isValid && isCorrectSub;
