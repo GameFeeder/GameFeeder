@@ -6,6 +6,7 @@ import Notification from '../notifications/notification';
 import Logger from '../logger';
 import NotificationBuilder from '../notifications/notification_builder';
 import Updater from '../updater';
+import { limitEnd } from '../util/array_util';
 
 export default class DotaProvider extends Provider {
   public static key = 'dota';
@@ -18,10 +19,10 @@ export default class DotaProvider extends Provider {
       throw new Error('Could not find Dota 2 game.');
     }
 
-    super(`http://www.dota2.com/patches/`, `Gameplay Patch`, dota);
+    super(`http://www.dota2.com/patches/`, `Dota Updates`, dota);
   }
 
-  public async getNotifications(updater: Updater): Promise<Notification[]> {
+  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
     let notifications: Notification[] = [];
     try {
       const pageDoc = await this.getPatchPage();
@@ -49,6 +50,8 @@ export default class DotaProvider extends Provider {
           .withAuthor('Dota 2')
           .build();
       });
+
+      notifications = limitEnd(notifications, limit);
     } catch (error) {
       this.logger.error(`Dota updates page parsing failed, error: ${error.substring(0, 120)}`);
     }
