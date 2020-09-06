@@ -155,6 +155,7 @@ export default class NotificationBuilder {
       this.thumbnail,
       this.image,
       this.footer,
+      this.version,
     );
   }
 }

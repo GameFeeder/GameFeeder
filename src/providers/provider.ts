@@ -30,7 +30,7 @@ export default abstract class Provider {
   public saveUpdate(updater: Updater, timestamp: Date, version?: string): void {
     // Cache the values
     this.updateTimestamp = timestamp;
-    this.updateVersion = version;
+    this.updateVersion = version ?? this.updateVersion;
 
     // If autosave is enabled, the values also get saved to the data files
     if (updater.autosave) {

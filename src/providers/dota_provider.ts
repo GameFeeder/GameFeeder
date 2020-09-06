@@ -27,24 +27,27 @@ export default class DotaProvider extends Provider {
     try {
       const pageDoc = await this.getPatchPage();
       const patchList = await this.getPatchList(pageDoc);
-      let lastPatch = this.getLastUpdateVersion(updater);
-      const newPatches = [];
+      const lastPatch = this.getLastUpdateVersion(updater);
 
-      // Discard the old patches
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < patchList.length && patchList[i] !== lastPatch; i++) {
-        newPatches.push(patchList[i]);
-      }
-
-      // Update the last patch version
-      if (newPatches.length > 0) {
-        lastPatch = newPatches[0];
-        this.saveUpdate(updater, new Date(), lastPatch);
-      }
+      const newPatches = patchList
+        // Sort ascending (latest patches are last)
+        .sort((a, b) => {
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
+          return 0;
+        })
+        // Filter out old patches
+        .filter((patchVersion) => {
+          return !lastPatch || patchVersion > lastPatch;
+        });
 
       // Convert the patches to notifications
       notifications = newPatches.map((value) => {
-        return new NotificationBuilder()
+        return new NotificationBuilder(new Date(), value)
           .withGameDefaults(this.game)
           .withTitle(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`)
           .withAuthor('Dota 2')

@@ -129,7 +129,7 @@ export default class Updater {
       gameNotifications = sortLimitEnd(gameNotifications, this.limit);
       const lastUpdate = gameNotifications[gameNotifications.length - 1];
       // Save last update data
-      provider.saveUpdate(this, lastUpdate.timestamp);
+      provider.saveUpdate(this, lastUpdate.timestamp, lastUpdate.version);
 
       const pollEndTime = Date.now();
       const pollDuration = Math.abs(pollStartTime - pollEndTime);
