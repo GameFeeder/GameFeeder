@@ -1,6 +1,6 @@
 {
   "name": "gamefeeder",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "repository": {
@@ -22,8 +22,8 @@
     "dev": "yarn build && concurrently --kill-others \"yarn watch\" \"yarn serve\"",
     "deploy": "yarn install --frozen-lockfile && yarn demolish && yarn build",
     "demolish": "rimraf dist",
-    "serve": "nodemon --watch dist --watch config --delay 4 dist/_main.js",
-    "start": "node dist/_main.js",
+    "serve": "nodemon --watch dist --watch config --delay 4 dist/src/_main.js",
+    "start": "node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
     "test": "jest --coverage",
