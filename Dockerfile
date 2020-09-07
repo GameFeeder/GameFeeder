@@ -21,4 +21,4 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=info
 # https://github.com/yagop/node-telegram-bot-api/issues/319
 ENV NTBA_FIX_319=WORKAROUND
-CMD ["node", "/app/dist/_main.js"]
+CMD ["node", "/app/dist/src/_main.js"]
