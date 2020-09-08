@@ -3,7 +3,6 @@ import SubredditProvider from './subreddit_provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
-
 import Updater from '../updater';
 
 export default class RedditProvider extends Provider {
@@ -19,5 +18,15 @@ export default class RedditProvider extends Provider {
 
     // Merge the results
     return sortLimitEnd(mergeArrays(subredditNotifications), limit);
+  }
+
+  public saveUpdate(updater: Updater, timestamp: Date, version?: string): void {
+    super.saveUpdate(updater, timestamp, version);
+
+    // Also save the update for the subreddit providers
+    this.subredditProviders.forEach((subredditProvider) => {
+      subredditProvider.updateTimestamp = timestamp;
+      subredditProvider.updateVersion = version ?? subredditProvider.updateVersion;
+    });
   }
 }
