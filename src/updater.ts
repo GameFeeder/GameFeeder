@@ -90,19 +90,18 @@ export default class Updater {
   public async update(): Promise<void> {
     const startTime = Date.now();
 
-    // Get game notifications
-    await Game.getGames().reduce(async (prevUpdatesHandle: Promise<void>, game: Game, index) => {
-      // Wait for the previous game update to finish
-      await prevUpdatesHandle;
+    const games = Game.getGames();
 
-      // If this is not the first game, delay the update
-      if (index !== 0) {
+    for (const [index, game] of games.entries()) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.updateGame(game);
+
+      // Delay in between game
+      if (index < games.length - 1) {
+        // eslint-disable-next-line no-await-in-loop
         await sleep(this.gameIntervalMs);
       }
-
-      // Get the updates for the current game
-      await this.updateGame(game);
-    }, Promise.resolve());
+    }
 
     const updateDuration = Date.now() - startTime;
     this.logger.debug(`Finished update cycle in ${updateDuration} ms.`);
