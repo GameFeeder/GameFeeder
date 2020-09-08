@@ -6,7 +6,8 @@ import Notification from '../notifications/notification';
 import Logger from '../logger';
 import NotificationBuilder from '../notifications/notification_builder';
 import Updater from '../updater';
-import { limitEnd } from '../util/array_util';
+import { limitEnd, removeSmallerEqThan, sort } from '../util/array_util';
+import Version from '../notifications/version';
 
 export default class DotaProvider extends Provider {
   public static key = 'dota';
@@ -27,27 +28,19 @@ export default class DotaProvider extends Provider {
     try {
       const pageDoc = await this.getPatchPage();
       const patchList = await this.getPatchList(pageDoc);
-      const lastPatch = this.getLastUpdateVersion(updater);
+      const lastPatchStr = this.getLastUpdateVersion(updater);
+      const lastPatch = lastPatchStr ? new Version(lastPatchStr) : undefined;
 
-      const newPatches = patchList
-        // Sort ascending (latest patches are last)
-        .sort((a, b) => {
-          if (a < b) {
-            return -1;
-          }
-          if (a > b) {
-            return 1;
-          }
-          return 0;
-        })
-        // Filter out old patches
-        .filter((patchVersion) => {
-          return !lastPatch || patchVersion > lastPatch;
-        });
+      const newPatches = sort(
+        removeSmallerEqThan(
+          patchList.map((patch) => new Version(patch)),
+          lastPatch,
+        ),
+      );
 
       // Convert the patches to notifications
       notifications = newPatches.map((value) => {
-        return new NotificationBuilder(new Date(), value)
+        return new NotificationBuilder(new Date(), value.version)
           .withGameDefaults(this.game)
           .withTitle(`Gameplay patch ${value}`, `http://www.dota2.com/patches/${value}`)
           .withAuthor('Dota 2')

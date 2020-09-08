@@ -5,6 +5,17 @@ export function sort<T extends Comparable<T>>(array: T[]): T[] {
   return array.sort((a, b) => a.compareTo(b));
 }
 
+/** Filters an array, removing all elements which are smaller or equal to the reference value. */
+export function removeSmallerEqThan<T extends Comparable<T>>(array: T[], filterValue?: T): T[] {
+  if (filterValue === undefined) {
+    return array;
+  }
+
+  return array.filter((value) => {
+    return value.compareTo(filterValue) > 0;
+  });
+}
+
 /** Limits the array, returning the first elements. */
 export function limitStart<T>(array: T[], limit?: number): T[] {
   if (limit !== undefined && array.length > limit) {
