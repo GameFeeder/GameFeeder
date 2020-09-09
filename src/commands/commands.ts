@@ -1,5 +1,6 @@
-/* eslint-disable no-use-before-define */
 // TODO: Revisit these overrides
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable no-use-before-define */
 /* eslint-disable prefer-template */
 import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
@@ -33,21 +34,6 @@ export function filterByRole(commands: Command[], role: UserRole): Command[] {
   });
 }
 
-/** Start command, used as a welcome message. */
-const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', async (message) => {
-  const name = ProjectManager.getName();
-  const gitLink = ProjectManager.getURL();
-  const version = ProjectManager.getVersionNumber();
-  message.reply(
-    `Welcome to the **${name}** (v${version})!\n` +
-      `Use \`${commands.tryFindCmdLabel(
-        helpCmd,
-        message.channel,
-      )}\` to display all available commands.\n` +
-      `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
-  );
-});
-
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
   'help',
@@ -62,6 +48,21 @@ const helpCmd = new SimpleAction(
     message.reply(helpMD);
   },
 );
+
+/** Start command, used as a welcome message. */
+const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', async (message) => {
+  const name = ProjectManager.getName();
+  const gitLink = ProjectManager.getURL();
+  const version = ProjectManager.getVersionNumber();
+  message.reply(
+    `Welcome to the **${name}** (v${version})!\n` +
+      `Use \`${commands.tryFindCmdLabel(
+        helpCmd,
+        message.channel,
+      )}\` to display all available commands.\n` +
+      `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+  );
+});
 
 /** About command, display some info about the bot. */
 const aboutCmd = new NoLabelAction(
@@ -78,43 +79,55 @@ const aboutCmd = new NoLabelAction(
   },
 );
 
-/** Settings command, used to display an overview of the settings you can configure. */
-const settingsCmd = new NoLabelAction(
-  'settings',
-  'Display an overview of the settings you can configure for the bot.',
-  /^\s*(settings)|(options)|(config)\s*$/,
-  async (message) => {
+/** Prefix command, used to change the prefix of the bot on that channel. */
+const prefixCmd = new TwoPartCommand(
+  'prefix',
+  `Change the bot's prefix used in this channel.`,
+  'prefix <new prefix>',
+  // Group trigger
+  /^\s*prefix(?<group>.*)$/,
+  // Actiont trigger
+  /^\s*(?<newPrefix>.+?)\s*$/,
+  // Action
+  async (message, match) => {
+    const bot = message.getBot();
     const channel = message.channel;
-    const gameStr =
-      channel.gameSubs && channel.gameSubs.length > 0
-        ? `> You are currently subscribed to the following games:\n` +
-          `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
-        : '> You are currently not subscribed to any games.';
+    let { newPrefix } = matchGroups(match);
+    newPrefix = newPrefix ? newPrefix.trim() : '';
 
-    message.reply(
-      `You can use \`${commands.tryFindCmdLabel(
-        prefixCmd,
-        message.channel,
-      )}\` to change the prefix the bot uses ` +
-        `on this channel.\n` +
-        `> The prefix currently used on this channel is \`${channel.prefix}\`.\n` +
-        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
-        `\`${commands.tryFindCmdLabel(
-          unsubCmd,
-          message.channel,
-        )}\` to change the games you are subscribed to.\n` +
-        gameStr,
-    );
+    // Check if the bot can write to this channel
+    const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
+
+    if (!permissions) {
+      bot.logger.error(
+        `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
+      );
+      return;
+    }
+
+    if (!permissions.canWrite) {
+      if (bot.removeData(channel)) {
+        bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
+      }
+      return;
+    }
+
+    channel.prefix = newPrefix;
   },
+  // Default action
+  async (message) => {
+    if (message.isEmpty()) {
+      const prefix = message.channel.prefix;
+      message.reply(
+        `The prefix currently used on this channel is \`${prefix}\`.\n` +
+          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
+          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
+          `(\`${message.getBot().prefix}\`).`,
+      );
+    }
+  },
+  UserRole.ADMIN,
 );
-
-/** Games command, used to display a list of all games. */
-const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
-  const gamesList = Game.getGames().map((game) => `- ${game.label}`);
-  const gamesMD = `Available games:\n${gamesList.join('\n')}`;
-
-  message.reply(gamesMD);
-});
 
 /** Subscribe command, used to subscribe to a game. */
 const subCmd = new TwoPartCommand(
@@ -282,55 +295,43 @@ const unsubCmd = new TwoPartCommand(
   UserRole.ADMIN,
 );
 
-/** Prefix command, used to change the prefix of the bot on that channel. */
-const prefixCmd = new TwoPartCommand(
-  'prefix',
-  `Change the bot's prefix used in this channel.`,
-  'prefix <new prefix>',
-  // Group trigger
-  /^\s*prefix(?<group>.*)$/,
-  // Actiont trigger
-  /^\s*(?<newPrefix>.+?)\s*$/,
-  // Action
-  async (message, match) => {
-    const bot = message.getBot();
-    const channel = message.channel;
-    let { newPrefix } = matchGroups(match);
-    newPrefix = newPrefix ? newPrefix.trim() : '';
-
-    // Check if the bot can write to this channel
-    const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
-
-    if (!permissions) {
-      bot.logger.error(
-        `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
-      );
-      return;
-    }
-
-    if (!permissions.canWrite) {
-      if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
-      }
-      return;
-    }
-
-    channel.prefix = newPrefix;
-  },
-  // Default action
+/** Settings command, used to display an overview of the settings you can configure. */
+const settingsCmd = new NoLabelAction(
+  'settings',
+  'Display an overview of the settings you can configure for the bot.',
+  /^\s*(settings)|(options)|(config)\s*$/,
   async (message) => {
-    if (message.isEmpty()) {
-      const prefix = message.channel.prefix;
-      message.reply(
-        `The prefix currently used on this channel is \`${prefix}\`.\n` +
-          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
-          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
-          `(\`${message.getBot().prefix}\`).`,
-      );
-    }
+    const channel = message.channel;
+    const gameStr =
+      channel.gameSubs && channel.gameSubs.length > 0
+        ? `> You are currently subscribed to the following games:\n` +
+          `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
+        : '> You are currently not subscribed to any games.';
+
+    message.reply(
+      `You can use \`${commands.tryFindCmdLabel(
+        prefixCmd,
+        message.channel,
+      )}\` to change the prefix the bot uses ` +
+        `on this channel.\n` +
+        `> The prefix currently used on this channel is \`${channel.prefix}\`.\n` +
+        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
+        `\`${commands.tryFindCmdLabel(
+          unsubCmd,
+          message.channel,
+        )}\` to change the games you are subscribed to.\n` +
+        gameStr,
+    );
   },
-  UserRole.ADMIN,
 );
+
+/** Games command, used to display a list of all games. */
+const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
+  const gamesList = Game.getGames().map((game) => `- ${game.label}`);
+  const gamesMD = `Available games:\n${gamesList.join('\n')}`;
+
+  message.reply(gamesMD);
+});
 
 /**  Notify All command, used to manually send a notification to all subscribers. */
 const notifyAllCmd = new TwoPartCommand(
