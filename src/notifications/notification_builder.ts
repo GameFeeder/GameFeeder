@@ -24,8 +24,9 @@ export default class NotificationBuilder {
 
   /** Creates a new Notification builder.
    * @param timestamp - The timestamp of the notification (default: now).
+   * @param version - The gameplay version of the update.
    */
-  constructor(public timestamp: Date = new Date()) {}
+  constructor(public timestamp: Date = new Date(), public version?: string) {}
 
   /** Changes the content of the notification.
    *
@@ -128,6 +129,15 @@ export default class NotificationBuilder {
     return this;
   }
 
+  /** Changes the gameplay version of the notification.
+   *
+   * @param version - The new gameplay version of the notification.
+   */
+  public withVersion(version?: string): NotificationBuilder {
+    this.version = version;
+    return this;
+  }
+
   /** Converts the builder to a notification. */
   public build(): Notification {
     // Check for required parameters
@@ -145,6 +155,7 @@ export default class NotificationBuilder {
       this.thumbnail,
       this.image,
       this.footer,
+      this.version,
     );
   }
 }

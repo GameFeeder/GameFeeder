@@ -3,7 +3,7 @@ import getBots from './bots/bots';
 import Updater from './updater';
 import InitManager from './managers/init_manager';
 import ProjectManager from './managers/project_manager';
-import { mapAsync, naturalJoin } from './util/util';
+import { mapAsync, naturalJoin } from './util/array_util';
 
 export default class Main {
   public static logger = new Logger('Main');

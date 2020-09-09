@@ -16,6 +16,7 @@ export default class Notification implements Comparable<Notification> {
    * @param thumbnail The (small) thumbnail of the notification.
    * @param image The (big) image of the notification.
    * @param footer The footer of the notification.
+   * @param version The gameplay version of the update.
    */
   constructor(
     public timestamp: Date,
@@ -27,6 +28,7 @@ export default class Notification implements Comparable<Notification> {
     public thumbnail?: string,
     public image?: string,
     public footer?: NotificationElement,
+    public version?: string,
   ) {}
 
   public compareTo(other: Notification): -1 | 0 | 1 {
