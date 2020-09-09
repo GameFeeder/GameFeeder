@@ -8,8 +8,9 @@ const winstonFormat = Winston.format.combine(
 
     const ts = timestamp.slice(0, 19).replace('T', ' ');
     const obj = Object.keys(args).length ? JSON.stringify(args, null, 2) : '';
-    const printLabel = label ? ` [${label}]` : '';
-    return `${ts}${printLabel}\t ${level}:\t ${message} ${obj}`;
+    const printLabel = (label ? ` [${label}]` : '').substring(0, 20).padEnd(20);
+    const printLevel = `${level}:`.padEnd(17);
+    return `${ts}${printLabel} ${printLevel} ${message} ${obj}`;
   }),
 );
 
