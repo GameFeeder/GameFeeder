@@ -11,13 +11,19 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      - name: Push to GitHub Packages
+      - name: Prepare
+        id: prep
+        run: |
+          TAGS=$(jq -r '.version' package.json)
+          echo ::set-output name=tags::${TAGS}
+      - name: Build and push
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: GameFeeder/GameFeeder/gamefeeder
-          target: production
-          tag_with_ref: true
-          tags: latest
+          context: ..
+          file: ../Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/386
+          push: true
+          tags: |
+            ${{ steps.prep.outputs.tags }}
+            latest
