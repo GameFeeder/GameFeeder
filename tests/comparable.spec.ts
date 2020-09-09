@@ -1,4 +1,5 @@
-import Comparable, * as comparable from '../src/util/comparable';
+import Comparable from '../src/util/comparable';
+import * as arrayUtil from '../src/util/array_util';
 
 class TestComparable implements Comparable<TestComparable> {
   value: number;
@@ -31,21 +32,16 @@ describe('Comparable', () => {
   });
 
   test('should sort an array of comparable values', () => {
-    expect(comparable.sort([second, first])).toEqual([first, second]);
-  });
-
-  test('should limit an array returning last elements', () => {
-    expect(comparable.limitEnd([first, third, second], 1)).toEqual([second]);
-    expect(comparable.limitEnd([first, third, second])).toEqual([first, third, second]);
+    expect(arrayUtil.sort([second, first])).toEqual([first, second]);
   });
 
   test('should limit and sort an array returning first elements', () => {
-    expect(comparable.sortLimitStart([first, third, second], 1)).toEqual([first]);
-    expect(comparable.sortLimitStart([first, third, second])).toEqual([first, second, third]);
+    expect(arrayUtil.sortLimitStart([first, third, second], 1)).toEqual([first]);
+    expect(arrayUtil.sortLimitStart([first, third, second])).toEqual([first, second, third]);
   });
 
   test('should limit and sort an array returning last elements', () => {
-    expect(comparable.sortLimitEnd([first, third, second], 1)).toEqual([third]);
-    expect(comparable.sortLimitEnd([first, third, second])).toEqual([first, second, third]);
+    expect(arrayUtil.sortLimitEnd([first, third, second], 1)).toEqual([third]);
+    expect(arrayUtil.sortLimitEnd([first, third, second])).toEqual([first, second, third]);
   });
 });

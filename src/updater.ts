@@ -4,8 +4,8 @@ import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
 import Notification from './notifications/notification';
-import { sort, sortLimitEnd } from './util/comparable';
-import { mapAsync, mergeArrays, sleep } from './util/util';
+import { sortLimitEnd } from './util/array_util';
+import { sleep } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -17,7 +17,6 @@ export default class Updater {
   private gameIntervalMs: number;
   /** The delay in milliseconds between each update cycle. */
   private cyleIntervalMs: number;
-  private lastUpdate: Date;
 
   /**
    * Creates an instance of Updater.
@@ -31,12 +30,12 @@ export default class Updater {
   constructor(
     public key: string,
     public enabled: boolean,
-    private autosave: boolean,
+    public autosave: boolean,
     private limit: number,
     gameInterval: number,
     cycleInterval: number,
   ) {
-    this.logger = new Logger(`Updater (${this.key})`);
+    this.logger = new Logger(`Updater - ${this.key}`);
 
     const data = DataManager.getUpdaterData(this.key);
 
@@ -46,7 +45,6 @@ export default class Updater {
 
     this.gameIntervalMs = gameInterval * 1000;
     this.cyleIntervalMs = cycleInterval * 1000;
-    this.lastUpdate = data.lastUpdate ? new Date(data.lastUpdate) : new Date();
     this.doUpdates = false;
   }
 
@@ -57,13 +55,14 @@ export default class Updater {
       // Convert the configurations to updaters
       const updaters: Updater[] = Object.keys(updaterConfig).map((key) => {
         const config = updaterConfig[key];
+
         return new Updater(
           key,
           config.enabled,
           config.autosave,
+          config.limit,
           config.gameInterval,
           config.cycleInterval,
-          config.limit,
         );
       });
 
@@ -84,6 +83,7 @@ export default class Updater {
    * @returns {void}
    */
   public stop(): void {
+    this.logger.info(`Stopping updater...`);
     this.doUpdates = false;
   }
 
@@ -91,47 +91,21 @@ export default class Updater {
   public async update(): Promise<void> {
     const startTime = Date.now();
 
-    // Get game notifications
-    const gameNotifications = await mapAsync(Game.getGames(), async (game, index, games) => {
-      const updates = await this.updateGame(game);
+    const games = Game.getGames();
 
-      // If there are more games in this update cycle, delay them by the specified amount
-      if (index < games.length - 1) {
+    for (const [index, game] of games.entries()) {
+      // Delay in between game
+      if (index > 0) {
+        // eslint-disable-next-line no-await-in-loop
         await sleep(this.gameIntervalMs);
       }
 
-      return updates;
-    });
-
-    // Combine the game notifications
-    let notifications: Notification[] = mergeArrays(gameNotifications);
-
-    if (notifications.length > 0) {
-      // Sort the notifications by their date, from old to new.
-      notifications = sort(notifications);
-
-      const endPollTime = Date.now();
-      const pollTime = endPollTime - startTime;
-      this.logger.info(
-        `Found ${notifications.length} posts in ${pollTime} ms. Notifying channels...`,
-      );
-
-      // Update time
-      this.saveDate(notifications[notifications.length - 1].timestamp);
-
-      // Notify users
-      for (const bot of getBots()) {
-        for (const notification of notifications) {
-          // Temporary possible fix for telegram API limit
-          // eslint-disable-next-line no-await-in-loop
-          await bot.sendMessageToGameSubs(notification.game, notification);
-        }
-      }
-      const notifyTime = Date.now() - endPollTime;
-      this.logger.info(`Notified channels in ${notifyTime} ms.`);
+      // eslint-disable-next-line no-await-in-loop
+      await this.updateGame(game);
     }
-    const updateTime = Date.now() - startTime;
-    this.logger.debug(`Finished update cycle in ${updateTime} ms.`);
+
+    const updateDuration = Date.now() - startTime;
+    this.logger.debug(`Finished update cycle in ${updateDuration} ms.`);
   }
 
   /** Get the updates for the specified game.
@@ -139,34 +113,43 @@ export default class Updater {
    * @param game - The game to get the updates for.
    */
   public async updateGame(game: Game): Promise<Notification[]> {
-    const gameStartTime = Date.now();
+    const pollStartTime = Date.now();
+
+    const provider = game.providers[this.key];
+
+    if (!provider) {
+      return [];
+    }
+
     // Get provider notifications
-    let gameNotifications =
-      (await game.providers[this.key]?.getNotifications(this.lastUpdate, this.limit)) ?? [];
+    let gameNotifications = await provider.getNotifications(this, this.limit);
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
       gameNotifications = sortLimitEnd(gameNotifications, this.limit);
+      const lastUpdate = gameNotifications[gameNotifications.length - 1];
+      // Save last update data
+      provider.saveUpdate(this, lastUpdate.timestamp, lastUpdate.version);
 
-      const gameEndTime = Date.now();
-      const gameTime = Math.abs(gameStartTime - gameEndTime);
-      this.logger.info(`Found ${gameNotifications.length} ${game.label} posts in ${gameTime} ms.`);
+      const pollEndTime = Date.now();
+      const pollDuration = Math.abs(pollStartTime - pollEndTime);
+
+      // Notify users
+      for (const bot of getBots()) {
+        for (const notification of gameNotifications) {
+          // Temporary possible fix for telegram API limit
+          bot.sendMessageToGameSubs(notification.game, notification);
+        }
+      }
+
+      const notifyDuration = Date.now() - pollEndTime;
+
+      this.logger.info(
+        `Found ${gameNotifications.length} ${game.label} posts in ${pollDuration} ms, notified subs in ${notifyDuration} ms.`,
+      );
     }
 
     return gameNotifications;
-  }
-
-  public saveDate(date: Date): void {
-    this.lastUpdate = date;
-    if (this.autosave) {
-      const data = DataManager.getUpdaterData(this.key);
-      data.lastUpdate = date.toISOString();
-      DataManager.setUpdaterData(this.key, data);
-    }
-  }
-
-  public loadDate(): void {
-    this.lastUpdate = new Date(DataManager.getUpdaterData(this.key).lastUpdate);
   }
 
   public updateHealthcheck(): void {
@@ -180,12 +163,14 @@ export default class Updater {
    */
   private async updateLoop(): Promise<void> {
     try {
-      if (this.doUpdates) {
-        // Run update cycle
-        await this.update();
-        // Update the healthcheck timestamp
-        this.updateHealthcheck();
+      if (!this.doUpdates) {
+        this.logger.info(`Update loop stopped.`);
+        return;
       }
+      // Run update cycle
+      await this.update();
+      // Update the healthcheck timestamp
+      this.updateHealthcheck();
     } catch (error) {
       this.logger.error(`Update loop failed:\n${error}`);
     } finally {

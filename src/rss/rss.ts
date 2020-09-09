@@ -1,7 +1,7 @@
 import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
 import RSSItem from './rss_item';
-import { sortLimitEnd } from '../util/comparable';
+import { sortLimitEnd } from '../util/array_util';
 import Logger from '../logger';
 import PreProcessor from '../processors/pre_processor';
 

@@ -4,7 +4,7 @@ import { UserRole } from '../user';
 import Message from '../message';
 import Action from './action';
 import { filterByRole } from './commands';
-import { mergeArrays } from '../util/util';
+import { mergeArrays } from '../util/array_util';
 
 /**
  * A command group represents a collection of commands with a common prefix.

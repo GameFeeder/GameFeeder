@@ -31,10 +31,16 @@ export type SubscriberData = {
 
 /** The data for the updater. */
 export type UpdaterData = {
-  /** The time of the last update. */
-  lastUpdate: string;
-  /** The version string of the last patch. */
-  lastVersion?: string;
+  /** The data of the last update. */
+  lastUpdate: {
+    /** The data of the last update for the specified game. */
+    [index: string]: {
+      /** The timestamp of the last update. */
+      timestamp?: string;
+      /** The version of the last update. */
+      version?: string;
+    };
+  };
   /** Timestamp of the last update cycle run */
   healthcheckTimestamp: string;
 };
