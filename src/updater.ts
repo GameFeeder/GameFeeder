@@ -93,14 +93,14 @@ export default class Updater {
     const games = Game.getGames();
 
     for (const [index, game] of games.entries()) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.updateGame(game);
-
       // Delay in between game
-      if (index < games.length - 1) {
+      if (index > 0) {
         // eslint-disable-next-line no-await-in-loop
         await sleep(this.gameIntervalMs);
       }
+
+      // eslint-disable-next-line no-await-in-loop
+      await this.updateGame(game);
     }
 
     const updateDuration = Date.now() - startTime;
