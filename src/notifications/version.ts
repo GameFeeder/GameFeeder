@@ -34,7 +34,7 @@ export default class Version implements Comparable<Version> {
    */
   constructor(public version: string) {}
 
-  public compareTo(other: Version): 0 | 1 | -1 {
+  public compareTo(other: Version): -1 | 0 | 1 {
     // Split the version strings in the different version numbers
     const v1Parts = parseVersion(this.version);
     const v2Parts = parseVersion(other.version);
