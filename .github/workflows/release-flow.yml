@@ -12,8 +12,8 @@ jobs:
       - name: Build and tag the Docker image
         run: docker build .
           --target production
-          --tag gamefeeder/gamefeeder:$(jq -r '.version' package.json)
-          --tag gamefeeder/gamefeeder:latest
+          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:$(jq -r '.version' package.json)
+          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest
       - name: Login to Docker
         run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
       - name: Publish the Docker image:version
