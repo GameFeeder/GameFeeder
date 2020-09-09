@@ -314,7 +314,7 @@ export default abstract class BotClient {
    * @param  {string|Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public async sendMessageToGameSubs(game: Game, message: string | Notification): Promise<void> {
+  public sendMessageToGameSubs(game: Game, message: string | Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (!game) {
@@ -326,8 +326,7 @@ export default abstract class BotClient {
       for (const channelData of subscribers) {
         if (channelData.gameSubs?.includes(game.name)) {
           const channel = this.getChannelByID(channelData.id);
-          // eslint-disable-next-line no-await-in-loop
-          await this.sendMessage(channel, message);
+          this.sendMessage(channel, message);
         }
       }
     }

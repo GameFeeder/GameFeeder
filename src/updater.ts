@@ -35,7 +35,7 @@ export default class Updater {
     gameInterval: number,
     cycleInterval: number,
   ) {
-    this.logger = new Logger(`Updater (${this.key})`);
+    this.logger = new Logger(`Updater - ${this.key}`);
 
     const data = DataManager.getUpdaterData(this.key);
 
@@ -83,6 +83,7 @@ export default class Updater {
    * @returns {void}
    */
   public stop(): void {
+    this.logger.info(`Stopping updater...`);
     this.doUpdates = false;
   }
 
@@ -137,8 +138,7 @@ export default class Updater {
       for (const bot of getBots()) {
         for (const notification of gameNotifications) {
           // Temporary possible fix for telegram API limit
-          // eslint-disable-next-line no-await-in-loop
-          await bot.sendMessageToGameSubs(notification.game, notification);
+          bot.sendMessageToGameSubs(notification.game, notification);
         }
       }
 
@@ -163,12 +163,14 @@ export default class Updater {
    */
   private async updateLoop(): Promise<void> {
     try {
-      if (this.doUpdates) {
-        // Run update cycle
-        await this.update();
-        // Update the healthcheck timestamp
-        this.updateHealthcheck();
+      if (!this.doUpdates) {
+        this.logger.info(`Update loop stopped.`);
+        return;
       }
+      // Run update cycle
+      await this.update();
+      // Update the healthcheck timestamp
+      this.updateHealthcheck();
     } catch (error) {
       this.logger.error(`Update loop failed:\n${error}`);
     } finally {
