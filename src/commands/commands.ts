@@ -45,7 +45,7 @@ const helpCmd = new SimpleAction(
       await message.user.getRole(message.channel),
     )}`;
 
-    message.reply(helpMD);
+    await message.reply(helpMD);
   },
 );
 
@@ -54,7 +54,7 @@ const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', a
   const name = ProjectManager.getName();
   const gitLink = ProjectManager.getURL();
   const version = ProjectManager.getVersionNumber();
-  message.reply(
+  await message.reply(
     `Welcome to the **${name}** (v${version})!\n` +
       `Use \`${commands.tryFindCmdLabel(
         helpCmd,
@@ -73,7 +73,7 @@ const aboutCmd = new NoLabelAction(
     const name = ProjectManager.getName();
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
-    message.reply(
+    await message.reply(
       `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
@@ -118,7 +118,7 @@ const prefixCmd = new TwoPartCommand(
   async (message) => {
     if (message.isEmpty()) {
       const prefix = message.channel.prefix;
-      message.reply(
+      await message.reply(
         `The prefix currently used on this channel is \`${prefix}\`.\n` +
           `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
           `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
@@ -192,7 +192,7 @@ const subCmd = new TwoPartCommand(
         `${naturalJoin(invalidSubs.map((game) => game.label))}.`;
     }
 
-    message.reply(msg);
+    await message.reply(msg);
   },
   // Default action
   async (message) => {
@@ -200,11 +200,11 @@ const subCmd = new TwoPartCommand(
     const gameList = games.map((game) => `- ${game.label}`).join('\n');
 
     if (message.isEmpty()) {
-      message.reply(
+      await message.reply(
         `You need to specify the game you want to subscribe to. The following are available:\n${gameList}`,
       );
     } else {
-      message.reply(
+      await message.reply(
         `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
       );
     }
@@ -275,7 +275,7 @@ const unsubCmd = new TwoPartCommand(
         `${naturalJoin(invalidUnsubs.map((game) => game.label))} in the first place!`;
     }
 
-    message.reply(msg);
+    await message.reply(msg);
   },
   // Default action
   async (message) => {
@@ -283,11 +283,11 @@ const unsubCmd = new TwoPartCommand(
     const gameList = games.map((game) => `- ${game.label}`).join('\n');
 
     if (message.isEmpty()) {
-      message.reply(
+      await message.reply(
         `You need to specify the game you want to unsubscribe from. The following are available:\n${gameList}`,
       );
     } else {
-      message.reply(
+      await message.reply(
         `'${message.content.trim()}' is not a valid game. The following are available:\n${gameList}`,
       );
     }
@@ -308,7 +308,7 @@ const settingsCmd = new NoLabelAction(
           `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
         : '> You are currently not subscribed to any games.';
 
-    message.reply(
+    await message.reply(
       `You can use \`${commands.tryFindCmdLabel(
         prefixCmd,
         message.channel,
@@ -330,7 +330,7 @@ const gamesCmd = new SimpleAction('games', 'Display all available games.', async
   const gamesList = Game.getGames().map((game) => `- ${game.label}`);
   const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
-  message.reply(gamesMD);
+  await message.reply(gamesMD);
 });
 
 /**  Notify All command, used to manually send a notification to all subscribers. */
@@ -349,14 +349,14 @@ const notifyAllCmd = new TwoPartCommand(
 
     // Check if the user has provided a message
     if (!msg) {
-      message.reply(
+      await message.reply(
         `You need to provide a message to send to everyone.\n` +
           `Try \`${commands.tryFindCmdLabel(notifyAllCmd, message.channel)}\`.`,
       );
       return;
     }
 
-    message.reply(`Notifying all subs with:\n"${msg}"`);
+    await message.reply(`Notifying all subs with:\n"${msg}"`);
 
     // Send the provided message to all subs
     for (const curBot of getBots()) {
@@ -365,9 +365,9 @@ const notifyAllCmd = new TwoPartCommand(
   },
   async (message) => {
     if (message.isEmpty()) {
-      message.reply(`You need to provide a message to send to the subscribers.`);
+      await message.reply(`You need to provide a message to send to the subscribers.`);
     } else {
-      message.reply(
+      await message.reply(
         `'${message.content}' is an invalid message configuration. Try inserting a space between the command and the message.`,
       );
     }
@@ -392,7 +392,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
 
     // Check if the user has provided a message
     if (!msg) {
-      message.reply(
+      await message.reply(
         `You need to provide a message to send to everyone.\n` +
           `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
@@ -400,7 +400,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
     }
     // Check if the user has provided a game
     if (!alias) {
-      message.reply(
+      await message.reply(
         `You need to provide a game to notify the subs of.\n` +
           `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
       );
@@ -410,7 +410,9 @@ const notifyGameSubsCmd = new TwoPartCommand(
     // Try to find the game
     for (const game of Game.getGames()) {
       if (game.hasAlias(alias)) {
-        message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
+        // This is weird, it looks like it will try to spam the admin with those messages
+        // eslint-disable-next-line no-await-in-loop
+        await message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
         // Notify the game's subs
         for (const curBot of getBots()) {
           curBot.sendMessageToGameSubs(game, msg);
@@ -421,7 +423,7 @@ const notifyGameSubsCmd = new TwoPartCommand(
     }
 
     // We didn't find the specified game
-    message.reply(
+    await message.reply(
       `I didn't find a game with the alias '${alias}'.\n` +
         `Use \`${commands.tryFindCmdLabel(
           gamesCmd,
@@ -432,12 +434,12 @@ const notifyGameSubsCmd = new TwoPartCommand(
   // Default action
   async (message) => {
     if (message.isEmpty()) {
-      message.reply(
+      await message.reply(
         `You need to provide the game to notify the subscribers of as well as a message to send to them.\n` +
           `Try the following format: '(<game name>) <message>'.`,
       );
     } else {
-      message.reply(
+      await message.reply(
         `'${message.content}' is an invalid configuration. It must be in the form of '(<game name>) <message>'.`,
       );
     }
@@ -461,7 +463,7 @@ const flipCmd = new SimpleAction(
     }
 
     // Notify the user
-    message.reply(`Flipping a coin: **${result}**`);
+    await message.reply(`Flipping a coin: **${result}**`);
   },
   UserRole.USER,
 );
@@ -531,11 +533,11 @@ const rollCmd = new TwoPartCommand(
     }
 
     // Notify user
-    message.reply(`${text}:\n${resultStr}`);
+    await message.reply(`${text}:\n${resultStr}`);
   },
   // Default action
   async (message) => {
-    message.reply(
+    await message.reply(
       `'${message.content}' is an invalid dice configuration. Try something like '2 d20 +3'.`,
     );
   },
@@ -600,7 +602,7 @@ const statsCmd = new TwoPartCommand(
       `- **Subscribers**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
       botStatStrings.join('\n');
 
-    message.reply(statString);
+    await message.reply(statString);
   },
   async (message) => {
     if (message.isEmpty()) {
@@ -652,9 +654,9 @@ const statsCmd = new TwoPartCommand(
         `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
         botStatStrings.join('\n');
 
-      message.reply(statString);
+      await message.reply(statString);
     } else {
-      message.reply(`'${message.content}' is an invalid game alias.`);
+      await message.reply(`'${message.content}' is an invalid game alias.`);
     }
   },
   UserRole.USER,
@@ -666,7 +668,7 @@ const pingCmd = new SimpleAction(
   'Test the delay of the bot.',
   async (message) => {
     const time = Date.now() - message.timestamp.valueOf();
-    message.reply(`Pong! (${time} ms)`);
+    await message.reply(`Pong! (${time} ms)`);
   },
   UserRole.USER,
 );
@@ -685,7 +687,7 @@ const telegramCmdsCmd = new SimpleAction(
     // Block code format
     const telegramCmdStr = `\`\`\`\n${cmdEntries.join('\n')}\n\`\`\``;
 
-    message.reply(telegramCmdStr);
+    await message.reply(telegramCmdStr);
   },
   UserRole.OWNER,
 );
@@ -709,7 +711,7 @@ const debugCmd = new SimpleAction(
       `**Channel info:**\n- ID: ${channelID}\n- Server members: ${serverMembers}\n` +
       `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
 
-    message.reply(debugStr);
+    await message.reply(debugStr);
   },
 );
 
@@ -741,7 +743,7 @@ const labelCmd = new TwoPartCommand(
           .map((client) => `- ${client.name}`)
           .join('\n');
 
-        message.reply(
+        await message.reply(
           `'${botName}' is not an available bot! Try one of the following:\n${botList}`,
         );
         return;
@@ -779,12 +781,12 @@ const labelCmd = new TwoPartCommand(
       const hasLabel = message.channel.hasLabel();
 
       if (hasLabel) {
-        message.reply(
+        await message.reply(
           `The label currenctly used on this channel is '${message.channel.label}'.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
             `Use 'this' as channel id to change the label of this channel.`,
         );
       } else {
-        message.reply(
+        await message.reply(
           `This channel does not have a label.\nYou can change the label of a channel by using '<bot name> <channel id> <channel label>'.\n` +
             `Use 'this' as channel id to change the label of this channel.`,
         );
@@ -808,18 +810,18 @@ const labelCmd = new TwoPartCommand(
         const label = channel.label;
 
         if (label) {
-          message.reply(
+          await message.reply(
             `The label currenctly used on channel ${channel.id} is '${label}'.\nYou can change its label by using ` +
               `'${channelBot.name} ${channel.id} <channel label>' as command argument.`,
           );
         } else {
-          message.reply(
+          await message.reply(
             `Channel ${channel.id} does not have a label.\nYou can change the label of it by using ` +
               `'${channelBot.name} ${channel.id} <channel label>' as command argument.`,
           );
         }
       } else {
-        message.reply(
+        await message.reply(
           `'${message.content}' is an invalid configuration. Try to use '<bot name> <channel id> <channel label>'.\n` +
             `Use 'this' as channel id to change the label of this channel.`,
         );

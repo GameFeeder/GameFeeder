@@ -178,7 +178,7 @@ export default class Channel {
    *
    * @returns The number of users in this channel
    */
-  public async getUserCount(): Promise<number> {
+  public getUserCount(): Promise<number> {
     return this.bot.getChannelUserCount(this);
   }
 

@@ -6,8 +6,8 @@ import Command from '../commands/command';
 import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
-import { mapAsync, optMapAsync } from '../util/array_util';
-import { StrUtil } from '../util/util';
+import { mapAsync } from '../util/array_util';
+import { assertIsDefined, StrUtil } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
@@ -60,7 +60,7 @@ export default class DiscordBot extends BotClient {
     return this.userTag;
   }
 
-  public async getUser(): Promise<User> {
+  public getUser(): User {
     const userID = this.bot.user?.id;
 
     if (!userID) {
@@ -70,6 +70,7 @@ export default class DiscordBot extends BotClient {
     return new User(this, userID);
   }
 
+  // eslint-disable-next-line require-await
   public async getChannelUserCount(channel: Channel): Promise<number> {
     const discordChannel = this.bot.channels.cache.get(channel.id);
 
@@ -83,7 +84,7 @@ export default class DiscordBot extends BotClient {
     return 0;
   }
 
-  public async getChannelCount(game?: Game): Promise<number> {
+  public getChannelCount(game?: Game): number {
     let channels = this.getBotChannels();
     // Save guilds
     const seenGuilds = new Map<string, boolean>();
@@ -131,7 +132,7 @@ export default class DiscordBot extends BotClient {
     });
 
     // Aggregate results
-    const userCounts = await mapAsync(channels, async (botChannel) => botChannel.getUserCount());
+    const userCounts = await mapAsync(channels, (botChannel) => botChannel.getUserCount());
     const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
@@ -159,13 +160,12 @@ export default class DiscordBot extends BotClient {
     return UserRole.USER;
   }
 
+  // eslint-disable-next-line require-await
   public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
     const channels = this.bot.channels;
 
-    if (!channels) {
-      // This probably means that the Discord API is down
-      return undefined;
-    }
+    // This probably means that the Discord API is down
+    assertIsDefined(channels);
 
     const discordChannel = this.bot.channels.cache.get(channel.id);
 
@@ -183,16 +183,10 @@ export default class DiscordBot extends BotClient {
       try {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
-
-        if (!discordUser) {
-          return undefined;
-        }
+        assertIsDefined(discordUser);
 
         const discordPermissions = discordChannel.permissionsFor(discordUser);
-
-        if (!discordPermissions) {
-          return undefined;
-        }
+        assertIsDefined(discordPermissions);
 
         const hasAccess = discordPermissions.has('VIEW_CHANNEL');
         const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
@@ -207,7 +201,7 @@ export default class DiscordBot extends BotClient {
     }
 
     this.logger.error(
-      `Unecpected Discord channel type for channel ${channel.label}: ${discordChannel}`,
+      `Unexpected Discord channel type for channel ${channel.label}: ${discordChannel}`,
     );
 
     return undefined;
@@ -218,7 +212,7 @@ export default class DiscordBot extends BotClient {
    * @param user - The user to get the permission for.
    * @param channel - The channel to get the permission on.
    */
-  public async canEmbed(user: User, channel: Channel): Promise<boolean> {
+  public canEmbed(user: User, channel: Channel): boolean {
     const discordChannel = this.bot.channels.cache.get(channel.id);
 
     let canEmbed;
@@ -240,12 +234,12 @@ export default class DiscordBot extends BotClient {
     return canEmbed;
   }
 
-  public async getOwners(): Promise<User[]> {
+  public getOwners(): User[] {
     const ownerIds: string[] = ConfigManager.getBotConfig().discord.owners;
     return ownerIds.map((id) => new User(this, id));
   }
 
-  public async registerCommand(command: Command): Promise<void> {
+  public registerCommand(command: Command): void {
     this.bot.on('message', async (msg) => {
       const channel = this.getChannelByID(msg.channel.id);
       const user = new User(this, msg.author.id);
@@ -270,12 +264,12 @@ export default class DiscordBot extends BotClient {
       await this.bot.login(this.token);
       this.isRunning = true;
       // Handle being removed from a guild
-      this.bot.on('guildDelete', async (guild) => {
+      this.bot.on('guildDelete', (guild) => {
         const guildID = guild.id;
         const channels = this.getBotChannels();
 
         // Remove all channel data of that guild
-        await optMapAsync(channels, (channel) => {
+        channels.forEach((channel) => {
           const discordChannel = this.bot.channels.cache.get(channel.id);
           if (!discordChannel) {
             // Can't find the channel, it probably belongs to the guild, remove data
@@ -374,7 +368,7 @@ export default class DiscordBot extends BotClient {
       }
     }
     // Check if the bot can send embeds
-    if (await this.canEmbed(await this.getUser(), channel)) {
+    if (this.canEmbed(await this.getUser(), channel)) {
       // Parse markdown
       const embed = this.embedFromNotification(message);
 
@@ -555,21 +549,13 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    // TODO: Fix this unknown
-    const callback = (error: Error | unknown) => {
-      const errorMsg = error instanceof Error ? `${error.name}: ${error.message}` : 'UNKNOWN ERROR';
-
-      this.logger.error(`Failed to send message to channel ${channel.label}:\n${errorMsg}`);
-      return false;
-    };
-
     try {
       if (discordChannel instanceof DMChannel) {
-        discordChannel.send(text, embed).catch(callback);
+        await discordChannel.send(text, embed);
         return true;
       }
       if (discordChannel instanceof TextChannel) {
-        discordChannel.send(text, embed).catch(callback);
+        await discordChannel.send(text, embed);
         return true;
       }
       // Group DMs seem to be deprecated

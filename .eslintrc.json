@@ -6,9 +6,11 @@
   "extends": [
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
     "plugin:jest/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint"
   ],
   "globals": {
     "Atomics": "readonly",
@@ -48,16 +50,19 @@
     "no-nested-ternary": "off",
     "no-param-reassign": ["error", { "props": false }],
     "no-restricted-syntax": "off",
+    "no-return-await": "warn",
     "no-throw-literal": "off",
     "no-underscore-dangle": ["warn", { "allowAfterThis": true }],
-    "prefer-destructuring": "off"
+    "prefer-destructuring": "off",
+    "require-await": "warn"
   },
   "settings": {
     "import/resolver": {
       "node": {
         "paths": ["src"],
         "extensions": [".js", ".ts"]
-      }
+      },
+      "typescript": {}
     }
   }
 }
