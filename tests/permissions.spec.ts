@@ -1,4 +1,4 @@
-import Permissions from '../src/permissions';
+import Permissions from 'src/permissions';
 
 describe('Permissions', () => {
   test('should have channel access', () => {

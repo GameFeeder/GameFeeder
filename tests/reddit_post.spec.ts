@@ -1,4 +1,4 @@
-import RedditPost from '../src/reddit/reddit_post';
+import RedditPost from 'src/reddit/reddit_post';
 
 jest.mock('request-promise-native');
 

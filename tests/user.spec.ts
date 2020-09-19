@@ -1,8 +1,8 @@
-import User, { UserRole } from '../src/user';
-import Channel from '../src/channel';
+import User, { UserRole } from 'src/user';
+import Channel from 'src/channel';
 import MockBot from './mockClasses/mockBot';
 
-jest.mock('../src/bots/telegram');
+jest.mock('src/bots/telegram');
 jest.mock('request-promise-native');
 
 let testUser: User;

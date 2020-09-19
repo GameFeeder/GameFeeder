@@ -1,4 +1,4 @@
-import Version from '../src/notifications/version';
+import Version from 'src/notifications/version';
 
 describe('Version', () => {
   describe('compareTo', () => {

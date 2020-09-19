@@ -86,6 +86,12 @@
       "<rootDir>/src",
       "<rootDir>/tests"
     ],
+    "modulePaths": [
+      "<rootDir>",
+      "<rootDir>/src",
+      "<rootDir>/tests",
+      "<rootDir>/tests/mockClasses"
+    ],
     "preset": "ts-jest",
     "coveragePathIgnorePatterns": [
       "/node_modules/",

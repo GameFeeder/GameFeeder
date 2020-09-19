@@ -1,9 +1,7 @@
+import Message from 'src/message';
+import User from 'src/user';
+import Channel from 'src/channel';
 import MockBot from './mockClasses/mockBot';
-import Message from '../src/message';
-import User from '../src/user';
-import Channel from '../src/channel';
-
-// jest.mock('../src/bots/bot');
 
 describe('Message', () => {
   let testMessage: Message;

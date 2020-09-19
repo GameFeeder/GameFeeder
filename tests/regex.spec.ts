@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-disabled-tests */
 /* eslint-disable jest/expect-expect */
 // TODO: Fix commented tests
-import MDRegex from '../src/util/regex';
+import MDRegex from 'src/util/regex';
 
 /** Tests the given regular expression
  *
