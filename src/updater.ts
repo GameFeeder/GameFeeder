@@ -23,7 +23,7 @@ export default class Updater {
    * @param key Id of the updater
    * @param enabled Whether the specific updater loop should run or not
    * @param autosave Whether the specific updater should save the new data on each loop
-   * @param limit Numver of notifications to generate per loop
+   * @param limit Number of notifications to generate per loop
    * @param gameInterval Time between update checks in milliseconds
    * @param cycleInterval Time between loop end and loop begin in milliseconds
    */
@@ -74,9 +74,9 @@ export default class Updater {
   /** Starts the updater.
    * @returns {Promise<void>}
    */
-  public async start(): Promise<void> {
+  public start(): Promise<void> {
     this.doUpdates = true;
-    this.updateLoop();
+    return this.updateLoop();
   }
 
   /** Stops the updater.

@@ -14,6 +14,8 @@ export function sleep(ms: number): Promise<void> {
 export function assertIsDefined<T>(val: T, errorMsg?: string): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     const message = errorMsg ?? `Expected 'val' to be defined, but received ${val}`;
+    // For some reason, typescript-eslint does not recognize this as an Error
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new AssertionError({ message });
   }
 }

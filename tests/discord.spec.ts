@@ -1,4 +1,4 @@
-import DiscordBot from '../src/bots/discord';
+import DiscordBot from 'src/bots/discord';
 
 jest.mock('request-promise-native');
 

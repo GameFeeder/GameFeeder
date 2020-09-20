@@ -1,6 +1,7 @@
 /* eslint-disable jest/no-disabled-tests */
+/* eslint-disable jest/expect-expect */
 // TODO: Fix commented tests
-import MDRegex from '../src/util/regex';
+import MDRegex from 'src/util/regex';
 
 /** Tests the given regular expression
  *
@@ -17,9 +18,7 @@ function testRegExp(regExp: RegExp, testStr: string, results: Array<string | und
   }
 
   if (!match) {
-    // For some reason the jest-eslint plugin doesn't contain fail()
-    // eslint-disable-next-line no-undef
-    fail(`Not matching '${testStr}'.`);
+    throw new Error(`Not matching '${testStr}'.`);
     return;
   }
 
@@ -85,7 +84,7 @@ describe('Markdown regex', () => {
         ]);
       });
 
-      xtest('without link', () => {
+      test.skip('without link', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.imageLink, '![TestLabel](https://test.png)', [
           '![TestLabel](https://test.png)',
@@ -117,7 +116,7 @@ describe('Markdown regex', () => {
         ]);
       });
 
-      xtest('without image', () => {
+      test.skip('without image', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.imageLink, '[TestLabel](https://url.com)', [
           '[TestLabel](https://url.com)',
@@ -128,12 +127,12 @@ describe('Markdown regex', () => {
         ]);
       });
 
-      xtest('not matching images', () => {
+      test.skip('not matching images', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.imageLink, '![TestImage](https://test.png)', []);
       });
 
-      xtest('not matching image links', () => {
+      test.skip('not matching image links', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.imageLink, '![[TestLabel](https://url.com)](https://test.png)', []);
       });
@@ -213,7 +212,7 @@ describe('Markdown regex', () => {
         testRegExp(MDRegex.list, '* List Element', ['* List Element', 'List Element']);
       });
 
-      xtest('single with dash', () => {
+      test.skip('single with dash', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.list, '- List Element', ['- List Element', 'List Element']);
       });
@@ -225,7 +224,7 @@ describe('Markdown regex', () => {
         testRegExp(MDRegex.quote, '> Quote text', ['> Quote text', 'Quote text']);
       });
 
-      xtest('without space', () => {
+      test.skip('without space', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.quote, '>Quote text', ['>Quote text', 'Quote text']);
       });
@@ -237,7 +236,7 @@ describe('Markdown regex', () => {
         testRegExp(MDRegex.separator, '\n\n---\n\n', ['\n\n---\n\n', '---']);
       });
 
-      xtest('with 3 asterisks', () => {
+      test.skip('with 3 asterisks', () => {
         // This should pass, the function test passes. No idea what's happening here
         testRegExp(MDRegex.separator, '\n\n***\n\n', ['\n\n***\n\n', '***']);
       });

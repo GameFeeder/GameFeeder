@@ -1,5 +1,5 @@
-import Comparable from '../src/util/comparable';
-import * as arrayUtil from '../src/util/array_util';
+import Comparable from 'src/util/comparable';
+import * as arrayUtil from 'src/util/array_util';
 
 class TestComparable implements Comparable<TestComparable> {
   value: number;

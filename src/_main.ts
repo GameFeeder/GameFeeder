@@ -17,7 +17,7 @@ export default class Main {
     InitManager.initAll();
     await Main.registerCommands();
     await Main.startBots();
-    await Main.startUpdaters();
+    Main.startUpdaters();
   }
 
   /** Registers the bot commands. */
@@ -26,9 +26,8 @@ export default class Main {
     const startTime = Date.now();
     const bots = getBots();
 
-    // Register the commands asynchronously
-    await mapAsync(bots, async (bot) => {
-      bot.registerCommand(commands);
+    bots.forEach((bot) => {
+      return bot.registerCommand(commands);
     });
 
     const time = Date.now() - startTime;
@@ -63,7 +62,7 @@ export default class Main {
   }
 
   /** Starts the updaters. */
-  public static async startUpdaters(): Promise<void> {
+  public static startUpdaters(): void {
     const updaters = Updater.getUpdaters();
 
     updaters.forEach((updater) => {

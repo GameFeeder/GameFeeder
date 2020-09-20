@@ -248,12 +248,12 @@ export default class TelegramBot extends BotClient {
       channels.filter((channel) => channel.gameSubs.includes(game));
     }
 
-    const userCounts = await mapAsync(channels, async (botChannel) => botChannel.getUserCount());
+    const userCounts = await mapAsync(channels, (botChannel) => botChannel.getUserCount());
     const userCount = userCounts.reduce((prevValue, curValue) => prevValue + curValue, 0);
     return userCount;
   }
 
-  public async getChannelCount(game?: Game): Promise<number> {
+  public getChannelCount(game?: Game): number {
     const channels = this.getBotChannels();
 
     if (game) {
@@ -263,14 +263,14 @@ export default class TelegramBot extends BotClient {
     return channels.length;
   }
 
-  public async getOwners(): Promise<User[]> {
+  public getOwners(): User[] {
     const ownerIds: string[] = ConfigManager.getBotConfig().telegram.owners || [];
     return ownerIds.map((id) => new User(this, id));
   }
 
   public registerCommand(command: Command): void {
-    this.bot.on('message', async (msg: TelegramAPI.Message) => this.onMessage(msg, command));
-    this.bot.on('channel_post', async (msg: TelegramAPI.Message) => this.onMessage(msg, command));
+    this.bot.on('message', (msg: TelegramAPI.Message) => this.onMessage(msg, command));
+    this.bot.on('channel_post', (msg: TelegramAPI.Message) => this.onMessage(msg, command));
   }
 
   /** Executes the given command if the message matches the regex. */

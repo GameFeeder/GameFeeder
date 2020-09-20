@@ -26,7 +26,7 @@ export default class User {
    * @param channel - The channel to get the role on.
    * @returns The role the user has on the given channel.
    */
-  public async getRole(channel: Channel): Promise<UserRole> {
+  public getRole(channel: Channel): Promise<UserRole> {
     return this.bot.getUserRole(this, channel);
   }
   /** Determines whether the user has the given role on the given channel.

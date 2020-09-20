@@ -1,10 +1,10 @@
-import { mapAsync, filterAsync, naturalJoin, limitStart, limitEnd } from '../src/util/array_util';
+import { mapAsync, filterAsync, naturalJoin, limitStart, limitEnd } from 'src/util/array_util';
 
 describe('ArrayUtil', () => {
   describe('map async', () => {
     test('works', async () => {
       const testArray = [1, 2, 3];
-      const asyncFunction = async (el: number) => el + 1;
+      const asyncFunction = (el: number) => new Promise((resolve) => resolve(el + 1));
       const rr = await mapAsync(testArray, asyncFunction);
       expect(rr).toEqual([2, 3, 4]);
     });
@@ -13,6 +13,7 @@ describe('ArrayUtil', () => {
   describe('filter async', () => {
     test('works', async () => {
       const testArray = [1, 2, 3];
+      // eslint-disable-next-line require-await
       const asyncFunction = async (el: number) => el > 2;
       const rr = await filterAsync(testArray, asyncFunction);
       expect(rr).toEqual([3]);

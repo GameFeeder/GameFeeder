@@ -5,6 +5,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "yzhang.markdown-all-in-one",
-		"ban.spellright"
+    "ban.spellright",
+    "eamodio.toggle-excluded-files"
   ]
 }

@@ -87,7 +87,7 @@ export type SteamProvider = {
 };
 
 /** A Telegram IV template. */
-export type telegramIVTemplate = {
+export type TelegramIVTemplate = {
   /** The domain to apply the IV template to. */
   domain: string;
   /** The hash of the IV template to use on that domain. */
@@ -116,7 +116,7 @@ export type GameSettings = {
     rss: RSSProvider[];
   };
   /** The Telegram IV templates of the game. */
-  telegramIVTemplates: telegramIVTemplate[];
+  telegramIVTemplates: TelegramIVTemplate[];
 };
 
 /** The config of an updater. */

@@ -22,7 +22,7 @@ export default class SimpleAction extends NoLabelAction {
       description,
       // The name is the regex
       new RegExp(`^\\s*${name}\\s*$`),
-      async (message) => action(message),
+      (message) => action(message),
       role,
     );
   }
