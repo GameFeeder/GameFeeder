@@ -1,4 +1,5 @@
-import Logger from '../src/logger';
+/* eslint-disable jest/expect-expect */
+import Logger from 'src/logger';
 
 describe('Logger', () => {
   const testMessage = 'testMessage';

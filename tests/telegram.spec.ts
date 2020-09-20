@@ -1,4 +1,4 @@
-import TelegramBot from '../src/bots/telegram';
+import TelegramBot from 'src/bots/telegram';
 
 jest.mock('request-promise-native');
 

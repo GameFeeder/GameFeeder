@@ -1,8 +1,8 @@
-import Channel from '../src/channel';
-import DataManager from '../src/managers/data_manager';
-import MockBot from './__mocks__/mockBot';
+import Channel from 'src/channel';
+import DataManager from 'src/managers/data_manager';
+import MockBot from './mockClasses/mockBot';
 
-jest.mock('../src/managers/data_manager');
+jest.mock('src/managers/data_manager');
 
 const mockBot = new MockBot();
 let testChannel: Channel;

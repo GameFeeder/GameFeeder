@@ -33,7 +33,7 @@ export default class Message {
    *
    * @param message - The message to send.
    */
-  public async reply(message: string | Notification): Promise<boolean> {
+  public reply(message: string | Notification): Promise<boolean> {
     return this.getBot().sendMessage(this.channel, message);
   }
 }

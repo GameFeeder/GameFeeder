@@ -56,7 +56,7 @@ export default class DotaProvider extends Provider {
   }
 
   /** Gets a list of the patch names available. */
-  public async getPatchList(pageDoc: CheerioStatic): Promise<string[]> {
+  public getPatchList(pageDoc: CheerioStatic): string[] {
     const patchList: string[] = [];
     const $ = pageDoc;
 
@@ -73,7 +73,7 @@ export default class DotaProvider extends Provider {
   }
 
   /** Gets the content of the patch page. */
-  public async getPatchPage(): Promise<CheerioStatic> {
+  public getPatchPage(): Promise<CheerioStatic> {
     const options = {
       uri: 'http://www.dota2.com/patches/',
       transform: (body: string) => {

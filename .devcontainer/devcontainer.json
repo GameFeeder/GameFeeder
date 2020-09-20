@@ -8,5 +8,6 @@
 		"esbenp.prettier-vscode",
 		"mutantdino.resourcemonitor",
 		"yzhang.markdown-all-in-one",
+		"eamodio.toggle-excluded-files"
 	]
 }

@@ -4,10 +4,13 @@
     "jest/globals": true
   },
   "extends": [
-    "airbnb-base",
+    "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:jest/recommended",
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint"
   ],
   "globals": {
     "Atomics": "readonly",
@@ -16,6 +19,7 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
+    "project": "./tsconfig.json",
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "jest"],
@@ -28,29 +32,37 @@
         "ts": "never"
       }
     ],
-    "@typescript-eslint/explicit-function-return-type": "off",
+    // "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/lines-between-class-members": "off",
     "class-methods-use-this": "off",
-    "no-underscore-dangle": ["warn", { "allowAfterThis": true }],
-    "no-param-reassign": ["error", { "props": false }],
+    "curly": ["error", "all"],
+    "import/no-cycle":"off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
     "jest/no-disabled-tests": "warn",
     "jest/no-focused-tests": "error",
+    "jest/no-mocks-import": "warn",
     "jest/no-identical-title": "error",
+    "jest/no-standalone-expect": ["error", { "additionalTestBlockFunctions": ["each.test", "beforeAll", "afterAll"] }],
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
-    "lines-between-class-members": "off",
     "max-classes-per-file": "off",
     "no-nested-ternary": "off",
+    "no-param-reassign": ["error", { "props": false }],
     "no-restricted-syntax": "off",
-    "no-useless-constructor": "off",
+    "no-return-await": "warn",
+    "no-throw-literal": "off",
+    "no-underscore-dangle": ["warn", { "allowAfterThis": true }],
     "prefer-destructuring": "off",
-    "curly": ["error", "all"]
+    "require-await": "warn"
   },
   "settings": {
     "import/resolver": {
       "node": {
         "paths": ["src"],
         "extensions": [".js", ".ts"]
-      }
+      },
+      "typescript": {}
     }
   }
 }

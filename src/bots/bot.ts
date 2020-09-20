@@ -86,7 +86,7 @@ export default abstract class BotClient {
    *
    * @returns An array filled with the owner BotUsers of the bot.
    */
-  public abstract async getOwners(): Promise<User[]>;
+  public abstract getOwners(): User[];
 
   /** Add a channel subscription to a game.
    *
@@ -234,20 +234,20 @@ export default abstract class BotClient {
   }
 
   /** Gets the bot user. */
-  public abstract async getUser(): Promise<User>;
+  public abstract getUser(): User | Promise<User>;
 
   /** Get the number of users in a given channel.
    *
    * @param channel - The channel to count the users in.
    * @returns The number of users in the given channel.
    */
-  public abstract async getChannelUserCount(channel: Channel): Promise<number>;
+  public abstract getChannelUserCount(channel: Channel): Promise<number>;
 
   /** Gets the number of users for this bot. */
   public abstract async getUserCount(game?: Game): Promise<number>;
 
   /** Gets the number of channels for this bot. */
-  public abstract async getChannelCount(game?: Game): Promise<number>;
+  public abstract getChannelCount(game?: Game): number;
 
   /** Get the channels subscribed on this bot client.
    *
@@ -352,7 +352,7 @@ export default abstract class BotClient {
   }
 
   /** Called when the bot is removed from the given channel. */
-  public async onRemoved(channel: Channel): Promise<void> {
+  public onRemoved(channel: Channel): void {
     if (this.removeData(channel)) {
       this.logger.info(`Bot removed from channel, removing channel data.`);
     }

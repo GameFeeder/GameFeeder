@@ -2,8 +2,8 @@ import SteamAppNews, {
   SteamNewsItem,
   SteamNewsItemResponse,
   SteamAppNewsResponse,
-} from '../src/steam/steam_app_news';
-import Game from '../src/game';
+} from 'src/steam/steam_app_news';
+import Game from 'src/game';
 
 jest.mock('request-promise-native');
 
