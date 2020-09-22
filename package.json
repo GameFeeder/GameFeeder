@@ -75,7 +75,7 @@
     "rss-parser": "3.9.0",
     "smart-request-balancer": "2.1.1",
     "snoowrap": "1.21.0",
-    "telegraf": "^3.38.0",
+    "telegraf": "3.38.0",
     "turndown": "6.0.0",
     "winston": "3.3.3"
   },
