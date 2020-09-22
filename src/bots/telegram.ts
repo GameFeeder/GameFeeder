@@ -1,5 +1,6 @@
 import { Context, Telegraf } from 'telegraf';
 import Queue from 'smart-request-balancer';
+import { ExtraEditMessage, ParseMode } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -22,6 +23,28 @@ enum ChatType {
   group = 'group',
 }
 
+interface TelegramError {
+  code?: number;
+  response: {
+    ok: boolean;
+    error_code: number;
+    description: string;
+  };
+  description?: string;
+  parameters?: {
+    migrate_to_chat_id?: number;
+    retry_after?: number;
+  };
+  on?: {
+    method: string;
+    payload: {
+      chat_id: number;
+      text: string;
+      parse_mode: ParseMode;
+    };
+  };
+}
+
 const MAX_SEND_MESSAGE_RETRIES = 5;
 
 export default class TelegramBot extends BotClient {
@@ -36,6 +59,9 @@ export default class TelegramBot extends BotClient {
 
     // Set up the bot
     this.bot = new Telegraf(token);
+    this.bot.catch((err: TelegramError, ctx: Context) => {
+      this.logger.error(`Encountered an error for ${ctx.updateType}: ${err}`);
+    });
     this.queue = new Queue({
       rules: {
         notificationPrivate: {
@@ -143,7 +169,7 @@ export default class TelegramBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
     // Default values if the permissions can't be checked
     let hasAccess = false;
     let canWrite = false;
@@ -152,37 +178,13 @@ export default class TelegramBot extends BotClient {
 
     try {
       // Try to get chat
-      const chat = await this.bot.telegram.getChat(channel.id).catch((error) => {
-        if (error.code === 'ETELEGRAM') {
-          const response = error.response.body;
-          const errorCode = response.error_code;
-          switch (errorCode) {
-            case 403: // Bot is not a member of the channel chat
-              return undefined;
-            default:
-              throw error;
-          }
-        }
-        this.logger.error(
-          `Failed to get chat to check permissions on channel ${channel.label}:\n${error}`,
-        );
-        throw error;
-      });
+      const chat = await this.bot.telegram.getChat(channel.id);
       // Check for expected chat errors
-      if (!chat) {
-        return undefined;
-      }
+      assertIsDefined(chat, 'Chat not defined in getUserPermissions()');
       // Try to get chat member
-      const chatMember = await this.bot.telegram
-        .getChatMember(channel.id, parseInt(user.id, 10))
-        .catch((error) => {
-          this.logger.error(`Failed to get chat member on channel ${channel.label}:\n${error}`);
-          throw error;
-        });
+      const chatMember = await this.bot.telegram.getChatMember(channel.id, parseInt(user.id, 10));
       // Check for expected chat member errors
-      if (!chatMember) {
-        return undefined;
-      }
+      assertIsDefined(chatMember, 'ChatMember not defined in getUserPermissions()');
 
       // Chat type
       const isChannel = chat.type === 'channel';
@@ -284,8 +286,7 @@ export default class TelegramBot extends BotClient {
       // Re-enable the channel if disabled, since it is now active
       channel.disabled = false;
       // Channel messages don't have an author, so we have to work around that
-      const userID = ctx.message.from ? ctx.message.from.id.toString() : this.channelAuthorID;
-      // FIX: Properly identify the user key
+      const userID = ctx.message.from?.id?.toString() ?? this.channelAuthorID;
       const user = new User(this, userID);
       const content = ctx.message.text ?? '';
       // Convert from Unix time to date
@@ -417,10 +418,9 @@ export default class TelegramBot extends BotClient {
     // Set up the message
     const message = messageText;
     let text = '';
-    let options = {};
+    let options: ExtraEditMessage = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
-      // Snakecase used by Telegram API
       options = { parse_mode: 'Markdown' };
     } else {
       const link = message.title.link;
@@ -487,35 +487,16 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  // TODO: Properly type the error
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleNotificationError(error: any, channel: Channel) {
-    if (error.code === 'ETELEGRAM') {
-      const response = error.response.body;
-      const errorCode = response.error_code;
-      switch (errorCode) {
-        // Chat not found
-        case 400:
-          this.logger.warn(
-            `Failed to send notification to channel ${channel.label}, error code 400.`,
-          );
-          // this.removeData(channel);
-          break;
-        // Bot is not a member of the channel chat or blocked by user
-        case 403:
-          this.logger.warn(
-            `Failed to send notification to channel ${channel.label}, error code 403.`,
-          );
-          // this.removeData(channel);
-          break;
-        default:
-          this.logger.error(
-            `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
-          );
-      }
-    } else {
-      this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
-    }
+  private handleNotificationError(error: TelegramError, channel: Channel) {
+    const errorCode = error.response.error_code;
+    this.logger.error(
+      `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
+    );
+    // TODO: conditions
+    // if (conditions) {
+    //   this.logger.warn(`Unable to send notification to channel ${channel.label}, deleting data...`);
+    //   this.removeData(channel);
+    // }
   }
 
   public static msgFromMarkdown(text: string): string {
