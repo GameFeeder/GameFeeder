@@ -19,6 +19,4 @@ COPY --from=production-dependencies /app/node_modules ./node_modules
 COPY ./config/games ./config/games
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
-# https://github.com/yagop/node-telegram-bot-api/issues/319
-ENV NTBA_FIX_319=WORKAROUND
 CMD ["node", "/app/dist/src/_main.js"]
