@@ -10,11 +10,12 @@ import { limitEnd, removeSmallerEqThan, sort } from '../util/array_util';
 import Version from '../notifications/version';
 
 export default class DotaProvider extends Provider {
-  public static key = 'dota';
+  public static key = 'dota_patches';
+  public static relevant_game = 'dota';
   public static logger = new Logger('Dota Provider');
 
   constructor() {
-    const dota = Game.getGameByName('dota');
+    const dota = Game.getGameByName(DotaProvider.relevant_game);
 
     if (!dota) {
       throw new Error('Could not find Dota 2 game.');
