@@ -1,6 +1,7 @@
 import BotClient from './bots/bot';
 import Game from './game';
-import DataManager from './managers/data_manager';
+import DataManager, { Subscriber } from './managers/data_manager';
+import { assertIsDefined } from './util/util';
 
 /** A representation of a bot's channel. */
 export default class Channel {
@@ -9,21 +10,20 @@ export default class Channel {
     return this._label ? `'${this._label}' (${ID})` : ID;
   }
   set label(value: string | undefined) {
-    const newLabel = value;
-
     // Save locally
-    this._label = newLabel;
+    this._label = value;
 
     // Save in the JSON file
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.bot.name];
+    assertIsDefined(channels, 'Bot channels undefined when setting label');
 
     // Check if the channel is already registered
     const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
     if (existingChannelId >= 0) {
       const existingChannel = channels[existingChannelId];
       // Update label
-      existingChannel.label = newLabel;
+      existingChannel.label = value;
 
       // Remove unnecessary entries
       if (
@@ -31,8 +31,7 @@ export default class Channel {
         !existingChannel.prefix &&
         !existingChannel.label
       ) {
-        this.bot.logger.info(`Removing unnecessary entry for channel ${this.label}...`);
-        channels.splice(existingChannelId, 1);
+        this.removeChannel(channels, existingChannelId);
       } else {
         channels[existingChannelId] = existingChannel;
       }
@@ -44,7 +43,7 @@ export default class Channel {
       channels.push({
         gameSubs: [],
         id: this.id,
-        label: newLabel,
+        label: value,
       });
       // Save the changes
       subscribers[this.bot.name] = channels;
@@ -74,6 +73,7 @@ export default class Channel {
     // Save in the JSON file
     const subscribers = DataManager.getSubscriberData();
     const channels = subscribers[this.bot.name];
+    assertIsDefined(channels, 'Bot channels undefined when setting prefix');
 
     // Check if the channel is already registered
     const existingChannelId = channels.findIndex((ch) => this.isEqual(ch.id));
@@ -84,8 +84,7 @@ export default class Channel {
 
       // Remove unnecessary entries
       if (existingChannel.gameSubs.length === 0 && !existingChannel.prefix) {
-        this.bot.logger.debug('Removing unnecessary channel entry...');
-        channels.splice(existingChannelId, 1);
+        this.removeChannel(channels, existingChannelId);
       } else {
         channels[existingChannelId] = existingChannel;
       }
@@ -163,13 +162,13 @@ export default class Channel {
     }
     return this.id === other.id;
   }
-  public toJSON(): string {
+  public toJSONString(): string {
     const labelStr = this._label ? `, "label": "${this._label}"` : '';
     const prefixStr = this._prefix ? `, "prefix": "${this._prefix}"` : '';
     return `{
       "id": "${this.id}"${labelStr},
       "gameSubs": [
-        ${this.gameSubs.map((game) => game.name).join(', ')}
+        ${this.gameSubs.map((game) => `"${game.name}"`).join(', ')}
       ]${prefixStr}
     }`;
   }
@@ -184,5 +183,10 @@ export default class Channel {
 
   hasLabel(): boolean {
     return !!this._label;
+  }
+
+  public removeChannel(channels: Subscriber[], existingChannelId: number): void {
+    this.bot.logger.debug('Removing unnecessary channel entry...');
+    channels.splice(existingChannelId, 1);
   }
 }

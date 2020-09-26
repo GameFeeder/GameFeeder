@@ -11,9 +11,9 @@
     ],
     "diffEditor.ignoreTrimWhitespace": false,
     "files.exclude": {
-        "coverage": true,
-        "dist": true,
-        "node_modules": true,
-        "yarn.lock": true
+        "coverage": false,
+        "dist": false,
+        "node_modules": false,
+        "yarn.lock": false
     }
 }

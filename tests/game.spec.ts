@@ -2,7 +2,14 @@ import Game from 'src/game';
 
 jest.mock('request-promise-native');
 
-describe('Game', () => {
+describe('Game with real file', () => {
+  test('should do something', () => {
+    const existingGame = Game.getGameByName('dota');
+    expect(existingGame).toBeTruthy();
+  });
+});
+
+describe('Game with mocked getGames', () => {
   let testGame: Game;
 
   beforeAll(() => {
@@ -35,6 +42,10 @@ describe('Game', () => {
 
   test('should get game by its name', () => {
     expect(Game.getGameByName('testGameName')).toEqual(testGame);
+  });
+
+  test('should fail to get non-exsting game', () => {
+    expect(() => Game.getGameByName('nonExistingGame')).toThrowError();
   });
 
   test('should get a game by its alias', () => {

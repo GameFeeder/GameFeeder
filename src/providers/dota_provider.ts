@@ -14,9 +14,10 @@ export default class DotaProvider extends Provider {
   public static logger = new Logger('Dota Provider');
 
   constructor() {
-    const dota = Game.getGameByName('dota');
-
-    if (!dota) {
+    let dota: Game;
+    try {
+      dota = Game.getGameByName('dota');
+    } catch {
       throw new Error('Could not find Dota 2 game.');
     }
 
