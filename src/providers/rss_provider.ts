@@ -5,7 +5,7 @@ import { rss } from '../rss/rss';
 import PreProcessor from '../processors/pre_processor';
 import SteamProcessor from '../processors/steam_processor';
 import NotificationBuilder from '../notifications/notification_builder';
-import Updater from '../updater';
+import { ProviderData } from '../managers/data_manager';
 
 export default class RSSProvider extends Provider {
   public preProcessors: PreProcessor[];
@@ -21,11 +21,11 @@ export default class RSSProvider extends Provider {
     }
   }
 
-  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
+  public async getNotifications(since: ProviderData, limit?: number): Promise<Notification[]> {
     const feedItems = await rss.getFeedItems(
       this.url,
       this.preProcessors,
-      this.getLastUpdateTimestamp(updater),
+      this.getLastUpdateTimestamp(since),
       limit,
     );
     const notifications: Notification[] = feedItems.map((feedItem) => {

@@ -5,9 +5,9 @@ import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
 import NotificationBuilder from '../notifications/notification_builder';
-import Updater from '../updater';
 import { limitEnd, removeSmallerEqThan, sort } from '../util/array_util';
 import Version from '../notifications/version';
+import { ProviderData } from '../managers/data_manager';
 
 export default class DotaProvider extends Provider {
   public static key = 'dota_patches';
@@ -24,12 +24,12 @@ export default class DotaProvider extends Provider {
     super(`http://www.dota2.com/patches/`, `Dota Updates`, dota);
   }
 
-  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
+  public async getNotifications(since: ProviderData, limit?: number): Promise<Notification[]> {
     let notifications: Notification[] = [];
     try {
       const pageDoc = await this.getPatchPage();
       const patchList = await this.getPatchList(pageDoc);
-      const lastPatchStr = this.getLastUpdateVersion(updater);
+      const lastPatchStr = this.getLastUpdateVersion(since);
       const lastPatch = lastPatchStr ? new Version(lastPatchStr) : undefined;
 
       const newPatches = sort(
