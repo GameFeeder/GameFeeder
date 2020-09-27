@@ -3,6 +3,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable prefer-template */
 import EscapeRegex from 'escape-string-regexp';
+import PubSub from 'pubsub-js';
 import { UserRole } from '../user';
 import getBots from '../bots/bots';
 import Game from '../game';
@@ -14,6 +15,11 @@ import SimpleAction from './simple_action';
 import NoLabelAction from './no_label_action';
 import Command from './command';
 import TwoPartCommand from './two_part_command';
+import Notification from '../notifications/notification';
+import NotificationElement from '../notifications/notification_element';
+import Updater from '../updater';
+
+export const EVERYONE_TOPIC = 'EVERYONE_TOPIC';
 
 /** Filters the given command array by the provided role. */
 export function filterByRole(commands: Command[], role: UserRole): Command[] {
@@ -359,9 +365,7 @@ const notifyAllCmd = new TwoPartCommand(
     await message.reply(`Notifying all subs with:\n"${msg}"`);
 
     // Send the provided message to all subs
-    for (const curBot of getBots()) {
-      curBot.sendMessageToAllSubs(msg);
-    }
+    PubSub.publish(EVERYONE_TOPIC, msg);
   },
   async (message) => {
     if (message.isEmpty()) {
@@ -407,29 +411,27 @@ const notifyGameSubsCmd = new TwoPartCommand(
       return;
     }
 
-    // Try to find the game
-    for (const game of Game.getGames()) {
-      if (game.hasAlias(alias)) {
-        // This is weird, it looks like it will try to spam the admin with those messages
-        // eslint-disable-next-line no-await-in-loop
-        await message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
-        // Notify the game's subs
-        for (const curBot of getBots()) {
-          curBot.sendMessageToGameSubs(game, msg);
-        }
-
-        return;
-      }
+    const allGames = Game.getGames();
+    if (allGames.findIndex((game) => game.hasAlias(alias)) < 0) {
+      // We didn't find the specified game
+      await message.reply(
+        `I didn't find a game with the alias '${alias}'.\n` +
+          `Use \`${commands.tryFindCmdLabel(
+            gamesCmd,
+            message.channel,
+          )}\` to view a list of all available games.`,
+      );
+      return;
     }
 
-    // We didn't find the specified game
-    await message.reply(
-      `I didn't find a game with the alias '${alias}'.\n` +
-        `Use \`${commands.tryFindCmdLabel(
-          gamesCmd,
-          message.channel,
-        )}\` to view a list of all available games.`,
-    );
+    // Publish a message for the subscribers of each game that matches
+    allGames
+      .filter((game) => game.hasAlias(alias))
+      .forEach(async (game) => {
+        await message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
+        const notification = new Notification(new Date(), game, new NotificationElement(''), msg);
+        PubSub.publish(Updater.UPDATER_TOPIC, notification);
+      });
   },
   // Default action
   async (message) => {

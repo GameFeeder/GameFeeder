@@ -311,10 +311,10 @@ export default abstract class BotClient {
   /** Sends a message to all subscribers of a game.
    *
    * @param  {Game} game - The game to notify the subscribers of.
-   * @param  {string|Notification} message - The message to send to the subscribers.
+   * @param  {Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToGameSubs(game: Game, message: string | Notification): void {
+  public sendMessageToGameSubs(game: Game, message: Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (!game) {

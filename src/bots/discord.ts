@@ -1,4 +1,5 @@
 import DiscordAPI, { DMChannel, TextChannel, MessageEmbed } from 'discord.js';
+import PubSub from 'pubsub-js';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -12,6 +13,8 @@ import Message from '../message';
 import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
 import Game from '../game';
+import Updater from '../updater';
+import { EVERYONE_TOPIC } from '../commands/commands';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;
@@ -23,6 +26,8 @@ const EMBED_CONTENT_LIMIT = 2048;
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
+  private updaterSubscription = '';
+  private everyoneSubscription = '';
 
   constructor(prefix: string, private token: string, autostart: boolean) {
     super('discord', 'Discord', prefix, autostart);
@@ -260,76 +265,105 @@ export default class DiscordBot extends BotClient {
     });
   }
   public async start(): Promise<boolean> {
-    if (this.token) {
-      await this.bot.login(this.token);
-      this.isRunning = true;
-      // Handle being removed from a guild
-      this.bot.on('guildDelete', (guild) => {
-        const guildID = guild.id;
-        const channels = this.getBotChannels();
+    if (!this.enabled) {
+      this.logger.info('Autostart disabled.');
+      return false;
+    }
+    assertIsDefined(this.token, `Token is undefined`);
+    const startTime = Date.now();
 
-        // Remove all channel data of that guild
-        channels.forEach((channel) => {
-          const discordChannel = this.bot.channels.cache.get(channel.id);
-          if (!discordChannel) {
-            // Can't find the channel, it probably belongs to the guild, remove data
+    // Set up the pubsub subscriptions
+    if (!this.updaterSubscription) {
+      this.updaterSubscription = PubSub.subscribe(
+        Updater.UPDATER_TOPIC,
+        (topic: string, notification: Notification) => {
+          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
+          this.sendMessageToGameSubs(notification.game, notification);
+        },
+      );
+    }
+    if (!this.everyoneSubscription) {
+      this.everyoneSubscription = PubSub.subscribe(
+        EVERYONE_TOPIC,
+        (topic: string, message: string) => {
+          this.sendMessageToAllSubs(message);
+        },
+      );
+    }
+    await this.bot.login(this.token);
+    this.isRunning = true;
+    // Handle being removed from a guild
+    this.bot.on('guildDelete', (guild) => {
+      const guildID = guild.id;
+      const channels = this.getBotChannels();
+
+      // Remove all channel data of that guild
+      channels.forEach((channel) => {
+        const discordChannel = this.bot.channels.cache.get(channel.id);
+        if (!discordChannel) {
+          // Can't find the channel, it probably belongs to the guild, remove data
+          return this.onRemoved(channel);
+        }
+
+        if (discordChannel instanceof TextChannel) {
+          const channelGuildID = discordChannel.guild.id;
+          if (guildID === channelGuildID) {
+            // The channel belongs to the guild, remove data
             return this.onRemoved(channel);
           }
-
-          if (discordChannel instanceof TextChannel) {
-            const channelGuildID = discordChannel.guild.id;
-            if (guildID === channelGuildID) {
-              // The channel belongs to the guild, remove data
-              return this.onRemoved(channel);
-            }
-          }
-
-          // No promise needed otherwise
-          return undefined;
-        });
-      });
-      // Handle deleted channels
-      this.bot.on('channelDelete', async (discordChannel) => {
-        const channels = this.getBotChannels();
-
-        // Search for the channel
-        const channel = channels.find((ch) => discordChannel.id === ch.id);
-        if (channel) {
-          await this.onRemoved(channel);
         }
+
+        // No promise needed otherwise
+        return undefined;
       });
+    });
+    // Handle deleted channels
+    this.bot.on('channelDelete', async (discordChannel) => {
+      const channels = this.getBotChannels();
 
-      const user = this.bot.user;
-      if (!user) {
-        this.logger.error('Bot user not found');
+      // Search for the channel
+      const channel = channels.find((ch) => discordChannel.id === ch.id);
+      if (channel) {
+        await this.onRemoved(channel);
       }
+    });
 
-      // Initialize user name and user tag
-      this.userName = user?.username ?? 'UNKNOWN';
-      this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
-
-      // Setup presence
-      try {
-        this.bot.user?.setPresence({
-          status: 'online',
-          activity: {
-            type: 'PLAYING',
-            name: `v${ProjectManager.getVersionNumber()}`,
-          },
-        });
-      } catch (error) {
-        this.logger.error(`Failed to setup bot presence:\n${error}`);
-        throw error;
-      }
-
-      return true;
+    const user = this.bot.user;
+    if (!user) {
+      this.logger.error('Bot user not found');
     }
 
-    return false;
+    // Initialize user name and user tag
+    this.userName = user?.username ?? 'UNKNOWN';
+    this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
+
+    // Setup presence
+    try {
+      this.bot.user?.setPresence({
+        status: 'online',
+        activity: {
+          type: 'PLAYING',
+          name: `v${ProjectManager.getVersionNumber()}`,
+        },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to setup bot presence:\n${error}`);
+      throw error;
+    }
+    const time = Date.now() - startTime;
+    this.logger.info(`Started bot as @${this.getUserName()} in ${time} ms.`);
+    return true;
   }
+
   public stop(): void {
     this.bot.destroy();
     this.isRunning = false;
+    // Clean up subscriptions
+    PubSub.unsubscribe(this.updaterSubscription);
+    this.updaterSubscription = '';
+    PubSub.unsubscribe(this.everyoneSubscription);
+    this.everyoneSubscription = '';
+    this.logger.info(`Stopped bot.`);
   }
 
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {

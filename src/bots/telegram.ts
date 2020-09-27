@@ -1,5 +1,6 @@
 import TelegramAPI from 'node-telegram-bot-api';
 import Queue from 'smart-request-balancer';
+import PubSub from 'pubsub-js';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -8,10 +9,12 @@ import ConfigManager from '../managers/config_manager';
 import Notification from '../notifications/notification';
 import MDRegex from '../util/regex';
 import { mapAsync } from '../util/array_util';
-import { StrUtil } from '../util/util';
+import { assertIsDefined, StrUtil } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
 import Game from '../game';
+import Updater from '../updater';
+import { EVERYONE_TOPIC } from '../commands/commands';
 
 enum MessageType {
   notification = 'notification',
@@ -30,6 +33,8 @@ export default class TelegramBot extends BotClient {
   private queue: Queue;
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
+  private updaterSubscription = '';
+  private everyoneSubscription = '';
 
   constructor(prefix: string, private token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
@@ -305,50 +310,76 @@ export default class TelegramBot extends BotClient {
   }
 
   public async start(): Promise<boolean> {
-    try {
-      if (this.token) {
-        await this.bot.startPolling({ restart: true });
-        this.isRunning = true;
-        // Handle being removed from chats (except channels apparently)
-        this.bot.on('left_chat_member', async (message) => {
-          const leftMember = message.left_chat_member;
-          const telegramUser = await this.bot.getMe();
-          const userID = telegramUser.id;
-
-          if (!leftMember || leftMember.id !== userID) {
-            // It's not the bot
-            return;
-          }
-
-          const channels = this.getBotChannels();
-          const channelID = message.chat.id.toString();
-          // Search for the channel
-          const channel = channels.find((ch) => channelID === ch.id);
-          if (channel) {
-            await this.onRemoved(channel);
-          }
-        });
-
-        // Initialize user name and user tag
-        try {
-          const botUser = await this.bot.getMe();
-          this.userName = botUser.username ?? '';
-          this.userTag = `@${this.userName}`;
-        } catch (error) {
-          this.logger.error(`Failed to get user name and user tag:\n${error}`);
-        }
-
-        return true;
-      }
-    } catch (error) {
-      this.logger.error(`Failed to start bot:\n${error}`);
+    if (!this.enabled) {
+      this.logger.info('Autostart disabled.');
+      return false;
     }
-    return false;
+    assertIsDefined(this.token, `Token is undefined`);
+    const startTime = Date.now();
+
+    // Set up the pubsub subscriptions
+    if (!this.updaterSubscription) {
+      this.updaterSubscription = PubSub.subscribe(
+        Updater.UPDATER_TOPIC,
+        (topic: string, notification: Notification) => {
+          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
+          this.sendMessageToGameSubs(notification.game, notification);
+        },
+      );
+    }
+    if (!this.everyoneSubscription) {
+      this.everyoneSubscription = PubSub.subscribe(
+        EVERYONE_TOPIC,
+        (topic: string, message: string) => {
+          this.sendMessageToAllSubs(message);
+        },
+      );
+    }
+
+    await this.bot.startPolling({ restart: true });
+    this.isRunning = true;
+    // Handle being removed from chats (except channels apparently)
+    this.bot.on('left_chat_member', async (message) => {
+      const leftMember = message.left_chat_member;
+      const telegramUser = await this.bot.getMe();
+      const userID = telegramUser.id;
+
+      if (!leftMember || leftMember.id !== userID) {
+        // It's not the bot
+        return;
+      }
+
+      const channels = this.getBotChannels();
+      const channelID = message.chat.id.toString();
+      // Search for the channel
+      const channel = channels.find((ch) => channelID === ch.id);
+      if (channel) {
+        await this.onRemoved(channel);
+      }
+    });
+
+    // Initialize user name and user tag
+    try {
+      const botUser = await this.bot.getMe();
+      this.userName = botUser.username ?? '';
+      this.userTag = `@${this.userName}`;
+    } catch (error) {
+      this.logger.error(`Failed to get user name and user tag:\n${error}`);
+    }
+    const time = Date.now() - startTime;
+    this.logger.info(`Started bot as @${this.getUserName()} in ${time} ms.`);
+    return true;
   }
 
   public stop(): void {
     this.bot.stopPolling();
     this.isRunning = false;
+    // Clean up subscriptions
+    PubSub.unsubscribe(this.updaterSubscription);
+    this.updaterSubscription = '';
+    PubSub.unsubscribe(this.everyoneSubscription);
+    this.everyoneSubscription = '';
+    this.logger.info(`Stopped bot.`);
   }
 
   public async sendMessage(
