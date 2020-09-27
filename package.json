@@ -20,7 +20,6 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/_main.ts\"",
-    "serve": "nodemon --watch dist --watch config --delay 4 dist/src/_main.js",
     "start": "node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
@@ -39,6 +38,7 @@
     "@types/node": "14.14.9",
     "@types/node-fetch": "2.5.7",
     "@types/node-telegram-bot-api": "0.50.4",
+    "@types/pubsub-js": "1.5.18",
     "@types/turndown": "5.0.0",
     "@types/ws": "7.4.0",
     "@types/xml2js": "0.4.7",
@@ -66,6 +66,7 @@
     "lodash": "4.17.20",
     "node-fetch": "2.6.1",
     "node-html-parser": "2.0.0",
+    "pubsub-js": "1.9.0",
     "rss-parser": "3.9.0",
     "smart-request-balancer": "2.1.1",
     "snoowrap": "1.21.0",

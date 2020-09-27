@@ -311,6 +311,10 @@ export default class DiscordBot extends BotClient {
     this.addGuildRemovalHandler();
     this.addChannelDeleteHandler();
 
+    // Set up the pubsub subscriptions
+    this.setupUpdaterSubscription();
+    this.setupEveryoneSubscription();
+
     // Start the bot
     await this.bot.login(this.token);
     this.isRunning = true;
@@ -338,13 +342,14 @@ export default class DiscordBot extends BotClient {
       this.logger.error(`Failed to setup bot presence:\n${error}`);
       throw error;
     }
-
     return true;
   }
 
   public stop(): void {
     this.bot.destroy();
     this.isRunning = false;
+    this.cleanupSubscriptions();
+    this.logger.info(`Stopped bot.`);
   }
 
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {

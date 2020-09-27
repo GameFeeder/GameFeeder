@@ -342,6 +342,10 @@ export default class TelegramBot extends BotClient {
     // Add handlers
     this.addChatRemovalHandler();
 
+    // Set up the pubsub subscriptions
+    this.setupUpdaterSubscription();
+    this.setupEveryoneSubscription();
+
     // Start the bot
     await this.bot.launch();
     this.isRunning = true;
@@ -354,13 +358,14 @@ export default class TelegramBot extends BotClient {
     } catch (error) {
       this.logger.error(`Failed to get user name and user tag:\n${error}`);
     }
-
     return true;
   }
 
   public stop(): void {
     this.bot.stop();
     this.isRunning = false;
+    this.cleanupSubscriptions();
+    this.logger.info(`Stopped bot.`);
   }
 
   public async sendMessage(
@@ -476,7 +481,7 @@ export default class TelegramBot extends BotClient {
       // Log the appropriate error
       this.handleNotificationError(error, channel);
       if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
-        this.logger.info(
+        this.logger.warn(
           `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
         );
         this.sendMessage(channel, messageText, retryAttempt + 1);

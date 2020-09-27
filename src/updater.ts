@@ -1,4 +1,4 @@
-import getBots from './bots/bots';
+import PubSub from 'pubsub-js';
 import DataManager, { ProviderData } from './managers/data_manager';
 import ConfigManager from './managers/config_manager';
 import Game from './game';
@@ -9,6 +9,7 @@ import { sleep } from './util/util';
 
 export default class Updater {
   private static updaters: Updater[];
+  public static UPDATER_TOPIC = 'UPDATER_TOPIC';
 
   public logger: Logger;
   /** Determines if the auto updating is set to on or off. */
@@ -198,12 +199,9 @@ export default class Updater {
       const pollEndTime = Date.now();
       const pollDuration = Math.abs(pollStartTime - pollEndTime);
 
-      // Notify users
-      for (const bot of getBots()) {
-        for (const notification of gameNotifications) {
-          // Temporary possible fix for telegram API limit
-          bot.sendMessageToGameSubs(notification.game, notification);
-        }
+      // Publish notification
+      for (const notification of gameNotifications) {
+        PubSub.publish(Updater.UPDATER_TOPIC, notification);
       }
 
       const notifyDuration = Date.now() - pollEndTime;
