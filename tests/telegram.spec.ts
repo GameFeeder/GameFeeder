@@ -1,7 +1,5 @@
 import TelegramBot from 'src/bots/telegram';
 
-jest.mock('request-promise-native');
-
 describe('Telegram bot', () => {
   describe('message from markdown', () => {
     // LINK

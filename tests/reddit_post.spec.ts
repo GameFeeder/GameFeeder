@@ -1,7 +1,5 @@
 import RedditPost from 'src/reddit/reddit_post';
 
-jest.mock('request-promise-native');
-
 describe('Name of the group', () => {
   const now = new Date();
   const testPost = new RedditPost(
