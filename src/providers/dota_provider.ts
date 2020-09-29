@@ -1,4 +1,4 @@
-import request from 'request-promise-native';
+import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import Provider from './provider';
 import Game from '../game';
@@ -73,13 +73,9 @@ export default class DotaProvider extends Provider {
   }
 
   /** Gets the content of the patch page. */
-  public getPatchPage(): Promise<CheerioStatic> {
-    const options = {
-      uri: 'http://www.dota2.com/patches/',
-      transform: (body: string) => {
-        return cheerio.load(body);
-      },
-    };
-    return request(options);
+  public async getPatchPage(): Promise<CheerioStatic> {
+    const response = await fetch('http://www.dota2.com/patches/');
+    const updatesPage = await response.text();
+    return cheerio.load(updatesPage);
   }
 }
