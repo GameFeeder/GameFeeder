@@ -1,7 +1,5 @@
 import Game from 'src/game';
 
-jest.mock('request-promise-native');
-
 describe('Game', () => {
   let testGame: Game;
 
