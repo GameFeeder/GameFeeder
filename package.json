@@ -35,7 +35,7 @@
     }
   },
   "devDependencies": {
-    "@types/cheerio": "0.22.21",
+    "@types/cheerio": "0.22.22",
     "@types/lodash": "4.14.161",
     "@types/node": "14.11.2",
     "@types/node-fetch": "2.5.7",
