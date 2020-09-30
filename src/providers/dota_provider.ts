@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+import { HTMLElement, parse } from 'node-html-parser';
 import Provider from './provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
@@ -56,26 +56,18 @@ export default class DotaProvider extends Provider {
   }
 
   /** Gets a list of the patch names available. */
-  public getPatchList(pageDoc: CheerioStatic): string[] {
-    const patchList: string[] = [];
-    const $ = pageDoc;
-
-    // Get all options of the patch selector
-    $('#PatchSelector option').each((_index, element) => {
-      const option = $(element).val();
-
-      // Remove the default option
-      if (option !== 'Select an Update...') {
-        patchList.push(option);
-      }
-    });
-    return patchList;
+  public getPatchList(pageDoc: HTMLElement): string[] {
+    return pageDoc
+      .querySelector('#PatchSelector') // Find the patch selector
+      .childNodes.filter((node) => node.nodeType === 1) // Remove intermidiate nodes
+      .map((node) => node.childNodes[0].rawText) // extract option element text
+      .filter((text) => text !== 'Select an Update...'); // remove placeholder option
   }
 
   /** Gets the content of the patch page. */
-  public async getPatchPage(): Promise<CheerioStatic> {
+  public async getPatchPage(): Promise<HTMLElement> {
     const response = await fetch('http://www.dota2.com/patches/');
     const updatesPage = await response.text();
-    return cheerio.load(updatesPage);
+    return parse(updatesPage);
   }
 }
