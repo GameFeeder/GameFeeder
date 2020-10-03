@@ -1,6 +1,5 @@
 import Snoowrap from 'snoowrap';
 import Notification from '../notifications/notification';
-import Reddit from './reddit';
 import Game from '../game';
 import NotificationBuilder from '../notifications/notification_builder';
 
@@ -31,7 +30,7 @@ export default class RedditPost {
   public static fromSubmission(submission: Snoowrap.Submission): RedditPost {
     const title = submission.title;
     const url = submission.url;
-    const content = Reddit.mdFromReddit(submission.selftext);
+    const content = this.mdFromReddit(submission.selftext);
     // Remove subreddit prefix
     const subreddit = submission.subreddit_name_prefixed.substr(2);
     const user = submission.author.name;
@@ -40,7 +39,17 @@ export default class RedditPost {
     return new RedditPost(title, url, content, subreddit, user, timestamp);
   }
 
-  /** COnvert the reddit post to a game notification.
+  public static mdFromReddit(text: string): string {
+    let fulltext = '';
+    // User links
+    fulltext = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
+    // Subreddit links
+    fulltext = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
+
+    return fulltext;
+  }
+
+  /** Convert the reddit post to a game notification.
    *
    * @param game - The game the notification is about.
    */

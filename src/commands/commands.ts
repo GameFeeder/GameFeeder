@@ -15,25 +15,6 @@ import NoLabelAction from './no_label_action';
 import Command from './command';
 import TwoPartCommand from './two_part_command';
 
-/** Filters the given command array by the provided role. */
-export function filterByRole(commands: Command[], role: UserRole): Command[] {
-  return commands.filter((cmd) => {
-    switch (cmd.role) {
-      case UserRole.OWNER:
-        // Owner commands can only be executed by owners
-        return role === UserRole.OWNER;
-      case UserRole.ADMIN:
-        // Admin commands can only be executed by owners and admins
-        return role === UserRole.OWNER || role === UserRole.ADMIN;
-      case UserRole.USER:
-        // User commands can be executed by anyone
-        return true;
-      default:
-        return false;
-    }
-  });
-}
-
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
   'help',
@@ -846,7 +827,7 @@ const commands: CommandGroup = new CommandGroup(
   // Help
   (channel, prefix, role) => {
     const cmdPrefix = channel.prefix;
-    const cmdLabels = filterByRole(commands.commands, role || UserRole.OWNER).map(
+    const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map(
       (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
     );
     return cmdLabels.join('\n');
