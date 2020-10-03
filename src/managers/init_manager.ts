@@ -231,7 +231,7 @@ export default class InitManager {
     return this.addMissingUserKeys(configPath);
   }
 
-  // To be deprecated after 1/1/2021
+  // To be deprecated after 2021/01/01
   public static dotaPatchesMigration(): void {
     const updatersConfig = ConfigManager.getUpdatersConfig();
     if (Object.keys(updatersConfig).includes('dota')) {
