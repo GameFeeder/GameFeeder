@@ -277,6 +277,28 @@ export default class TelegramBot extends BotClient {
     this.bot.on('channel_post', (ctx) => this.onMessage(ctx, command));
   }
 
+  private addChatRemovalHandler(): void {
+    this.bot.on('left_chat_member', async (ctx) => {
+      assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');
+      const leftMember = ctx.message.left_chat_member;
+      const telegramUser = await this.bot.telegram.getMe();
+      const userID = telegramUser.id;
+
+      if (!leftMember || leftMember.id !== userID) {
+        // It's not the bot
+        return;
+      }
+
+      const channels = this.getBotChannels();
+      const channelID = ctx.message.chat.id.toString();
+      // Search for the channel
+      const channel = channels.find((ch) => channelID === ch.id);
+      if (channel) {
+        await this.onRemoved(channel);
+      }
+    });
+  }
+
   /** Executes the given command if the message matches the regex. */
   private async onMessage(ctx: Context, command: Command): Promise<void> {
     assertIsDefined(ctx.chat, 'Chat is not defined onMessage');
@@ -310,46 +332,30 @@ export default class TelegramBot extends BotClient {
   }
 
   public async start(): Promise<boolean> {
-    try {
-      if (this.token) {
-        await this.bot.launch();
-        this.isRunning = true;
-        // Handle being removed from chats (except channels apparently)
-        this.bot.on('left_chat_member', async (ctx) => {
-          assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');
-          const leftMember = ctx.message.left_chat_member;
-          const telegramUser = await this.bot.telegram.getMe();
-          const userID = telegramUser.id;
-
-          if (!leftMember || leftMember.id !== userID) {
-            // It's not the bot
-            return;
-          }
-
-          const channels = this.getBotChannels();
-          const channelID = ctx.message.chat.id.toString();
-          // Search for the channel
-          const channel = channels.find((ch) => channelID === ch.id);
-          if (channel) {
-            await this.onRemoved(channel);
-          }
-        });
-
-        // Initialize user name and user tag
-        try {
-          const botUser = await this.bot.telegram.getMe();
-          this.userName = botUser.username ?? '';
-          this.userTag = `@${this.userName}`;
-        } catch (error) {
-          this.logger.error(`Failed to get user name and user tag:\n${error}`);
-        }
-
-        return true;
-      }
-    } catch (error) {
-      this.logger.error(`Failed to start bot:\n${error}`);
+    // Startup check
+    if (!this.enabled) {
+      this.logger.info('Autostart disabled.');
+      return false;
     }
-    return false;
+    assertIsDefined(this.token, `Token is undefined`);
+
+    // Add handlers
+    this.addChatRemovalHandler();
+
+    // Start the bot
+    await this.bot.launch();
+    this.isRunning = true;
+
+    // Initialize user name and user tag
+    try {
+      const botUser = await this.bot.telegram.getMe();
+      this.userName = botUser.username ?? '';
+      this.userTag = `@${this.userName}`;
+    } catch (error) {
+      this.logger.error(`Failed to get user name and user tag:\n${error}`);
+    }
+
+    return true;
   }
 
   public stop(): void {
