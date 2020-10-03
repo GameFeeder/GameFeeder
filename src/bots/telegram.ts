@@ -1,6 +1,7 @@
-import TelegramAPI from 'node-telegram-bot-api';
+import { Context, Telegraf } from 'telegraf';
 import Queue from 'smart-request-balancer';
 import PubSub from 'pubsub-js';
+import { ExtraEditMessage, ParseMode } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -25,11 +26,33 @@ enum ChatType {
   group = 'group',
 }
 
+interface TelegramError {
+  code?: number;
+  response: {
+    ok: boolean;
+    error_code: number;
+    description: string;
+  };
+  description?: string;
+  parameters?: {
+    migrate_to_chat_id?: number;
+    retry_after?: number;
+  };
+  on?: {
+    method: string;
+    payload: {
+      chat_id: number;
+      text: string;
+      parse_mode: ParseMode;
+    };
+  };
+}
+
 const MAX_SEND_MESSAGE_RETRIES = 5;
 
 export default class TelegramBot extends BotClient {
   private static standardBot: TelegramBot;
-  private bot: TelegramAPI;
+  private bot: Telegraf<Context>;
   private queue: Queue;
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
@@ -40,7 +63,10 @@ export default class TelegramBot extends BotClient {
     super('telegram', 'Telegram', prefix, autostart);
 
     // Set up the bot
-    this.bot = new TelegramAPI(token, { polling: false });
+    this.bot = new Telegraf(token);
+    this.bot.catch((err: TelegramError, ctx: Context) => {
+      this.logger.error(`Encountered an error for ${ctx.updateType}: ${err}`);
+    });
     this.queue = new Queue({
       rules: {
         notificationPrivate: {
@@ -81,6 +107,29 @@ export default class TelegramBot extends BotClient {
     };
   }
 
+  private setupUpdaterSubscription() {
+    if (!this.updaterSubscription) {
+      this.updaterSubscription = PubSub.subscribe(
+        Updater.UPDATER_TOPIC,
+        (topic: string, notification: Notification) => {
+          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
+          this.sendMessageToGameSubs(notification.game, notification);
+        },
+      );
+    }
+  }
+
+  private setupEveryoneSubscription() {
+    if (!this.everyoneSubscription) {
+      this.everyoneSubscription = PubSub.subscribe(
+        EVERYONE_TOPIC,
+        (topic: string, message: string) => {
+          this.sendMessageToAllSubs(message);
+        },
+      );
+    }
+  }
+
   public static getBot(): TelegramBot {
     if (this.standardBot) {
       return this.standardBot;
@@ -112,7 +161,7 @@ export default class TelegramBot extends BotClient {
   }
 
   public async getUser(): Promise<User> {
-    const telegramUser = await this.bot.getMe();
+    const telegramUser = await this.bot.telegram.getMe();
     const userID = telegramUser.id.toString();
     return new User(this, userID);
   }
@@ -131,12 +180,12 @@ export default class TelegramBot extends BotClient {
         return UserRole.OWNER;
       }
       // Check if user has default admin rights
-      const chat = await this.bot.getChat(channel.id);
+      const chat = await this.bot.telegram.getChat(channel.id);
       if (chat.all_members_are_administrators || chat.type === 'private') {
         return UserRole.ADMIN;
       }
       // Check if user is an admin on this channel
-      const chatAdmins = (await this.bot.getChatAdministrators(channel.id)) || [];
+      const chatAdmins = (await this.bot.telegram.getChatAdministrators(channel.id)) || [];
       const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
       if (adminIds.includes(user.id)) {
         return UserRole.ADMIN;
@@ -148,7 +197,7 @@ export default class TelegramBot extends BotClient {
     return UserRole.USER;
   }
 
-  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions | undefined> {
+  public async getUserPermissions(user: User, channel: Channel): Promise<Permissions> {
     // Default values if the permissions can't be checked
     let hasAccess = false;
     let canWrite = false;
@@ -157,35 +206,13 @@ export default class TelegramBot extends BotClient {
 
     try {
       // Try to get chat
-      const chat = await this.bot.getChat(channel.id).catch((error) => {
-        if (error.code === 'ETELEGRAM') {
-          const response = error.response.body;
-          const errorCode = response.error_code;
-          switch (errorCode) {
-            case 403: // Bot is not a member of the channel chat
-              return undefined;
-            default:
-              throw error;
-          }
-        }
-        this.logger.error(
-          `Failed to get chat to check permissions on channel ${channel.label}:\n${error}`,
-        );
-        throw error;
-      });
+      const chat = await this.bot.telegram.getChat(channel.id);
       // Check for expected chat errors
-      if (!chat) {
-        return undefined;
-      }
+      assertIsDefined(chat, 'Chat not defined in getUserPermissions()');
       // Try to get chat member
-      const chatMember = await this.bot.getChatMember(channel.id, user.id).catch((error) => {
-        this.logger.error(`Failed to get chat member on channel ${channel.label}:\n${error}`);
-        throw error;
-      });
+      const chatMember = await this.bot.telegram.getChatMember(channel.id, parseInt(user.id, 10));
       // Check for expected chat member errors
-      if (!chatMember) {
-        return undefined;
-      }
+      assertIsDefined(chatMember, 'ChatMember not defined in getUserPermissions()');
 
       // Chat type
       const isChannel = chat.type === 'channel';
@@ -239,7 +266,7 @@ export default class TelegramBot extends BotClient {
   public async getChannelUserCount(channel: Channel): Promise<number> {
     // Get the count and subscract the bot itself
     try {
-      return (await this.bot.getChatMembersCount(channel.id)) - 1;
+      return (await this.bot.telegram.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
       this.logger.error(`Failed to get chat member count for channel ${channel.label}:\n${error}`);
       return 0;
@@ -274,23 +301,24 @@ export default class TelegramBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    this.bot.on('message', (msg: TelegramAPI.Message) => this.onMessage(msg, command));
-    this.bot.on('channel_post', (msg: TelegramAPI.Message) => this.onMessage(msg, command));
+    this.bot.on('message', (ctx) => this.onMessage(ctx, command));
+    this.bot.on('channel_post', (ctx) => this.onMessage(ctx, command));
   }
 
   /** Executes the given command if the message matches the regex. */
-  private async onMessage(msg: TelegramAPI.Message, command: Command): Promise<void> {
-    const channel = this.getChannelByID(msg.chat.id.toString());
+  private async onMessage(ctx: Context, command: Command): Promise<void> {
+    assertIsDefined(ctx.chat, 'Chat is not defined onMessage');
+    assertIsDefined(ctx.message, 'Messsage is not defined onMessage');
+    const channel = this.getChannelByID(ctx.chat.id.toString());
     try {
       // Re-enable the channel if disabled, since it is now active
       channel.disabled = false;
       // Channel messages don't have an author, so we have to work around that
-      const userID = msg.from ? msg.from.id.toString() : this.channelAuthorID;
-      // FIX: Properly identify the user key
+      const userID = ctx.message.from?.id?.toString() ?? this.channelAuthorID;
       const user = new User(this, userID);
-      const content = msg.text ?? '';
+      const content = ctx.message.text ?? '';
       // Convert from Unix time to date
-      const timeNumber = Math.min(Date.now(), msg.date * 1000 + 500);
+      const timeNumber = Math.min(Date.now(), ctx.message.date * 1000 + 500);
       const timestamp = new Date(timeNumber);
 
       const reg = await command.getRegExp(channel);
@@ -318,30 +346,17 @@ export default class TelegramBot extends BotClient {
     const startTime = Date.now();
 
     // Set up the pubsub subscriptions
-    if (!this.updaterSubscription) {
-      this.updaterSubscription = PubSub.subscribe(
-        Updater.UPDATER_TOPIC,
-        (topic: string, notification: Notification) => {
-          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
-          this.sendMessageToGameSubs(notification.game, notification);
-        },
-      );
-    }
-    if (!this.everyoneSubscription) {
-      this.everyoneSubscription = PubSub.subscribe(
-        EVERYONE_TOPIC,
-        (topic: string, message: string) => {
-          this.sendMessageToAllSubs(message);
-        },
-      );
-    }
+    this.setupUpdaterSubscription();
+    this.setupEveryoneSubscription();
 
-    await this.bot.startPolling({ restart: true });
+    // Start the bot
+    await this.bot.launch();
     this.isRunning = true;
     // Handle being removed from chats (except channels apparently)
-    this.bot.on('left_chat_member', async (message) => {
-      const leftMember = message.left_chat_member;
-      const telegramUser = await this.bot.getMe();
+    this.bot.on('left_chat_member', async (ctx) => {
+      assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');
+      const leftMember = ctx.message.left_chat_member;
+      const telegramUser = await this.bot.telegram.getMe();
       const userID = telegramUser.id;
 
       if (!leftMember || leftMember.id !== userID) {
@@ -350,7 +365,7 @@ export default class TelegramBot extends BotClient {
       }
 
       const channels = this.getBotChannels();
-      const channelID = message.chat.id.toString();
+      const channelID = ctx.message.chat.id.toString();
       // Search for the channel
       const channel = channels.find((ch) => channelID === ch.id);
       if (channel) {
@@ -360,7 +375,7 @@ export default class TelegramBot extends BotClient {
 
     // Initialize user name and user tag
     try {
-      const botUser = await this.bot.getMe();
+      const botUser = await this.bot.telegram.getMe();
       this.userName = botUser.username ?? '';
       this.userTag = `@${this.userName}`;
     } catch (error) {
@@ -372,7 +387,7 @@ export default class TelegramBot extends BotClient {
   }
 
   public stop(): void {
-    this.bot.stopPolling();
+    this.bot.stop();
     this.isRunning = false;
     // Clean up subscriptions
     PubSub.unsubscribe(this.updaterSubscription);
@@ -393,7 +408,7 @@ export default class TelegramBot extends BotClient {
         this.logger.info(`Not adding message to queue for disabled channel ${channel.label}`);
         return false;
       }
-      const chat = await this.bot.getChat(channel.id);
+      const chat = await this.bot.telegram.getChat(channel.id);
       const messageType: MessageType =
         messageText instanceof Notification ? MessageType.notification : MessageType.command;
       const chatType: ChatType = chat.type === 'private' ? ChatType.private : ChatType.group;
@@ -443,10 +458,9 @@ export default class TelegramBot extends BotClient {
     // Set up the message
     const message = messageText;
     let text = '';
-    let options = {};
+    let options: ExtraEditMessage = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
-      // Snakecase used by Telegram API
       options = { parse_mode: 'Markdown' };
     } else {
       const link = message.title.link;
@@ -491,7 +505,7 @@ export default class TelegramBot extends BotClient {
     }
     // Send the message
     try {
-      await this.bot.sendMessage(channel.id, text, options);
+      await this.bot.telegram.sendMessage(channel.id, text, options);
     } catch (error) {
       // Log the appropriate error
       this.handleNotificationError(error, channel);
@@ -513,35 +527,16 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  // TODO: Properly type the error
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleNotificationError(error: any, channel: Channel) {
-    if (error.code === 'ETELEGRAM') {
-      const response = error.response.body;
-      const errorCode = response.error_code;
-      switch (errorCode) {
-        // Chat not found
-        case 400:
-          this.logger.warn(
-            `Failed to send notification to channel ${channel.label}, error code 400.`,
-          );
-          // this.removeData(channel);
-          break;
-        // Bot is not a member of the channel chat or blocked by user
-        case 403:
-          this.logger.warn(
-            `Failed to send notification to channel ${channel.label}, error code 403.`,
-          );
-          // this.removeData(channel);
-          break;
-        default:
-          this.logger.error(
-            `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
-          );
-      }
-    } else {
-      this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
-    }
+  private handleNotificationError(error: TelegramError, channel: Channel) {
+    const errorCode = error.response.error_code;
+    this.logger.error(
+      `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
+    );
+    // TODO: conditions
+    // if (conditions) {
+    //   this.logger.warn(`Unable to send notification to channel ${channel.label}, deleting data...`);
+    //   this.removeData(channel);
+    // }
   }
 
   public static msgFromMarkdown(text: string): string {

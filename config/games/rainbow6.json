@@ -1,0 +1,31 @@
+{
+  "name": "rainbow6",
+  "label": "Tom Clancy's Rainbow Six Siege",
+  "aliases": [
+    "tom clancy's rainbow six siege",
+    "tom clancys rainbow six siege",
+    "rainbow six siege",
+    "rainbow 6 siege",
+    "rainbow 6",
+    "rainbow6",
+    "six siege",
+    "6 siege",
+    "tcrss",
+    "rss"
+  ],
+  "color": "#eeeeee",
+  "icon": "https://imgur.com/CtLj8WV.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "Rainbow6",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 359550,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
