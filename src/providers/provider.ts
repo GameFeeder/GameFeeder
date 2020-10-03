@@ -1,8 +1,8 @@
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
-import DataManager from '../managers/data_manager';
-import Updater from '../updater';
+import { ProviderData } from '../managers/data_manager';
+import { assertIsDefined } from '../util/util';
 
 export default abstract class Provider {
   public logger: Logger;
@@ -19,74 +19,26 @@ export default abstract class Provider {
     this.logger = new Logger(this.label);
   }
 
-  public abstract async getNotifications(updater: Updater, limit?: number): Promise<Notification[]>;
-
-  /**
-   * Saves the data of the last update.
-   * @param updater The updater to save the update for.
-   * @param timestamp The timestamp of the update.
-   * @param version The version name of the update.
-   */
-  public saveUpdate(updater: Updater, timestamp: Date, version?: string): void {
-    // Cache the values
-    this.updateTimestamp = timestamp;
-    this.updateVersion = version ?? this.updateVersion;
-
-    // If autosave is enabled, the values also get saved to the data files
-    if (updater.autosave) {
-      const data = DataManager.getUpdaterData(updater.key);
-      const lastUpdate = data.lastUpdate[this.game.name] ?? {};
-      lastUpdate.timestamp = timestamp.toISOString();
-
-      if (version) {
-        lastUpdate.version = version;
-      }
-
-      data.lastUpdate[this.game.name] = lastUpdate;
-
-      DataManager.setUpdaterData(updater.key, data);
-    }
-  }
+  public abstract async getNotifications(
+    since: ProviderData,
+    limit?: number,
+  ): Promise<Notification[]>;
 
   /**
    * Gets the timestamp of the last update.
-   * @param updater The updater to get the last update for.
+   * @param since The provider data to get the last update from.
    */
-  public getLastUpdateTimestamp(updater: Updater): Date {
-    // If a value is cached, return it
-    if (this.updateTimestamp) {
-      return this.updateTimestamp;
-    }
-
-    // Otherwise, load the value from the data files
-    const data = DataManager.getUpdaterData(updater.key);
-    const timestamp = data.lastUpdate[this.game.name]?.timestamp;
-
-    if (timestamp) {
-      return new Date(timestamp);
-    }
-
-    // If no timestamp is saved yet, save the current one and return it
-    const date = new Date();
-    this.saveUpdate(updater, date);
-
-    return date;
+  public getLastUpdateTimestamp(since: ProviderData): Date {
+    const timestamp = since.timestamp;
+    assertIsDefined(timestamp, 'Timestamp not found in getLastUpdateTimestamp');
+    return new Date(timestamp);
   }
 
   /**
    * Gets the version string of the last update.
-   * @param updater The updater to get the last update for.
+   * @param since The provider data to get the last update from.
    */
-  public getLastUpdateVersion(updater: Updater): string | undefined {
-    // If a value is cached, return it
-    if (this.updateVersion) {
-      return this.updateVersion;
-    }
-
-    // Otherwise, load the value from the data files
-    const data = DataManager.getUpdaterData(updater.key);
-    const version = data.lastUpdate[this.game.name]?.version;
-
-    return version;
+  public getLastUpdateVersion(since: ProviderData): string | undefined {
+    return since.version;
   }
 }
