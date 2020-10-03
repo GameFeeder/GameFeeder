@@ -62,6 +62,9 @@ export default class Notification implements Comparable<Notification> {
     return mdStr;
   }
 
+  /**
+   *  Debug method that makes Notification objects printable inside templated strings
+   */
   public toString(): string {
     return this.title.text + this.content;
   }

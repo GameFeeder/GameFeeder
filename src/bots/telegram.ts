@@ -495,7 +495,7 @@ export default class TelegramBot extends BotClient {
       this.logger.warn(
         `Max retries reached; Disabling failed channel ${channel.label} to avoid future errors until active again.`,
       );
-      // channel.disabled = true;
+      channel.disabled = true;
       return false;
     }
     return true;
