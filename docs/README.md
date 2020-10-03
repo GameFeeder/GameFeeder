@@ -90,14 +90,20 @@ So far, we are providing the following commands:
 
 So far, we are supporting the following games:
 
+- <strong align="left">Among Us</strong> <img src="https://imgur.com/ey1SDhy.jpg" height="17px"/>
 - <strong align="left">Artifact</strong> <img src="https://i.imgur.com/DblOFap.png" height="17px"/>
 - <strong align="left">Cities: Skylines</strong> <img src="https://imgur.com/zRjxsWw.jpg" height="17px"/>
 - <strong align="left">Counter-Strike: Global Offensive</strong> <img src="https://i.imgur.com/2ONuRD3.png" height="17px"/>
+- <strong align="left">Dead by Daylight</strong> <img src="https://imgur.com/fVn0tRs.jpg" height="17px"/>
 - <strong align="left">Dead Cells</strong> <img src="https://imgur.com/pBgwuv6.jpg" height="17px"/>
 - <strong align="left">Don't Starve Together</strong> <img src="https://imgur.com/oRZpbb3.jpg" height="17px"/>
 - <strong align="left">Dota 2</strong> <img src="https://i.imgur.com/aRVbvDh.png" height="17px"/>
 - <strong align="left">Dota Underlords</strong> <img src="https://i.imgur.com/gaYsZ7Z.png" height="17px"/>
 - <strong align="left">Factorio</strong> <img src="https://i.imgur.com/7D0A9eT.png" height="17px"/>
+- <strong align="left">Forager</strong> <img src="https://imgur.com/tqLE7vm.jpg" height="17px"/>
+- <strong align="left">Hades</strong> <img src="https://imgur.com/VHWSO4y.jpg" height="17px"/>
+- <strong align="left">Microsoft Flight Simulator 2020</strong> <img src="https://imgur.com/VLPzilS.jpg" height="17px"/>
+- <strong align="left">Minecraft</strong> <img src="https://imgur.com/GKVk9ve.png" height="17px"/>
 - <strong align="left">Payday 2</strong> <img src="https://imgur.com/oblgpMY.jpg" height="17px"/>
 - <strong align="left">PLAYERUNKNOWN'S BATTLEGROUNDS</strong> <img src="https://imgur.com/Emx9o83.jpg" height="17px"/>
 - <strong align="left">Risk of Rain 2</strong> <img src="https://imgur.com/oQhrK1N.jpg" height="17px"/>
@@ -106,6 +112,7 @@ So far, we are supporting the following games:
 - <strong align="left">Stardew Valley</strong> <img src="https://imgur.com/cgm7M2G.jpg" height="17px"/>
 - <strong align="left">Steam</strong> <img src="https://i.imgur.com/QbzZxrC.png" height="17px"/>
 - <strong align="left">Team Fortress 2</strong> <img src="https://i.imgur.com/zaQObOc.png" height="17px"/>
+- <strong align="left">Tom Clancy's Rainbow Six Siege</strong> <img src="https://imgur.com/CtLj8WV.jpg" height="17px"/>
 - <strong align="left">Veloren</strong> <img src="https://veloren.net/Logo_Square.png" height="17px"/>
 
 ### Contributing
