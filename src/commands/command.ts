@@ -26,6 +26,7 @@ export default abstract class Command {
     public action: (message: Message, match: RegExpMatchArray) => Promise<void>,
     public role: UserRole = UserRole.USER,
   ) {}
+
   /** Tries to execute the command on the given channel.
    *
    * @param message - The message triggering the command.
