@@ -8,6 +8,7 @@ export default class Channel {
     const ID = `${this.bot.name.substr(0, 1).toLocaleUpperCase()}|${this.id}`;
     return this._label ? `'${this._label}' (${ID})` : ID;
   }
+
   set label(value: string | undefined) {
     const newLabel = value;
 
@@ -58,6 +59,7 @@ export default class Channel {
     }
     return this.bot.prefix;
   }
+
   set prefix(value: string) {
     let newPrefix = value;
     // Check if the user wants to reset the prefix
@@ -108,6 +110,7 @@ export default class Channel {
   get disabled(): boolean {
     return this._disabled;
   }
+
   set disabled(value: boolean) {
     // Save locally
     this.bot.logger.debug(`Channel ${this.label} has been ${value ? 'disabled' : 'enabled'}`);
@@ -153,6 +156,7 @@ export default class Channel {
     private _label?: string,
     private _disabled = false,
   ) {}
+
   /** Compares the channel to another channel.
    *
    * @param  {IBotChannel} other - The other channel to compare to.
@@ -164,6 +168,7 @@ export default class Channel {
     }
     return this.id === other.id;
   }
+
   public toJSON(): string {
     const labelStr = this._label ? `, "label": "${this._label}"` : '';
     const prefixStr = this._prefix ? `, "prefix": "${this._prefix}"` : '';

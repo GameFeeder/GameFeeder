@@ -61,7 +61,6 @@ export default class Main {
     updaters.forEach((updater) => {
       if (updater.enabled) {
         updater.start();
-        updater.logger.info('Started updater.');
       }
     });
   }

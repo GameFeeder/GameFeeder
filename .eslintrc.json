@@ -46,6 +46,7 @@
     "jest/no-standalone-expect": ["error", { "additionalTestBlockFunctions": ["each.test", "beforeAll", "afterAll"] }],
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
+    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
     "max-classes-per-file": "off",
     "no-nested-ternary": "off",
     "no-param-reassign": ["error", { "props": false }],

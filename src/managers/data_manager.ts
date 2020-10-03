@@ -29,17 +29,19 @@ export type SubscriberData = {
   telegram: Subscriber[];
 };
 
+export type ProviderData = {
+  /** The timestamp of the last update. */
+  timestamp?: string;
+  /** The version of the last update. */
+  version?: string;
+};
+
 /** The data for the updater. */
 export type UpdaterData = {
   /** The data of the last update. */
   lastUpdate: {
     /** The data of the last update for the specified game. */
-    [index: string]: {
-      /** The timestamp of the last update. */
-      timestamp?: string;
-      /** The version of the last update. */
-      version?: string;
-    };
+    [index: string]: ProviderData;
   };
   /** Timestamp of the last update cycle run */
   healthcheckTimestamp: string;
@@ -122,6 +124,13 @@ export default class DataManager {
   public static setUpdaterData(key: string, data: UpdaterData): void {
     const updatersData = this.getUpdatersData();
     updatersData[key] = data;
+    this.setUpdatersData(updatersData);
+  }
+
+  /** Sets the data of a provider inside an updater. */
+  public static setProviderData(updaterKey: string, gameName: string, data: ProviderData): void {
+    const updatersData = this.getUpdatersData();
+    updatersData[updaterKey].lastUpdate[gameName] = data;
     this.setUpdatersData(updatersData);
   }
 }

@@ -15,12 +15,14 @@ export enum UserRole {
 /** Represents a user of a bot. */
 export default class User {
   public static logger = new Logger('User');
+
   /**
    * Create a new BotUser.
    * @param bot The bot the user is associated to.
    * @param id The ID of the BotUser.
    */
   constructor(public bot: BotClient, public id: string) {}
+
   /** Get's the user's role on the given channel.
    *
    * @param channel - The channel to get the role on.
@@ -29,6 +31,7 @@ export default class User {
   public getRole(channel: Channel): Promise<UserRole> {
     return this.bot.getUserRole(this, channel);
   }
+
   /** Determines whether the user has the given role on the given channel.
    *
    * @param channel - The channel the user wants the role on.

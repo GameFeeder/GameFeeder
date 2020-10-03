@@ -305,6 +305,28 @@ export default class TelegramBot extends BotClient {
     this.bot.on('channel_post', (ctx) => this.onMessage(ctx, command));
   }
 
+  private addChatRemovalHandler(): void {
+    this.bot.on('left_chat_member', async (ctx) => {
+      assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');
+      const leftMember = ctx.message.left_chat_member;
+      const telegramUser = await this.bot.telegram.getMe();
+      const userID = telegramUser.id;
+
+      if (!leftMember || leftMember.id !== userID) {
+        // It's not the bot
+        return;
+      }
+
+      const channels = this.getBotChannels();
+      const channelID = ctx.message.chat.id.toString();
+      // Search for the channel
+      const channel = channels.find((ch) => channelID === ch.id);
+      if (channel) {
+        await this.onRemoved(channel);
+      }
+    });
+  }
+
   /** Executes the given command if the message matches the regex. */
   private async onMessage(ctx: Context, command: Command): Promise<void> {
     assertIsDefined(ctx.chat, 'Chat is not defined onMessage');
@@ -338,6 +360,7 @@ export default class TelegramBot extends BotClient {
   }
 
   public async start(): Promise<boolean> {
+    // Startup check
     if (!this.enabled) {
       this.logger.info('Autostart disabled.');
       return false;
@@ -349,9 +372,13 @@ export default class TelegramBot extends BotClient {
     this.setupUpdaterSubscription();
     this.setupEveryoneSubscription();
 
+    // Add handlers
+    this.addChatRemovalHandler();
+
     // Start the bot
     await this.bot.launch();
     this.isRunning = true;
+
     // Handle being removed from chats (except channels apparently)
     this.bot.on('left_chat_member', async (ctx) => {
       assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');

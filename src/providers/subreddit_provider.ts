@@ -1,11 +1,10 @@
+import { ProviderData } from 'src/managers/data_manager';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Provider from './provider';
 import Reddit from '../reddit/reddit';
 import RedditUserProvider from '../reddit/reddit_user';
 import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
-
-import Updater from '../updater';
 
 export default class SubredditProvider extends Provider {
   constructor(
@@ -18,13 +17,13 @@ export default class SubredditProvider extends Provider {
     Reddit.init();
   }
 
-  public async getNotifications(updater: Updater, limit?: number): Promise<Notification[]> {
+  public async getNotifications(since: ProviderData, limit?: number): Promise<Notification[]> {
     const userNotifications = await mapAsync(this.users, async (user) => {
       let userPosts = await Reddit.getUserPosts(user.name);
       // Filter out irrelevant posts
       userPosts = userPosts.filter((post) => {
         const isValid = post.isValid(
-          this.getLastUpdateTimestamp(updater),
+          this.getLastUpdateTimestamp(since),
           user.titleFilter,
           this.urlFilters,
         );

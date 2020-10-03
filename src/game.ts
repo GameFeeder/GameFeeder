@@ -135,8 +135,8 @@ export default class Game {
 
     // Unique providers
     for (const game of games) {
-      if (game.name === DotaProvider.key) {
-        game.providers.dota = new DotaProvider();
+      if (game.name === DotaProvider.relevant_game) {
+        game.providers[DotaProvider.key] = new DotaProvider();
       }
     }
 
