@@ -1,5 +1,5 @@
 import getBots from './bots/bots';
-import DataManager from './managers/data_manager';
+import DataManager, { ProviderData } from './managers/data_manager';
 import ConfigManager from './managers/config_manager';
 import Game from './game';
 import Logger from './logger';
@@ -17,6 +17,8 @@ export default class Updater {
   private gameIntervalMs: number;
   /** The delay in milliseconds between each update cycle. */
   private cyleIntervalMs: number;
+  /** A cahce for last update data. */
+  private lastUpdateCache: Map<Game, ProviderData>;
 
   /**
    * Creates an instance of Updater.
@@ -35,7 +37,12 @@ export default class Updater {
     gameInterval: number,
     cycleInterval: number,
   ) {
-    this.logger = new Logger(`Updater - ${this.key}`);
+    const updaterName = this.key
+      .split('_')
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(' ')
+      .concat('-U');
+    this.logger = new Logger(updaterName);
 
     const data = DataManager.getUpdaterData(this.key);
 
@@ -46,6 +53,7 @@ export default class Updater {
     this.gameIntervalMs = gameInterval * 1000;
     this.cyleIntervalMs = cycleInterval * 1000;
     this.doUpdates = false;
+    this.lastUpdateCache = new Map();
   }
 
   public static getUpdaters(): Updater[] {
@@ -75,6 +83,7 @@ export default class Updater {
    * @returns {Promise<void>}
    */
   public start(): Promise<void> {
+    this.logger.info('Started updater.');
     this.doUpdates = true;
     return this.updateLoop();
   }
@@ -108,6 +117,60 @@ export default class Updater {
     this.logger.debug(`Finished update cycle in ${updateDuration} ms.`);
   }
 
+  /**
+   * Gets the timestamp of the last update.
+   * @param game The Game to get the last update for.
+   */
+  public getLastUpdate(game: Game): ProviderData {
+    // Check the cache
+    const cachedData = this.lastUpdateCache.get(game);
+    if (cachedData) {
+      return cachedData;
+    }
+    // Otherwise, load the value from the data files
+    let data = DataManager.getUpdaterData(this.key).lastUpdate[game.name];
+
+    // If no provider data exist for the game yet, create it
+    if (!data) {
+      data = {
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    // If no timestamp is saved yet, save the current one in the cache
+    if (!data.timestamp) {
+      data.timestamp = new Date().toISOString();
+    }
+
+    this.lastUpdateCache.set(game, data);
+    return data;
+  }
+
+  /**
+   * Saves the data of the last update.
+   * @param game The Game to save the update for.
+   * @param timestamp The timestamp of the update.
+   * @param version The version name of the update.
+   */
+  public saveUpdate(game: Game, timestamp?: Date, version?: string): void {
+    // const data = DataManager.getUpdaterData(this.key);
+    const data = this.getLastUpdate(game);
+    if (timestamp) {
+      data.timestamp = timestamp.toISOString();
+    }
+    if (version) {
+      data.version = version;
+    }
+
+    // Save to the file and update the cache
+    this.lastUpdateCache.set(game, data);
+    // If autosave is enabled, the values also get saved to the data files
+    if (!this.autosave) {
+      return;
+    }
+    DataManager.setProviderData(this.key, game.name, data);
+  }
+
   /** Get the updates for the specified game.
    *
    * @param game - The game to get the updates for.
@@ -116,20 +179,21 @@ export default class Updater {
     const pollStartTime = Date.now();
 
     const provider = game.providers[this.key];
-
     if (!provider) {
       return [];
     }
 
+    // Get provider data
+    const providerData = this.getLastUpdate(game);
     // Get provider notifications
-    let gameNotifications = await provider.getNotifications(this, this.limit);
+    let gameNotifications = await provider.getNotifications(providerData, this.limit);
 
     if (gameNotifications.length > 0) {
       // Only take the newest notifications
       gameNotifications = sortLimitEnd(gameNotifications, this.limit);
       const lastUpdate = gameNotifications[gameNotifications.length - 1];
       // Save last update data
-      provider.saveUpdate(this, lastUpdate.timestamp, lastUpdate.version);
+      this.saveUpdate(game, lastUpdate.timestamp, lastUpdate.version);
 
       const pollEndTime = Date.now();
       const pollDuration = Math.abs(pollStartTime - pollEndTime);

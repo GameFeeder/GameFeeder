@@ -20,7 +20,7 @@
     "enabled": true,
     "autosave": true
   },
-  "dota": {
+  "dota_patches": {
     "gameInterval": 0,
     "cycleInterval": 60,
     "limit": 2,
