@@ -61,4 +61,8 @@ export default class Notification implements Comparable<Notification> {
 
     return mdStr;
   }
+
+  public toString(): string {
+    return this.title.text + this.content;
+  }
 }

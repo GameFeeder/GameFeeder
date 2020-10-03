@@ -403,6 +403,7 @@ export default class TelegramBot extends BotClient {
     retryAttempt = 0,
   ): Promise<boolean> {
     try {
+      this.logger.info(`START: SendMessage to ${channel.label}`);
       if (channel.disabled) {
         // TODO: Make this a debug log once verified to be working properly
         this.logger.info(`Not adding message to queue for disabled channel ${channel.label}`);
@@ -413,10 +414,15 @@ export default class TelegramBot extends BotClient {
         messageText instanceof Notification ? MessageType.notification : MessageType.command;
       const chatType: ChatType = chat.type === 'private' ? ChatType.private : ChatType.group;
       const rule = this.ruleNames[messageType][chatType];
-      await this.queue.request(
+      const queueResponse = await this.queue.request(
         () => this.sendMessageInstantly(channel, messageText, retryAttempt),
         channel.id,
         rule,
+      );
+      // this.sendMessageInstantly(channel, messageText, retryAttempt);
+      // this.logger.info(`END: SendMessage to ${channel.label}, message:${messageText}`);
+      this.logger.info(
+        `END: SendMessage to ${channel.label} with ${queueResponse}, isoverheated: ${this.queue.isOverheated}, length: ${this.queue.totalLength}`,
       );
       return true;
     } catch (err) {
@@ -435,6 +441,7 @@ export default class TelegramBot extends BotClient {
     messageText: string | Notification,
     retryAttempt = 0,
   ): Promise<boolean> {
+    this.logger.info(`START: SendMessageInstantly to ${channel.label}`);
     if (channel.disabled) {
       // TODO: Make this a debug log once verified to be working properly
       this.logger.info(`Skipping message for disabled channel ${channel.label}`);
@@ -510,7 +517,7 @@ export default class TelegramBot extends BotClient {
       // Log the appropriate error
       this.handleNotificationError(error, channel);
       if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
-        this.logger.info(
+        this.logger.warn(
           `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
         );
         this.sendMessage(channel, messageText, retryAttempt + 1);
@@ -521,7 +528,7 @@ export default class TelegramBot extends BotClient {
       this.logger.warn(
         `Max retries reached; Disabling failed channel ${channel.label} to avoid future errors until active again.`,
       );
-      channel.disabled = true;
+      // channel.disabled = true;
       return false;
     }
     return true;
