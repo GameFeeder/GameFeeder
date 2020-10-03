@@ -231,6 +231,24 @@ export default class InitManager {
     return this.addMissingUserKeys(configPath);
   }
 
+  // To be deprecated after 1/1/2021
+  public static dotaPatchesMigration(): void {
+    const updatersConfig = ConfigManager.getUpdatersConfig();
+    if (Object.keys(updatersConfig).includes('dota')) {
+      updatersConfig.dota_patches = updatersConfig.dota;
+      delete updatersConfig.dota;
+      ConfigManager.setUpdatersConfig(updatersConfig);
+      InitManager.logger.warn('Found old "dota" updater config key, replacing with "dota_patches"');
+    }
+    const updatersData = DataManager.getUpdatersData();
+    if (Object.keys(updatersData).includes('dota')) {
+      updatersData.dota_patches = updatersData.dota;
+      delete updatersData.dota;
+      DataManager.setUpdatersData(updatersData);
+      InitManager.logger.warn('Found old "dota" updater data key, replacing with "dota_patches"');
+    }
+  }
+
   /** Initializes and validates all config and data files. */
   public static initAll(): void {
     this.addMissingUserConfigKeys();
@@ -238,6 +256,9 @@ export default class InitManager {
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
 
+    // Migrations
+    // 1. Rename 'dota' provider to 'dota_patches'
+    this.dotaPatchesMigration();
     InitManager.logger.info('Finished initialization check.');
   }
 }
