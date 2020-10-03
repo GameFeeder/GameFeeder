@@ -1,5 +1,4 @@
 import DiscordAPI, { DMChannel, TextChannel, MessageEmbed } from 'discord.js';
-import PubSub from 'pubsub-js';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -13,8 +12,6 @@ import Message from '../message';
 import Permissions from '../permissions';
 import ProjectManager from '../managers/project_manager';
 import Game from '../game';
-import Updater from '../updater';
-import { EVERYONE_TOPIC } from '../commands/commands';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;
@@ -26,8 +23,6 @@ const EMBED_CONTENT_LIMIT = 2048;
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
-  private updaterSubscription = '';
-  private everyoneSubscription = '';
 
   constructor(prefix: string, private token: string, autostart: boolean) {
     super('discord', 'Discord', prefix, autostart);
@@ -314,23 +309,8 @@ export default class DiscordBot extends BotClient {
     const startTime = Date.now();
 
     // Set up the pubsub subscriptions
-    if (!this.updaterSubscription) {
-      this.updaterSubscription = PubSub.subscribe(
-        Updater.UPDATER_TOPIC,
-        (topic: string, notification: Notification) => {
-          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
-          this.sendMessageToGameSubs(notification.game, notification);
-        },
-      );
-    }
-    if (!this.everyoneSubscription) {
-      this.everyoneSubscription = PubSub.subscribe(
-        EVERYONE_TOPIC,
-        (topic: string, message: string) => {
-          this.sendMessageToAllSubs(message);
-        },
-      );
-    }
+    this.setupUpdaterSubscription();
+    this.setupEveryoneSubscription();
 
     // Add handlers
     this.addGuildRemovalHandler();
@@ -371,11 +351,7 @@ export default class DiscordBot extends BotClient {
   public stop(): void {
     this.bot.destroy();
     this.isRunning = false;
-    // Clean up subscriptions
-    PubSub.unsubscribe(this.updaterSubscription);
-    this.updaterSubscription = '';
-    PubSub.unsubscribe(this.everyoneSubscription);
-    this.everyoneSubscription = '';
+    this.cleanupSubscriptions();
     this.logger.info(`Stopped bot.`);
   }
 

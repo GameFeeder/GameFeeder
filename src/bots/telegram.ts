@@ -1,6 +1,5 @@
 import { Context, Telegraf } from 'telegraf';
 import Queue from 'smart-request-balancer';
-import PubSub from 'pubsub-js';
 import { ExtraEditMessage, ParseMode } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
@@ -14,8 +13,6 @@ import { assertIsDefined, StrUtil } from '../util/util';
 import Message from '../message';
 import Permissions from '../permissions';
 import Game from '../game';
-import Updater from '../updater';
-import { EVERYONE_TOPIC } from '../commands/commands';
 
 enum MessageType {
   notification = 'notification',
@@ -56,8 +53,6 @@ export default class TelegramBot extends BotClient {
   private queue: Queue;
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
-  private updaterSubscription = '';
-  private everyoneSubscription = '';
 
   constructor(prefix: string, private token: string, autostart: boolean) {
     super('telegram', 'Telegram', prefix, autostart);
@@ -105,29 +100,6 @@ export default class TelegramBot extends BotClient {
         group: 'commandGroup',
       },
     };
-  }
-
-  private setupUpdaterSubscription() {
-    if (!this.updaterSubscription) {
-      this.updaterSubscription = PubSub.subscribe(
-        Updater.UPDATER_TOPIC,
-        (topic: string, notification: Notification) => {
-          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
-          this.sendMessageToGameSubs(notification.game, notification);
-        },
-      );
-    }
-  }
-
-  private setupEveryoneSubscription() {
-    if (!this.everyoneSubscription) {
-      this.everyoneSubscription = PubSub.subscribe(
-        EVERYONE_TOPIC,
-        (topic: string, message: string) => {
-          this.sendMessageToAllSubs(message);
-        },
-      );
-    }
   }
 
   public static getBot(): TelegramBot {
@@ -379,27 +351,6 @@ export default class TelegramBot extends BotClient {
     await this.bot.launch();
     this.isRunning = true;
 
-    // Handle being removed from chats (except channels apparently)
-    this.bot.on('left_chat_member', async (ctx) => {
-      assertIsDefined(ctx.message, 'Message is not defined on left_chat_member');
-      const leftMember = ctx.message.left_chat_member;
-      const telegramUser = await this.bot.telegram.getMe();
-      const userID = telegramUser.id;
-
-      if (!leftMember || leftMember.id !== userID) {
-        // It's not the bot
-        return;
-      }
-
-      const channels = this.getBotChannels();
-      const channelID = ctx.message.chat.id.toString();
-      // Search for the channel
-      const channel = channels.find((ch) => channelID === ch.id);
-      if (channel) {
-        await this.onRemoved(channel);
-      }
-    });
-
     // Initialize user name and user tag
     try {
       const botUser = await this.bot.telegram.getMe();
@@ -416,11 +367,7 @@ export default class TelegramBot extends BotClient {
   public stop(): void {
     this.bot.stop();
     this.isRunning = false;
-    // Clean up subscriptions
-    PubSub.unsubscribe(this.updaterSubscription);
-    this.updaterSubscription = '';
-    PubSub.unsubscribe(this.everyoneSubscription);
-    this.everyoneSubscription = '';
+    this.cleanupSubscriptions();
     this.logger.info(`Stopped bot.`);
   }
 
@@ -430,7 +377,6 @@ export default class TelegramBot extends BotClient {
     retryAttempt = 0,
   ): Promise<boolean> {
     try {
-      this.logger.info(`START: SendMessage to ${channel.label}`);
       if (channel.disabled) {
         // TODO: Make this a debug log once verified to be working properly
         this.logger.info(`Not adding message to queue for disabled channel ${channel.label}`);
@@ -441,15 +387,10 @@ export default class TelegramBot extends BotClient {
         messageText instanceof Notification ? MessageType.notification : MessageType.command;
       const chatType: ChatType = chat.type === 'private' ? ChatType.private : ChatType.group;
       const rule = this.ruleNames[messageType][chatType];
-      const queueResponse = await this.queue.request(
+      await this.queue.request(
         () => this.sendMessageInstantly(channel, messageText, retryAttempt),
         channel.id,
         rule,
-      );
-      // this.sendMessageInstantly(channel, messageText, retryAttempt);
-      // this.logger.info(`END: SendMessage to ${channel.label}, message:${messageText}`);
-      this.logger.info(
-        `END: SendMessage to ${channel.label} with ${queueResponse}, isoverheated: ${this.queue.isOverheated}, length: ${this.queue.totalLength}`,
       );
       return true;
     } catch (err) {
@@ -468,7 +409,6 @@ export default class TelegramBot extends BotClient {
     messageText: string | Notification,
     retryAttempt = 0,
   ): Promise<boolean> {
-    this.logger.info(`START: SendMessageInstantly to ${channel.label}`);
     if (channel.disabled) {
       // TODO: Make this a debug log once verified to be working properly
       this.logger.info(`Skipping message for disabled channel ${channel.label}`);
