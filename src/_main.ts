@@ -44,17 +44,10 @@ export default class Main {
     const startTime = Date.now();
     // Start bots
     await mapAsync(getBots(), async (bot) => {
-      if (bot.enabled) {
-        const botStart = Date.now();
-        if (await bot.start()) {
-          const userName = bot.getUserName();
-          const botTime = Date.now() - botStart;
-          bot.logger.info(`Started bot as @${userName} in ${botTime} ms.`);
-        } else {
-          bot.logger.warn('Bot did not start. Did you provide a token in "bot_config.json"?');
-        }
-      } else {
-        bot.logger.debug('Autostart disabled.');
+      try {
+        await bot.start();
+      } catch (error) {
+        Main.logger.error(`Failed to start bot ${bot.name}: ${error}`);
       }
     });
     const time = Date.now() - startTime;
