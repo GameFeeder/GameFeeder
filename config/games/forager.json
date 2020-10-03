@@ -1,0 +1,20 @@
+{
+  "name": "forager",
+  "label": "Forager",
+  "aliases": ["forager"],
+  "color": "#ff8474",
+  "icon": "https://imgur.com/tqLE7vm.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "Forager",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 751780,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
