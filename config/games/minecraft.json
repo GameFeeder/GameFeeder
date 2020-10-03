@@ -1,0 +1,20 @@
+{
+  "name": "minecraft",
+  "label": "Minecraft",
+  "aliases": ["minecraft", "mc"],
+  "color": "#527b47",
+  "icon": "https://imgur.com/GKVk9ve.png",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "Minecraft"
+      }
+    ],
+    "rss": [
+      {
+        "label": "Minecraft Blog",
+        "url": "https://minecraft.net/en-us/feeds/community-content/rss"
+      }
+    ]
+  }
+}

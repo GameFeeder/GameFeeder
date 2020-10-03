@@ -5,8 +5,6 @@ import SteamAppNews, {
 } from 'src/steam/steam_app_news';
 import Game from 'src/game';
 
-jest.mock('request-promise-native');
-
 describe('Steam App News', () => {
   const now = new Date();
   const testResp: SteamNewsItemResponse = {

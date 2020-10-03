@@ -5,8 +5,6 @@ import Notification from 'src/notifications/notification';
 import Permissions from 'src/permissions';
 import User, { UserRole } from 'src/user';
 
-jest.mock('request-promise-native');
-
 export default class MockBot extends BotClient {
   constructor() {
     super('mockBot', 'mockLabel', 'mockPrefix', false);
