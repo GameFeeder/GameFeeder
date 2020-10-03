@@ -239,6 +239,45 @@ export default class DiscordBot extends BotClient {
     return ownerIds.map((id) => new User(this, id));
   }
 
+  private addGuildRemovalHandler(): void {
+    this.bot.on('guildDelete', (guild) => {
+      const guildID = guild.id;
+      const channels = this.getBotChannels();
+
+      // Remove all channel data of that guild
+      channels.forEach((channel) => {
+        const discordChannel = this.bot.channels.cache.get(channel.id);
+        if (!discordChannel) {
+          // Can't find the channel, it probably belongs to the guild, remove data
+          return this.onRemoved(channel);
+        }
+
+        if (discordChannel instanceof TextChannel) {
+          const channelGuildID = discordChannel.guild.id;
+          if (guildID === channelGuildID) {
+            // The channel belongs to the guild, remove data
+            return this.onRemoved(channel);
+          }
+        }
+
+        // No promise needed otherwise
+        return undefined;
+      });
+    });
+  }
+
+  addChannelDeleteHandler(): void {
+    this.bot.on('channelDelete', async (discordChannel) => {
+      const channels = this.getBotChannels();
+
+      // Search for the channel
+      const channel = channels.find((ch) => discordChannel.id === ch.id);
+      if (channel) {
+        await this.onRemoved(channel);
+      }
+    });
+  }
+
   public registerCommand(command: Command): void {
     this.bot.on('message', async (msg) => {
       const channel = this.getChannelByID(msg.channel.id);
@@ -259,74 +298,50 @@ export default class DiscordBot extends BotClient {
       }
     });
   }
+
   public async start(): Promise<boolean> {
-    if (this.token) {
-      await this.bot.login(this.token);
-      this.isRunning = true;
-      // Handle being removed from a guild
-      this.bot.on('guildDelete', (guild) => {
-        const guildID = guild.id;
-        const channels = this.getBotChannels();
+    // Startup check
+    if (!this.enabled) {
+      this.logger.info('Autostart disabled.');
+      return false;
+    }
+    assertIsDefined(this.token, `Token is undefined`);
 
-        // Remove all channel data of that guild
-        channels.forEach((channel) => {
-          const discordChannel = this.bot.channels.cache.get(channel.id);
-          if (!discordChannel) {
-            // Can't find the channel, it probably belongs to the guild, remove data
-            return this.onRemoved(channel);
-          }
+    // Add handlers
+    this.addGuildRemovalHandler();
+    this.addChannelDeleteHandler();
 
-          if (discordChannel instanceof TextChannel) {
-            const channelGuildID = discordChannel.guild.id;
-            if (guildID === channelGuildID) {
-              // The channel belongs to the guild, remove data
-              return this.onRemoved(channel);
-            }
-          }
+    // Start the bot
+    await this.bot.login(this.token);
+    this.isRunning = true;
 
-          // No promise needed otherwise
-          return undefined;
-        });
-      });
-      // Handle deleted channels
-      this.bot.on('channelDelete', async (discordChannel) => {
-        const channels = this.getBotChannels();
-
-        // Search for the channel
-        const channel = channels.find((ch) => discordChannel.id === ch.id);
-        if (channel) {
-          await this.onRemoved(channel);
-        }
-      });
-
-      const user = this.bot.user;
-      if (!user) {
-        this.logger.error('Bot user not found');
-      }
-
-      // Initialize user name and user tag
-      this.userName = user?.username ?? 'UNKNOWN';
-      this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
-
-      // Setup presence
-      try {
-        this.bot.user?.setPresence({
-          status: 'online',
-          activity: {
-            type: 'PLAYING',
-            name: `v${ProjectManager.getVersionNumber()}`,
-          },
-        });
-      } catch (error) {
-        this.logger.error(`Failed to setup bot presence:\n${error}`);
-        throw error;
-      }
-
-      return true;
+    // Setup the user
+    const user = this.bot.user;
+    if (!user) {
+      this.logger.error('Bot user not found');
     }
 
-    return false;
+    // Initialize user name and user tag
+    this.userName = user?.username ?? 'UNKNOWN';
+    this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
+
+    // Setup presence
+    try {
+      this.bot.user?.setPresence({
+        status: 'online',
+        activity: {
+          type: 'PLAYING',
+          name: `v${ProjectManager.getVersionNumber()}`,
+        },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to setup bot presence:\n${error}`);
+      throw error;
+    }
+
+    return true;
   }
+
   public stop(): void {
     this.bot.destroy();
     this.isRunning = false;
