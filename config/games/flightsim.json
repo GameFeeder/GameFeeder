@@ -1,0 +1,29 @@
+{
+  "name": "flightsim",
+  "label": "Microsoft Flight Simulator 2020",
+  "aliases": [
+    "microsoft flight simulator 2020",
+    "microsoft flight simulator",
+    "flight simulator 2020",
+    "flightsim 2020",
+    "flightsim",
+    "msfs2020",
+    "msfs",
+    "fs"
+  ],
+  "color": "#5bcff5",
+  "icon": "https://imgur.com/VLPzilS.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "flightsim",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 1250410,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
