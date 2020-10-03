@@ -20,7 +20,6 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/_main.ts\"",
-    "deploy": "yarn install --frozen-lockfile && yarn demolish && yarn build",
     "start": "node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
