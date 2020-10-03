@@ -1,5 +1,4 @@
-import assert from 'assert';
-import fetch from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import { HTMLElement, parse } from 'node-html-parser';
 import Provider from './provider';
 import Game from '../game';
@@ -15,11 +14,13 @@ export default class DotaProvider extends Provider {
   public static relevant_game = 'dota';
   public static logger = new Logger('Dota Provider');
 
-  constructor(dota: Game) {
-    assert(
-      dota.name === DotaProvider.relevant_game,
-      `Wrong game ${dota.name} used for Dota Provider`,
-    );
+  constructor() {
+    const dota = Game.getGameByName(DotaProvider.relevant_game);
+
+    if (!dota) {
+      throw new Error('Could not find Dota 2 game.');
+    }
+
     super(`http://www.dota2.com/patches/`, `Dota Updates`, dota);
   }
 
@@ -66,7 +67,7 @@ export default class DotaProvider extends Provider {
 
   /** Gets the content of the patch page. */
   public async getPatchPage(): Promise<HTMLElement> {
-    const response = await fetch('http://www.dota2.com/patches/');
+    const response = await nodeFetch('http://www.dota2.com/patches/');
     const updatesPage = await response.text();
     return parse(updatesPage);
   }

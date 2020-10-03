@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import { URL, URLSearchParams } from 'url';
 import Logger from '../logger';
 import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
@@ -52,7 +52,7 @@ export default class SteamWebAPI {
       const uri = new URL('https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/');
       const params = new URLSearchParams(newsOptions);
       uri.search = params.toString();
-      const response = await fetch(uri.toString(), { timeout: REQUEST_TIMEOUT });
+      const response = await nodeFetch(uri.toString(), { timeout: REQUEST_TIMEOUT });
       const responseJSON = await response.json();
       return new SteamAppNews(responseJSON);
     } catch (error) {

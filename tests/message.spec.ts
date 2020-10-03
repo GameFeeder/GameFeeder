@@ -3,6 +3,9 @@ import User from 'src/user';
 import Channel from 'src/channel';
 import MockBot from './mockClasses/mockBot';
 
+// https://github.com/request/request-promise/issues/247
+jest.mock('request-promise-native');
+
 describe('Message', () => {
   let testMessage: Message;
   const mockBot = new MockBot();

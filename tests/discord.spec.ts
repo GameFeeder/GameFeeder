@@ -1,5 +1,8 @@
 import DiscordBot from 'src/bots/discord';
 
+// https://github.com/request/request-promise/issues/247
+jest.mock('request-promise-native');
+
 describe('Discord bot', () => {
   describe('message from markdown', () => {
     // LINK
