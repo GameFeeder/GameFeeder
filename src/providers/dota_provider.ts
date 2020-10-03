@@ -17,7 +17,7 @@ export default class DotaProvider extends Provider {
 
   constructor(dota: Game) {
     assert(
-      dota.name !== DotaProvider.relevant_game,
+      dota.name === DotaProvider.relevant_game,
       `Wrong game ${dota.name} used for Dota Provider`,
     );
     super(`http://www.dota2.com/patches/`, `Dota Updates`, dota);
