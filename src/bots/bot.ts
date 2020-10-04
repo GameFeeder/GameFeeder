@@ -15,9 +15,9 @@ import { assertIsDefined } from '../util/util';
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */
   public isRunning: boolean;
-  /** The logger used for this bot.PubSub */
+  /** The logger used for this bot. */
   public logger: Logger;
-  /** The user tag of this bot */
+  /** The user tag of this bot. */
   public userTag?: string;
   /** The user name of this bot. */
   public userName?: string;
