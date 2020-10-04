@@ -106,14 +106,4 @@ export default class Reddit {
     }
     return posts;
   }
-
-  public static mdFromReddit(text: string): string {
-    let fulltext = '';
-    // User links
-    fulltext = text.replace(/\/u\/([a-zA-Z0-9]+)/, '[/u/$1](https://reddit.com/user/$1)');
-    // Subreddit links
-    fulltext = text.replace(/\/r\/([a-zA-Z0-9]+)/, '[/r/$1](https://reddit.com/r/$1)');
-
-    return fulltext;
-  }
 }

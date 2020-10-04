@@ -28,6 +28,9 @@ jobs:
       - name: Run typescript compiler
         run: yarn build
 
+      - name: Check for circular dependencies
+        run: npx madge --circular --extensions js ./dist
+
       - name: Run the tests
         run: yarn test
 

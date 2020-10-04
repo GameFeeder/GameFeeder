@@ -3,7 +3,6 @@ import Channel from '../channel';
 import { UserRole } from '../user';
 import Message from '../message';
 import Action from './action';
-import { filterByRole } from './commands';
 import { mergeArrays } from '../util/array_util';
 
 /**
@@ -71,6 +70,11 @@ export default class CommandGroup extends Command {
     );
   }
 
+  /** Override log method for command groups to avoid duplicate logs */
+  public logExecutionDuration(): void {
+    // Don't log anything for command groups
+  }
+
   /** Tries to find the label of the given command in this group.
    *
    * @param command - The command to search for.
@@ -117,7 +121,7 @@ export default class CommandGroup extends Command {
    * @param role - The user role to filter the commands for.
    */
   public aggregateCmds(role?: UserRole): Action[] {
-    const aggregates = filterByRole(this.commands, role || UserRole.OWNER).map((cmd) => {
+    const aggregates = Command.filterByRole(this.commands, role || UserRole.OWNER).map((cmd) => {
       if (cmd instanceof Action) {
         // Wrap the command in an array
         return [cmd];

@@ -2,7 +2,6 @@ import EscapeRegex from 'escape-string-regexp';
 import { UserRole } from '../user';
 import Channel from '../channel';
 import Message from '../message';
-import CommandGroup from './command_group';
 
 /**
  * Represents a command that can be executed by the users on the given bot clients.
@@ -27,6 +26,14 @@ export default abstract class Command {
     public role: UserRole = UserRole.USER,
   ) {}
 
+  public logExecutionDuration(message: Message): void {
+    const bot = message.channel.bot;
+    const time = Date.now() - message.timestamp.valueOf();
+    bot.logger.debug(
+      `Command '${this.name}' executed on channel ${message.channel.label} in ${time} ms.`,
+    );
+  }
+
   /** Tries to execute the command on the given channel.
    *
    * @param message - The message triggering the command.
@@ -38,12 +45,7 @@ export default abstract class Command {
 
     if (await message.user.hasRole(message.channel, this.role)) {
       await this.action(message, match);
-      const time = Date.now() - message.timestamp.valueOf();
-      if (!(this instanceof CommandGroup)) {
-        bot.logger.debug(
-          `Command '${this.name}' executed on channel ${message.channel.label} in ${time} ms.`,
-        );
-      }
+      this.logExecutionDuration(message);
       return true;
     }
 
@@ -56,6 +58,25 @@ export default abstract class Command {
     );
 
     return false;
+  }
+
+  /** Filters the given command array by the provided role. */
+  public static filterByRole(commands: Command[], role: UserRole): Command[] {
+    return commands.filter((cmd) => {
+      switch (cmd.role) {
+        case UserRole.OWNER:
+          // Owner commands can only be executed by owners
+          return role === UserRole.OWNER;
+        case UserRole.ADMIN:
+          // Admin commands can only be executed by owners and admins
+          return role === UserRole.OWNER || role === UserRole.ADMIN;
+        case UserRole.USER:
+          // User commands can be executed by anyone
+          return true;
+        default:
+          return false;
+      }
+    });
   }
 
   /** Tests if the given message triggers the command.
