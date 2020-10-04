@@ -70,6 +70,11 @@ export default class CommandGroup extends Command {
     );
   }
 
+  /** Override log method for command groups to avoid duplicate logs */
+  public logExecutionDuration(): void {
+    // Don't log anything for command groups
+  }
+
   /** Tries to find the label of the given command in this group.
    *
    * @param command - The command to search for.

@@ -26,6 +26,14 @@ export default abstract class Command {
     public role: UserRole = UserRole.USER,
   ) {}
 
+  public logExecutionDuration(message: Message): void {
+    const bot = message.channel.bot;
+    const time = Date.now() - message.timestamp.valueOf();
+    bot.logger.debug(
+      `Command '${this.name}' executed on channel ${message.channel.label} in ${time} ms.`,
+    );
+  }
+
   /** Tries to execute the command on the given channel.
    *
    * @param message - The message triggering the command.
@@ -37,10 +45,7 @@ export default abstract class Command {
 
     if (await message.user.hasRole(message.channel, this.role)) {
       await this.action(message, match);
-      const time = Date.now() - message.timestamp.valueOf();
-      bot.logger.debug(
-        `Command '${this.name}' executed on channel ${message.channel.label} in ${time} ms.`,
-      );
+      this.logExecutionDuration(message);
       return true;
     }
 
