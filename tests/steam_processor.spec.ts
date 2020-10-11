@@ -2,6 +2,37 @@ import SteamProcessor from 'src/processors/steam_processor';
 
 describe('Steam processor', () => {
   describe('processing', () => {
+    // Lists
+    describe('lists', () => {
+      test('should parse empty list', () => {
+        const sampleText = `[list][/list]`;
+        const expected = `<ul></ul>`;
+
+        const processor = new SteamProcessor();
+        const actual = processor.process(sampleText);
+
+        expect(actual).toEqual(expected);
+      });
+      test('should parse empty multiline list', () => {
+        const sampleText = `[list]\n\n[/list]`;
+        const expected = `<ul></ul>`;
+
+        const processor = new SteamProcessor();
+        const actual = processor.process(sampleText);
+
+        expect(actual).toEqual(expected);
+      });
+      test('should parse sample list', () => {
+        const sampleText = `[list]\n[*] Storm Spirit’s Overload lasts until end of round rather than until Storm spirit's next combat.\n[*] Abaddon’s stats changed from 3/6 -> 2/8 \n[*] Abaddon’s Borrowed Time purges Abaddon and may be used when stunned or silenced. Cooldown reduced from 3 -> 2.\n[*] Abaddon’s Mist Coil self-damage reduced from 3 -> 2.\n[*] Corpse Horde is now an After Combat effect and will spread Zombies more sanely when there is a mix of new Zombies and old units to devour.\n[*] Claszureme Hourglass gives +2 Health.\n[*] No Hesitation and Raid can only be used if there is still a combat phase (i.e. there is only one combat phase per lane).\n[*] Axe’s Berserker’s Call, Keefe the Bold’s Stop Hittin’ Yourself, Shadow Fiend’s Requiem of Souls, Bristleback’s Quill Spray, and Nyctasha’s Guard must have valid targets to use.\n[*] Phase Boots and Rebel Decoy require that both units are not rooted.\n[*] Force Staff cannot target rooted units.\n[/list]`;
+        const expected = `<ul><li>Storm Spirit’s Overload lasts until end of round rather than until Storm spirit's next combat.</li><li>Abaddon’s stats changed from 3/6 -> 2/8</li><li>Abaddon’s Borrowed Time purges Abaddon and may be used when stunned or silenced. Cooldown reduced from 3 -> 2.</li><li>Abaddon’s Mist Coil self-damage reduced from 3 -> 2.</li><li>Corpse Horde is now an After Combat effect and will spread Zombies more sanely when there is a mix of new Zombies and old units to devour.</li><li>Claszureme Hourglass gives +2 Health.</li><li>No Hesitation and Raid can only be used if there is still a combat phase (i.e. there is only one combat phase per lane).</li><li>Axe’s Berserker’s Call, Keefe the Bold’s Stop Hittin’ Yourself, Shadow Fiend’s Requiem of Souls, Bristleback’s Quill Spray, and Nyctasha’s Guard must have valid targets to use.</li><li>Phase Boots and Rebel Decoy require that both units are not rooted.</li><li>Force Staff cannot target rooted units.</li></ul>`;
+
+        const processor = new SteamProcessor();
+        const actual = processor.process(sampleText);
+
+        expect(actual).toEqual(expected);
+      });
+    });
+
     test('sample text 01', () => {
       const sampleText = `[i]<a class="bb_link" href="https://steamcommunity.com/linkfilter/?url=https://factorio.com/blog/post/fff-318" target="_blank" rel="noreferrer" >Read this post on our website.</a><span class="bb_link_host">[factorio.com]</span>[/i]<br><br>Hello,<br>we just released 0.17.73, with 0.17.74 coming very soon. This is just some bug fixes and further pathfinding improvements, and we hope to be able to mark the release as Stable next week.<br><br><div class="bb_h1">The new tooltips (Twinsen)</div><br>As part of our big GUI update, I've been working on one particular part: the tooltips. We worked not only on updating the style, but also how the information is structured and sorted, added missing information, removed irrelevant information. This concerns entity, item and recipe tooltips, but almost all tooltips were touched one way or another. Many things were changed. I will go through some of the more important changes. There is also a link [url=https://steamcommunity.com/ogg/593110/announcements/detail/1599264607923965569/]here/[/url/].`;
 

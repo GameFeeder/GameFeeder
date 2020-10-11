@@ -40,7 +40,7 @@ export default class SteamWebAPI {
     const newsOptions: SteamNewsOptions = {
       appid: appid.toString(),
       count: count?.toString(),
-      maxlength: maxlength?.toString(),
+      // maxlength: maxlength?.toString(),
       // Convert to Unix timestamp
       enddate: (enddate.valueOf() / 1000).toString(),
       // Convert to single string
