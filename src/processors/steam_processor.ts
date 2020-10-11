@@ -11,6 +11,11 @@ export default class SteamProcessor extends PreProcessor {
   // <a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>
   public linkFilter = /(?:(?<=")https:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*?)(?="))/g;
 
+  // [list] ... [/list]
+  public listReg = /(?:\[list\]\s*((?:.|\s)*?)\[\/list\])/gm;
+  // [*] List item
+  public listElemReg = /(?:\[\*\])\s*(.*?)\s*\n/g;
+
   // [url=https://github.com]Text[/url]
   public urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
   // [h1]Text[/h1]
@@ -75,6 +80,16 @@ export default class SteamProcessor extends PreProcessor {
     // Convert spoiler tag (not handled yet)
     newContent = newContent.replace(this.spoilerTagReg, (_, spoilerText) => {
       return `${spoilerText}`;
+    });
+
+    // Convert lists
+    newContent = newContent.replace(this.listReg, (_, listContent: string) => {
+      // Convert list elements
+      const newListContent = listContent.replace(this.listElemReg, (_match, listElement) => {
+        return `<li>${listElement}</li>`;
+      });
+
+      return `<ul>${newListContent}</ul>`;
     });
 
     return newContent;
