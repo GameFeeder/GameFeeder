@@ -24,8 +24,8 @@
     "start": "node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
-    "test": "jest --coverage",
-    "coverage": "jest --coverage",
+    "test": "jest --config jest.config.json",
+    "coverage": "jest --config jest.config.json --coverage",
     "watch": "tsc --watch"
   },
   "husky": {
@@ -72,31 +72,5 @@
     "telegraf": "3.38.0",
     "turndown": "7.0.0",
     "winston": "3.3.3"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/tests"
-    ],
-    "modulePaths": [
-      "<rootDir>",
-      "<rootDir>/src",
-      "<rootDir>/tests",
-      "<rootDir>/tests/mockClasses"
-    ],
-    "preset": "ts-jest",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/dist/",
-      "/tests/",
-      "/docs/",
-      "/data/",
-      "/config/",
-      "/@types/",
-      ".vscode",
-      ".github",
-      ".devcontainer"
-    ]
   }
 }
