@@ -1,3 +1,4 @@
+import SteamProcessor from '../processors/steam_processor';
 import Notification from '../notifications/notification';
 import Game from '../game';
 import NotificationBuilder from '../notifications/notification_builder';
@@ -74,12 +75,14 @@ export class SteamNewsItem {
   public tags: string[];
 
   constructor(response: SteamNewsItemResponse) {
+    const steamProcessor = new SteamProcessor();
+
     this.gID = response.gid;
     this.title = response.title;
     this.url = response.url;
     this.isExternalUrl = response.is_external_url;
     this.author = response.author;
-    this.contents = response.contents;
+    this.contents = steamProcessor.process(response.contents);
     this.feedLabel = response.feedlabel;
     this.date = response.date;
     this.feedName = response.feedname;
@@ -99,7 +102,7 @@ export class SteamNewsItem {
         .withTitle(this.title, this.url)
         .withAuthor(this.author)
         // TODO: Fix the fomatting of the post content and reenable this line
-        // .withContent(steamProcessor.process(this.contents))
+        .withContent(this.contents)
         .withGameDefaults(game)
         .build()
     );
