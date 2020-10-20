@@ -22,6 +22,12 @@
                 "/config/games/*.json"
             ],
             "url": "./config/schemas/game_config.schema.json"
+        },
+        {
+            "fileMatch": [
+                "/config/api_config*.json"
+            ],
+            "url": "./config/schemas/api_config.schema.json"
         }
     ]
 }
