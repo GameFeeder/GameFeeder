@@ -15,5 +15,13 @@
         "dist": true,
         "node_modules": true,
         "yarn.lock": true
-    }
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "/config/games/*.json"
+            ],
+            "url": "./config/schemas/game_config.schema.json"
+        }
+    ]
 }
