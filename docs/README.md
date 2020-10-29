@@ -1,4 +1,4 @@
-![Build status](https://github.com/GameFeeder/GameFeeder/workflows/ci-flow/badge.svg)
+![CI status](https://img.shields.io/github/workflow/status/GameFeeder/GameFeeder/ci-flow/main?label=CI)
 ![Release](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)
 ![Docker image size](https://img.shields.io/docker/image-size/gamefeeder/gamefeeder/latest)
 
