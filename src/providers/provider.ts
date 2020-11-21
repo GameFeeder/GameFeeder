@@ -19,10 +19,7 @@ export default abstract class Provider {
     this.logger = new Logger(this.label);
   }
 
-  public abstract async getNotifications(
-    since: ProviderData,
-    limit?: number,
-  ): Promise<Notification[]>;
+  public abstract getNotifications(since: ProviderData, limit?: number): Promise<Notification[]>;
 
   /**
    * Gets the timestamp of the last update.
