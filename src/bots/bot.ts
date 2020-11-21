@@ -57,7 +57,7 @@ export default abstract class BotClient {
    *
    * @returns True, if the start was successful, else false.
    */
-  public abstract async start(): Promise<boolean>;
+  public abstract start(): Promise<boolean>;
   /** Stop the bot.
    *
    * @returns void
@@ -69,7 +69,7 @@ export default abstract class BotClient {
    * @param user - The user to get the role of.
    * @param channel - The channel to get the role on.
    */
-  public abstract async getUserRole(user: User, channel: Channel): Promise<UserRole>;
+  public abstract getUserRole(user: User, channel: Channel): Promise<UserRole>;
 
   /** Gets the permissions of a user on a given channel.
    *
@@ -77,7 +77,7 @@ export default abstract class BotClient {
    * @param channel - The channel to get the permissions on.
    * @returns The permissions of the user or undefined, if no permissions could be retrieved.
    */
-  public abstract async getUserPermissions(
+  public abstract getUserPermissions(
     user: User,
     channel: Channel,
   ): Promise<Permissions | undefined>;
@@ -244,7 +244,7 @@ export default abstract class BotClient {
   public abstract getChannelUserCount(channel: Channel): Promise<number>;
 
   /** Gets the number of users for this bot. */
-  public abstract async getUserCount(game?: Game): Promise<number>;
+  public abstract getUserCount(game?: Game): Promise<number>;
 
   /** Gets the number of channels for this bot. */
   public abstract getChannelCount(game?: Game): number;
@@ -303,10 +303,7 @@ export default abstract class BotClient {
    * @param  {string|Notification} message - The message to send to the channel.
    * @returns void
    */
-  public abstract async sendMessage(
-    channel: Channel,
-    message: string | Notification,
-  ): Promise<boolean>;
+  public abstract sendMessage(channel: Channel, message: string | Notification): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *
