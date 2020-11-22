@@ -18,7 +18,7 @@ import TwoPartCommand from './two_part_command';
 import Notification from '../notifications/notification';
 import NotificationElement from '../notifications/notification_element';
 import Updater from '../updater';
-import EVERYONE_TOPIC from '../util/constants';
+import constants from '../util/constants';
 
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
@@ -345,7 +345,7 @@ const notifyAllCmd = new TwoPartCommand(
     await message.reply(`Notifying all subs with:\n"${msg}"`);
 
     // Send the provided message to all subs
-    PubSub.publish(EVERYONE_TOPIC, msg);
+    PubSub.publish(constants.EVERYONE_TOPIC, msg);
   },
   async (message) => {
     if (message.isEmpty()) {

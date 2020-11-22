@@ -675,10 +675,10 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.5.tgz#b6ab3bba29e16b821d84e09ecfaded462b816b00"
   integrity sha512-UEyp8LwZ4Dg30kVU2Q3amHHyTn1jEdhCIE59ANed76GaT1Vp76DD3ZWSAxgCrw6wJ0TqeoBpqmfUHiUDPs//HQ==
 
-"@types/pubsub-js@1.5.18":
-  version "1.5.18"
-  resolved "https://registry.yarnpkg.com/@types/pubsub-js/-/pubsub-js-1.5.18.tgz#dd12284c5e93b39874e62675702bf50c6f55e9ec"
-  integrity sha512-1xFx7o/DKwbDm5UwjnkkeAVk+U1puh0odDkY+NpTCuQfbhcGh4+fjQSuKVHLPP1F9osj3/lDtnr71kud9u3ZYA==
+"@types/pubsub-js@1.8.1":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@types/pubsub-js/-/pubsub-js-1.8.1.tgz#5d6c99feb4a9486586134e7215b751f93dcd12cd"
+  integrity sha512-555w1/JKf2z9oJ5QLWyAQYicG9WuL4+feF161cu+nr8UsWnxXgKszEXgNcscHWYow2kFZrrU62kP6+tRqlahYw==
 
 "@types/request@*":
   version "2.48.5"
@@ -4372,10 +4372,10 @@ pstree.remy@^1.1.7:
   resolved "https://registry.yarnpkg.com/pstree.remy/-/pstree.remy-1.1.8.tgz#c242224f4a67c21f686839bbdb4ac282b8373d3a"
   integrity sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==
 
-pubsub-js@1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.9.0.tgz#fa19de437f41221e95b6bd4dc4c745b25b92c0ab"
-  integrity sha512-bBGaOnAdkn3jhZC71mhjNB4mxQAOM99GTh/NoVuf/VXWUuQAZJGWIkEJlkXi0ACdKx3z65u5qilWaE5G4mMQOw==
+pubsub-js@1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.9.1.tgz#49f4252fca1439dcc72f0795b354e167861b004c"
+  integrity sha512-m4XKhojoruI/fU+poB9wkwIPiYuiFHdxgiFeH55BnqQ04lPNW6nrv6FI3yZ7I8/R1ulXYh95/i6nLeZZ1KegHQ==
 
 pump@^3.0.0:
   version "3.0.0"

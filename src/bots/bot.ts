@@ -9,7 +9,7 @@ import Logger from '../logger';
 import Permissions from '../permissions';
 import { mapAsync } from '../util/array_util';
 import Updater from '../updater';
-import EVERYONE_TOPIC from '../util/constants';
+import constants from '../util/constants';
 import { assertIsDefined } from '../util/util';
 
 export default abstract class BotClient {
@@ -76,7 +76,7 @@ export default abstract class BotClient {
   protected setupEveryoneSubscription(): void {
     if (!this.everyoneSubscription) {
       this.everyoneSubscription = PubSub.subscribe(
-        EVERYONE_TOPIC,
+        constants.EVERYONE_TOPIC,
         (topic: string, message: string) => {
           this.sendMessageToAllSubs(message);
         },
