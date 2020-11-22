@@ -113,6 +113,7 @@ export default class Channel {
 
   set disabled(value: boolean) {
     // Save locally
+    this.bot.logger.debug(`Channel ${this.label} has been ${value ? 'disabled' : 'enabled'}`);
     this._disabled = value;
 
     // Save in the JSON file

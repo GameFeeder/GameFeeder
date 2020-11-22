@@ -1,3 +1,4 @@
+import PubSub from 'pubsub-js';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
 import Command from '../commands/command';
@@ -7,16 +8,22 @@ import Notification from '../notifications/notification';
 import Logger from '../logger';
 import Permissions from '../permissions';
 import { mapAsync } from '../util/array_util';
+import Updater from '../updater';
+import EVERYONE_TOPIC from '../util/constants';
+import { assertIsDefined } from '../util/util';
 
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */
   public isRunning: boolean;
   /** The logger used for this bot. */
   public logger: Logger;
-  /** The user tag of this bot */
+  /** The user tag of this bot. */
   public userTag?: string;
   /** The user name of this bot. */
   public userName?: string;
+
+  protected updaterSubscription = '';
+  protected everyoneSubscription = '';
 
   /** Creates a new BotClient.
    *
@@ -53,6 +60,37 @@ export default abstract class BotClient {
    * @returns void
    */
   public abstract registerCommand(command: Command): void;
+
+  protected setupUpdaterSubscription(): void {
+    if (!this.updaterSubscription) {
+      this.updaterSubscription = PubSub.subscribe(
+        Updater.UPDATER_TOPIC,
+        (topic: string, notification: Notification) => {
+          assertIsDefined(notification.game, `Notification ${notification.title} has no game`);
+          this.sendMessageToGameSubs(notification.game, notification);
+        },
+      );
+    }
+  }
+
+  protected setupEveryoneSubscription(): void {
+    if (!this.everyoneSubscription) {
+      this.everyoneSubscription = PubSub.subscribe(
+        EVERYONE_TOPIC,
+        (topic: string, message: string) => {
+          this.sendMessageToAllSubs(message);
+        },
+      );
+    }
+  }
+
+  protected cleanupSubscriptions(): void {
+    PubSub.unsubscribe(this.updaterSubscription);
+    this.updaterSubscription = '';
+    PubSub.unsubscribe(this.everyoneSubscription);
+    this.everyoneSubscription = '';
+  }
+
   /** Start the bot.
    *
    * @returns True, if the start was successful, else false.
@@ -308,10 +346,10 @@ export default abstract class BotClient {
   /** Sends a message to all subscribers of a game.
    *
    * @param  {Game} game - The game to notify the subscribers of.
-   * @param  {string|Notification} message - The message to send to the subscribers.
+   * @param  {Notification} message - The message to send to the subscribers.
    * @returns void
    */
-  public sendMessageToGameSubs(game: Game, message: string | Notification): void {
+  public sendMessageToGameSubs(game: Game, message: Notification): void {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (!game) {
