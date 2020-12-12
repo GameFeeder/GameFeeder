@@ -12,6 +12,6 @@ jobs:
       - name: Set global git conf
         run: git config --global user.email "" && git config --global user.name "github-actions"
       - name: Get current version
-        run: echo "::set-env name=gamefeeder_version::v$(jq -r '.version' package.json)"
+        run: echo "gamefeeder_version=v$(jq -r '.version' package.json)" >> $GITHUB_ENV
       - name: Create tag and push to GitHub
         run: git tag $gamefeeder_version && git push origin $gamefeeder_version || true
