@@ -571,11 +571,11 @@ export default class DiscordBot extends BotClient {
 
     try {
       if (discordChannel instanceof DMChannel) {
-        await discordChannel.send(text, embed);
+        await discordChannel.send(text, embed ?? {});
         return true;
       }
       if (discordChannel instanceof TextChannel) {
-        await discordChannel.send(text, embed);
+        await discordChannel.send(text, embed ?? {});
         return true;
       }
       // Group DMs seem to be deprecated
