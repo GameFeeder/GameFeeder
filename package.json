@@ -14,8 +14,8 @@
   },
   "homepage": "https://github.com/GameFeeder/GameFeeder",
   "engines": {
-    "node": "^12",
-    "yarn": "^1.16.0"
+    "node": ">=12",
+    "yarn": ">=1.16.0"
   },
   "scripts": {
     "build": "tsc --build",
