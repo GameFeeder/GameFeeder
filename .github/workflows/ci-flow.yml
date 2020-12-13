@@ -1,6 +1,11 @@
 name: ci-flow
 
-on: [pull_request]
+on:
+  pull_request:
+  # Also run it on pushes for main, for the badges
+  push:
+    branches:
+      - main
 
 jobs:
   CI:
