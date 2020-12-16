@@ -44,4 +44,26 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // Images
+  describe('images', () => {
+    test('should parse simple img tag', () => {
+      const sampleText = '[img]https://example.com/image.png[/img]';
+      const expected = '<p><img src="https://example.com/image.png" alt="Image"/></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse img tag with STEAM_CLAN_IMAGE', () => {
+      const sampleText = '[img]{STEAM_CLAN_IMAGE}/image.png[/img]';
+      const expected =
+        '<p><img src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/image.png" alt="Image"/></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
