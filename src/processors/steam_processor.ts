@@ -57,7 +57,7 @@ export default class SteamProcessor extends PreProcessor {
         '{STEAM_CLAN_IMAGE}',
         'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans',
       );
-      return `<img src="${url}" alt="Image"/>`;
+      return `<p><img src="${url}" alt="Image"/></p>`;
     });
     // Convert noparse tag (not handled yet)
     newContent = newContent.replace(this.noparseTagReg, (_, noparseText) => {
