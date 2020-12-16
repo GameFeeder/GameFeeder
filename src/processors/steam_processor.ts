@@ -32,6 +32,10 @@ export default class SteamProcessor extends PreProcessor {
   public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
   // [noparse]Text[/noparse]
   public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
+  // [img]link[/img]
+  public imgTagReg = /(?:\[img\])(.*?)(?:\[\/img\])/g;
+  // [previewyoutube=link][/previewyoutube]
+  public youTubeTagReg = /(?:\[previewyoutube=(.*?)\])(.*?)(?:\[\/previewyoutube\])/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
@@ -48,13 +52,28 @@ export default class SteamProcessor extends PreProcessor {
 
     // Convert Steam formatting tags
 
+    // Convert img tag
+    newContent = newContent.replace(this.imgTagReg, (_, link: string) => {
+      // Replace Steam clan image shortcut
+      const url = link.replace(
+        '{STEAM_CLAN_IMAGE}',
+        'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans',
+      );
+      return `<p><img src="${url}" alt="Image"/></p>`;
+    });
+    // Convert YouTube preview tag
+    newContent = newContent.replace(this.youTubeTagReg, (_, link: string, text: string) => {
+      const alt = text || 'YouTube Video';
+      return `<p><a href="https://youtu.be/${link}">${alt}</a></p>`;
+    });
     // Convert noparse tag (not handled yet)
     newContent = newContent.replace(this.noparseTagReg, (_, noparseText) => {
       return `${noparseText}`;
     });
     // Convert URL tag
     newContent = newContent.replace(this.urlTagReg, (_, url, urlText) => {
-      return `<a href="${url}">${urlText}</a>`;
+      const text = urlText || 'Link';
+      return `<a href="${url}">${text}</a>`;
     });
     // Convert header tag
     newContent = newContent.replace(this.headerTagReg, (_, level, headerText) => {

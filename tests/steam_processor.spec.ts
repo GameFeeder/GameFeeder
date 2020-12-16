@@ -44,4 +44,244 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // Images
+  describe('images', () => {
+    test('should parse simple img tag', () => {
+      const sampleText = '[img]https://example.com/image.png[/img]';
+      const expected = '<p><img src="https://example.com/image.png" alt="Image"/></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse img tag with STEAM_CLAN_IMAGE', () => {
+      const sampleText = '[img]{STEAM_CLAN_IMAGE}/image.png[/img]';
+      const expected =
+        '<p><img src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/image.png" alt="Image"/></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // YouTube previews
+  describe('YouTube previews', () => {
+    test('should parse simple previewyoutube tag', () => {
+      const sampleText = '[previewyoutube=PVNSct9atp8;full][/previewyoutube]';
+      const expected = '<p><a href="https://youtu.be/PVNSct9atp8;full">YouTube Video</a></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse previewyoutube tag with alt text', () => {
+      const sampleText = '[previewyoutube=PVNSct9atp8;full]Alt Text[/previewyoutube]';
+      const expected = '<p><a href="https://youtu.be/PVNSct9atp8;full">Alt Text</a></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // URLs
+  describe('URLs', () => {
+    test('should parse simple URL tag', () => {
+      const sampleText = '[url=https://github.com]Text[/url]';
+      const expected = '<a href="https://github.com">Text</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse URL tag without link text', () => {
+      const sampleText = '[url=https://github.com][/url]';
+      const expected = '<a href="https://github.com">Link</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Bold
+  describe('bold', () => {
+    test('should parse simple bold tag', () => {
+      const sampleText = '[b]Text[/b]';
+      const expected = '<b>Text</b>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Italic
+  describe('italic', () => {
+    test('should parse simple italic tag', () => {
+      const sampleText = '[i]Text[/i]';
+      const expected = '<i>Text</i>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Underline
+  describe('underline', () => {
+    test('should parse simple underline tag', () => {
+      const sampleText = '[u]Text[/u]';
+      const expected = '<u>Text</u>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Strikethrough
+  describe('strikethrough', () => {
+    test('should parse simple strikethrough tag', () => {
+      const sampleText = '[strike]Text[/strike]';
+      const expected = '<s>Text</s>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Header
+  describe('header', () => {
+    test('should parse simple h1 tag', () => {
+      const sampleText = '[h1]Text[/h1]';
+      const expected = '<h1>Text</h1>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h2 tag', () => {
+      const sampleText = '[h2]Text[/h2]';
+      const expected = '<h2>Text</h2>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h3 tag', () => {
+      const sampleText = '[h3]Text[/h3]';
+      const expected = '<h3>Text</h3>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h4 tag', () => {
+      const sampleText = '[h4]Text[/h4]';
+      const expected = '<h4>Text</h4>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Link filter
+  describe('link filter', () => {
+    test('should remove linkfilters', () => {
+      const sampleText =
+        '<a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>';
+      const expected = '<a href="https://github.com">Text</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // BB Headers
+  describe('bb header', () => {
+    test('should parse bb h1 header', () => {
+      const sampleText = '<div class="bb_h1">Text</div>';
+      const expected = '<h1>Text</h1>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h2 header', () => {
+      const sampleText = '<div class="bb_h2">Text</div>';
+      const expected = '<h2>Text</h2>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h3 header', () => {
+      const sampleText = '<div class="bb_h3">Text</div>';
+      const expected = '<h3>Text</h3>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h4 header', () => {
+      const sampleText = '<div class="bb_h4">Text</div>';
+      const expected = '<h4>Text</h4>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // BB Link Hosts
+  describe('bb link host', () => {
+    test('should remove bb link hosts', () => {
+      const sampleText = '<span class="bb_link_host">[github.com]</span>';
+      const expected = '';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // No Parse
+  describe('noparse', () => {
+    test('should not change normal text', () => {
+      const sampleText = '[noparse]Text[/noparse]';
+      const expected = 'Text';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Spoiler
+  describe('spoiler', () => {
+    test('should remove spoiler tag', () => {
+      // TODO: Add a proper test once the spoiler tag is supported
+      const sampleText = '[spoiler]Text[/spoiler]';
+      const expected = 'Text';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
