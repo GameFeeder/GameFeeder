@@ -1,0 +1,28 @@
+{
+  "name": "fallguys",
+  "label": "Fall Guys: Ultimate Knockout",
+  "aliases": [
+    "fallguys",
+    "fall guys",
+    "fall guys: ultimate knockout",
+    "fall guys ultimate knockout",
+    "fall guys: ultimate",
+    "fall guys ultimate",
+    "fguk"
+  ],
+  "color": "#46dddb",
+  "icon": "https://imgur.com/qjGAmMD.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "FallGuysGame",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 1097150,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}

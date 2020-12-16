@@ -31,7 +31,11 @@
         ]
       },
       {
-        "urlFilters": ["dota2.com/patches", "blog.dota2.com"],
+        "urlFilters": [
+          "dota2.com/patches",
+          "blog.dota2.com",
+          "https://steamcommunity.com/games/570/"
+        ],
         "subreddit": "DotaPatches",
         "users": [
           {
@@ -50,7 +54,8 @@
       }
     ],
     "steam": {
-      "appID": 570
+      "appID": 570,
+      "feeds": ["steam_community_announcements"]
     },
     "rss": [
       {
