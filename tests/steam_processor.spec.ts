@@ -66,4 +66,25 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // YouTube previews
+  describe('YouTube previews', () => {
+    test('should parse simple previewyoutube tag', () => {
+      const sampleText = '[previewyoutube=PVNSct9atp8;full][/previewyoutube]';
+      const expected = '<p><a href="https://youtu.be/PVNSct9atp8;full">YouTube Video</a></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse previewyoutube tag with alt text', () => {
+      const sampleText = '[previewyoutube=PVNSct9atp8;full]Alt Text[/previewyoutube]';
+      const expected = '<p><a href="https://youtu.be/PVNSct9atp8;full">Alt Text</a></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
