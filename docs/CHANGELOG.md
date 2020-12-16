@@ -28,10 +28,17 @@
 - Updated `turndown` to 7.0.0
 
 ### v0.16.1
+- Removed all circular dependencies
+- Added check for circular dependencies in CI flow
 
 ### v0.16.0
+- Renamed dota updater to dota_patches
+- Refactored providers to not need updaters to function
+- Added dota_patches change migration
 
 ### v0.15.6
+- Moved try-catch block to main instead of start
+- Added padding between class methods linter rule
 
 ### v0.15.5
 - Added 7 more games:
