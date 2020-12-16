@@ -259,4 +259,29 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // No Parse
+  describe('noparse', () => {
+    test('should not change normal text', () => {
+      const sampleText = '[noparse]Text[/noparse]';
+      const expected = 'Text';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Spoiler
+  describe('spoiler', () => {
+    test('should remove spoiler tag', () => {
+      // TODO: Add a proper test once the spoiler tag is supported
+      const sampleText = '[spoiler]Text[/spoiler]';
+      const expected = 'Text';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
