@@ -156,4 +156,43 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // Header
+  describe('header', () => {
+    test('should parse simple h1 tag', () => {
+      const sampleText = '[h1]Text[/h1]';
+      const expected = '<h1>Text</h1>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h2 tag', () => {
+      const sampleText = '[h2]Text[/h2]';
+      const expected = '<h2>Text</h2>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h3 tag', () => {
+      const sampleText = '[h3]Text[/h3]';
+      const expected = '<h3>Text</h3>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse simple h4 tag', () => {
+      const sampleText = '[h4]Text[/h4]';
+      const expected = '<h4>Text</h4>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
