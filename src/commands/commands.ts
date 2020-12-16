@@ -313,7 +313,12 @@ const settingsCmd = new NoLabelAction(
 
 /** Games command, used to display a list of all games. */
 const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
-  const gamesList = Game.getGames().map((game) => `- ${game.label}`);
+  const gamesList = Game.getGames()
+    .map((game) => `- ${game.label}`)
+    .sort((a, b) => {
+      // Ignore capitalization for sorting
+      return a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase());
+    });
   const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
   await message.reply(gamesMD);
