@@ -34,6 +34,8 @@ export default class SteamProcessor extends PreProcessor {
   public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
   // [img]link[/img]
   public imgTagReg = /(?:\[img\])(.*?)(?:\[\/img\])/g;
+  // [previewyoutube=link][/previewyoutube]
+  public youTubeTagReg = /(?:\[previewyoutube=(.*?)\])(.*?)(?:\[\/previewyoutube\])/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
@@ -58,6 +60,11 @@ export default class SteamProcessor extends PreProcessor {
         'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans',
       );
       return `<p><img src="${url}" alt="Image"/></p>`;
+    });
+    // Convert YouTube preview tag
+    newContent = newContent.replace(this.youTubeTagReg, (_, link: string, text: string) => {
+      const alt = text || 'YouTube Video';
+      return `<p><a href="https://youtu.be/${link}">${alt}</a></p>`;
     });
     // Convert noparse tag (not handled yet)
     newContent = newContent.replace(this.noparseTagReg, (_, noparseText) => {
