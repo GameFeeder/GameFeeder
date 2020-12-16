@@ -195,4 +195,68 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // Link filter
+  describe('link filter', () => {
+    test('should remove linkfilters', () => {
+      const sampleText =
+        '<a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>';
+      const expected = '<a href="https://github.com">Text</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // BB Headers
+  describe('bb header', () => {
+    test('should parse bb h1 header', () => {
+      const sampleText = '<div class="bb_h1">Text</div>';
+      const expected = '<h1>Text</h1>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h2 header', () => {
+      const sampleText = '<div class="bb_h2">Text</div>';
+      const expected = '<h2>Text</h2>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h3 header', () => {
+      const sampleText = '<div class="bb_h3">Text</div>';
+      const expected = '<h3>Text</h3>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse bb h4 header', () => {
+      const sampleText = '<div class="bb_h4">Text</div>';
+      const expected = '<h4>Text</h4>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // BB Link Hosts
+  describe('bb link host', () => {
+    test('should remove bb link hosts', () => {
+      const sampleText = '<span class="bb_link_host">[github.com]</span>';
+      const expected = '';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
