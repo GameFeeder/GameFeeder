@@ -108,4 +108,52 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // Bold
+  describe('bold', () => {
+    test('should parse simple bold tag', () => {
+      const sampleText = '[b]Text[/b]';
+      const expected = '<b>Text</b>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Italic
+  describe('italic', () => {
+    test('should parse simple italic tag', () => {
+      const sampleText = '[i]Text[/i]';
+      const expected = '<i>Text</i>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Underline
+  describe('underline', () => {
+    test('should parse simple underline tag', () => {
+      const sampleText = '[u]Text[/u]';
+      const expected = '<u>Text</u>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Strikethrough
+  describe('strikethrough', () => {
+    test('should parse simple strikethrough tag', () => {
+      const sampleText = '[strike]Text[/strike]';
+      const expected = '<s>Text</s>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });
