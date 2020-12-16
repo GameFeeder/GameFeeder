@@ -87,4 +87,25 @@ describe('Steam processor', () => {
       expect(actual).toEqual(expected);
     });
   });
+  // URLs
+  describe('URLs', () => {
+    test('should parse simple URL tag', () => {
+      const sampleText = '[url=https://github.com]Text[/url]';
+      const expected = '<a href="https://github.com">Text</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+    test('should parse URL tag without link text', () => {
+      const sampleText = '[url=https://github.com][/url]';
+      const expected = '<a href="https://github.com">Link</a>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });

@@ -72,7 +72,8 @@ export default class SteamProcessor extends PreProcessor {
     });
     // Convert URL tag
     newContent = newContent.replace(this.urlTagReg, (_, url, urlText) => {
-      return `<a href="${url}">${urlText}</a>`;
+      const text = urlText || 'Link';
+      return `<a href="${url}">${text}</a>`;
     });
     // Convert header tag
     newContent = newContent.replace(this.headerTagReg, (_, level, headerText) => {
