@@ -51,8 +51,13 @@ export default class SteamProcessor extends PreProcessor {
     // Convert Steam formatting tags
 
     // Convert img tag
-    newContent = newContent.replace(this.imgTagReg, (_, url) => {
-      return `<img src="${url}" alt="image"/>`;
+    newContent = newContent.replace(this.imgTagReg, (_, link: string) => {
+      // Replace Steam clan image shortcut
+      const url = link.replace(
+        '{STEAM_CLAN_IMAGE}',
+        'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans',
+      );
+      return `<img src="${url}" alt="Image"/>`;
     });
     // Convert noparse tag (not handled yet)
     newContent = newContent.replace(this.noparseTagReg, (_, noparseText) => {
@@ -97,8 +102,6 @@ export default class SteamProcessor extends PreProcessor {
 
       return `<ul>${newListContent}</ul>`;
     });
-
-    console.debug(newContent);
 
     return newContent;
   }
