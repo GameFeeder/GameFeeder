@@ -32,6 +32,8 @@ export default class SteamProcessor extends PreProcessor {
   public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
   // [noparse]Text[/noparse]
   public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
+  // [img]link[/img]
+  public imgTagReg = /(?:\[img\])(.*?)(?:\[\/img\])/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
@@ -48,6 +50,10 @@ export default class SteamProcessor extends PreProcessor {
 
     // Convert Steam formatting tags
 
+    // Convert img tag
+    newContent = newContent.replace(this.imgTagReg, (_, url) => {
+      return `<img src="${url}" alt="image"/>`;
+    });
     // Convert noparse tag (not handled yet)
     newContent = newContent.replace(this.noparseTagReg, (_, noparseText) => {
       return `${noparseText}`;
@@ -91,6 +97,8 @@ export default class SteamProcessor extends PreProcessor {
 
       return `<ul>${newListContent}</ul>`;
     });
+
+    console.debug(newContent);
 
     return newContent;
   }
