@@ -63,6 +63,7 @@ export default class DotaProvider extends Provider {
       .map((node) => node.childNodes[0].rawText) // extract option element text
       .filter((text) => text !== 'Select an Update...'); // remove placeholder option
     if (!rr) {
+      this.logger.debug(`Dota updates page parsing failed, unknown problem`);
       rr = [];
     }
     return rr;
