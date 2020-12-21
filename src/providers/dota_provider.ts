@@ -50,18 +50,23 @@ export default class DotaProvider extends Provider {
 
       notifications = limitEnd(notifications, limit);
     } catch (error) {
-      this.logger.error(`Dota updates page parsing failed, error: ${error.substring(0, 120)}`);
+      this.logger.error(`Dota updates page parsing failed, error: ${error}`);
     }
     return notifications;
   }
 
   /** Gets a list of the patch names available. */
   public getPatchList(pageDoc: HTMLElement): string[] {
-    return pageDoc
+    let rr = pageDoc
       .querySelector('#PatchSelector') // Find the patch selector
-      .childNodes.filter((node) => node.nodeType === 1) // Remove intermidiate nodes
+      ?.childNodes.filter((node) => node.nodeType === 1) // Remove intermidiate nodes
       .map((node) => node.childNodes[0].rawText) // extract option element text
       .filter((text) => text !== 'Select an Update...'); // remove placeholder option
+    if (!rr) {
+      this.logger.warn(`Dota updates page parsing failed, unknown problem`);
+      rr = [];
+    }
+    return rr;
   }
 
   /** Gets the content of the patch page. */
