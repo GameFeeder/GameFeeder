@@ -5,23 +5,19 @@
   "packageRules": [
     {
       "depTypeList": ["devDependencies"],
-      "updateTypes": ["patch", "minor"],
-      "groupName": "devDependencies (non-major)"
+      "updateTypes": ["patch", "minor", "major"],
+      "groupName": "devDependencies",
+      "automerge": true
     },
     {
       "depTypeList": ["dependencies"],
-      "updateTypes": ["patch", "minor"],
-      "groupName": "dependencies (non-major)"
+      "updateTypes": ["patch"],
+      "groupName": "dependencies (patch)"
     },
     {
       "depTypeList": ["dependencies"],
-      "updateTypes": ["major"],
-      "groupName": "dependencies (major)"
-    },
-    {
-      "depTypeList": ["devDependencies"],
-      "updateTypes": ["major"],
-      "groupName": "devDependencies (major)"
+      "updateTypes": ["minor", "major"],
+      "groupName": "dependencies (minor-major)"
     }
   ]
 }
