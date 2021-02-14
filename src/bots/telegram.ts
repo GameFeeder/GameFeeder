@@ -1,6 +1,6 @@
 import { Context, Telegraf } from 'telegraf';
 import Queue from 'smart-request-balancer';
-import { ExtraEditMessage, ParseMode } from 'telegraf/typings/telegram-types';
+import { ExtraReplyMessage, ParseMode } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -59,7 +59,7 @@ export default class TelegramBot extends BotClient {
 
     // Set up the bot
     this.bot = new Telegraf(token);
-    this.bot.catch((err: TelegramError, ctx: Context) => {
+    this.bot.catch((err, ctx) => {
       this.logger.error(`Encountered an error for ${ctx.updateType}: ${err}`);
     });
     this.queue = new Queue({
@@ -146,20 +146,15 @@ export default class TelegramBot extends BotClient {
         // If you can write in a channel, you have an admin role
         return UserRole.ADMIN;
       }
-      // Check if user is owner
-      const ownerIds = (await this.getOwners()).map((owner) => owner.id);
-      if (ownerIds.includes(user.id)) {
+
+      // Check if user is a GameFeeder owner
+      const ownerIds = await this.getOwners();
+      if (ownerIds.map((owner) => owner.id).includes(user.id)) {
         return UserRole.OWNER;
       }
-      // Check if user has default admin rights
-      const chat = await this.bot.telegram.getChat(channel.id);
-      if (chat.all_members_are_administrators || chat.type === 'private') {
-        return UserRole.ADMIN;
-      }
-      // Check if user is an admin on this channel
-      const chatAdmins = (await this.bot.telegram.getChatAdministrators(channel.id)) || [];
-      const adminIds = chatAdmins.map((admin) => admin.user.id.toString());
-      if (adminIds.includes(user.id)) {
+
+      const adminIds = await this.bot.telegram.getChatAdministrators(channel.id);
+      if (adminIds.map((admin) => admin.user.id.toString()).includes(user.id)) {
         return UserRole.ADMIN;
       }
     } catch (error) {
@@ -275,6 +270,20 @@ export default class TelegramBot extends BotClient {
   public registerCommand(command: Command): void {
     this.bot.on('message', (ctx) => this.onMessage(ctx, command));
     this.bot.on('channel_post', (ctx) => this.onMessage(ctx, command));
+    this.bot.on('channel_post', (ctx) => {
+      if (ctx === undefined) {
+        this.logger.debug('Undefined ctx');
+        return;
+      }
+      if (ctx.channelPost === undefined) {
+        this.logger.debug('Undefined message');
+        return;
+      }
+      this.logger.debug(Object.keys(ctx.channelPost).join(', '));
+      if ('text' in ctx.channelPost) {
+        this.logger.debug(ctx.channelPost.text);
+      }
+    });
   }
 
   private addChatRemovalHandler(): void {
@@ -302,17 +311,27 @@ export default class TelegramBot extends BotClient {
   /** Executes the given command if the message matches the regex. */
   private async onMessage(ctx: Context, command: Command): Promise<void> {
     assertIsDefined(ctx.chat, 'Chat is not defined onMessage');
-    assertIsDefined(ctx.message, 'Messsage is not defined onMessage');
+    let msg;
+    if (ctx.message !== undefined) {
+      msg = ctx.message;
+    } else if (ctx.channelPost !== undefined) {
+      msg = ctx.channelPost;
+    } else {
+      throw new Error('Message and ChannelPost undefined');
+    }
     const channel = this.getChannelByID(ctx.chat.id.toString());
     try {
       // Re-enable the channel if disabled, since it is now active
       channel.disabled = false;
       // Channel messages don't have an author, so we have to work around that
-      const userID = ctx.message.from?.id?.toString() ?? this.channelAuthorID;
+      const userID = msg.from?.id?.toString() ?? this.channelAuthorID;
       const user = new User(this, userID);
-      const content = ctx.message.text ?? '';
+      let content = '';
+      if ('text' in msg) {
+        content = msg.text;
+      }
       // Convert from Unix time to date
-      const timeNumber = Math.min(Date.now(), ctx.message.date * 1000 + 500);
+      const timeNumber = Math.min(Date.now(), msg.date * 1000 + 500);
       const timestamp = new Date(timeNumber);
 
       const reg = await command.getRegExp(channel);
@@ -429,7 +448,7 @@ export default class TelegramBot extends BotClient {
     // Set up the message
     const message = messageText;
     let text = '';
-    let options: ExtraEditMessage = {};
+    let options: ExtraReplyMessage = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
       options = { parse_mode: 'Markdown' };
