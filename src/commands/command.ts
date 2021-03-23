@@ -104,6 +104,7 @@ export default abstract class Command {
     // Allow the bot tag after every command
     return new RegExp(
       `${this.channelTrigger(channel).source}(\\s*${EscapeRegex(channel.bot.getUserTag())})?\\s*`,
+      'i',
     );
   }
 }
