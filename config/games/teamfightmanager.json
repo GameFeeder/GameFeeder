@@ -1,0 +1,20 @@
+{
+  "name": "teamfight",
+  "label": "Teamfight Manager",
+  "aliases": ["teamfight", "teamfight manager", "tm"],
+  "color": "#f8f02b",
+  "icon": "https://i.imgur.com/OilT7c5.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "teamfightmanager",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 1372810,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
