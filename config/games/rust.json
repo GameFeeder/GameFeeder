@@ -1,0 +1,15 @@
+{
+  "name": "rust",
+  "label": "Rust",
+  "aliases": ["rust"],
+  "color": "#d04131",
+  "icon": "https://imgur.com/rZyGEEb.jpg",
+  "providers": {
+    "reddit": [],
+    "steam": {
+      "appID": 252490,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
