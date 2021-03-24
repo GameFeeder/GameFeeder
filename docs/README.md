@@ -91,6 +91,7 @@ So far, we are providing the following commands:
 So far, we are supporting the following games:
 
 - <strong align="left">Among Us</strong> <img src="https://imgur.com/ey1SDhy.jpg" height="17px"/>
+- <strong align="left">Apex Legends</strong> <img src="https://imgur.com/AbF7UW5.jpg" height="17px"/>
 - <strong align="left">Artifact</strong> <img src="https://i.imgur.com/DblOFap.png" height="17px"/>
 - <strong align="left">Cities: Skylines</strong> <img src="https://imgur.com/zRjxsWw.jpg" height="17px"/>
 - <strong align="left">Counter-Strike: Global Offensive</strong> <img src="https://i.imgur.com/2ONuRD3.png" height="17px"/>
@@ -109,12 +110,16 @@ So far, we are supporting the following games:
 - <strong align="left">Payday 2</strong> <img src="https://imgur.com/oblgpMY.jpg" height="17px"/>
 - <strong align="left">PLAYERUNKNOWN'S BATTLEGROUNDS</strong> <img src="https://imgur.com/Emx9o83.jpg" height="17px"/>
 - <strong align="left">Risk of Rain 2</strong> <img src="https://imgur.com/oQhrK1N.jpg" height="17px"/>
+- <strong align="left">Rust</strong> <img src="https://imgur.com/rZyGEEb.jpg" height="17px"/>
 - <strong align="left">Satisfactory</strong> <img src="https://i.imgur.com/RgtzvdT.png" height="17px"/>
+- <strong align="left">Sea of Thieves</strong> <img src="https://imgur.com/4nPhHjX.jpg" height="17px"/>
 - <strong align="left">Sid Meier's Civilization VI</strong> <img src="https://imgur.com/jKlh55f.jpg" height="17px"/>
 - <strong align="left">Stardew Valley</strong> <img src="https://imgur.com/cgm7M2G.jpg" height="17px"/>
 - <strong align="left">Steam</strong> <img src="https://i.imgur.com/QbzZxrC.png" height="17px"/>
+- <strong align="left">Teamfight Manager</strong> <img src="https://i.imgur.com/OilT7c5.jpg" height="17px"/>
 - <strong align="left">Team Fortress 2</strong> <img src="https://i.imgur.com/zaQObOc.png" height="17px"/>
 - <strong align="left">Tom Clancy's Rainbow Six Siege</strong> <img src="https://imgur.com/CtLj8WV.jpg" height="17px"/>
+- <strong align="left">Valheim</strong> <img src="https://imgur.com/lEc7zOO.jpg" height="17px"/>
 - <strong align="left">Veloren</strong> <img src="https://veloren.net/Logo_Square.png" height="17px"/>
 
 ### Contributing
