@@ -1,0 +1,20 @@
+{
+  "name": "seaofthieves",
+  "label": "Sea of Thieves",
+  "aliases": ["sea of thieves", "sot"],
+  "color": "#00ffa8",
+  "icon": "https://imgur.com/4nPhHjX.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "Seaofthieves",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 1172620,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
