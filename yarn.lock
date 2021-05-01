@@ -1267,6 +1267,24 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
+buffer-alloc-unsafe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
+  integrity sha512-TEM2iMIEQdJ2yjPJoSIsldnleVaAk1oW3DBVUykyOLsEsFmEc9kn+SFFPz+gl54KQNxlDnAwCXosOS9Okx2xAg==
+
+buffer-alloc@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
+  integrity sha512-CFsHQgjtW1UChdXgbyJGtnm+O/uLQeZdtbDo8mfUgYXCHSM1wgrVxXm6bSyrUuErEb+4sYVGCzASBRot7zyrow==
+  dependencies:
+    buffer-alloc-unsafe "^1.1.0"
+    buffer-fill "^1.0.0"
+
+buffer-fill@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
+  integrity sha1-+PeLdniYiO858gXNY39o5wISKyw=
+
 buffer-from@1.x, buffer-from@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
@@ -1730,19 +1748,19 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-discord.js@12.5.1:
-  version "12.5.1"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-12.5.1.tgz#992b45753e3815526a279914ccc281d3496f5990"
-  integrity sha512-VwZkVaUAIOB9mKdca0I5MefPMTQJTNg0qdgi1huF3iwsFwJ0L5s/Y69AQe+iPmjuV6j9rtKoG0Ta0n9vgEIL6w==
+discord.js@12.5.3:
+  version "12.5.3"
+  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-12.5.3.tgz#56820d473c24320871df9ea0bbc6b462f21cf85c"
+  integrity sha512-D3nkOa/pCkNyn6jLZnAiJApw2N9XrIsXUAdThf01i7yrEuqUmDGc7/CexVWwEcgbQR97XQ+mcnqJpmJ/92B4Aw==
   dependencies:
     "@discordjs/collection" "^0.1.6"
     "@discordjs/form-data" "^3.0.1"
     abort-controller "^3.0.0"
     node-fetch "^2.6.1"
-    prism-media "^1.2.2"
+    prism-media "^1.2.9"
     setimmediate "^1.0.5"
     tweetnacl "^1.0.3"
-    ws "^7.3.1"
+    ws "^7.4.4"
 
 doctrine@1.5.0:
   version "1.5.0"
@@ -3639,15 +3657,15 @@ lodash.sortby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
   integrity sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
 
-lodash@4.17.20, lodash@4.x, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20:
-  version "4.17.20"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
-  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
-
-lodash@^4.17.21:
+lodash@4.17.21, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+
+lodash@4.x, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20:
+  version "4.17.20"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
+  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
 logform@^2.2.0:
   version "2.2.0"
@@ -4271,10 +4289,10 @@ pretty-format@^26.0.0, pretty-format@^26.6.2:
     ansi-styles "^4.0.0"
     react-is "^17.0.1"
 
-prism-media@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/prism-media/-/prism-media-1.2.2.tgz#4f1c841f248b67d325a24b4e6b1a491b8f50a24f"
-  integrity sha512-I+nkWY212lJ500jLe4tN9tWO7nRiBAVdMv76P9kffZjYhw20raMlW1HSSvS+MLXC9MmbNZCazMrAr+5jEEgTuw==
+prism-media@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/prism-media/-/prism-media-1.2.9.tgz#8d4f97b36efdfc82483eb8d3db64020767866f36"
+  integrity sha512-UHCYuqHipbTR1ZsXr5eg4JUmHER8Ss4YEb9Azn+9zzJ7/jlTtD1h0lc4g6tNx3eMlB8Mp6bfll0LPMAV4R6r3Q==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -4311,10 +4329,10 @@ pstree.remy@^1.1.7:
   resolved "https://registry.yarnpkg.com/pstree.remy/-/pstree.remy-1.1.8.tgz#c242224f4a67c21f686839bbdb4ac282b8373d3a"
   integrity sha512-77DZwxQmxKnu3aR542U+X8FypNzbfJ+C5XQDk3uWjWxn6151aIMGthWYRXTqT1E5oJvg+ljaa2OJi+VfvCOQ8w==
 
-pubsub-js@1.9.2:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.9.2.tgz#4d01fe4df7d1957efa681f6338ebc9ba11b7ef3a"
-  integrity sha512-t+djzDvEKv4GoP5nPJ5Ar5h+4MrwPw+C9/9l75GV8TzO49HezXnxR1G6E/QJZdE2EDsXRNMu6O9MFjpjkSV7zg==
+pubsub-js@1.9.3:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/pubsub-js/-/pubsub-js-1.9.3.tgz#674eea4d568d0402e0527cdb10e2aab7b55621d2"
+  integrity sha512-FhYYlPNOywTh7zN38u5AlG67emA47w6JZd7YgdQU1w8gQbZhhIGxVM0AQosdaINHb2ALb+fhfnVyBJAt4D4IzA==
 
 pump@^3.0.0:
   version "3.0.0"
@@ -4579,10 +4597,10 @@ rimraf@^3.0.0, rimraf@^3.0.2:
   dependencies:
     glob "^7.1.3"
 
-rss-parser@3.11.0:
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/rss-parser/-/rss-parser-3.11.0.tgz#d885ea2ee12758377397648ac20582182379bbf6"
-  integrity sha512-oTLoYW+bNqNwkz8OpGinBU9s3As0sdczQjETIZFgyAdi7AopyhoVFGPIyFMYXXEY8hayKzD5CH+4CtmiPtJ89g==
+rss-parser@3.12.0:
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/rss-parser/-/rss-parser-3.12.0.tgz#b8888699ea46304a74363fbd8144671b2997984c"
+  integrity sha512-aqD3E8iavcCdkhVxNDIdg1nkBI17jgqF+9OqPS1orwNaOgySdpvq6B+DoONLhzjzwV8mWg37sb60e4bmLK117A==
   dependencies:
     entities "^2.0.3"
     xml2js "^0.4.19"
@@ -4606,6 +4624,13 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
+
+safe-compare@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/safe-compare/-/safe-compare-1.1.4.tgz#5e0128538a82820e2e9250cd78e45da6786ba593"
+  integrity sha512-b9wZ986HHCo/HbKrRpBJb2kqXMK9CEWIE1egeEvZsYn69ay3kdfl9nG3RyOcR+jInTDf7a86WQ1d4VJX7goSSQ==
+  dependencies:
+    buffer-alloc "^1.2.0"
 
 safe-regex@^1.1.0:
   version "1.1.0"
@@ -5059,10 +5084,10 @@ table@^6.0.4:
     slice-ansi "^4.0.0"
     string-width "^4.2.0"
 
-telegraf@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/telegraf/-/telegraf-4.0.3.tgz#309ec4cbc7b4ac0cc32d4f39ac1454103c60fc5a"
-  integrity sha512-QWn9r7IAX4C0kHiP2skieI4pry1SO3YGe2n34a3ymqENeu6bJposut6uR1zLNzOhSPvAxqdlO59bJWGXnADqHQ==
+telegraf@4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/telegraf/-/telegraf-4.3.0.tgz#c9683192bdb81e7c7fbb04cf1ce750fb34de7149"
+  integrity sha512-MuDUtSMipzMzQp8fXbQx76jp4ZD70KREdnpH1idUzN9Zlgm6EzatBQFU4Ps0ipxtEmnBBdghBMumQwrjRe3eqg==
   dependencies:
     abort-controller "^3.0.0"
     debug "^4.3.1"
@@ -5070,8 +5095,9 @@ telegraf@4.0.3:
     module-alias "^2.2.2"
     node-fetch "^2.6.1"
     p-timeout "^4.1.0"
+    safe-compare "^1.1.4"
     sandwich-stream "^2.0.2"
-    typegram "^3.1.4"
+    typegram "^3.2.0"
 
 term-size@^2.1.0:
   version "2.2.1"
@@ -5313,10 +5339,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typegram@^3.1.4:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/typegram/-/typegram-3.1.9.tgz#9fd40956263f852b94c808f814ade61593089810"
-  integrity sha512-qF1cR8W7pm9oohLYPwH8jPZY3dRgA3/jjx0O83sKYHg1RYxIO90oEKH5FmnMq0lhGtX75pH0XOtyIU5e7hve4Q==
+typegram@^3.2.0:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/typegram/-/typegram-3.3.1.tgz#af1ca857350a270ed065fb708c19bab36e0d61a7"
+  integrity sha512-Y1bR17IZ9Shj1Ih8wTLtrmOOMHJ20ve0Bd5SPymmw53uO4WLp/JjNM55s2b6PEziBvMISRdCQSZ+m6JiUKEobA==
 
 typescript@4.2.4:
   version "4.2.4"
@@ -5588,10 +5614,15 @@ ws@^3.3.1:
     safe-buffer "~5.1.0"
     ultron "~1.1.0"
 
-ws@^7.2.3, ws@^7.3.1:
+ws@^7.2.3:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.0.tgz#a5dd76a24197940d4a8bb9e0e152bb4503764da7"
   integrity sha512-kyFwXuV/5ymf+IXhS6f0+eAFvydbaBW3zjpT6hUdAh/hbVjTIB5EHBGi0bPoCLSK2wcuz3BrEkB9LrYv1Nm4NQ==
+
+ws@^7.4.4:
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.5.tgz#a484dd851e9beb6fdb420027e3885e8ce48986c1"
+  integrity sha512-xzyu3hFvomRfXKH8vOFMU3OguG6oOvhXMo3xsGy3xWExqaM2dxBbVxuD99O7m3ZUFMvvscsZDqxfgMaRr/Nr1g==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"
