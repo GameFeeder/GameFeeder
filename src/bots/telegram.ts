@@ -1,6 +1,6 @@
 import { Context, Telegraf } from 'telegraf';
 import Queue from 'smart-request-balancer';
-import { ExtraReplyMessage, ParseMode } from 'telegraf/typings/telegram-types';
+import { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -40,7 +40,6 @@ interface TelegramError {
     payload: {
       chat_id: number;
       text: string;
-      parse_mode: ParseMode;
     };
   };
 }
