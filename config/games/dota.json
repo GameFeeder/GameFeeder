@@ -13,7 +13,7 @@
   "providers": {
     "reddit": [
       {
-        "urlFilters": ["dota2.com/patches", "blog.dota2.com"],
+        "urlFilters": [],
         "subreddit": "DotA2",
         "users": [
           {
@@ -31,11 +31,7 @@
         ]
       },
       {
-        "urlFilters": [
-          "dota2.com/patches",
-          "blog.dota2.com",
-          "https://steamcommunity.com/games/570/"
-        ],
+        "urlFilters": ["https://steamcommunity.com/games/570/"],
         "subreddit": "DotaPatches",
         "users": [
           {
@@ -57,11 +53,6 @@
       "appID": 570,
       "feeds": ["steam_community_announcements"]
     },
-    "rss": [
-      {
-        "label": "Dota 2 Blog",
-        "url": "http://blog.dota2.com/feed"
-      }
-    ]
+    "rss": []
   }
 }
