@@ -1,0 +1,14 @@
+{
+  "name": "gwent",
+  "label": "GWENT: The Witcher Card Game",
+  "aliases": ["gwent: the witcher card game", "gwent", "witcher card game"],
+  "color": "#60ebeb",
+  "icon": "https://imgur.com/8JEYta8.jpg",
+  "providers": {
+    "steam": {
+      "appID": 1284410,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
