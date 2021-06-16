@@ -4583,10 +4583,10 @@ smart-request-balancer@2.1.1:
     debug "^4.1.1"
     uuid "^3.3.2"
 
-snoowrap@1.22.0:
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/snoowrap/-/snoowrap-1.22.0.tgz#d89fe3876d238da8697cf95f73ad67c1949cf66c"
-  integrity sha512-eV1CnzWaAinucpOulyaz8ma/3sStPsxlE0sa0kjldKVrS4aQQc8rBJpwJk5cE67DcLSDMm6O1C6out4pPmrR6g==
+snoowrap@1.23.0:
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/snoowrap/-/snoowrap-1.23.0.tgz#30f02514ee533b7e305df083ad5bb0741549e268"
+  integrity sha512-8FIGWr20Gc+d/C3NRrNPp5VQFNb+eGaQyvIkM5KUL71pYpRM231fkRdLNydMrdtLNRDrTZeZApHHCb8Uk/QuTQ==
   dependencies:
     bluebird "^3.5.5"
     lodash "^4.17.15"
