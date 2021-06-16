@@ -780,9 +780,8 @@ const labelCmd = new TwoPartCommand(
       }
     } else {
       // Check if an ID and bot has been specified
-      const channelIDMatch = /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))$/.exec(
-        message.content,
-      );
+      const channelIDMatch =
+        /^\s*(?:(?<botName>\w+)\s+)?(?<channelID>(?:(?:\+|-)?\d+)|(?:this))$/.exec(message.content);
       if (channelIDMatch) {
         const channelIDGroups = matchGroups(channelIDMatch);
         const channel = message.getBot().getChannelByID(channelIDGroups.channelID);
