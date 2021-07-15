@@ -5059,10 +5059,10 @@ table@^6.0.9:
     string-width "^4.2.0"
     strip-ansi "^6.0.0"
 
-telegraf@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/telegraf/-/telegraf-4.3.0.tgz#c9683192bdb81e7c7fbb04cf1ce750fb34de7149"
-  integrity sha512-MuDUtSMipzMzQp8fXbQx76jp4ZD70KREdnpH1idUzN9Zlgm6EzatBQFU4Ps0ipxtEmnBBdghBMumQwrjRe3eqg==
+telegraf@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/telegraf/-/telegraf-4.4.0.tgz#a84228664a252062036b328fc364b5662ba3d22d"
+  integrity sha512-DjVVEz37/5Hp0n8eLhAVjErwoyrWsqLyFAoRj8sU5XiD2CVAbBOx9J6a7cLn/B46pPgDqgbrdjiOeK0fQMiLOA==
   dependencies:
     abort-controller "^3.0.0"
     debug "^4.3.1"
@@ -5072,7 +5072,7 @@ telegraf@4.3.0:
     p-timeout "^4.1.0"
     safe-compare "^1.1.4"
     sandwich-stream "^2.0.2"
-    typegram "^3.2.0"
+    typegram "^3.4.0"
 
 term-size@^2.1.0:
   version "2.2.1"
@@ -5237,10 +5237,10 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-turndown@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/turndown/-/turndown-7.0.0.tgz#19b2a6a2d1d700387a1e07665414e4af4fec5225"
-  integrity sha512-G1FfxfR0mUNMeGjszLYl3kxtopC4O9DRRiMlMDDVHvU1jaBkGFg4qxIyjIk2aiKLHyDyZvZyu4qBO2guuYBy3Q==
+turndown@7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/turndown/-/turndown-7.1.1.tgz#96992f2d9b40a1a03d3ea61ad31b5a5c751ef77f"
+  integrity sha512-BEkXaWH7Wh7e9bd2QumhfAXk5g34+6QUmmWx+0q6ThaVOLuLUqsnkq35HQ5SBHSaxjSfSM7US5o4lhJNH7B9MA==
   dependencies:
     domino "^2.1.6"
 
@@ -5295,10 +5295,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typegram@^3.2.0:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/typegram/-/typegram-3.3.1.tgz#af1ca857350a270ed065fb708c19bab36e0d61a7"
-  integrity sha512-Y1bR17IZ9Shj1Ih8wTLtrmOOMHJ20ve0Bd5SPymmw53uO4WLp/JjNM55s2b6PEziBvMISRdCQSZ+m6JiUKEobA==
+typegram@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/typegram/-/typegram-3.4.0.tgz#ab3a7b4219d9d7d7210eb2e39759a242927e8035"
+  integrity sha512-GUE1LV3LJruTThJaUBUvTnaEpTswFhuxhEx9LaVLIA6WRw9CdPQmb87OIA0rCvoMSPBC8gZiHrrPqX9VJGDXwQ==
 
 typescript@4.3.5:
   version "4.3.5"
