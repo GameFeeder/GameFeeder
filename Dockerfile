@@ -1,4 +1,4 @@
-FROM node:14.17.5-alpine3.14 AS production-dependencies
+FROM node:14.18.0-alpine3.14 AS production-dependencies
 WORKDIR /app
 COPY ./package.json ./yarn.lock /app/
 RUN yarn install --frozen-lockfile --production
@@ -11,7 +11,7 @@ COPY . .
 FROM workspace AS build-dependencies
 RUN yarn build
 
-FROM node:14.17.5-alpine3.14 AS production
+FROM node:14.18.0-alpine3.14 AS production
 WORKDIR /app
 COPY ./package.json .
 COPY --from=build-dependencies /app/dist ./dist
