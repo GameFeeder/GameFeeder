@@ -15,7 +15,8 @@
       }
     },
     "color": {
-      "type": "string"
+      "type": "string",
+      "format": "color-hex"
     },
     "icon": {
       "type": "string"
