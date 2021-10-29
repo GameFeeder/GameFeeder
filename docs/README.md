@@ -108,6 +108,7 @@ So far, we are supporting the following games:
 - <strong align="left">Hades</strong> <img src="https://imgur.com/VHWSO4y.jpg" height="17px"/>
 - <strong align="left">Microsoft Flight Simulator 2020</strong> <img src="https://imgur.com/VLPzilS.jpg" height="17px"/>
 - <strong align="left">Minecraft</strong> <img src="https://imgur.com/GKVk9ve.png" height="17px"/>
+- <strong align="left">MIR4</strong> <img src="https://imgur.com/VwEx3Mp.jpg" height="17px"/>
 - <strong align="left">Payday 2</strong> <img src="https://imgur.com/oblgpMY.jpg" height="17px"/>
 - <strong align="left">PLAYERUNKNOWN'S BATTLEGROUNDS</strong> <img src="https://imgur.com/Emx9o83.jpg" height="17px"/>
 - <strong align="left">Risk of Rain 2</strong> <img src="https://imgur.com/oQhrK1N.jpg" height="17px"/>
