@@ -1,0 +1,20 @@
+{
+  "name": "mir4",
+  "label": "MIR4",
+  "aliases": ["mir4", "mir"],
+  "color": "#fa1c19",
+  "icon": "https://imgur.com/VwEx3Mp.jpg",
+  "providers": {
+    "steam": {
+      "appID": 1623660,
+      "feeds": ["steam_community_announcements"]
+    },
+    "reddit": [
+      {
+        "subreddit": "MIR4",
+        "users": []
+      }
+    ],
+    "rss": []
+  }
+}
