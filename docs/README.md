@@ -105,6 +105,7 @@ So far, we are supporting the following games:
 - <strong align="left">Factorio</strong> <img src="https://i.imgur.com/7D0A9eT.png" height="17px"/>
 - <strong align="left">Fall Guys: Ultimate Knockout</strong> <img src="https://imgur.com/qjGAmMD.jpg" height="17px"/>
 - <strong align="left">Forager</strong> <img src="https://imgur.com/tqLE7vm.jpg" height="17px"/>
+- <strong align="left">Grand Theft Auto V</strong> <img src="https://imgur.com/XiGyunR.jpg" height="17px"/>
 - <strong align="left">GWENT: The Witcher Card Game</strong> <img src="https://imgur.com/8JEYta8.jpg" height="17px"/>
 - <strong align="left">Hades</strong> <img src="https://imgur.com/VHWSO4y.jpg" height="17px"/>
 - <strong align="left">Microsoft Flight Simulator 2020</strong> <img src="https://imgur.com/VLPzilS.jpg" height="17px"/>
