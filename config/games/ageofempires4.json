@@ -1,0 +1,20 @@
+{
+  "name": "ageofempires4",
+  "label": "Age of Empires IV",
+  "aliases": ["age of empires iv", "age of empires 4", "aoeiv", "aoe4", "aoe iv", "aoe 4"],
+  "color": "#ebc594",
+  "icon": "https://imgur.com/NCYubeG.jpg",
+  "providers": {
+    "steam": {
+      "appID": 1466860,
+      "feeds": ["steam_community_announcements"]
+    },
+    "reddit": [
+      {
+        "subreddit": "aoe4",
+        "users": []
+      }
+    ],
+    "rss": []
+  }
+}
