@@ -2,7 +2,7 @@
 
 First of, thanks for your help!
 
-In most cases, you will need to setup the bot locally to contribute to this project. To do this, visit our in-depth [setup guide](SETUP.md).
+In most cases, you will need to setup the bot locally to contribute to this project. To do this, visit our in-depth [setup guide](docs/SETUP.md).
 
 ## Index
 
