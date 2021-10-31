@@ -90,6 +90,7 @@ So far, we are providing the following commands:
 
 So far, we are supporting the following games:
 
+- <strong align="left">Age of Empires IV</strong> <img src="https://imgur.com/NCYubeG.jpg" height="17px"/>
 - <strong align="left">Among Us</strong> <img src="https://imgur.com/ey1SDhy.jpg" height="17px"/>
 - <strong align="left">Apex Legends</strong> <img src="https://imgur.com/AbF7UW5.jpg" height="17px"/>
 - <strong align="left">Artifact</strong> <img src="https://i.imgur.com/DblOFap.png" height="17px"/>
