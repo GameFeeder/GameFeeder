@@ -1,0 +1,20 @@
+{
+  "name": "gta5",
+  "label": "Grand Theft Auto V",
+  "aliases": ["gta5", "gtav", "gta 5", "gta v", "grand theft auto v", "grand theft auto 5"],
+  "color": "#497c2d",
+  "icon": "https://imgur.com/XiGyunR.jpg",
+  "providers": {
+    "reddit": [
+      {
+        "subreddit": "GrandTheftAutoV",
+        "users": []
+      }
+    ],
+    "steam": {
+      "appID": 271590,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
