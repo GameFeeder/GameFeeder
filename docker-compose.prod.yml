@@ -2,10 +2,10 @@ version: '3.3'
 services:
   bot:
     container_name: gamefeeder
-    image: docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest
+    image: ghcr.io/gamefeeder/gamefeeder/gamefeeder:latest
     volumes:
-      - ./config/api_config.json:/app/config/api_config.json:ro
-      - ./config/updater_config.json:/app/config/updater_config.json:ro
+      - ./config/api_config.json:/app/config/api_config.json
+      - ./config/updater_config.json:/app/config/updater_config.json
       - ./data:/app/data
     restart: unless-stopped
     logging:
