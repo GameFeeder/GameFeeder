@@ -61,7 +61,7 @@
     "lodash": "4.17.21",
     "node-fetch": "2.6.7",
     "node-html-parser": "3.3.6",
-    "pubsub-js": "1.9.3",
+    "pubsub-js": "1.9.4",
     "rss-parser": "3.12.0",
     "smart-request-balancer": "2.1.1",
     "snoowrap": "1.23.0",
