@@ -28,7 +28,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "discord.js": "12.5.3",
+    "discord.js": "^13",
     "escape-string-regexp": "4.0.0",
     "lodash": "4.17.21",
     "node-fetch": "2.6.7",
