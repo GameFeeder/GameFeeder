@@ -15,7 +15,7 @@
   "homepage": "https://github.com/GameFeeder/GameFeeder",
   "engines": {
     "node": ">=18.12.1",
-    "yarn": ">=1.16.0"
+    "npm": ">=8.19"
   },
   "scripts": {
     "build": "tsc --build",
@@ -25,8 +25,7 @@
     "format": "eslint \"src/**/*.ts\" --fix",
     "test": "jest --config jest.config.json",
     "coverage": "jest --config jest.config.json --coverage",
-    "watch": "tsc --watch",
-    "prepare": "husky install"
+    "watch": "tsc --watch"
   },
   "devDependencies": {
     "@types/lodash": "4.14.171",

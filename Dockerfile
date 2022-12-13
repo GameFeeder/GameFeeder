@@ -1,15 +1,15 @@
 FROM node:18.12.1-alpine3.16 AS production-dependencies
 WORKDIR /app
-COPY ./package.json ./yarn.lock /app/
-RUN yarn install --frozen-lockfile --production
+COPY ./package.json ./package-lock.json /app/
+RUN npm ci --omit=dev
 
 # Bring only devDependencies
 FROM production-dependencies AS workspace
-RUN yarn install --frozen-lockfile
+RUN npm ci
 COPY . .
 
 FROM workspace AS build-dependencies
-RUN yarn build
+RUN npm run build
 
 FROM node:18.12.1-alpine3.16 AS production
 WORKDIR /app
