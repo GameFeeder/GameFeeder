@@ -12,7 +12,7 @@ In most cases, you will need to setup the bot locally to contribute to this proj
 
 ## Debugging and configurations
 
-To test out the bot in development, use the `yarn dev` command. The bot will try to make sure that the `config/` and `data/` files are up-to-date and launch all enabled bots and the updater. The bot will restart on any `config/` or code changes.
+To test out the bot in development, use the `npm run dev` command. The bot will try to make sure that the `config/` and `data/` files are up-to-date and launch all enabled bots and the updater. The bot will restart on any `config/` or code changes.
 
 Several `config/` changes are recommended for testing and debugging:
 
@@ -30,4 +30,4 @@ To test out the bot's functionality, we recommend to try the following steps:
 
 ## Testing
 
-You can use `yarn test` to run the unit tests to make sure that you didn't break anything. Please provide unit tests for your code if applicable.
+You can use `npm run test` to run the unit tests to make sure that you didn't break anything. Please provide unit tests for your code if applicable.

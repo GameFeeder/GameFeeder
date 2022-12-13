@@ -25,19 +25,19 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Check for code style & formatting
-        run: yarn lint
+        run: npm run lint
 
       - name: Run typescript compiler
-        run: yarn build
+        run: npm run build
 
       - name: Check for circular dependencies
         run: npx madge --circular --extensions js ./dist
 
       - name: Run the tests
-        run: yarn test
+        run: npm run test
 
         env:
           CI: true

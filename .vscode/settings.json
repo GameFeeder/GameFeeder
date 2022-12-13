@@ -14,7 +14,7 @@
         "coverage": true,
         "dist": true,
         "node_modules": true,
-        "yarn.lock": true
+        "package-lock.json": true
     },
     "json.schemas": [
         {

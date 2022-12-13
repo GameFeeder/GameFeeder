@@ -23,10 +23,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Determine test coverage
-        run: yarn coverage
+        run: npm run coverage
 
       - name: Upload coverage to codecov
         run: bash <(curl -s https://codecov.io/bash)

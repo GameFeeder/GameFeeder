@@ -30,4 +30,4 @@ LICENSE                           @TimJentzsch
 /package.json                     @zachkont
 /tsconfig.json                    @zachkont
 /tslint.json                      @zachkont
-/yarn.lock                        @zachkont
+/package-lock.json                @zachkont

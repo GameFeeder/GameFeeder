@@ -28,7 +28,7 @@ Before we can start, you first need a couple of programs and tools:
 - We suggest to use [Visual Studio Code](https://code.visualstudio.com/) (*VS Code*) as code editor.
 - We use [git](https://git-scm.com/) as version-control system. Ensure that *git* is installed by running `git --version` in a terminal.
 - We use [node.js](https://nodejs.org/en/) as runtime environment. Take a look the `engines.node` field in [`package.json`](package.json) to see which version you need. Ensure that *node.js* is installed by running `node --version` in a terminal.
-- We use [yarn](https://classic.yarnpkg.com/en/docs/install) as package manager. Please do not use *npm*! Take a look the `engines.yarn` field in [`package.json`](package.json) to see which version you need. Ensure that *yarn* is installed by runnning `yarn --version` in a terminal.
+- We use [npmjs](https://docs.npmjs.com/) as package manager. Take a look the `engines.npm` field in [`package.json`](package.json) to see which version you need.
 
 ### Configuration
 
@@ -43,7 +43,7 @@ $ git clone git@github.com:GameFeeder/GameFeeder.git
 
 This will create a new `GameFeeder` folder that you should open in *VS Code*. You should now install the recommended extensions (*VS Code* might ask you for it, otherwise navigate to the extension tab to install them).
 
-Now, open the *VS Code* terminal and execute `yarn install` to install all packages you need to run the bot. After that, you can start the bot for the first time using `yarn dev`. The `Init Manager` will then setup the configuration and data files that you need. We use [nodemon](https://nodemon.io/) to automatically restart the bot when it crashes or when you made any changes to the code, so the bot will restart and warn you that API keys are missing. We will add those in the next section.
+Now, open the *VS Code* terminal and execute `npm install` to install all packages you need to run the bot. After that, you can start the bot for the first time using `npm run dev`. The `Init Manager` will then setup the configuration and data files that you need. We use [nodemon](https://nodemon.io/) to automatically restart the bot when it crashes or when you made any changes to the code, so the bot will restart and warn you that API keys are missing. We will add those in the next section.
 
 But first, take some time to get familiar with the configuration files. The files are in JSON format and some of them are `.example` files. Do not modify these files! The `.example` files serve as template for the `Init Manager` and get uploaded on GitHub.
 

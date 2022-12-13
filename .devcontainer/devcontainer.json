@@ -1,7 +1,7 @@
 {
 	"name": "GameFeederDev",
 	"dockerFile": "Dockerfile",
-	"postCreateCommand": "yarn install",
+	"postCreateCommand": "npm install",
 	"extensions": [
 		"ban.spellright",
 		"dbaeumer.vscode-eslint",
