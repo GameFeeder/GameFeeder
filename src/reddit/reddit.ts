@@ -79,10 +79,7 @@ export default class Reddit {
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
     } catch (error) {
       Reddit.logger.error(
-        `Failed to get submissions on /r/${subreddit}:\n${StrUtil.naturalLimit(
-          error.toString(),
-          5000,
-        )}`,
+        `Failed to get submissions on /r/${subreddit}:\n${StrUtil.naturalLimit(`${error}`, 5000)}`,
       );
     }
     return posts;
@@ -101,7 +98,7 @@ export default class Reddit {
       posts = submissions.map((submission) => RedditPost.fromSubmission(submission));
     } catch (error) {
       Reddit.logger.error(
-        `Failed to get submissions by /r/${user}:\n${StrUtil.naturalLimit(error.toString(), 5000)}`,
+        `Failed to get submissions by /r/${user}:\n${StrUtil.naturalLimit(`${error}`, 5000)}`,
       );
     }
     return posts;
