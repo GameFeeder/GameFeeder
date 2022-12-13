@@ -5,8 +5,9 @@ import DiscordAPI, {
   GatewayIntentBits,
   ActivityType,
   PermissionsBitField,
+  EmbedBuilder,
+  HexColorString,
 } from 'discord.js';
-import { EmbedBuilder } from '@discordjs/builders';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -458,7 +459,7 @@ export default class DiscordBot extends BotClient {
     }
     // Color
     if (notification.color) {
-      embed.setColor(notification.color);
+      embed.setColor(notification.color as HexColorString);
     }
     // Description
     if (notification.content) {
