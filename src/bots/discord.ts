@@ -1,4 +1,11 @@
-import DiscordAPI, { DMChannel, TextChannel, MessageEmbed } from 'discord.js';
+import DiscordAPI, {
+  DMChannel,
+  TextChannel,
+  MessageEmbed,
+  Intents,
+  Permissions as DiscordPermissions,
+  HexColorString,
+} from 'discord.js';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -28,7 +35,14 @@ export default class DiscordBot extends BotClient {
     super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot
-    this.bot = new DiscordAPI.Client();
+    this.bot = new DiscordAPI.Client({
+      intents: [
+        Intents.FLAGS.DIRECT_MESSAGES,
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.MESSAGE_CONTENT,
+      ],
+    });
   }
 
   public static getBot(): DiscordBot {
@@ -152,7 +166,7 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
-      if (discordUser?.hasPermission(8)) {
+      if (discordUser?.permissions.has(DiscordPermissions.FLAGS.ADMINISTRATOR)) {
         return UserRole.ADMIN;
       }
     }
@@ -279,7 +293,7 @@ export default class DiscordBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    this.bot.on('message', async (msg) => {
+    this.bot.on('messageCreate', async (msg) => {
       const channel = this.getChannelByID(msg.channel.id);
       const user = new User(this, msg.author.id);
       const now = new Date();
@@ -329,15 +343,14 @@ export default class DiscordBot extends BotClient {
     this.userName = user?.username ?? 'UNKNOWN';
     this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
 
+    const presence: DiscordAPI.PresenceData = {
+      status: 'online',
+      activities: [{ name: `v${ProjectManager.getVersionNumber()}`, type: 'PLAYING' }],
+    };
+
     // Setup presence
     try {
-      this.bot.user?.setPresence({
-        status: 'online',
-        activity: {
-          type: 'PLAYING',
-          name: `v${ProjectManager.getVersionNumber()}`,
-        },
-      });
+      this.bot.user?.setPresence(presence);
     } catch (error) {
       this.logger.error(`Failed to setup bot presence:\n${error}`);
       throw error;
@@ -430,15 +443,16 @@ export default class DiscordBot extends BotClient {
     // Author
     if (notification.author) {
       const authorMD = DiscordBot.msgFromMarkdown(notification.author.text, true);
-      if (notification.author.icon && notification.author.link) {
-        embed.setAuthor(authorMD, notification.author.icon, notification.author.link);
-      } else {
-        embed.setAuthor(authorMD);
-      }
+
+      embed.setAuthor({
+        name: authorMD,
+        iconURL: notification.author?.icon,
+        url: notification.author?.link,
+      });
     }
     // Color
     if (notification.color) {
-      embed.setColor(notification.color);
+      embed.setColor(notification.color as HexColorString);
     }
     // Description
     if (notification.content) {
@@ -449,11 +463,10 @@ export default class DiscordBot extends BotClient {
     // Footer
     if (notification.footer) {
       const footerMD = DiscordBot.msgFromMarkdown(notification.footer.text, true);
-      if (notification.footer.icon) {
-        embed.setFooter(footerMD, notification.footer.icon);
-      } else {
-        embed.setFooter(footerMD);
-      }
+      embed.setFooter({
+        text: footerMD,
+        iconURL: notification.footer.icon,
+      });
     }
     // Image
     if (notification.image) {
@@ -569,13 +582,19 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
+    const discordMessage: DiscordAPI.MessageOptions = {
+      // The string is not allowed to be empty
+      content: text || undefined,
+      embeds: embed ? [embed] : undefined,
+    };
+
     try {
       if (discordChannel instanceof DMChannel) {
-        await discordChannel.send(text, embed ?? {});
+        await discordChannel.send(discordMessage);
         return true;
       }
       if (discordChannel instanceof TextChannel) {
-        await discordChannel.send(text, embed ?? {});
+        await discordChannel.send(discordMessage);
         return true;
       }
       // Group DMs seem to be deprecated
