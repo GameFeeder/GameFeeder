@@ -10,11 +10,6 @@
         "subreddit": "Minecraft"
       }
     ],
-    "rss": [
-      {
-        "label": "Minecraft Blog",
-        "url": "https://minecraft.net/en-us/feeds/community-content/rss"
-      }
-    ]
+    "rss": []
   }
 }
