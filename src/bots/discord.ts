@@ -1,11 +1,12 @@
 import DiscordAPI, {
   DMChannel,
   TextChannel,
-  MessageEmbed,
-  Intents,
-  Permissions as DiscordPermissions,
-  HexColorString,
+  APIEmbed,
+  GatewayIntentBits,
+  ActivityType,
+  PermissionsBitField,
 } from 'discord.js';
+import { EmbedBuilder } from '@discordjs/builders';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -37,10 +38,10 @@ export default class DiscordBot extends BotClient {
     // Set up the bot
     this.bot = new DiscordAPI.Client({
       intents: [
-        Intents.FLAGS.DIRECT_MESSAGES,
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.MESSAGE_CONTENT,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
       ],
     });
   }
@@ -166,7 +167,7 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof TextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
-      if (discordUser?.permissions.has(DiscordPermissions.FLAGS.ADMINISTRATOR)) {
+      if (discordUser?.permissions.has(PermissionsBitField.Flags.Administrator)) {
         return UserRole.ADMIN;
       }
     }
@@ -202,10 +203,13 @@ export default class DiscordBot extends BotClient {
         const discordPermissions = discordChannel.permissionsFor(discordUser);
         assertIsDefined(discordPermissions);
 
-        const hasAccess = discordPermissions.has('VIEW_CHANNEL');
-        const canWrite = hasAccess && discordPermissions.has('SEND_MESSAGES');
-        const canEdit = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
-        const canPin = hasAccess && discordPermissions.has('MANAGE_MESSAGES');
+        const hasAccess = discordPermissions.has(PermissionsBitField.Flags.ViewChannel);
+        const canWrite =
+          hasAccess && discordPermissions.has(PermissionsBitField.Flags.SendMessages);
+        const canEdit =
+          hasAccess && discordPermissions.has(PermissionsBitField.Flags.ManageMessages);
+        const canPin =
+          hasAccess && discordPermissions.has(PermissionsBitField.Flags.ManageMessages);
 
         return new Permissions(hasAccess, canWrite, canEdit, canPin);
       } catch (error) {
@@ -238,7 +242,8 @@ export default class DiscordBot extends BotClient {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
       canEmbed = discordUser
-        ? discordChannel.permissionsFor(discordUser)?.has('EMBED_LINKS') ?? false
+        ? discordChannel.permissionsFor(discordUser)?.has(PermissionsBitField.Flags.EmbedLinks) ??
+          false
         : false;
     } else {
       this.logger.error(`Unecpected Discord channel type for channel ${channel.label}.`);
@@ -345,7 +350,7 @@ export default class DiscordBot extends BotClient {
 
     const presence: DiscordAPI.PresenceData = {
       status: 'online',
-      activities: [{ name: `v${ProjectManager.getVersionNumber()}`, type: 'PLAYING' }],
+      activities: [{ name: `v${ProjectManager.getVersionNumber()}`, type: ActivityType.Playing }],
     };
 
     // Setup presence
@@ -423,8 +428,9 @@ export default class DiscordBot extends BotClient {
     }
   }
 
-  public embedFromNotification(notification: Notification): MessageEmbed {
-    const embed = new MessageEmbed();
+  public embedFromNotification(notification: Notification): APIEmbed {
+    const embed: EmbedBuilder = new EmbedBuilder();
+
     // Title
     if (notification.title) {
       // Respect title character limits
@@ -452,7 +458,7 @@ export default class DiscordBot extends BotClient {
     }
     // Color
     if (notification.color) {
-      embed.setColor(notification.color as HexColorString);
+      embed.setColor(notification.color);
     }
     // Description
     if (notification.content) {
@@ -481,7 +487,8 @@ export default class DiscordBot extends BotClient {
     if (notification.timestamp) {
       embed.setTimestamp(notification.timestamp);
     }
-    return embed;
+
+    return embed.toJSON();
   }
 
   public static msgFromMarkdown(text: string, isEmbed: boolean): string {
@@ -564,11 +571,7 @@ export default class DiscordBot extends BotClient {
     return markdown;
   }
 
-  private async sendToChannel(
-    channel: Channel,
-    text: string,
-    embed?: MessageEmbed,
-  ): Promise<boolean> {
+  private async sendToChannel(channel: Channel, text: string, embed?: APIEmbed): Promise<boolean> {
     const botChannels = this.bot.channels;
     let discordChannel;
     try {
@@ -582,7 +585,7 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    const discordMessage: DiscordAPI.MessageOptions = {
+    const discordMessage: DiscordAPI.MessageCreateOptions = {
       // The string is not allowed to be empty
       content: text || undefined,
       embeds: embed ? [embed] : undefined,
