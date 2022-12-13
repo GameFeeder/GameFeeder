@@ -497,7 +497,7 @@ export default class TelegramBot extends BotClient {
       await this.bot.telegram.sendMessage(channel.id, text, options);
     } catch (error) {
       // Log the appropriate error
-      this.handleNotificationError(error, channel);
+      this.handleNotificationError(error as TelegramError, channel);
       if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
         this.logger.warn(
           `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
