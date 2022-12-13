@@ -17,7 +17,7 @@ This guide is meant to be beginner-friendly. If you run into any problems during
   - [Test the setup](#test-the-setup)
 - [Docker containers](#docker-containers)
   - [Using the VSCode Dev Container](#using-the-vscode-dev-container)
-  - [Using the production-ready Docker image & Docker Compose](#using-the-production-ready-docker-image--docker-compose)
+  - [Using the production-ready Docker image \& Docker Compose](#using-the-production-ready-docker-image--docker-compose)
 
 ## Local setup
 
@@ -61,7 +61,7 @@ Several features of the bot, such as the different messenger clients and reddit 
 
 You will need to create a Discord bot if you want to test out the Discord notification functionalities.
 
-To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create an application with a bot. This provide you with a bot token. Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field. Make sure to take the bot's token and not the application's client secret, it won't work otherwise.
+To do that, first follow [this](https://discordpy.readthedocs.io/en/latest/discord.html) tutorial to create an application with a bot. This will provide you with a bot token. Copy & paste that in the `config/api_config.json`, in the `bots.discord.token` field. Make sure to take the bot's token and not the application's client secret, it won't work otherwise.
 
 Some commands require the `OWNER` role. To access those, you need to add your userID as a string to `config/api_config.json` in the `bots.discord.owners` array.
 To find out your ID, you can follow [this](https://support.discordapp.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) guide or use the `debug` command of our bot.

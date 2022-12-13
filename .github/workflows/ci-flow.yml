@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.17.2]
+        node-version: [18.12.1]
 
     steps:
       - name: Checkout the source code
