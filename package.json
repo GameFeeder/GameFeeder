@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "NODE_OPTIONS='--experimental-specifier-resolution=node' nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/_main.ts\"",
-    "start": "node dist/src/_main.js",
+    "start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
     "test": "jest --config jest.config.json",
