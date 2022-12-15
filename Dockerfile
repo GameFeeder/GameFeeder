@@ -18,5 +18,6 @@ COPY --from=build-dependencies /app/dist ./dist
 COPY --from=production-dependencies /app/node_modules ./node_modules
 COPY ./config/games ./config/games
 ENV NODE_ENV=production
+ENV NODE_OPTIONS='--experimental-specifier-resolution=node'
 ENV LOG_LEVEL=info
 CMD ["node", "/app/dist/src/_main.js"]
