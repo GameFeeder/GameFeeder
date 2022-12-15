@@ -24,8 +24,8 @@
     "start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
-    "test": "jest --config jest.config.json",
-    "coverage": "jest --config jest.config.json --coverage",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --experimental-specifier-resolution=node' jest --config jest.config.ts",
+    "coverage": "NODE_OPTIONS='--experimental-vm-modules --experimental-specifier-resolution=node' jest --config jest.config.ts --coverage",
     "watch": "tsc --watch"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "winston": "3.3.3"
   },
   "devDependencies": {
+    "@jest/globals": "^29.3.1",
     "@types/jest": "26.0.24",
     "@types/lodash": "4.14.171",
     "@types/node": "18.11.14",
