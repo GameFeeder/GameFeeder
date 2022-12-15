@@ -1,6 +1,6 @@
 import assert from 'assert';
 import fetch from 'node-fetch';
-import { HTMLElement, parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 import Provider from './provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
