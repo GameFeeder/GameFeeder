@@ -6,6 +6,17 @@ import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news';
 /** The timeout duration in ms for all API requests. */
 const REQUEST_TIMEOUT = 10000;
 
+/**
+ * Create a signal that aborts after the request timeout.
+ *
+ * The `timeout` option has been removed for `fetch` requests, so we have to do this instead.
+ */
+function createTimeoutSignal(): AbortSignal {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  return controller.signal;
+}
+
 export type SteamNewsOptions = {
   /** AppID to retrieve news for. */
   appid: string;
@@ -52,9 +63,11 @@ export default class SteamWebAPI {
       const uri = new URL('https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/');
       const params = new URLSearchParams(newsOptions);
       uri.search = params.toString();
-      const response = await fetch(uri.toString(), { timeout: REQUEST_TIMEOUT });
+
+      const response = await fetch(uri.toString(), { signal: createTimeoutSignal() });
       const responseJSON = await response.json();
-      return new SteamAppNews(responseJSON);
+
+      return new SteamAppNews(responseJSON as SteamAppNewsResponse);
     } catch (error) {
       this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
       // Return empty news
