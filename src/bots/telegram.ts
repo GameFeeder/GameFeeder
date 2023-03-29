@@ -152,6 +152,11 @@ export default class TelegramBot extends BotClient {
         return UserRole.OWNER;
       }
 
+      const chat = await this.bot.telegram.getChat(channel.id);
+      if (chat.type === 'private') {
+        return UserRole.ADMIN;
+      }
+
       const adminIds = await this.bot.telegram.getChatAdministrators(channel.id);
       if (adminIds.map((admin) => admin.user.id.toString()).includes(user.id)) {
         return UserRole.ADMIN;
@@ -176,7 +181,11 @@ export default class TelegramBot extends BotClient {
       // Check for expected chat errors
       assertIsDefined(chat, 'Chat not defined in getUserPermissions()');
       // Try to get chat member
+      if (user.id === this.channelAuthorID) {
+        return new Permissions(true, true, true, true);
+      }
       const chatMember = await this.bot.telegram.getChatMember(channel.id, parseInt(user.id, 10));
+
       // Check for expected chat member errors
       assertIsDefined(chatMember, 'ChatMember not defined in getUserPermissions()');
 
@@ -184,18 +193,30 @@ export default class TelegramBot extends BotClient {
       const isChannel = chat.type === 'channel';
       const isGroup = chat.type === 'group';
       const isSuperGroup = chat.type === 'supergroup';
+      const isPrivate = chat.type === 'private';
 
       // Member status
+      const isCreator = chatMember.status === 'creator';
       const isAdmin = chatMember.status === 'administrator';
       const isRestricted = chatMember.status === 'restricted';
       const hasLeft = chatMember.status === 'left';
       const isKicked = chatMember.status === 'kicked';
+      const isMember = chatMember.status === 'member';
 
       // Permissions
-      const canPostMsg = chatMember.can_post_messages ?? false;
-      const canSendMsg = chatMember.can_send_messages ?? false;
-      const canEditMsg = chatMember.can_edit_messages ?? false;
-      const canPinMsg = chatMember.can_pin_messages ?? false;
+      const canPostMsg =
+        (isCreator || (isAdmin && chatMember.can_post_messages) || isPrivate) ?? false;
+      const canSendMsg =
+        isCreator ||
+        (isRestricted && chatMember.can_send_messages) ||
+        isMember ||
+        isAdmin ||
+        isPrivate;
+      const canEditMsg =
+        (isCreator || (isAdmin && chatMember.can_edit_messages) || isPrivate) ?? false;
+      const canPinMsg =
+        (isCreator || ((isAdmin || isRestricted) && chatMember.can_pin_messages) || isPrivate) ??
+        false;
 
       hasAccess = !(hasLeft || isKicked);
       canWrite =
@@ -497,7 +518,7 @@ export default class TelegramBot extends BotClient {
       await this.bot.telegram.sendMessage(channel.id, text, options);
     } catch (error) {
       // Log the appropriate error
-      this.handleNotificationError(error as TelegramError, channel);
+      this.handleMessageError(error as TelegramError, channel);
       if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
         this.logger.warn(
           `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
@@ -510,16 +531,17 @@ export default class TelegramBot extends BotClient {
       this.logger.warn(
         `Max retries reached; Disabling failed channel ${channel.label} to avoid future errors until active again.`,
       );
-      channel.disabled = true;
+      this.logger.warn(`Actually, skipping disabling until it's more robust.`);
+      // channel.disabled = true;
       return false;
     }
     return true;
   }
 
-  private handleNotificationError(error: TelegramError, channel: Channel) {
+  private handleMessageError(error: TelegramError, channel: Channel) {
     const errorCode = error.response.error_code;
     this.logger.error(
-      `Failed to send notification to channel ${channel.label}, error code ${errorCode}:\n${error}`,
+      `Failed to send message to channel ${channel.label}, error code ${errorCode}:\n${error}`,
     );
     // TODO: conditions
     // if (conditions) {
