@@ -379,25 +379,30 @@ export default class TelegramBot extends BotClient {
     assertIsDefined(this.token, `Token is undefined`);
 
     // Add handlers
+    this.logger.debug('Adding handlers');
     this.addChatRemovalHandler();
 
     // Set up the pubsub subscriptions
+    this.logger.debug('Setup updater subscription');
     this.setupUpdaterSubscription();
+    this.logger.debug('Setup everyone subscription');
     this.setupEveryoneSubscription();
 
     // Start the bot
-    await this.bot.launch();
+    this.logger.debug('Launching');
+    this.bot.launch();
     this.isRunning = true;
 
     // Initialize user name and user tag
     try {
+      this.logger.debug('Getting user name and user tag');
       const botUser = await this.bot.telegram.getMe();
       this.userName = botUser.username ?? '';
       this.userTag = `@${this.userName}`;
     } catch (error) {
       this.logger.error(`Failed to get user name and user tag:\n${error}`);
     }
-    return true;
+    return this.isRunning;
   }
 
   public stop(): void {
