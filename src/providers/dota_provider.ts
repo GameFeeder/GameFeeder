@@ -92,7 +92,20 @@ export default class DotaProvider extends Provider {
       const heroChanges = patchDetails.heroes?.length ?? 0;
       const itemChanges = patchDetails.items?.length ?? 0;
       const neutralItemChanges = patchDetails.neutral_items?.length ?? 0;
-      return `${genericChanges} generic changes, ${heroChanges} hero changes, ${itemChanges} item changes, ${neutralItemChanges} neutral item changes`;
+      let details = '';
+      if (genericChanges > 0) {
+        details += `Generic changes: ${genericChanges}`;
+      }
+      if (heroChanges > 0) {
+        details += `Hero changes: ${heroChanges}`;
+      }
+      if (itemChanges > 0) {
+        details += `Item changes: ${itemChanges}`;
+      }
+      if (neutralItemChanges > 0) {
+        details += `Neutral item changes: ${neutralItemChanges}`;
+      }
+      return details;
     } catch (error) {
       this.logger.error(`Failed to get patch details, error: ${error}`);
       return '';
