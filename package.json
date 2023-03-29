@@ -33,7 +33,6 @@
     "escape-string-regexp": "5.0.0",
     "lodash": "4.17.21",
     "node-fetch": "3.3.1",
-    "node-html-parser": "6.1.5",
     "pubsub-js": "1.9.4",
     "rss-parser": "3.12.0",
     "smart-request-balancer": "2.1.1",
