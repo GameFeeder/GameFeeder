@@ -46,6 +46,7 @@ export default class Main {
     await mapAsync(getBots(), async (bot) => {
       try {
         await bot.start();
+        Main.logger.info(`Started ${bot.userTag}.`);
       } catch (error) {
         Main.logger.error(`Failed to start bot ${bot.name}: ${error}`);
       }
