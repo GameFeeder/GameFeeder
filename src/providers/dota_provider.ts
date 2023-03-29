@@ -1,14 +1,20 @@
 import assert from 'assert';
 import fetch from 'node-fetch';
-import { parse, HTMLElement } from 'node-html-parser';
 import Provider from './provider';
 import Game from '../game';
 import Notification from '../notifications/notification';
 import Logger from '../logger';
 import NotificationBuilder from '../notifications/notification_builder';
-import { limitEnd, removeSmallerEqThan, sort } from '../util/array_util';
+import { limitEnd, removeSmallerEqThan } from '../util/array_util';
 import Version from '../notifications/version';
 import { ProviderData } from '../managers/data_manager';
+
+interface DotaPatch {
+  patch_number: string;
+  patch_name: string;
+  patch_timestamp: number;
+  patch_website?: string;
+}
 
 export default class DotaProvider extends Provider {
   public static key = 'dota_patches';
@@ -26,25 +32,30 @@ export default class DotaProvider extends Provider {
   public async getNotifications(since: ProviderData, limit?: number): Promise<Notification[]> {
     let notifications: Notification[] = [];
     try {
-      const pageDoc = await this.getPatchPage();
-      const patchList = await this.getPatchList(pageDoc);
+      let patchList = await this.getPatchList();
       const lastPatchStr = this.getLastUpdateVersion(since);
       const lastPatch = lastPatchStr ? new Version(lastPatchStr) : undefined;
+      const patchNumbers = patchList.map((patch) => new Version(patch.patch_number));
+      const newPatches = removeSmallerEqThan(patchNumbers, lastPatch).map((patch) => patch.version);
 
-      const newPatches = sort(
-        removeSmallerEqThan(
-          patchList.map((patch) => new Version(patch)),
-          lastPatch,
-        ),
+      patchList = patchList.filter((patch) => newPatches.includes(patch.patch_number));
+
+      patchList.sort((patch: DotaPatch, otherPatch: DotaPatch) => {
+        return patch.patch_timestamp - otherPatch.patch_timestamp;
+      });
+
+      const patchDetails = await Promise.all(
+        patchList.map((patch) => this.getPatchDetails(patch.patch_number)),
       );
 
       // Convert the patches to notifications
-      notifications = newPatches.map((patch) => {
-        const versionStr = patch.version;
+      notifications = patchList.map((patch, index) => {
+        const versionStr = patch.patch_number;
         return new NotificationBuilder(new Date(), versionStr)
           .withGameDefaults(this.game)
           .withTitle(`Gameplay patch ${versionStr}`, `http://www.dota2.com/patches/${versionStr}`)
           .withAuthor('Dota 2')
+          .withContent(patchDetails[index])
           .build();
       });
 
@@ -56,23 +67,35 @@ export default class DotaProvider extends Provider {
   }
 
   /** Gets a list of the patch names available. */
-  public getPatchList(pageDoc: HTMLElement): string[] {
-    let rr = pageDoc
-      .querySelector('#PatchSelector') // Find the patch selector
-      ?.childNodes.filter((node) => node.nodeType === 1) // Remove intermidiate nodes
-      .map((node) => node.childNodes[0].rawText) // extract option element text
-      .filter((text) => text !== 'Select an Update...'); // remove placeholder option
-    if (!rr) {
-      this.logger.debug(`Dota updates page parsing failed, unknown problem`);
-      rr = [];
+  async getPatchList(): Promise<DotaPatch[]> {
+    try {
+      const response = await fetch(
+        'https://www.dota2.com/datafeed/patchnoteslist?language=english',
+      );
+      const body = await response.text();
+      const patchList = JSON.parse(body).patches;
+      return patchList;
+    } catch (error) {
+      this.logger.error(`Failed to get patch list, error: ${error}`);
+      return [];
     }
-    return rr;
   }
 
-  /** Gets the content of the patch page. */
-  public async getPatchPage(): Promise<HTMLElement> {
-    const response = await fetch('http://www.dota2.com/patches/');
-    const updatesPage = await response.text();
-    return parse(updatesPage);
+  async getPatchDetails(version: string): Promise<string> {
+    try {
+      const response = await fetch(
+        `https://www.dota2.com/datafeed/patchnotes?version=${version}&language=english`,
+      );
+      const body = await response.text();
+      const patchDetails = JSON.parse(body);
+      const genericChanges = patchDetails.generic?.length ?? 0;
+      const heroChanges = patchDetails.heroes?.length ?? 0;
+      const itemChanges = patchDetails.items?.length ?? 0;
+      const neutralItemChanges = patchDetails.neutral_items?.length ?? 0;
+      return `${genericChanges} generic changes, ${heroChanges} hero changes, ${itemChanges} item changes, ${neutralItemChanges} neutral item changes`;
+    } catch (error) {
+      this.logger.error(`Failed to get patch details, error: ${error}`);
+      return '';
+    }
   }
 }
