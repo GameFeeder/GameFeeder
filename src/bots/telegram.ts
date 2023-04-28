@@ -1,4 +1,4 @@
-import { Context, Telegraf } from 'telegraf';
+import { Context, Telegraf, TelegramError } from 'telegraf';
 import Queue from 'smart-request-balancer';
 import { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
@@ -21,27 +21,6 @@ enum MessageType {
 enum ChatType {
   private = 'private',
   group = 'group',
-}
-
-interface TelegramError {
-  code?: number;
-  response: {
-    ok: boolean;
-    error_code: number;
-    description: string;
-  };
-  description?: string;
-  parameters?: {
-    migrate_to_chat_id?: number;
-    retry_after?: number;
-  };
-  on?: {
-    method: string;
-    payload: {
-      chat_id: number;
-      text: string;
-    };
-  };
 }
 
 const MAX_SEND_MESSAGE_RETRIES = 5;
@@ -436,11 +415,8 @@ export default class TelegramBot extends BotClient {
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to add message for channel ${channel.label} in the queue. \
-        \n - Error: ${err}. \
-        \n - This is most likely because the bot has been blocked, disabling subscriber.`,
+        `Failed to add message for channel ${channel.label} in the queue. Full error: ${err}`,
       );
-      channel.disabled = true;
       return false;
     }
   }
@@ -523,36 +499,49 @@ export default class TelegramBot extends BotClient {
       await this.bot.telegram.sendMessage(channel.id, text, options);
     } catch (error) {
       // Log the appropriate error
-      this.handleMessageError(error as TelegramError, channel);
-      if (retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
+      const isRetriable = this.handleMessageError(error as TelegramError, channel);
+      if (isRetriable && retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
         this.logger.warn(
-          `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label} `,
+          `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label}. Retrying... `,
         );
         this.sendMessage(channel, messageText, retryAttempt + 1);
         return false;
       }
 
-      // Disable the channel that failed.
       this.logger.warn(
-        `Max retries reached; Disabling failed channel ${channel.label} to avoid future errors until active again.`,
+        `Max retries reached for channel ${channel.label}, message will not be sent.`,
       );
-      this.logger.warn(`Actually, skipping disabling until it's more robust.`);
-      // channel.disabled = true;
       return false;
     }
     return true;
   }
 
-  private handleMessageError(error: TelegramError, channel: Channel) {
+  private handleMessageError(error: TelegramError, channel: Channel): boolean {
     const errorCode = error.response.error_code;
     this.logger.error(
-      `Failed to send message to channel ${channel.label}, error code ${errorCode}:\n${error}`,
+      `Failed to send message to channel ${channel.label}, error code ${errorCode}:\n${error.description}`,
     );
-    // TODO: conditions
-    // if (conditions) {
-    //   this.logger.warn(`Unable to send notification to channel ${channel.label}, deleting data...`);
-    //   this.removeData(channel);
-    // }
+
+    // Includes the following errors:
+    // - Bot was blocked by the user
+    // - Bot was kicked from the group
+    // - User is deactivated
+    if (errorCode == 403) {
+      this.logger.warn(`Bot restricted from posting to ${channel.label}, disabling.`);
+      channel.disabled = true;
+      return false;
+    }
+
+    // When a group is updated to a supergroup the id changes
+    if (
+      errorCode == 400 &&
+      error.description.includes('group chat was upgraded to a supergroup chat')
+    ) {
+      this.logger.warn(`Channel ${channel.label} has changed, disabling`);
+      channel.disabled = true;
+      return false;
+    }
+    return true;
   }
 
   public static msgFromMarkdown(text: string): string {
