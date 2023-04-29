@@ -108,9 +108,7 @@ export default class Channel {
   }
 
   get disabled(): boolean {
-    // return this._disabled;
-    // Force enable all channels for now
-    return false;
+    return this._disabled;
   }
 
   set disabled(value: boolean) {
