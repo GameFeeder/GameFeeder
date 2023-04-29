@@ -499,7 +499,7 @@ export default class TelegramBot extends BotClient {
       await this.bot.telegram.sendMessage(channel.id, text, options);
     } catch (error) {
       // Log the appropriate error
-      const isRetriable = this.handleMessageError(error as TelegramError, channel);
+      const isRetriable = this.handleTelegramError(error as TelegramError, channel);
       if (isRetriable && retryAttempt <= MAX_SEND_MESSAGE_RETRIES) {
         this.logger.warn(
           `This was attempt ${retryAttempt} of ${MAX_SEND_MESSAGE_RETRIES} for channel ${channel.label}. Retrying... `,
@@ -516,7 +516,16 @@ export default class TelegramBot extends BotClient {
     return true;
   }
 
-  private handleMessageError(error: TelegramError, channel: Channel): boolean {
+  /**
+   * Handles a Telegram error and returns whether the error is retriable.
+   *
+   * @private
+   * @param {TelegramError} error
+   * @param {Channel} channel
+   * @return {*}  {boolean}
+   * @memberof TelegramBot
+   */
+  private handleTelegramError(error: TelegramError, channel: Channel): boolean {
     const errorCode = error.response.error_code;
     this.logger.error(
       `Failed to send message to channel ${channel.label}, error code ${errorCode}:\n${error.description}`,
