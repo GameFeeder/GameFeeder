@@ -120,6 +120,15 @@ describe('Steam processor', () => {
 
       expect(actual).toEqual(expected);
     });
+    test('should parse bold tag with line break', () => {
+      const sampleText = '[b]Text\n[/b]';
+      const expected = '<p><b>Text<br></b></p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
   });
   // Italic
   describe('italic', () => {
@@ -278,6 +287,30 @@ describe('Steam processor', () => {
       // TODO: Add a proper test once the spoiler tag is supported
       const sampleText = '[spoiler]Text[/spoiler]';
       const expected = '<p>Text</p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  // Paragraphs and line breaks
+  describe('paragraphs and line breaks', () => {
+    test('should convert double line break to paragraph', () => {
+      // TODO: Add a proper test once the spoiler tag is supported
+      const sampleText = 'First\n\nSecond';
+      const expected = '<p>First</p><p>Second</p>';
+
+      const processor = new SteamProcessor();
+      const actual = processor.process(sampleText);
+
+      expect(actual).toEqual(expected);
+    });
+
+    test('should convert line break to <br>', () => {
+      // TODO: Add a proper test once the spoiler tag is supported
+      const sampleText = 'First\nSecond';
+      const expected = '<p>First<br>Second</p>';
 
       const processor = new SteamProcessor();
       const actual = processor.process(sampleText);
