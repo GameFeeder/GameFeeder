@@ -37,18 +37,14 @@ export default class SteamProcessor extends PreProcessor {
   // [previewyoutube=link][/previewyoutube]
   public youTubeTagReg = /(?:\[previewyoutube=(.*?)\])(.*?)(?:\[\/previewyoutube\])/gs;
 
+  // Paragraphs, at least one empty line
   public paragraphReg = /(\n\r?[ ]*){2,}/g;
-
+  // Line breaks
   public lineBreakReg = /\n\r?/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
 
-    if (htmlContent.includes('※')) {
-      console.debug('BEFORE');
-      console.debug(htmlContent);
-      console.debug('\n\n');
-    }
     // Remove link hosts
     newContent = newContent.replace(this.linkHostReg, () => '');
     // Remove link filters
