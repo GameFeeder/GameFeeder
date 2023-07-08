@@ -5,41 +5,50 @@ export default class SteamProcessor extends PreProcessor {
   public static logger = new Logger('SteamProcessor');
 
   // <span class="bb_link_host">[github.com]</span>
-  public linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\]?<\/span>)/g;
+  public linkHostReg = /(?:<span class="bb_link_host">\[?)(.*?)(?:\]?<\/span>)/gs;
   // <div class="bb_h1">Text</div>
-  public headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/g;
+  public headerReg = /(?:<div class="bb_h(\d)">)(.*?)(?:<\/div>)/gs;
   // <a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>
   public linkFilter = /(?:(?<=")https:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*?)(?="))/g;
 
   // [list] ... [/list]
   public listReg = /(?:\[list\]\s*((?:.|\s)*?)\[\/list\])/gm;
   // [*] List item
-  public listElemReg = /(?:\[\*\])\s*(.*?)\s*\n/g;
+  public listElemReg = /(?:\[\*\])\s*(.*)\s*/g;
 
   // [url=https://github.com]Text[/url]
   public urlTagReg = /(?:\[url=(.*?)\/?\])(.*?)(?:\/?\[\/url\/?\])/g;
   // [h1]Text[/h1]
-  public headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/g;
+  public headerTagReg = /(?:\[h(\d)\/?\])(.*?)(?:\/?\[\/h\d\/?\])/gs;
   // [b]Text[/b]
-  public boldTagReg = /(?:\[b\/?\])(.*?)(?:\/?\[\/b\/?\])/g;
+  public boldTagReg = /(?:\[b\/?\])(.*?)(?:\/?\[\/b\/?\])/gs;
   // [u]Text[/u]
-  public underlineTagReg = /(?:\[u\/?\])(.*?)(?:\/?\[\/u\/?\])/g;
+  public underlineTagReg = /(?:\[u\/?\])(.*?)(?:\/?\[\/u\/?\])/gs;
   // [i]Text[/i]
-  public italicTagReg = /(?:\[i\/?\])(.*?)(?:\/?\[\/i\/?\])/g;
+  public italicTagReg = /(?:\[i\/?\])(.*?)(?:\/?\[\/i\/?\])/gs;
   // [strike]Text[/strike]
-  public strikethroughTagReg = /(?:\[strike\/?\])(.*?)(?:\/?\[\/strike\/?\])/g;
+  public strikethroughTagReg = /(?:\[strike\/?\])(.*?)(?:\/?\[\/strike\/?\])/gs;
   // [spoiler]Text[/spoiler]
-  public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/g;
+  public spoilerTagReg = /(?:\[spoiler\/?\])(.*?)(?:\/?\[\/spoiler\/?\])/gs;
   // [noparse]Text[/noparse]
-  public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/g;
+  public noparseTagReg = /(?:\[noparse\/?\])(.*?)(?:\/?\[\/noparse\/?\])/gs;
   // [img]link[/img]
-  public imgTagReg = /(?:\[img\])(.*?)(?:\[\/img\])/g;
+  public imgTagReg = /(?:\[img\])(.*?)(?:\[\/img\])/gs;
   // [previewyoutube=link][/previewyoutube]
-  public youTubeTagReg = /(?:\[previewyoutube=(.*?)\])(.*?)(?:\[\/previewyoutube\])/g;
+  public youTubeTagReg = /(?:\[previewyoutube=(.*?)\])(.*?)(?:\[\/previewyoutube\])/gs;
+
+  public paragraphReg = /(\n\r?[ ]*){2,}/g;
+
+  public lineBreakReg = /\n\r?/g;
 
   public process(htmlContent: string): string {
     let newContent = htmlContent;
 
+    if (htmlContent.includes('※')) {
+      console.debug('BEFORE');
+      console.debug(htmlContent);
+      console.debug('\n\n');
+    }
     // Remove link hosts
     newContent = newContent.replace(this.linkHostReg, () => '');
     // Remove link filters
@@ -110,6 +119,11 @@ export default class SteamProcessor extends PreProcessor {
 
       return `<ul>${newListContent}</ul>`;
     });
+
+    // Paragraphs and linebreaks
+    newContent = newContent.replace(this.paragraphReg, '</p><p>');
+    newContent = newContent.replace(this.lineBreakReg, '<br>');
+    newContent = `<p>${newContent}</p>`;
 
     return newContent;
   }
