@@ -33,7 +33,11 @@ export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: DiscordAPI.Client;
 
-  constructor(prefix: string, private token: string, autostart: boolean) {
+  constructor(
+    prefix: string,
+    private token: string,
+    autostart: boolean,
+  ) {
     super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot

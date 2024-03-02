@@ -10,7 +10,12 @@ import { ProviderData } from '../managers/data_manager';
 export default class RSSProvider extends Provider {
   public preProcessors: PreProcessor[];
 
-  constructor(url: string, label: string, game: Game, public flavor?: string) {
+  constructor(
+    url: string,
+    label: string,
+    game: Game,
+    public flavor?: string,
+  ) {
     super(url, label, game);
 
     this.preProcessors = [];

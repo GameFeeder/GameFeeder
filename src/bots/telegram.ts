@@ -32,7 +32,11 @@ export default class TelegramBot extends BotClient {
   private ruleNames: { [m in MessageType]: { [c in ChatType]: string } };
   private channelAuthorID = '-322';
 
-  constructor(prefix: string, private token: string, autostart: boolean) {
+  constructor(
+    prefix: string,
+    private token: string,
+    autostart: boolean,
+  ) {
     super('telegram', 'Telegram', prefix, autostart);
 
     // Set up the bot
@@ -204,9 +208,9 @@ export default class TelegramBot extends BotClient {
           ? // In channels the user must be an admin to write and have posting permissions
             isAdmin && canPostMsg
           : // If the user is restricted, check permissions, else he can send messages
-          isRestricted
-          ? canSendMsg
-          : true);
+            isRestricted
+            ? canSendMsg
+            : true);
       // If the user is an admin, check permissions, else he cannot edit
       canEdit = hasAccess && (isAdmin ? canEditMsg : false);
       canPin =

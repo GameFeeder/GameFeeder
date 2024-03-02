@@ -6,7 +6,11 @@ import SteamWebAPI from '../steam/steam_web_api';
 import { ProviderData } from '../managers/data_manager';
 
 export default class SteamProvider extends Provider {
-  constructor(public appID: number, public feeds: string[], game: Game) {
+  constructor(
+    public appID: number,
+    public feeds: string[],
+    game: Game,
+  ) {
     super(`https://steamcommunity.com/games/${appID}/announcements`, `Steam App ${appID}`, game);
   }
 

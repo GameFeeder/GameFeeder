@@ -5,7 +5,10 @@ export default class TelegramIVTemplate {
    * @param domain - The domain of the Telegram IV template.
    * @param templateHash - The hash of the Telegram IV template.
    */
-  constructor(public domain: string, public templateHash: string) {}
+  constructor(
+    public domain: string,
+    public templateHash: string,
+  ) {}
 
   /** Gets the instant view URL from the URL.
    *

@@ -21,7 +21,10 @@ export default class User {
    * @param bot The bot the user is associated to.
    * @param id The ID of the BotUser.
    */
-  constructor(public bot: BotClient, public id: string) {}
+  constructor(
+    public bot: BotClient,
+    public id: string,
+  ) {}
 
   /** Get's the user's role on the given channel.
    *
