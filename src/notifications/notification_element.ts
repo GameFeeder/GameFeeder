@@ -5,5 +5,9 @@ export default class NotificationElement {
    * @param link The source of the notification element
    * @param icon The icon of the notification element
    */
-  constructor(public text: string, public link?: string, public icon?: string) {}
+  constructor(
+    public text: string,
+    public link?: string,
+    public icon?: string,
+  ) {}
 }

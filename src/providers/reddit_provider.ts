@@ -6,7 +6,10 @@ import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
 import { ProviderData } from '../managers/data_manager';
 
 export default class RedditProvider extends Provider {
-  constructor(public subredditProviders: SubredditProvider[], game: Game) {
+  constructor(
+    public subredditProviders: SubredditProvider[],
+    game: Game,
+  ) {
     super(`https://www.reddit.com`, `Reddit`, game);
   }
 

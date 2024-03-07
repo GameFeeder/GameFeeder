@@ -26,7 +26,10 @@ export default class NotificationBuilder {
    * @param timestamp - The timestamp of the notification (default: now).
    * @param version - The gameplay version of the update.
    */
-  constructor(public timestamp: Date = new Date(), public version?: string) {}
+  constructor(
+    public timestamp: Date = new Date(),
+    public version?: string,
+  ) {}
 
   /** Changes the content of the notification.
    *

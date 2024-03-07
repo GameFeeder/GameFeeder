@@ -15,7 +15,11 @@ export default abstract class Provider {
    * @param label Logging label for the provider
    * @param game The game that uses this provider
    */
-  constructor(public url: string, public label: string, public game: Game) {
+  constructor(
+    public url: string,
+    public label: string,
+    public game: Game,
+  ) {
     this.logger = new Logger(this.label);
   }
 
