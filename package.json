@@ -29,7 +29,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "discord.js": "14.7.1",
+    "discord.js": "14.14.1",
     "escape-string-regexp": "5.0.0",
     "lodash": "4.17.21",
     "node-fetch": "3.3.2",
@@ -37,9 +37,9 @@
     "rss-parser": "3.13.0",
     "smart-request-balancer": "2.1.1",
     "snoowrap": "1.23.0",
-    "telegraf": "4.12.2",
+    "telegraf": "4.16.3",
     "turndown": "7.1.2",
-    "winston": "3.8.2"
+    "winston": "3.12.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",

@@ -493,10 +493,8 @@ export default class TelegramBot extends BotClient {
       text = StrUtil.naturalLimit(text, 2048);
 
       // Snakecase used by Telegram API
-      options = {
-        disable_web_page_preview: !templateFound,
-        parse_mode: 'Markdown',
-      };
+      options = { parse_mode: 'Markdown' };
+      // TODO: Add link_preview_options
     }
     // Send the message
     try {
