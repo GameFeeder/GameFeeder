@@ -1,0 +1,14 @@
+{
+  "name": "palworld",
+  "label": "Palworld",
+  "aliases": ["palworld"],
+  "color": "#7fd8eb",
+  "icon": "https://imgur.com/pkp7Oyv.jpg",
+  "providers": {
+    "steam": {
+      "appID": 1623730,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
