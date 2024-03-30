@@ -1,0 +1,14 @@
+{
+  "name": "thronefall",
+  "label": "Thronefall",
+  "aliases": ["thronefall"],
+  "color": "#feac00",
+  "icon": "https://imgur.com/xQTfTZP.jpg",
+  "providers": {
+    "steam": {
+      "appID": 2239150,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
