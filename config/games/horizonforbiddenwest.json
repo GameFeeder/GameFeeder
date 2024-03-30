@@ -1,0 +1,18 @@
+{
+  "name": "horzionforbiddenwest",
+  "label": "Horizon Forbidden West",
+  "aliases": [
+    "horizon forbidden west",
+    "horizon forbidden west complete edition",
+    "horizon forbidden west: complete edition"
+  ],
+  "color": "#eecad9",
+  "icon": "https://imgur.com/aenhMtD.jpg",
+  "providers": {
+    "steam": {
+      "appID": 2420110,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
