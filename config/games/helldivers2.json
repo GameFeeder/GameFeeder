@@ -1,0 +1,14 @@
+{
+  "name": "helldivers2",
+  "label": "Helldivers 2",
+  "aliases": ["helldivers 2", "helldivers2", "helldivers"],
+  "color": "#dcbe2d",
+  "icon": "https://imgur.com/ZjSuoLl.jpg",
+  "providers": {
+    "steam": {
+      "appID": 553850,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}

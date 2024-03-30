@@ -97,6 +97,7 @@ So far, we are supporting the following games:
 - <strong align="left">Cities: Skylines</strong> <img src="https://imgur.com/zRjxsWw.jpg" height="17px"/>
 - <strong align="left">Counter-Strike: Global Offensive</strong> <img src="https://i.imgur.com/2ONuRD3.png" height="17px"/>
 - <strong align="left">Cyberpunk 2077</strong> <img src="https://imgur.com/rKu7F5P.jpg" height="17px"/>
+- <strong align="left">Dave the Diver</strong> <img src="https://imgur.com/9yjvwxa.jpg" height="17px"/>
 - <strong align="left">Dead by Daylight</strong> <img src="https://imgur.com/fVn0tRs.jpg" height="17px"/>
 - <strong align="left">Dead Cells</strong> <img src="https://imgur.com/pBgwuv6.jpg" height="17px"/>
 - <strong align="left">Don't Starve Together</strong> <img src="https://imgur.com/oRZpbb3.jpg" height="17px"/>
@@ -108,9 +109,12 @@ So far, we are supporting the following games:
 - <strong align="left">Grand Theft Auto V</strong> <img src="https://imgur.com/XiGyunR.jpg" height="17px"/>
 - <strong align="left">GWENT: The Witcher Card Game</strong> <img src="https://imgur.com/8JEYta8.jpg" height="17px"/>
 - <strong align="left">Hades</strong> <img src="https://imgur.com/VHWSO4y.jpg" height="17px"/>
+- <strong align="left">Helldivers 2</strong> <img src="https://imgur.com/ZjSuoLl.jpg" height="17px"/>
+- <strong align="left">Horizon Forbidden West</strong> <img src="https://imgur.com/aenhMtD.jpg" height="17px"/>
 - <strong align="left">Microsoft Flight Simulator 2020</strong> <img src="https://imgur.com/VLPzilS.jpg" height="17px"/>
 - <strong align="left">Minecraft</strong> <img src="https://imgur.com/GKVk9ve.png" height="17px"/>
 - <strong align="left">MIR4</strong> <img src="https://imgur.com/VwEx3Mp.jpg" height="17px"/>
+- <strong align="left">Palworld</strong> <img src="https://imgur.com/pkp7Oyv.jpg" height="17px"/>
 - <strong align="left">Payday 2</strong> <img src="https://imgur.com/oblgpMY.jpg" height="17px"/>
 - <strong align="left">PLAYERUNKNOWN'S BATTLEGROUNDS</strong> <img src="https://imgur.com/Emx9o83.jpg" height="17px"/>
 - <strong align="left">Risk of Rain 2</strong> <img src="https://imgur.com/oQhrK1N.jpg" height="17px"/>
@@ -122,6 +126,7 @@ So far, we are supporting the following games:
 - <strong align="left">Steam</strong> <img src="https://i.imgur.com/QbzZxrC.png" height="17px"/>
 - <strong align="left">Teamfight Manager</strong> <img src="https://i.imgur.com/OilT7c5.jpg" height="17px"/>
 - <strong align="left">Team Fortress 2</strong> <img src="https://i.imgur.com/zaQObOc.png" height="17px"/>
+- <strong align="left">Thronefall</strong> <img src="https://imgur.com/xQTfTZP.jpg" height="17px"/>
 - <strong align="left">Tom Clancy's Rainbow Six Siege</strong> <img src="https://imgur.com/CtLj8WV.jpg" height="17px"/>
 - <strong align="left">Valheim</strong> <img src="https://imgur.com/lEc7zOO.jpg" height="17px"/>
 - <strong align="left">Veloren</strong> <img src="https://veloren.net/Logo_Square.png" height="17px"/>

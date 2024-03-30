@@ -1,0 +1,14 @@
+{
+  "name": "davethediver",
+  "label": "Dave the Diver",
+  "aliases": ["dave the diver", "dave"],
+  "color": "#ffcf2d",
+  "icon": "https://imgur.com/9yjvwxa.jpg",
+  "providers": {
+    "steam": {
+      "appID": 1868140,
+      "feeds": ["steam_community_announcements"]
+    },
+    "rss": []
+  }
+}
