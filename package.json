@@ -1,6 +1,6 @@
 {
   "name": "gamefeeder",
-  "version": "0.22.2",
+  "version": "0.22.3",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "type": "module",
