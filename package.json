@@ -46,15 +46,15 @@
     "@jest/globals": "^29.3.1",
     "@types/jest": "29.5.12",
     "@types/lodash": "4.17.0",
-    "@types/node": "20.12.2",
+    "@types/node": "20.12.5",
     "@types/node-fetch": "2.6.11",
     "@types/pubsub-js": "1.8.6",
     "@types/request": "2.48.12",
     "@types/turndown": "5.0.4",
     "@types/ws": "8.5.10",
     "@types/xml2js": "0.4.14",
-    "@typescript-eslint/eslint-plugin": "7.4.0",
-    "@typescript-eslint/parser": "7.4.0",
+    "@typescript-eslint/eslint-plugin": "7.5.0",
+    "@typescript-eslint/parser": "7.5.0",
     "eslint": "8.57.0",
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "9.1.0",
@@ -68,6 +68,6 @@
     "prettier": "3.2.5",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
-    "typescript": "5.4.3"
+    "typescript": "5.4.4"
   }
 }
