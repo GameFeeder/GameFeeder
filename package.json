@@ -40,7 +40,7 @@
     "snoowrap": "1.23.0",
     "telegraf": "4.16.3",
     "turndown": "7.2.0",
-    "winston": "3.13.0"
+    "winston": "3.13.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
