@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Set global git conf
         run: git config --global user.email "" && git config --global user.name "github-actions"
       - name: Get current version
