@@ -106,11 +106,9 @@ export default class Updater {
     for (const [index, game] of games.entries()) {
       // Delay in between game
       if (index > 0) {
-        // eslint-disable-next-line no-await-in-loop
         await sleep(this.gameIntervalMs);
       }
 
-      // eslint-disable-next-line no-await-in-loop
       await this.updateGame(game);
     }
 

@@ -379,7 +379,6 @@ export default abstract class BotClient {
       for (const channelData of subscribers) {
         if (channelData.gameSubs?.length !== 0) {
           const channel = this.getChannelByID(channelData.id);
-          // eslint-disable-next-line no-await-in-loop
           await this.sendMessage(channel, message);
         }
       }

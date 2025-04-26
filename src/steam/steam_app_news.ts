@@ -14,7 +14,6 @@ export type SteamNewsItemResponse = {
   url: string;
   /** Determines if the URL is external. */
   // SteamWebAPI snakecase
-  // eslint-disable-next-line camelcase
   is_external_url: boolean;
   /** The name of the author of the news item. */
   author: string;
@@ -28,7 +27,6 @@ export type SteamNewsItemResponse = {
   feedname: string;
   /** The type of the feed this item was posted to. */
   // SteamWebAPI snakecase
-  // eslint-disable-next-line camelcase
   feed_type: number;
   /** The ID of the app these news are from. */
   appid: number;

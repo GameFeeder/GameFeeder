@@ -1,7 +1,3 @@
-// TODO: Revisit these overrides
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-use-before-define */
-/* eslint-disable prefer-template */
 import EscapeRegex from 'escape-string-regexp';
 import PubSub from 'pubsub-js';
 import { UserRole } from '../user';
@@ -484,7 +480,6 @@ const rollCmd = new TwoPartCommand(
     let sum = 0;
     const resultStrs = [];
 
-    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < diceCount; i++) {
       // Throw a die
       const dieResult = Math.floor(Math.random() * diceType) + 1;
@@ -562,9 +557,7 @@ const statsCmd = new TwoPartCommand(
     for (const myBot of bots) {
       // Get statistics
       // TODO: Convert these awaits to a Promise.all()
-      // eslint-disable-next-line no-await-in-loop
       const channelCount = await myBot.getChannelCount(game);
-      // eslint-disable-next-line no-await-in-loop
       const userCount = await myBot.getUserCount(game);
 
       totalUserCount += userCount;
@@ -605,9 +598,7 @@ const statsCmd = new TwoPartCommand(
       for (const myBot of bots) {
         // Get statistics
         // TODO: Convert these awaits to a Promise.all()
-        // eslint-disable-next-line no-await-in-loop
         const channelCount = await myBot.getChannelCount();
-        // eslint-disable-next-line no-await-in-loop
         const userCount = await myBot.getUserCount();
 
         totalUserCount += userCount;
