@@ -1,6 +1,5 @@
 import { Context, Telegraf, TelegramError } from 'telegraf';
 import Queue from 'smart-request-balancer';
-import { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 import { BotClient } from './bot';
 import User, { UserRole } from '../user';
 import Channel from '../channel';
@@ -453,7 +452,8 @@ export default class TelegramBot extends BotClient {
     // Set up the message
     const message = messageText;
     let text = '';
-    let options: ExtraReplyMessage = {};
+    // TODO: The options need to be of type ExtraReplyMessage
+    let options = {};
     if (typeof message === 'string') {
       text = TelegramBot.msgFromMarkdown(message);
       options = { parse_mode: 'Markdown' };
