@@ -247,8 +247,8 @@ export default class DiscordBot extends BotClient {
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
       canEmbed = discordUser
-        ? discordChannel.permissionsFor(discordUser)?.has(PermissionsBitField.Flags.EmbedLinks) ??
-          false
+        ? (discordChannel.permissionsFor(discordUser)?.has(PermissionsBitField.Flags.EmbedLinks) ??
+          false)
         : false;
     } else {
       this.logger.error(`Unecpected Discord channel type for channel ${channel.label}.`);
