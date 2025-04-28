@@ -1,6 +1,4 @@
-import Command from './command.js';
 import { UserRole } from '../user.js';
-import Channel from '../channel.js';
 import Message from '../message.js';
 import NoLabelAction from './no_label_action.js';
 
