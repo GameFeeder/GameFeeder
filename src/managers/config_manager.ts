@@ -1,4 +1,4 @@
-import FileManager from './file_manager';
+import FileManager from './file_manager.js';
 
 /** The available config files. */
 export enum CONFIG {

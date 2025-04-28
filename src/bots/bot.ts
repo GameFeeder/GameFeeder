@@ -1,16 +1,16 @@
 import PubSub from 'pubsub-js';
-import User, { UserRole } from '../user';
-import Channel from '../channel';
-import Command from '../commands/command';
-import DataManager, { Subscriber } from '../managers/data_manager';
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Logger from '../logger';
-import Permissions from '../permissions';
-import { mapAsync } from '../util/array_util';
-import Updater from '../updater';
-import constants from '../util/constants';
-import { assertIsDefined } from '../util/util';
+import User, { UserRole } from '../user.js';
+import Channel from '../channel.js';
+import Command from '../commands/command.js';
+import DataManager, { Subscriber } from '../managers/data_manager.js';
+import Game from '../game.js';
+import Notification from '../notifications/notification.js';
+import Logger from '../logger.js';
+import Permissions from '../permissions.js';
+import { mapAsync } from '../util/array_util.js';
+import Updater from '../updater.js';
+import constants from '../util/constants.js';
+import { assertIsDefined } from '../util/util.js';
 
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */

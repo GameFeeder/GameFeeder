@@ -1,10 +1,10 @@
-import { ProviderData } from 'src/managers/data_manager';
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Provider from './provider';
-import Reddit from '../reddit/reddit';
-import RedditUserProvider from '../reddit/reddit_user';
-import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util';
+import { ProviderData } from 'src/managers/data_manager.js';
+import Game from '../game.js';
+import Notification from '../notifications/notification.js';
+import Provider from './provider.js';
+import Reddit from '../reddit/reddit.js';
+import RedditUserProvider from '../reddit/reddit_user.js';
+import { sortLimitEnd, mapAsync, mergeArrays } from '../util/array_util.js';
 
 export default class SubredditProvider extends Provider {
   constructor(

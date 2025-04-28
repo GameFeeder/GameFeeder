@@ -1,4 +1,4 @@
-import DiscordBot from 'src/bots/discord';
+import DiscordBot from 'src/bots/discord.js';
 
 describe('Discord bot', () => {
   describe('message from markdown', () => {

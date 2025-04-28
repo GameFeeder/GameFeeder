@@ -1,6 +1,6 @@
-import BotClient from './bots/bot';
-import Channel from './channel';
-import Logger from './logger';
+import BotClient from './bots/bot.js';
+import Channel from './channel.js';
+import Logger from './logger.js';
 
 /** Determines the role a user has on a channel. */
 export enum UserRole {

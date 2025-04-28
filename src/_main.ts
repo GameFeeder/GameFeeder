@@ -1,9 +1,9 @@
-import Logger from './logger';
-import getBots from './bots/bots';
-import Updater from './updater';
-import InitManager from './managers/init_manager';
-import ProjectManager from './managers/project_manager';
-import { mapAsync, naturalJoin } from './util/array_util';
+import Logger from './logger.js';
+import getBots from './bots/bots.js';
+import Updater from './updater.js';
+import InitManager from './managers/init_manager.js';
+import ProjectManager from './managers/project_manager.js';
+import { mapAsync, naturalJoin } from './util/array_util.js';
 
 export default class Main {
   public static logger = new Logger('Main');
@@ -22,7 +22,7 @@ export default class Main {
 
   /** Registers the bot commands. */
   public static async registerCommands(): Promise<void> {
-    const commands = (await import('./commands/commands')).default;
+    const commands = (await import('./commands/commands.js')).default;
     const startTime = Date.now();
     const bots = getBots();
 

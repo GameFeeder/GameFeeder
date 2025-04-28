@@ -1,13 +1,13 @@
 import assert from 'assert';
 import fetch from 'node-fetch';
-import Provider from './provider';
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Logger from '../logger';
-import NotificationBuilder from '../notifications/notification_builder';
-import { limitEnd, removeSmallerEqThan } from '../util/array_util';
-import Version from '../notifications/version';
-import { ProviderData } from '../managers/data_manager';
+import Provider from './provider.js';
+import Game from '../game.js';
+import Notification from '../notifications/notification.js';
+import Logger from '../logger.js';
+import NotificationBuilder from '../notifications/notification_builder.js';
+import { limitEnd, removeSmallerEqThan } from '../util/array_util.js';
+import Version from '../notifications/version.js';
+import { ProviderData } from '../managers/data_manager.js';
 
 interface DotaPatch {
   patch_number: string;

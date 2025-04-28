@@ -1,4 +1,4 @@
-import RedditPost from 'src/reddit/reddit_post';
+import RedditPost from 'src/reddit/reddit_post.js';
 
 describe('Name of the group', () => {
   const now = new Date();

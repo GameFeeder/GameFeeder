@@ -1,4 +1,4 @@
-import DiscordAPI, {
+import {
   DMChannel,
   TextChannel,
   APIEmbed,
@@ -7,20 +7,23 @@ import DiscordAPI, {
   PermissionsBitField,
   EmbedBuilder,
   HexColorString,
+  Client,
+  PresenceData,
+  MessageCreateOptions,
 } from 'discord.js';
-import { BotClient } from './bot';
-import User, { UserRole } from '../user';
-import Channel from '../channel';
-import Command from '../commands/command';
-import ConfigManager from '../managers/config_manager';
-import Notification from '../notifications/notification';
-import MDRegex from '../util/regex';
-import { mapAsync } from '../util/array_util';
-import { assertIsDefined, StrUtil } from '../util/util';
-import Message from '../message';
-import Permissions from '../permissions';
-import ProjectManager from '../managers/project_manager';
-import Game from '../game';
+import { BotClient } from './bot.js';
+import User, { UserRole } from '../user.js';
+import Channel from '../channel.js';
+import Command from '../commands/command.js';
+import ConfigManager from '../managers/config_manager.js';
+import Notification from '../notifications/notification.js';
+import MDRegex from '../util/regex.js';
+import { mapAsync } from '../util/array_util.js';
+import { assertIsDefined, StrUtil } from '../util/util.js';
+import Message from '../message.js';
+import Permissions from '../permissions.js';
+import ProjectManager from '../managers/project_manager.js';
+import Game from '../game.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;
@@ -31,7 +34,7 @@ const EMBED_CONTENT_LIMIT = 2048;
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
-  private bot: DiscordAPI.Client;
+  private bot: Client;
 
   constructor(
     prefix: string,
@@ -41,7 +44,7 @@ export default class DiscordBot extends BotClient {
     super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot
-    this.bot = new DiscordAPI.Client({
+    this.bot = new Client({
       intents: [
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
@@ -353,7 +356,7 @@ export default class DiscordBot extends BotClient {
     this.userName = user?.username ?? 'UNKNOWN';
     this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
 
-    const presence: DiscordAPI.PresenceData = {
+    const presence: PresenceData = {
       status: 'online',
       activities: [{ name: `v${ProjectManager.getVersionNumber()}`, type: ActivityType.Playing }],
     };
@@ -590,7 +593,7 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    const discordMessage: DiscordAPI.MessageCreateOptions = {
+    const discordMessage: MessageCreateOptions = {
       // The string is not allowed to be empty
       content: text || undefined,
       embeds: embed ? [embed] : undefined,

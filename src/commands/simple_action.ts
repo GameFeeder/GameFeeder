@@ -1,6 +1,6 @@
-import Message from '../message';
-import { UserRole } from '../user';
-import NoLabelAction from './no_label_action';
+import { UserRole } from '../user.js';
+import Message from '../message.js';
+import NoLabelAction from './no_label_action.js';
 
 /** A very simple action. */
 export default class SimpleAction extends NoLabelAction {

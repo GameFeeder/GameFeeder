@@ -1,7 +1,7 @@
-import Message from 'src/message';
-import User from 'src/user';
-import Channel from 'src/channel';
-import MockBot from './mockClasses/mockBot';
+import Message from 'src/message.js';
+import User from 'src/user.js';
+import Channel from 'src/channel.js';
+import MockBot from './mockClasses/mockBot.js';
 
 describe('Message', () => {
   let testMessage: Message;

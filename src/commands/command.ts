@@ -1,7 +1,7 @@
 import EscapeRegex from 'escape-string-regexp';
-import { UserRole } from '../user';
-import Channel from '../channel';
-import Message from '../message';
+import { UserRole } from '../user.js';
+import Channel from '../channel.js';
+import Message from '../message.js';
 
 /**
  * Represents a command that can be executed by the users on the given bot clients.

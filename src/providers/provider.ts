@@ -1,8 +1,8 @@
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Logger from '../logger';
-import { ProviderData } from '../managers/data_manager';
-import { assertIsDefined } from '../util/util';
+import Game from '../game.js';
+import Notification from '../notifications/notification.js';
+import Logger from '../logger.js';
+import { ProviderData } from '../managers/data_manager.js';
+import { assertIsDefined } from '../util/util.js';
 
 export default abstract class Provider {
   public logger: Logger;

@@ -1,7 +1,7 @@
 import Snoowrap from 'snoowrap';
-import Notification from '../notifications/notification';
-import Game from '../game';
-import NotificationBuilder from '../notifications/notification_builder';
+import Notification from '../notifications/notification.js';
+import Game from '../game.js';
+import NotificationBuilder from '../notifications/notification_builder.js';
 
 /** A post made on reddit. */
 export default class RedditPost {

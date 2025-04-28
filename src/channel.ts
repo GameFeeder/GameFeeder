@@ -1,6 +1,6 @@
-import BotClient from './bots/bot';
-import Game from './game';
-import DataManager from './managers/data_manager';
+import BotClient from './bots/bot.js';
+import Game from './game.js';
+import DataManager from './managers/data_manager.js';
 
 /** A representation of a bot's channel. */
 export default class Channel {

@@ -1,4 +1,4 @@
-import SteamProcessor from 'src/processors/steam_processor';
+import SteamProcessor from 'src/processors/steam_processor.js';
 
 describe('Steam processor', () => {
   describe('processing', () => {

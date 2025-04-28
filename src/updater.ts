@@ -1,11 +1,11 @@
 import PubSub from 'pubsub-js';
-import DataManager, { ProviderData } from './managers/data_manager';
-import ConfigManager from './managers/config_manager';
-import Game from './game';
-import Logger from './logger';
-import Notification from './notifications/notification';
-import { sortLimitEnd } from './util/array_util';
-import { sleep } from './util/util';
+import DataManager, { ProviderData } from './managers/data_manager.js';
+import ConfigManager from './managers/config_manager.js';
+import Game from './game.js';
+import Logger from './logger.js';
+import Notification from './notifications/notification.js';
+import { sortLimitEnd } from './util/array_util.js';
+import { sleep } from './util/util.js';
 
 export default class Updater {
   private static updaters: Updater[];

@@ -1,14 +1,14 @@
 {
   "bots": {
     "telegram": {
-      "enabled": true,
+      "enabled": false,
       "prefix": "/",
       "token": "",
       "owners": []
     },
 
     "discord": {
-      "enabled": true,
+      "enabled": false,
       "prefix": "!",
       "token": "",
       "owners": []

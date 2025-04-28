@@ -1,6 +1,6 @@
-import Channel from 'src/channel';
-import DataManager from 'src/managers/data_manager';
-import MockBot from './mockClasses/mockBot';
+import Channel from 'src/channel.js';
+import DataManager from 'src/managers/data_manager.js';
+import MockBot from './mockClasses/mockBot.js';
 
 jest.mock('src/managers/data_manager');
 

@@ -1,7 +1,7 @@
-import CommandGroup from './command_group';
-import { UserRole } from '../user';
-import Message from '../message';
-import Action from './action';
+import CommandGroup from './command_group.js';
+import { UserRole } from '../user.js';
+import Message from '../message.js';
+import Action from './action.js';
 
 export default class TwoPartCommand extends CommandGroup {
   constructor(
