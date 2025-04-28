@@ -1,4 +1,4 @@
-import DiscordAPI, {
+import {
   DMChannel,
   TextChannel,
   APIEmbed,
@@ -7,6 +7,9 @@ import DiscordAPI, {
   PermissionsBitField,
   EmbedBuilder,
   HexColorString,
+  Client,
+  PresenceData,
+  MessageCreateOptions,
 } from 'discord.js';
 import { BotClient } from './bot.js';
 import User, { UserRole } from '../user.js';
@@ -31,7 +34,7 @@ const EMBED_CONTENT_LIMIT = 2048;
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
-  private bot: DiscordAPI.Client;
+  private bot: Client;
 
   constructor(
     prefix: string,
@@ -41,7 +44,7 @@ export default class DiscordBot extends BotClient {
     super('discord', 'Discord', prefix, autostart);
 
     // Set up the bot
-    this.bot = new DiscordAPI.Client({
+    this.bot = new Client({
       intents: [
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
@@ -353,7 +356,7 @@ export default class DiscordBot extends BotClient {
     this.userName = user?.username ?? 'UNKNOWN';
     this.userTag = `<@!${user?.id ?? 'UNKNOWN'}>`;
 
-    const presence: DiscordAPI.PresenceData = {
+    const presence: PresenceData = {
       status: 'online',
       activities: [{ name: `v${ProjectManager.getVersionNumber()}`, type: ActivityType.Playing }],
     };
@@ -590,7 +593,7 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    const discordMessage: DiscordAPI.MessageCreateOptions = {
+    const discordMessage: MessageCreateOptions = {
       // The string is not allowed to be empty
       content: text || undefined,
       embeds: embed ? [embed] : undefined,
