@@ -1,4 +1,4 @@
-import FileManager from './file_manager';
+import FileManager from './file_manager.js';
 
 export type ProjectInfo = {
   name: string;

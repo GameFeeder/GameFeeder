@@ -1,4 +1,4 @@
-import Comparable from '../util/comparable';
+import Comparable from '../util/comparable.js';
 
 export function parseVersion(version: string): Array<{ major: number; minor: string }> {
   // Split into version parts, e.g. 0.10.3 is split into 0 and 10 and 3

@@ -1,9 +1,9 @@
-import Game from '../game';
-import Notification from '../notifications/notification';
-import Provider from './provider';
-import { sortLimitEnd } from '../util/array_util';
-import SteamWebAPI from '../steam/steam_web_api';
-import { ProviderData } from '../managers/data_manager';
+import Game from '../game.js';
+import Notification from '../notifications/notification.js';
+import Provider from './provider.js';
+import { sortLimitEnd } from '../util/array_util.js';
+import SteamWebAPI from '../steam/steam_web_api.js';
+import { ProviderData } from '../managers/data_manager.js';
 
 export default class SteamProvider extends Provider {
   constructor(

@@ -1,4 +1,4 @@
-import RSS from 'src/rss/rss';
+import RSS from 'src/rss/rss.js';
 
 describe('RSS', () => {
   test('should create', () => {

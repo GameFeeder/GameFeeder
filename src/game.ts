@@ -1,12 +1,12 @@
-import ConfigManager, { RedditUser } from './managers/config_manager';
-import Provider from './providers/provider';
-import RSSProvider from './providers/rss_provider';
-import SubredditProvider from './providers/subreddit_provider';
-import RedditUserProvider from './reddit/reddit_user';
-import DotaProvider from './providers/dota_provider';
-import TelegramIVTemplate from './telegram_iv_template';
-import SteamProvider from './providers/steam_provider';
-import RedditProvider from './providers/reddit_provider';
+import ConfigManager, { RedditUser } from './managers/config_manager.js';
+import Provider from './providers/provider.js';
+import RSSProvider from './providers/rss_provider.js';
+import SubredditProvider from './providers/subreddit_provider.js';
+import RedditUserProvider from './reddit/reddit_user.js';
+import DotaProvider from './providers/dota_provider.js';
+import TelegramIVTemplate from './telegram_iv_template.js';
+import SteamProvider from './providers/steam_provider.js';
+import RedditProvider from './providers/reddit_provider.js';
 
 export type Providers = {
   [index: string]: Provider;

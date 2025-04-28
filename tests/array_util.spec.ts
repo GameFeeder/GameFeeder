@@ -1,4 +1,4 @@
-import { mapAsync, filterAsync, naturalJoin, limitStart, limitEnd } from 'src/util/array_util';
+import { mapAsync, filterAsync, naturalJoin, limitStart, limitEnd } from 'src/util/array_util.js';
 
 describe('ArrayUtil', () => {
   describe('map async', () => {

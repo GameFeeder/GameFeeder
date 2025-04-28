@@ -1,9 +1,9 @@
 import Snoowrap from 'snoowrap';
-import ConfigManager from '../managers/config_manager';
-import ProjectManager from '../managers/project_manager';
-import Logger from '../logger';
-import RedditPost from './reddit_post';
-import { StrUtil } from '../util/util';
+import ConfigManager from '../managers/config_manager.js';
+import ProjectManager from '../managers/project_manager.js';
+import Logger from '../logger.js';
+import RedditPost from './reddit_post.js';
+import { StrUtil } from '../util/util.js';
 
 let reddit: Snoowrap;
 let isInit = false;

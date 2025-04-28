@@ -1,20 +1,20 @@
 import EscapeRegex from 'escape-string-regexp';
 import PubSub from 'pubsub-js';
-import { UserRole } from '../user';
-import getBots from '../bots/bots';
-import Game from '../game';
-import { mapAsync, naturalJoin } from '../util/array_util';
-import { matchGroups } from '../util/util';
-import ProjectManager from '../managers/project_manager';
-import CommandGroup from './command_group';
-import SimpleAction from './simple_action';
-import NoLabelAction from './no_label_action';
-import Command from './command';
-import TwoPartCommand from './two_part_command';
-import Notification from '../notifications/notification';
-import NotificationElement from '../notifications/notification_element';
-import Updater from '../updater';
-import constants from '../util/constants';
+import { UserRole } from '../user.js';
+import getBots from '../bots/bots.js';
+import Game from '../game.js';
+import { mapAsync, naturalJoin } from '../util/array_util.js';
+import { matchGroups } from '../util/util.js';
+import ProjectManager from '../managers/project_manager.js';
+import CommandGroup from './command_group.js';
+import SimpleAction from './simple_action.js';
+import NoLabelAction from './no_label_action.js';
+import Command from './command.js';
+import TwoPartCommand from './two_part_command.js';
+import Notification from '../notifications/notification.js';
+import NotificationElement from '../notifications/notification_element.js';
+import Updater from '../updater.js';
+import constants from '../util/constants.js';
 
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(

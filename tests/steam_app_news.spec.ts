@@ -2,8 +2,8 @@ import SteamAppNews, {
   SteamNewsItem,
   SteamNewsItemResponse,
   SteamAppNewsResponse,
-} from 'src/steam/steam_app_news';
-import Game from 'src/game';
+} from 'src/steam/steam_app_news.js';
+import Game from 'src/game.js';
 
 describe('Steam App News', () => {
   const now = new Date();

@@ -1,9 +1,9 @@
-import Command from './command';
-import Channel from '../channel';
-import { UserRole } from '../user';
-import Message from '../message';
-import Action from './action';
-import { mergeArrays } from '../util/array_util';
+import Command from './command.js';
+import Channel from '../channel.js';
+import { UserRole } from '../user.js';
+import Message from '../message.js';
+import Action from './action.js';
+import { mergeArrays } from '../util/array_util.js';
 
 /**
  * A command group represents a collection of commands with a common prefix.

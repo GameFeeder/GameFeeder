@@ -1,4 +1,4 @@
-import { ObjUtil, StrUtil } from 'src/util/util';
+import { ObjUtil, StrUtil } from 'src/util/util.js';
 
 describe('Util', () => {
   describe('Object util', () => {

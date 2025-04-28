@@ -8,19 +8,19 @@ import DiscordAPI, {
   EmbedBuilder,
   HexColorString,
 } from 'discord.js';
-import { BotClient } from './bot';
-import User, { UserRole } from '../user';
-import Channel from '../channel';
-import Command from '../commands/command';
-import ConfigManager from '../managers/config_manager';
-import Notification from '../notifications/notification';
-import MDRegex from '../util/regex';
-import { mapAsync } from '../util/array_util';
-import { assertIsDefined, StrUtil } from '../util/util';
-import Message from '../message';
-import Permissions from '../permissions';
-import ProjectManager from '../managers/project_manager';
-import Game from '../game';
+import { BotClient } from './bot.js';
+import User, { UserRole } from '../user.js';
+import Channel from '../channel.js';
+import Command from '../commands/command.js';
+import ConfigManager from '../managers/config_manager.js';
+import Notification from '../notifications/notification.js';
+import MDRegex from '../util/regex.js';
+import { mapAsync } from '../util/array_util.js';
+import { assertIsDefined, StrUtil } from '../util/util.js';
+import Message from '../message.js';
+import Permissions from '../permissions.js';
+import ProjectManager from '../managers/project_manager.js';
+import Game from '../game.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;

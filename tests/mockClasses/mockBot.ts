@@ -1,9 +1,9 @@
-import BotClient from 'src/bots/bot';
-import Channel from 'src/channel';
-import Game from 'src/game';
-import Notification from 'src/notifications/notification';
-import Permissions from 'src/permissions';
-import User, { UserRole } from 'src/user';
+import BotClient from 'src/bots/bot.js';
+import Channel from 'src/channel.js';
+import Game from 'src/game.js';
+import Notification from 'src/notifications/notification.js';
+import Permissions from 'src/permissions.js';
+import User, { UserRole } from 'src/user.js';
 
 export default class MockBot extends BotClient {
   constructor() {

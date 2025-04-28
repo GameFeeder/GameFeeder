@@ -1,4 +1,4 @@
-import TelegramBot from 'src/bots/telegram';
+import TelegramBot from 'src/bots/telegram.js';
 
 describe('Telegram bot', () => {
   describe('message from markdown', () => {

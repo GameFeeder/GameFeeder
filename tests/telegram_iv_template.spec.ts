@@ -1,4 +1,4 @@
-import TelegramIVTemplate from 'src/telegram_iv_template';
+import TelegramIVTemplate from 'src/telegram_iv_template.js';
 
 describe('Telegram IV template', () => {
   describe('constructor', () => {

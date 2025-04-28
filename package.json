@@ -24,8 +24,8 @@
     "start": "node --loader commonjs-extension-resolution-loader dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.ts",
-    "coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.ts --coverage",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "watch": "tsc --watch"
   },
   "dependencies": {

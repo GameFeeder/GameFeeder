@@ -1,7 +1,7 @@
-import Game from '../game';
-import NotificationElement from './notification_element';
-import Notification from './notification';
-import { assertIsDefined } from '../util/util';
+import Game from '../game.js';
+import NotificationElement from './notification_element.js';
+import Notification from './notification.js';
+import { assertIsDefined } from '../util/util.js';
 
 /** A representation of a bot notification. */
 export default class NotificationBuilder {

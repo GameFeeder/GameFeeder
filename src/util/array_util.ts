@@ -1,4 +1,4 @@
-import Comparable from './comparable';
+import Comparable from './comparable.js';
 
 /** Sorts an array of comparable values. */
 export function sort<T extends Comparable<T>>(array: T[]): T[] {

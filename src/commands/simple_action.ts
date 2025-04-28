@@ -1,6 +1,8 @@
-import Message from '../message';
-import { UserRole } from '../user';
-import NoLabelAction from './no_label_action';
+import Command from './command.js';
+import { UserRole } from '../user.js';
+import Channel from '../channel.js';
+import Message from '../message.js';
+import NoLabelAction from './no_label_action.js';
 
 /** A very simple action. */
 export default class SimpleAction extends NoLabelAction {
