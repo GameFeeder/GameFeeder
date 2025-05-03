@@ -24,6 +24,7 @@ import Message from '../message.js';
 import Permissions from '../permissions.js';
 import ProjectManager from '../managers/project_manager.js';
 import Game from '../game.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;
@@ -221,7 +222,11 @@ export default class DiscordBot extends BotClient {
 
         return new Permissions(hasAccess, canWrite, canEdit, canPin);
       } catch (error) {
-        this.logger.error(`Failed to get permissions for text channel ${channel.label}:\n${error}`);
+        rollbar_client.reportCaughtError(
+          `Failed to get permissions for text channel ${channel.label}`,
+          error,
+          this.logger,
+        );
         throw error;
       }
     }
@@ -254,6 +259,7 @@ export default class DiscordBot extends BotClient {
           false)
         : false;
     } else {
+      rollbar_client.warning('Unexpected Discord channel type for channel', channel, user);
       this.logger.error(`Unecpected Discord channel type for channel ${channel.label}.`);
       canEmbed = false;
     }
@@ -349,6 +355,7 @@ export default class DiscordBot extends BotClient {
     // Setup the user
     const user = this.bot.user;
     if (!user) {
+      rollbar_client.warning('Bot user not found', this.bot);
       this.logger.error('Bot user not found');
     }
 
@@ -365,7 +372,7 @@ export default class DiscordBot extends BotClient {
     try {
       this.bot.user?.setPresence(presence);
     } catch (error) {
-      this.logger.error(`Failed to setup bot presence:\n${error}`);
+      rollbar_client.reportCaughtError(`Failed to setup bot presence`, error, this.logger);
       throw error;
     }
     return true;
@@ -381,9 +388,15 @@ export default class DiscordBot extends BotClient {
   public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
     try {
       // Check if the bot can write to this channel
-      const permissions = await this.getUserPermissions(await this.getUser(), channel);
+      const user = await this.getUser();
+      const permissions = await this.getUserPermissions(user, channel);
 
       if (!permissions) {
+        rollbar_client.warning(
+          'Failed to get user permissions while sending to channel',
+          channel,
+          user,
+        );
         this.logger.error(
           `Failed to get user permissions while sending to channel ${channel.label}`,
         );
@@ -397,8 +410,10 @@ export default class DiscordBot extends BotClient {
         return false;
       }
     } catch (error) {
-      this.logger.error(
-        `Failed to get user permissions while sending to channel ${channel.label}:\n${error}`,
+      rollbar_client.reportCaughtError(
+        `Failed to get user permissions while sending to channel ${channel.label}`,
+        error,
+        this.logger,
       );
       return false;
     }
@@ -585,7 +600,11 @@ export default class DiscordBot extends BotClient {
     try {
       discordChannel = botChannels.cache.get(channel.id);
     } catch (error) {
-      this.logger.error(`Failed to get discord channel ${channel.label}:\n${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to get discord channel ${channel.label}`,
+        error,
+        this.logger,
+      );
       return false;
     }
 
@@ -610,7 +629,11 @@ export default class DiscordBot extends BotClient {
       }
       // Group DMs seem to be deprecated
     } catch (error) {
-      this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to send message to channel ${channel.label}`,
+        error,
+        this.logger,
+      );
     }
     return false;
   }

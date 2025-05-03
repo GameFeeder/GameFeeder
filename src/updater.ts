@@ -6,6 +6,7 @@ import Logger from './logger.js';
 import Notification from './notifications/notification.js';
 import { sortLimitEnd } from './util/array_util.js';
 import { sleep } from './util/util.js';
+import rollbar_client from './util/rollbar_client.js';
 
 export default class Updater {
   private static updaters: Updater[];
@@ -232,7 +233,7 @@ export default class Updater {
       // Update the healthcheck timestamp
       this.updateHealthcheck();
     } catch (error) {
-      this.logger.error(`Update loop failed:\n${error}`);
+      rollbar_client.reportCaughtError(`Update loop failed`, error, this.logger);
     } finally {
       if (this.doUpdates) {
         // Update again after the delay
