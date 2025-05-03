@@ -4,6 +4,7 @@ import RSSItem from './rss_item.js';
 import { sortLimitEnd } from '../util/array_util.js';
 import Logger from '../logger.js';
 import PreProcessor from '../processors/pre_processor.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 export default class RSS {
   public static logger = new Logger('RSS');
@@ -62,11 +63,7 @@ export default class RSS {
 
       return feedItems;
     } catch (error) {
-      if (error instanceof Error) {
-        RSS.logger.error(`Failed to parse feed url '${url}':\n${error.stack}`);
-      } else {
-        RSS.logger.error(`Failed to parse feed url '${url}':\n${error}`);
-      }
+      rollbar_client.reportCaughtError(`Failed to parse feed url ${url}`, error, RSS.logger);
       return [];
     }
   }
