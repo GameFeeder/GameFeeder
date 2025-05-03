@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { URL, URLSearchParams } from 'url';
 import Logger from '../logger.js';
 import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 /** The timeout duration in ms for all API requests. */
 const REQUEST_TIMEOUT = 10000;
@@ -60,7 +61,7 @@ export default class SteamWebAPI {
 
       return new SteamAppNews(responseJSON as SteamAppNewsResponse);
     } catch (error) {
-      this.logger.error(`Failed to get news for app ${appid}:\n${error}`);
+      rollbar_client.reportCaughtError(`Failed to get news for app ${appid}`, error, this.logger);
       // Return empty news
       const respose: SteamAppNewsResponse = { appnews: { appid, newsitems: [], count: 0 } };
       return new SteamAppNews(respose);

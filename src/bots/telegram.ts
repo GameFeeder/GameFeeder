@@ -12,6 +12,7 @@ import { assertIsDefined, StrUtil } from '../util/util.js';
 import Message from '../message.js';
 import Permissions from '../permissions.js';
 import Game from '../game.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 enum MessageType {
   notification = 'notification',
@@ -41,7 +42,11 @@ export default class TelegramBot extends BotClient {
     // Set up the bot
     this.bot = new Telegraf(token);
     this.bot.catch((err, ctx) => {
-      this.logger.error(`Encountered an error for ${ctx.updateType}: ${err}`);
+      rollbar_client.reportCaughtError(
+        `Encountered an error for ${ctx.updateType}`,
+        err,
+        this.logger,
+      );
     });
     this.queue = new Queue({
       rules: {
@@ -144,7 +149,11 @@ export default class TelegramBot extends BotClient {
         return UserRole.ADMIN;
       }
     } catch (error) {
-      this.logger.error(`Failed to get chat admins on channel ${channel.label}:\n${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to get chat admins on channel ${channel.label}`,
+        error,
+        this.logger,
+      );
     }
     // the user is just a regular user
     return UserRole.USER;
@@ -222,8 +231,10 @@ export default class TelegramBot extends BotClient {
             : true
           : false);
     } catch (error) {
-      this.logger.error(
-        `Failed to get user permissions due to unexpected error on channel ${channel.label}:\n${error}`,
+      rollbar_client.reportCaughtError(
+        `Failed to get user permissions due to unexpected error on channel ${channel.label}`,
+        error,
+        this.logger,
       );
       throw error;
     }
@@ -237,7 +248,11 @@ export default class TelegramBot extends BotClient {
     try {
       return (await this.bot.telegram.getChatMembersCount(channel.id)) - 1;
     } catch (error) {
-      this.logger.error(`Failed to get chat member count for channel ${channel.label}:\n${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to get chat member count for channel ${channel.label}`,
+        error,
+        this.logger,
+      );
       return 0;
     }
   }
@@ -346,8 +361,10 @@ export default class TelegramBot extends BotClient {
         await command.execute(message, regMatch);
       }
     } catch (error) {
-      this.logger.error(
-        `Failed to execute command ${command.name} on channel ${channel.label}:\n${error}`,
+      rollbar_client.reportCaughtError(
+        `Failed to execute command ${command.name} on channel ${channel.label}`,
+        error,
+        this.logger,
       );
     }
   }
@@ -382,7 +399,7 @@ export default class TelegramBot extends BotClient {
       this.userName = botUser.username ?? '';
       this.userTag = `@${this.userName}`;
     } catch (error) {
-      this.logger.error(`Failed to get user name and user tag:\n${error}`);
+      rollbar_client.reportCaughtError(`Failed to get user name and user tag`, error, this.logger);
     }
     return this.isRunning;
   }
@@ -416,9 +433,11 @@ export default class TelegramBot extends BotClient {
         rule,
       );
       return true;
-    } catch (err) {
-      this.logger.error(
-        `Failed to add message for channel ${channel.label} in the queue. Full error: ${err}`,
+    } catch (error) {
+      rollbar_client.reportCaughtError(
+        `Failed to add message for channel ${channel.label} in the queue`,
+        error,
+        this.logger,
       );
       return false;
     }
