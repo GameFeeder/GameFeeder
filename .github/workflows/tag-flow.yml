@@ -28,7 +28,7 @@ jobs:
           fi
       - name: Create GitHub Release
         if: steps.check_tag.outputs.tag_exists == 'false'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.get_version.outputs.gamefeeder_version }}
           tag_name: v${{ steps.get_version.outputs.gamefeeder_version }}
