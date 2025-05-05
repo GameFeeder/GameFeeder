@@ -7,11 +7,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write  # This is needed for creating releases/tags
     steps:
       - uses: actions/checkout@v4.2.2
-      - name: Set global git conf
-        run: git config --global user.email "" && git config --global user.name "github-actions"
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
       - name: Get current version
-        run: echo "gamefeeder_version=v$(jq -r '.version' package.json)" >> $GITHUB_ENV
-      - name: Create tag and push to GitHub
-        run: git tag $gamefeeder_version && git push origin $gamefeeder_version || true
+        id: get_version
+        run: echo "gamefeeder_version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git ls-remote --tags origin refs/tags/v${{ steps.get_version.outputs.gamefeeder_version }} | grep -q v${{ steps.get_version.outputs.gamefeeder_version }}; then
+            echo "Tag v${{ steps.get_version.outputs.gamefeeder_version }} already exists, skipping tag creation"
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag v${{ steps.get_version.outputs.gamefeeder_version }} does not exist, will create"
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.get_version.outputs.gamefeeder_version }}
+          tag_name: v${{ steps.get_version.outputs.gamefeeder_version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
