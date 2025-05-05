@@ -4,6 +4,7 @@ import Updater from './updater.js';
 import InitManager from './managers/init_manager.js';
 import ProjectManager from './managers/project_manager.js';
 import { mapAsync, naturalJoin } from './util/array_util.js';
+import rollbar_client from './util/rollbar_client.js';
 
 export default class Main {
   public static logger = new Logger('Main');
@@ -48,7 +49,7 @@ export default class Main {
         await bot.start();
         Main.logger.info(`Started ${bot.userTag}.`);
       } catch (error) {
-        Main.logger.error(`Failed to start bot ${bot.name}: ${error}`);
+        rollbar_client.reportCaughtError(`Failed to start bot ${bot.name}`, error, Main.logger);
       }
     });
     const time = Date.now() - startTime;

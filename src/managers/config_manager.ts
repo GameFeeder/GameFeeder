@@ -42,12 +42,22 @@ export type RedditConfig = {
   userName: string;
 };
 
+/** The configuration settings for Rollbar error tracking. */
+export type RollbarConfig = {
+  /** Determines whether Rollbar error tracking is enabled. */
+  enabled: boolean;
+  /** The access token used to authenticate with Rollbar. */
+  accessToken: string;
+};
+
 /** The configuration settings for the used APIs. */
 export type APIConfig = {
   /** The configuration settings for the bots. */
   bots: BotConfig;
   /** The configuration settings for the reddit client. */
   reddit: RedditConfig;
+  /** The configuration settings for Rollbar error tracking. */
+  rollbar: RollbarConfig;
 };
 
 /** A reddit user. */
@@ -215,6 +225,19 @@ export default class ConfigManager {
   public static setRedditConfig(config: RedditConfig): void {
     const apiConfig = this.getAPIConfig();
     apiConfig.reddit = config;
+
+    this.setAPIConfig(apiConfig);
+  }
+
+  /** Gets the rollbar config object. */
+  public static getRollbarConfig(): RollbarConfig {
+    return this.getAPIConfig().rollbar;
+  }
+
+  /** Sets the rollbar config object. */
+  public static setRollbarConfig(config: RollbarConfig): void {
+    const apiConfig = this.getAPIConfig();
+    apiConfig.rollbar = config;
 
     this.setAPIConfig(apiConfig);
   }
