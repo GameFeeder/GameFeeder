@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+# Add permissions block to limit GITHUB_TOKEN permissions
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-22.04
