@@ -26,6 +26,13 @@ jobs:
             echo "Tag v${{ steps.get_version.outputs.gamefeeder_version }} does not exist, will create"
             echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
+      - name: Create Git Tag
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a v${{ steps.get_version.outputs.gamefeeder_version }} -m "Release v${{ steps.get_version.outputs.gamefeeder_version }}"
+          git push origin v${{ steps.get_version.outputs.gamefeeder_version }}
       - name: Create GitHub Release
         if: steps.check_tag.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v2
