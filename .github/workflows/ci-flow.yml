@@ -7,6 +7,10 @@ on:
     branches:
       - main
 
+# Add permissions block to limit GITHUB_TOKEN permissions
+permissions:
+  contents: read
+
 jobs:
   CI:
     runs-on: ubuntu-22.04
