@@ -1,4 +1,4 @@
-FROM node:23.11.0-alpine AS production-dependencies
+FROM node:22.15.1-alpine AS production-dependencies
 WORKDIR /app
 COPY ./package.json ./package-lock.json /app/
 RUN npm ci --omit=dev
@@ -11,7 +11,7 @@ COPY . .
 FROM workspace AS build-dependencies
 RUN npm run build
 
-FROM node:23.11.0-alpine AS production
+FROM node:22.15.1-alpine AS production
 WORKDIR /app
 COPY ./package.json .
 COPY --from=build-dependencies /app/dist ./dist
