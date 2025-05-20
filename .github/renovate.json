@@ -1,23 +1,47 @@
 {
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["config:recommended"],
   "packageRules": [
     {
-      "depTypeList": ["devDependencies"],
-      "updateTypes": ["patch", "minor", "major"],
-      "groupName": "devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "dev dependencies (non-major)",
       "automerge": true
     },
     {
-      "depTypeList": ["dependencies"],
-      "updateTypes": ["patch"],
-      "groupName": "dependencies (patch)"
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "dev dependencies (major)",
+      "automerge": false
     },
     {
-      "depTypeList": ["dependencies"],
-      "updateTypes": ["minor", "major"],
-      "groupName": "dependencies (minor-major)"
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "dependencies (patch)",
+      "automerge": false
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["minor"],
+      "groupName": "dependencies (minor)",
+      "automerge": false
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "dependencies (major)",
+      "automerge": false
+    },
+    {
+      "matchPackageNames": ["node", "nodejs/node", "node-version", "node:{/,}**"],
+      "matchManagers": ["dockerfile", "nvm", "github-actions"],
+      "versioning": "node"
+    },
+    {
+      "matchFileNames": ["package.json"],
+      "matchDepTypes": ["engines"],
+      "matchPackageNames": ["node"],
+      "versioning": "node"
     }
-  ]
+  ],
+  "constraints": { "node": "lts" }
 }
