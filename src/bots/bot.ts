@@ -11,6 +11,7 @@ import { mapAsync } from '../util/array_util.js';
 import Updater from '../updater.js';
 import constants from '../util/constants.js';
 import { assertIsDefined } from '../util/util.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */
@@ -134,10 +135,12 @@ export default abstract class BotClient {
    */
   public async addSubscriber(channel: Channel, game: Game): Promise<boolean> {
     // Check if the bot can write to this channel
-    const permissions = await this.getUserPermissions(await this.getUser(), channel);
+    const user = await this.getUser();
+    const permissions = await this.getUserPermissions(user, channel);
 
     if (!permissions) {
       this.logger.error('Failed to get user permissions');
+      rollbar_client.warning('Failed to get user permissions', user, channel);
       return false;
     }
 
@@ -259,6 +262,10 @@ export default abstract class BotClient {
         this.logger.error(
           `Failed to get user permissions while removing channels for channel ${channel.label}`,
         );
+        rollbar_client.warning(
+          'Failed to get user permissions while removing channels for channel',
+          channel,
+        );
       } else if (!channelPerms.canWrite) {
         // The bot can not write to this channel, remove channel data
         if (this.removeData(channel)) {
@@ -353,6 +360,12 @@ export default abstract class BotClient {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (!game) {
+      rollbar_client.warning(
+        `Failed to send message to game subs: No game specified!`,
+        game,
+        subscribers,
+        this.name,
+      );
       this.logger.error(`Failed to send message to game subs:\nNo game specified!`);
       return;
     }

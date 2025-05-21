@@ -15,6 +15,7 @@ import Notification from '../notifications/notification.js';
 import NotificationElement from '../notifications/notification_element.js';
 import Updater from '../updater.js';
 import constants from '../util/constants.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
@@ -74,13 +75,20 @@ const prefixCmd = new TwoPartCommand(
   async (message, match) => {
     const bot = message.getBot();
     const channel = message.channel;
+    const user = await bot.getUser();
     let { newPrefix } = matchGroups(match);
     newPrefix = newPrefix ? newPrefix.trim() : '';
 
     // Check if the bot can write to this channel
-    const permissions = await bot.getUserPermissions(await bot.getUser(), channel);
+    const permissions = await bot.getUserPermissions(user, channel);
 
     if (!permissions) {
+      rollbar_client.warning(
+        `Failed to get bot permissions while assigning new prefix for channel`,
+        channel,
+        permissions,
+        user,
+      );
       bot.logger.error(
         `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
       );

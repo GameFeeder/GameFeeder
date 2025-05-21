@@ -8,6 +8,7 @@ import NotificationBuilder from '../notifications/notification_builder.js';
 import { limitEnd, removeSmallerEqThan } from '../util/array_util.js';
 import Version from '../notifications/version.js';
 import { ProviderData } from '../managers/data_manager.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 interface DotaPatch {
   patch_number: string;
@@ -61,7 +62,7 @@ export default class DotaProvider extends Provider {
 
       notifications = limitEnd(notifications, limit);
     } catch (error) {
-      this.logger.error(`Dota updates page parsing failed, error: ${error}`);
+      rollbar_client.reportCaughtError('Dota updates page parsing failed', error, this.logger);
     }
     return notifications;
   }
@@ -76,7 +77,7 @@ export default class DotaProvider extends Provider {
       const patchList = JSON.parse(body).patches;
       return patchList;
     } catch (error) {
-      this.logger.error(`Failed to get patch list, error: ${error}`);
+      rollbar_client.reportCaughtError('Failed to get Dota patch list', error, this.logger);
       return [];
     }
   }
@@ -94,7 +95,11 @@ export default class DotaProvider extends Provider {
       const neutralItemChanges = patchDetails.neutral_items?.length ?? 0;
       return `${genericChanges} generic changes, ${heroChanges} hero changes, ${itemChanges} item changes, ${neutralItemChanges} neutral item changes`;
     } catch (error) {
-      this.logger.error(`Failed to get patch details, error: ${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to get Dota patch details for version ${version}`,
+        error,
+        this.logger,
+      );
       return '';
     }
   }
