@@ -1,4 +1,4 @@
-![CI status](https://img.shields.io/github/workflow/status/GameFeeder/GameFeeder/ci-flow/main?label=CI)
+![CI status](https://img.shields.io/github/actions/workflow/status/GameFeeder/GameFeeder/ci-flow.yml?branch=main)
 ![Release](https://img.shields.io/github/v/release/GameFeeder/GameFeeder)
 ![Docker image size](https://img.shields.io/docker/image-size/gamefeeder/gamefeeder/latest)
 
