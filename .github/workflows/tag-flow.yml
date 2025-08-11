@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: write  # This is needed for creating releases/tags
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4.3.0
         with:
           fetch-depth: 0  # Fetch all history for proper versioning
       - name: Get current version
