@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/GameFeeder/GameFeeder",
   "engines": {
-    "node": ">=v22.15.1",
+    "node": ">=v22.21.0",
     "npm": ">=8.19"
   },
   "scripts": {
