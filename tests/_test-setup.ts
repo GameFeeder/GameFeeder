@@ -1,4 +1,3 @@
-// filepath: /Users/zachkontoulis/GameFeeder/tests/_test-setup.ts
 /** Import jest for every test file. */
 import { jest } from '@jest/globals';
 
