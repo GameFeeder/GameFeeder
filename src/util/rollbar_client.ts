@@ -16,7 +16,7 @@ class RollbarClient {
    * Private constructor to enforce singleton pattern
    */
   private constructor() {
-    this.initialize();
+    // Explicit initialization required
   }
 
   /**
@@ -32,7 +32,11 @@ class RollbarClient {
   /**
    * Initialize Rollbar client based on configuration
    */
-  private initialize(): void {
+  public initialize(): void {
+    if (this.rollbar) {
+      return;
+    }
+
     // Get Rollbar configuration
     const rollbarConfig = ConfigManager.getRollbarConfig();
 
