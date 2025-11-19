@@ -7,16 +7,24 @@ Object.defineProperty(globalThis, 'jest', { value: jest });
 // Automatically mock problematic ESM modules
 jest.mock('node-fetch');
 
-// Mock RollbarClient globally for all tests
-jest.mock('../src/util/rollbar_client.js', () => {
+// Mock ConfigManager to prevent file access issues
+jest.mock('../src/managers/config_manager.js', () => {
   return {
+    __esModule: true,
     default: {
-      getInstance: jest.fn().mockReturnValue({
-        error: jest.fn(),
-        warning: jest.fn(),
-        info: jest.fn(),
-        debug: jest.fn(),
+      getRollbarConfig: () => ({ enabled: false, accessToken: 'mock' }),
+      getAPIConfig: () => ({
+        bots: {},
+        reddit: {},
+        rollbar: { enabled: false, accessToken: 'mock' },
       }),
+      getBotConfig: () => ({}),
+      getRedditConfig: () => ({}),
+      getGameConfig: () => [],
+      getUpdatersConfig: () => ({}),
     },
   };
 });
+
+// Mock RollbarClient globally for all tests
+jest.mock('../src/util/rollbar_client.js');
