@@ -5,6 +5,7 @@ import FileManager from './file_manager.js';
 import Logger from '../logger.js';
 import ConfigManager from './config_manager.js';
 import DataManager from './data_manager.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 export default class InitManager {
   public static logger = new Logger('Init Manager');
@@ -255,6 +256,7 @@ export default class InitManager {
     this.addMissingUserDataKeys();
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
+    rollbar_client.initialize();
 
     // Migrations
     // 1. Rename 'dota' provider to 'dota_patches'
