@@ -35,7 +35,7 @@
     "lodash": "4.17.21",
     "node-fetch": "3.3.2",
     "pubsub-js": "1.9.5",
-    "rollbar": "2.26.4",
+    "rollbar": "2.26.5",
     "rss-parser": "3.13.0",
     "smart-request-balancer": "2.2.0",
     "snoowrap": "1.23.0",
