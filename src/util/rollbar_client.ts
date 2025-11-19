@@ -37,7 +37,7 @@ class RollbarClient {
     const rollbarConfig = ConfigManager.getRollbarConfig();
 
     // Initialize Rollbar only if enabled in config
-    if (rollbarConfig.enabled && rollbarConfig.accessToken) {
+    if (rollbarConfig?.enabled && rollbarConfig?.accessToken) {
       this.rollbar = new Rollbar({
         accessToken: rollbarConfig.accessToken,
         environment: ProjectManager.getEnvironment(),
