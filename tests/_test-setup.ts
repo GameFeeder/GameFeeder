@@ -4,6 +4,26 @@ import { jest } from '@jest/globals';
 // For ESM compatibility, explicitly add jest to the global object
 Object.defineProperty(globalThis, 'jest', { value: jest });
 
+import fs from 'fs';
+import path from 'path';
+
+// Create dummy api_config.json if it doesn't exist (for CI)
+const apiConfigPath = path.resolve('config/api_config.json');
+if (!fs.existsSync(apiConfigPath)) {
+  const configDir = path.dirname(apiConfigPath);
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
+  }
+  fs.writeFileSync(
+    apiConfigPath,
+    JSON.stringify({
+      bots: {},
+      reddit: {},
+      rollbar: { enabled: false, accessToken: 'mock' },
+    }),
+  );
+}
+
 // Automatically mock problematic ESM modules
 jest.mock('node-fetch');
 
