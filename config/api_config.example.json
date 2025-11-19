@@ -20,5 +20,9 @@
     "clientSecret": "",
     "refreshToken": "",
     "userName": ""
+  },
+  "rollbar": {
+    "enabled": false,
+    "accessToken": ""
   }
 }

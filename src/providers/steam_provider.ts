@@ -4,6 +4,7 @@ import Provider from './provider.js';
 import { sortLimitEnd } from '../util/array_util.js';
 import SteamWebAPI from '../steam/steam_web_api.js';
 import { ProviderData } from '../managers/data_manager.js';
+import rollbar_client from '../util/rollbar_client.js';
 
 export default class SteamProvider extends Provider {
   constructor(
@@ -44,7 +45,11 @@ export default class SteamProvider extends Provider {
 
       return notifications;
     } catch (error) {
-      this.logger.error(`Failed to get Steam news for app ${this.appID}:\n${error}`);
+      rollbar_client.reportCaughtError(
+        `Failed to get Steam news for app ${this.appID}`,
+        error,
+        this.logger,
+      );
       return [];
     }
   }
