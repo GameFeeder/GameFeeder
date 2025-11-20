@@ -38,9 +38,4 @@ export default class ProjectManager {
     // Remove https prefix
     return this.getURL().replace(/^https:\/\//, '');
   }
-
-  /** Gets the environment the bot is running in (prod/dev). */
-  public static getEnvironment(): string {
-    return process.env.NODE_ENV || 'dev';
-  }
 }

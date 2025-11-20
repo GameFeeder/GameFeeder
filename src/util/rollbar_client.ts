@@ -16,7 +16,7 @@ class RollbarClient {
    * Private constructor to enforce singleton pattern
    */
   private constructor() {
-    this.initialize();
+    // Explicit initialization required
   }
 
   /**
@@ -32,7 +32,11 @@ class RollbarClient {
   /**
    * Initialize Rollbar client based on configuration
    */
-  private initialize(): void {
+  public initialize(): void {
+    if (this.rollbar) {
+      return;
+    }
+
     // Get Rollbar configuration
     const rollbarConfig = ConfigManager.getRollbarConfig();
 
@@ -40,7 +44,7 @@ class RollbarClient {
     if (rollbarConfig?.enabled && rollbarConfig?.accessToken) {
       this.rollbar = new Rollbar({
         accessToken: rollbarConfig.accessToken,
-        environment: ProjectManager.getEnvironment(),
+        environment: ConfigManager.getEnvironment(),
         captureUncaught: true,
         captureUnhandledRejections: true,
         code_version: ProjectManager.getVersionNumber(),
