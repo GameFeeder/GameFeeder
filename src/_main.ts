@@ -3,6 +3,7 @@ import getBots from './bots/bots.js';
 import Updater from './updater.js';
 import InitManager from './managers/init_manager.js';
 import ProjectManager from './managers/project_manager.js';
+import ConfigManager from './managers/config_manager.js';
 import { mapAsync, naturalJoin } from './util/array_util.js';
 import rollbar_client from './util/rollbar_client.js';
 
@@ -12,7 +13,7 @@ export default class Main {
   /** Registers the commands, starts the bots and the updater. */
   public static async start(): Promise<void> {
     Main.logger.info(
-      `Starting main in ${ProjectManager.getEnvironment()} mode,` +
+      `Starting main in ${ConfigManager.getEnvironment()} mode,` +
         ` v${ProjectManager.getVersionNumber()}.`,
     );
     InitManager.initAll();

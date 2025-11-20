@@ -44,7 +44,7 @@ class RollbarClient {
     if (rollbarConfig?.enabled && rollbarConfig?.accessToken) {
       this.rollbar = new Rollbar({
         accessToken: rollbarConfig.accessToken,
-        environment: ProjectManager.getEnvironment(),
+        environment: ConfigManager.getEnvironment(),
         captureUncaught: true,
         captureUnhandledRejections: true,
         code_version: ProjectManager.getVersionNumber(),
