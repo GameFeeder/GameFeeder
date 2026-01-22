@@ -5,7 +5,7 @@ export function parseVersion(version: string): Array<{ major: number; minor: str
   const vParts = version.split('.');
 
   // Split in major and minor version part, e.g. 10b is split in 10 and b
-  const partRegex = /(?<major>\d+)(?<minor>[a-zA-z]+)?/;
+  const partRegex = /(?<major>\d+)(?<minor>[a-zA-Z]+)?/;
 
   return vParts.map((vPart) => {
     const match = partRegex.exec(vPart);
