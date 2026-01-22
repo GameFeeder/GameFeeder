@@ -1,5 +1,8 @@
 name: coverage
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
