@@ -336,7 +336,7 @@ const notifyAllCmd = new TwoPartCommand(
   // Group Trigger
   /^\s*(notifyAll(Subs)?)(?<group>(?:.|\s)*?)$/,
   // Action Trigger
-  /^\s+(?<msg>(?:.|\s)+?)\s*$/,
+  /^\s+(?<msg>.+?)\s*$/s,
   // Action
   async (message, match) => {
     let { msg } = matchGroups(match);
