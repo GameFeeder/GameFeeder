@@ -28,20 +28,6 @@ export type BotConfig = {
   telegram: BotSettings;
 };
 
-/** The configuration settings for the reddit client. */
-export type RedditConfig = {
-  /** Determines wheather reddit posts should be processed. */
-  enabled: boolean;
-  /** The client id used by the reddit client. */
-  clientId: string;
-  /** The client secret used by the reddit client. */
-  clientSecret: string;
-  /** The refresh token used by the reddit client. */
-  refreshToken: string;
-  /** The user name of the bot owner. */
-  userName: string;
-};
-
 /** The configuration settings for Rollbar error tracking. */
 export type RollbarConfig = {
   /** Determines whether Rollbar error tracking is enabled. */
@@ -54,28 +40,8 @@ export type RollbarConfig = {
 export type APIConfig = {
   /** The configuration settings for the bots. */
   bots: BotConfig;
-  /** The configuration settings for the reddit client. */
-  reddit: RedditConfig;
   /** The configuration settings for Rollbar error tracking. */
   rollbar: RollbarConfig;
-};
-
-/** A reddit user. */
-export type RedditUser = {
-  /** The name of the reddit user. */
-  name: string;
-  /** The regex to filter the post tiles by. */
-  titleFilter: string;
-};
-
-/** The reddit providers for a game. */
-export type RedditProvider = {
-  /** The subreddit to search in. */
-  subreddit: string;
-  /** The relevant users in that subreddit. */
-  users: RedditUser[];
-  /** URLs that should be filtered out. */
-  urlFilters: string[];
 };
 
 /** An RSS provider. */
@@ -120,8 +86,6 @@ export type GameSettings = {
   providers: {
     /** The Steam provider of the game. */
     steam: SteamProvider;
-    /** The reddit providers of the game. */
-    reddit: RedditProvider[];
     /** The rss providers of the game. */
     rss: RSSProvider[];
   };
@@ -212,19 +176,6 @@ export default class ConfigManager {
   public static setBotConfig(config: BotConfig): void {
     const apiConfig = this.getAPIConfig();
     apiConfig.bots = config;
-
-    this.setAPIConfig(apiConfig);
-  }
-
-  /** Gets the reddit config object. */
-  public static getRedditConfig(): RedditConfig {
-    return this.getAPIConfig().reddit;
-  }
-
-  /** Sets the reddit config object. */
-  public static setRedditConfig(config: RedditConfig): void {
-    const apiConfig = this.getAPIConfig();
-    apiConfig.reddit = config;
 
     this.setAPIConfig(apiConfig);
   }
