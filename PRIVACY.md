@@ -175,8 +175,8 @@ GameFeeder requests the following Discord privileged intents:
 - **Why Necessary**: Required to ensure only authorized users can modify bot settings (subscribe/unsubscribe, change prefix)
 
 ### Message Content Intent
-- **Status**: NOT REQUIRED
-- **Usage**: GameFeeder operates using slash commands and mentions, and does not require access to message content beyond direct commands
+- **Status**: REQUIRED
+- **Usage**: GameFeeder does not yet support Discord slash commands, so message content access is required to process prefix-based commands and mentions (Note: Telegram uses native slash commands and is not affected by this requirement)
 
 ### Presence Intent
 - **Status**: NOT REQUIRED
