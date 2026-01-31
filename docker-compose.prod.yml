@@ -1,7 +1,7 @@
 services:
   bot:
     container_name: gamefeeder
-    image: ghcr.io/gamefeeder/gamefeeder/gamefeeder:latest
+    image: ghcr.io/gamefeeder/gamefeeder/gamefeeder:0.23.0
     volumes:
       - ./config/api_config.json:/app/config/api_config.json
       - ./config/updater_config.json:/app/config/updater_config.json
