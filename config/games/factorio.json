@@ -5,16 +5,7 @@
   "color": "#C67328",
   "icon": "https://i.imgur.com/7D0A9eT.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "factorio",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 427520,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 427520, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

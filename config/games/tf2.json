@@ -5,20 +5,7 @@
   "color": "#9A4713",
   "icon": "https://i.imgur.com/zaQObOc.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "tf2",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 440
-    },
-    "rss": [
-      {
-        "label": "Team Fortress 2 Blog",
-        "url": "http://www.teamfortress.com/rss.xml"
-      }
-    ]
+    "steam": { "appID": 440 },
+    "rss": [{ "label": "Team Fortress 2 Blog", "url": "http://www.teamfortress.com/rss.xml" }]
   }
 }

@@ -1,18 +1,5 @@
 {
-  "reddit": {
-    "lastUpdate": {},
-    "healthcheckTimestamp": ""
-  },
-  "steam": {
-    "lastUpdate": {},
-    "healthcheckTimestamp": ""
-  },
-  "rss": {
-    "lastUpdate": {},
-    "healthcheckTimestamp": ""
-  },
-  "dota_patches": {
-    "lastUpdate": {},
-    "healthcheckTimestamp": ""
-  }
+  "steam": { "lastUpdate": {}, "healthcheckTimestamp": "" },
+  "rss": { "lastUpdate": {}, "healthcheckTimestamp": "" },
+  "dota_patches": { "lastUpdate": {}, "healthcheckTimestamp": "" }
 }

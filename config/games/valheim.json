@@ -5,16 +5,7 @@
   "color": "#b62411",
   "icon": "https://imgur.com/lEc7zOO.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "valheim",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 892970,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 892970, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

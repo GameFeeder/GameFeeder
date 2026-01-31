@@ -1,26 +1,11 @@
 {
   "name": "skylines",
   "label": "Cities: Skylines",
-  "aliases": [
-    "cities: skylines",
-    "cities skylines",
-    "cs",
-    "c:s",
-    "skylines"
-  ],
+  "aliases": ["cities: skylines", "cities skylines", "cs", "c:s", "skylines"],
   "color": "#6bd5f2",
   "icon": "https://imgur.com/zRjxsWw.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "CitiesSkylines",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 255710,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 255710, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

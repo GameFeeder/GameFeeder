@@ -5,20 +5,7 @@
   "color": "#df554a",
   "icon": "https://imgur.com/oRZpbb3.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "dontstarve",
-        "users": []
-      },
-      {
-        "subreddit": "dontstarvetogether",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 322330,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 322330, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

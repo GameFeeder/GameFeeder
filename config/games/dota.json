@@ -4,55 +4,6 @@
   "aliases": ["dota", "dota2", "dota 2", "d2"],
   "color": "#CC0000",
   "icon": "https://i.imgur.com/aRVbvDh.png",
-  "telegramIVTemplates": [
-    {
-      "domain": "dota2.com",
-      "templateHash": "a8aa3892b2f818"
-    }
-  ],
-  "providers": {
-    "reddit": [
-      {
-        "urlFilters": [],
-        "subreddit": "DotA2",
-        "users": [
-          {
-            "name": "wykrhm",
-            "titleFilter": ".*"
-          },
-          {
-            "name": "Kappa_Man",
-            "titleFilter": "Update"
-          },
-          {
-            "name": "TheZett",
-            "titleFilter": "Dota 2 Update"
-          }
-        ]
-      },
-      {
-        "urlFilters": ["https://steamcommunity.com/games/570/"],
-        "subreddit": "DotaPatches",
-        "users": [
-          {
-            "name": "Kappa_Man",
-            "titleFilter": "Update"
-          },
-          {
-            "name": "Magesunite",
-            "titleFilter": "Update"
-          },
-          {
-            "name": "MSTRMN_",
-            "titleFilter": "Update"
-          }
-        ]
-      }
-    ],
-    "steam": {
-      "appID": 570,
-      "feeds": ["steam_community_announcements"]
-    },
-    "rss": []
-  }
+  "telegramIVTemplates": [{ "domain": "dota2.com", "templateHash": "a8aa3892b2f818" }],
+  "providers": { "steam": { "appID": 570, "feeds": ["steam_community_announcements"] }, "rss": [] }
 }
