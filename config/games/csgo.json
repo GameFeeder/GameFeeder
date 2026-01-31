@@ -13,25 +13,7 @@
   "color": "#000000",
   "icon": "https://i.imgur.com/2ONuRD3.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "csgo",
-        "users": [
-          {
-            "name": "wickedplayer494",
-            "titleFilter": "Counter-Strike: Global Offensive update"
-          }
-        ]
-      }
-    ],
-    "steam": {
-      "appID": 730
-    },
-    "rss": [
-      {
-        "label": "CS:GO Blog",
-        "url": "https://blog.counter-strike.net/index.php/feed/"
-      }
-    ]
+    "steam": { "appID": 730 },
+    "rss": [{ "label": "CS:GO Blog", "url": "https://blog.counter-strike.net/index.php/feed/" }]
   }
 }

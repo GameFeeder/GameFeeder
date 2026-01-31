@@ -5,16 +5,7 @@
   "color": "#d69d50",
   "icon": "https://imgur.com/cgm7M2G.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "StardewValley",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 413150,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 413150, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

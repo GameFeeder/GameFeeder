@@ -5,16 +5,7 @@
   "color": "#ee1a17",
   "icon": "https://imgur.com/ey1SDhy.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "AmongUs",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 945360,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 945360, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

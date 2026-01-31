@@ -5,16 +5,7 @@
   "color": "#e02713",
   "icon": "https://imgur.com/pBgwuv6.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "DeadCells",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 588650,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 588650, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

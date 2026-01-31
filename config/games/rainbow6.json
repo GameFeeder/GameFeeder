@@ -16,16 +16,7 @@
   "color": "#eeeeee",
   "icon": "https://imgur.com/CtLj8WV.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "Rainbow6",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 359550,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 359550, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

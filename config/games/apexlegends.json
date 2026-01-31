@@ -5,16 +5,7 @@
   "color": "#b8303e",
   "icon": "https://imgur.com/AbF7UW5.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "apexlegends",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 1172470,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1172470, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

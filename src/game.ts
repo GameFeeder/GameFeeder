@@ -1,12 +1,9 @@
-import ConfigManager, { RedditUser } from './managers/config_manager.js';
+import ConfigManager from './managers/config_manager.js';
 import Provider from './providers/provider.js';
 import RSSProvider from './providers/rss_provider.js';
-import SubredditProvider from './providers/subreddit_provider.js';
-import RedditUserProvider from './reddit/reddit_user.js';
 import DotaProvider from './providers/dota_provider.js';
 import TelegramIVTemplate from './telegram_iv_template.js';
 import SteamProvider from './providers/steam_provider.js';
-import RedditProvider from './providers/reddit_provider.js';
 
 export type Providers = {
   [index: string]: Provider;
@@ -96,25 +93,6 @@ export default class Game {
         {},
         telegramIVtemplates,
       );
-
-      // Reddit providers
-      if (gameSettings.providers.reddit) {
-        const subredditProviders: SubredditProvider[] = [];
-        gameSettings.providers.reddit.forEach((subredditConfig) => {
-          if (subredditConfig.users) {
-            const subreddit = subredditConfig.subreddit;
-            const users: RedditUser[] = subredditConfig.users;
-            const redditUsers = users.map(
-              (user) => new RedditUserProvider(user.name, user.titleFilter),
-            );
-            const urlFilters = subredditConfig.urlFilters ? subredditConfig.urlFilters : [];
-            subredditProviders.push(
-              new SubredditProvider(redditUsers, subreddit, urlFilters, game),
-            );
-          }
-        });
-        game.providers.reddit = new RedditProvider(subredditProviders, game);
-      }
 
       // Blog providers
       if (gameSettings.providers.rss) {

@@ -4,18 +4,5 @@
   "aliases": ["veloren"],
   "color": "#3083a6",
   "icon": "https://imgur.com/AivHTXn.png",
-  "providers": {
-    "reddit": [
-      {
-        "subreddit": "Veloren",
-        "users": []
-      }
-    ],
-    "rss": [
-      {
-        "label": "Veloren Blog",
-        "url": "https://veloren.net/rss.xml"
-      }
-    ]
-  }
+  "providers": { "rss": [{ "label": "Veloren Blog", "url": "https://veloren.net/rss.xml" }] }
 }

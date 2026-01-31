@@ -14,16 +14,7 @@
   "color": "#5bcff5",
   "icon": "https://imgur.com/VLPzilS.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "flightsim",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 1250410,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1250410, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

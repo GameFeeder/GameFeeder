@@ -13,7 +13,6 @@ This guide is meant to be beginner-friendly. If you run into any problems during
   - [API Keys](#api-keys)
     - [Discord Bot](#discord-bot)
     - [Telegram Bot](#telegram-bot)
-    - [Reddit API](#reddit-api)
   - [Test the setup](#test-the-setup)
 - [Docker containers](#docker-containers)
   - [Using the VSCode Dev Container](#using-the-vscode-dev-container)
@@ -53,7 +52,7 @@ The `data` folder saves data that will change while the bot is running. In `data
 
 ### API Keys
 
-Several features of the bot, such as the different messenger clients and reddit updates need API keys to work. However, you will only need to acquire the keys for the features you want to use. To disable one of the features, you can just leave the `token` fields empty or set `enabled` to `false`.
+Several features of the bot, such as the different messenger clients need API keys to work. However, you will only need to acquire the keys for the features you want to use. To disable one of the features, you can just leave the `token` fields empty or set `enabled` to `false`.
 
 > **Important**: Never share your API keys with anyone! Make sure to never add your API tokens and secrets to the `.example` files, as they are uploaded to GitHub!
 
@@ -74,18 +73,6 @@ To do that, first follow [this](https://core.telegram.org/bots#3-how-do-i-create
 
 Some commands require the `OWNER` role. To access those, you need to add your userID as a string to `config/api_config.json` in the `bots.telegram.owners` array.
 To find out your ID, you can use [@get_id_bot](https://telegram.me/get_id_bot) or use the `debug` command of our bot.
-
-#### Reddit API
-
-You will need to register for the Reddit API to be able to test out the Reddit post polling.
-
-To do that,
-
-- Create an app for the bot, following [these](https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started) steps (choose "web app" as type),
-- Register for the API, using [this](https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform) document,
-- Get a refresh token, using [this](https://not-an-aardvark.github.io/reddit-oauth-helper/) generator. You need `history` and `read` permissions.
-
-After following these steps, you should have `clientID`, `clientSecret`, `refreshToken` and your `userName`. Copy & paste all of them in `config/api_config.json`, in the corresponding fields in the `reddit` object.
 
 ### Test the setup
 

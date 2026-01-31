@@ -5,16 +5,7 @@
   "color": "#497c2d",
   "icon": "https://imgur.com/XiGyunR.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "GrandTheftAutoV",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 271590,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 271590, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

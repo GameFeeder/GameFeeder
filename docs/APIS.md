@@ -10,8 +10,6 @@ This documents aims to collect information about the APIs that we use for the bo
   - [Rate Limit](#rate-limit-1)
 - [Steam Web API](#steam-web-api)
   - [Rate Limit](#rate-limit-2)
-- [Reddit API](#reddit-api)
-  - [Rate Limit](#rate-limit-3)
 
 ## Telegram Bot API
 
@@ -61,15 +59,3 @@ The rate limit is specified in the [Terms of Use](https://steamcommunity.com/dev
 | Day         | Hour    | Minute | Second |
 | ----------- | ------- | ------ | ------ |
 | **100,000** | 4,166.7 | 69.4   | 1.2    |
-
-## Reddit API
-
-The [Reddit API](https://www.reddit.com/dev/api) is used to retrieve updates posted to Reddit.
-
-### Rate Limit
-
-The rate limit is specified in the [Rules](https://github.com/reddit-archive/reddit/wiki/API#rules).
-
-| Day    | Hour  | Minute | Second |
-| ------ | ----- | ------ | ------ |
-| 86,400 | 3,600 | **60** | 1      |

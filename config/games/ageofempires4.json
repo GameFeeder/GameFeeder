@@ -5,16 +5,7 @@
   "color": "#ebc594",
   "icon": "https://imgur.com/NCYubeG.jpg",
   "providers": {
-    "steam": {
-      "appID": 1466860,
-      "feeds": ["steam_community_announcements"]
-    },
-    "reddit": [
-      {
-        "subreddit": "aoe4",
-        "users": []
-      }
-    ],
+    "steam": { "appID": 1466860, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

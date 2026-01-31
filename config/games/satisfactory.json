@@ -6,17 +6,7 @@
   "icon": "https://i.imgur.com/RgtzvdT.png",
   "telegramIVTemplates": [],
   "providers": {
-    "reddit": [
-      {
-        "urlFilters": [],
-        "subreddit": "SatisfactoryGame",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 526870,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 526870, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

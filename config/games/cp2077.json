@@ -1,25 +1,11 @@
 {
   "name": "cp2077",
   "label": "Cyberpunk 2077",
-  "aliases": [
-    "cp2077",
-    "cp",
-    "2077",
-    "cyberpunk 2077"
-  ],
+  "aliases": ["cp2077", "cp", "2077", "cyberpunk 2077"],
   "color": "#f3ea12",
   "icon": "https://imgur.com/rKu7F5P.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "cyberpunkgame",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 1091500,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1091500, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

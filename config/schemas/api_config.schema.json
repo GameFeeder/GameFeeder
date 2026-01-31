@@ -7,48 +7,14 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "autostart": {
-            "type": "boolean"
-          },
-          "prefix": {
-            "type": "string"
-          },
-          "token": {
-            "type": "string"
-          },
-          "owners": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "enabled": {
-            "type": "boolean"
-          }
+          "autostart": { "type": "boolean" },
+          "prefix": { "type": "string" },
+          "token": { "type": "string" },
+          "owners": { "type": "array", "items": { "type": "string" } },
+          "enabled": { "type": "boolean" }
         },
         "additionalProperties": false
       }
-    },
-    "reddit": {
-      "type": "object",
-      "properties": {
-        "clientId": {
-          "type": "string"
-        },
-        "clientSecret": {
-          "type": "string"
-        },
-        "refreshToken": {
-          "type": "string"
-        },
-        "userName": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false
     }
   }
 }

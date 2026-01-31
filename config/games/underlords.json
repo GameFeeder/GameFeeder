@@ -5,21 +5,7 @@
   "color": "#FFFFFF",
   "icon": "https://i.imgur.com/gaYsZ7Z.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "underlords",
-        "users": [
-          {
-            "name": "wykrhm",
-            "titleFilter": ".*"
-          }
-        ]
-      }
-    ],
-    "steam": {
-      "appID": 1046930,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1046930, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

@@ -2,87 +2,26 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "label": {
-      "type": "string"
-    },
-    "aliases": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "color": {
-      "type": "string",
-      "format": "color-hex"
-    },
-    "icon": {
-      "type": "string"
-    },
+    "name": { "type": "string" },
+    "label": { "type": "string" },
+    "aliases": { "type": "array", "items": { "type": "string" } },
+    "color": { "type": "string", "format": "color-hex" },
+    "icon": { "type": "string" },
     "telegramIVTemplates": {
       "type": "array",
       "items": {
         "type": "object",
-        "properties": {
-          "domain": {
-            "type": "string"
-          },
-          "templateHash": {
-            "type": "string"
-          }
-        }
+        "properties": { "domain": { "type": "string" }, "templateHash": { "type": "string" } }
       }
     },
     "providers": {
       "type": "object",
       "properties": {
-        "reddit": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "urlFilters": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "subreddit": {
-                "type": "string"
-              },
-              "users": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "titleFilter": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              }
-            },
-            "additionalProperties": false
-          }
-        },
         "steam": {
           "type": "object",
           "properties": {
-            "appID": {
-              "type": "number"
-            },
-            "feeds": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "appID": { "type": "number" },
+            "feeds": { "type": "array", "items": { "type": "string" } }
           },
           "additionalProperties": false
         },
@@ -91,15 +30,9 @@
           "items": {
             "type": "object",
             "properties": {
-              "label": {
-                "type": "string"
-              },
-              "url": {
-                "type": "string"
-              },
-              "flavor": {
-                "type": "string"
-              }
+              "label": { "type": "string" },
+              "url": { "type": "string" },
+              "flavor": { "type": "string" }
             },
             "additionalProperties": false
           }

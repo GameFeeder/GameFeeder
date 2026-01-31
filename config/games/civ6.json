@@ -17,16 +17,7 @@
   "color": "#7e2f08",
   "icon": "https://imgur.com/jKlh55f.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "civ6",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 289070,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 289070, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }
