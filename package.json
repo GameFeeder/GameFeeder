@@ -1,6 +1,6 @@
 {
   "name": "gamefeeder",
-  "version": "0.24.1",
+  "version": "0.24.2",
   "description": "A notification bot for several games, available on Discord and Telegram.",
   "main": "src/_main.ts",
   "type": "module",
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"node --loader ts-node/esm src/_main.ts\"",
-    "start": "node --loader commonjs-extension-resolution-loader dist/src/_main.js",
+    "start": "NODE_ENV=production node --loader commonjs-extension-resolution-loader dist/src/_main.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
     "format": "eslint \"src/**/*.ts\" --fix",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",

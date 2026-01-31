@@ -85,7 +85,8 @@ export default class Updater {
    * @returns {Promise<void>}
    */
   public start(): Promise<void> {
-    this.logger.info('Started updater.');
+    this.logger.info(`Started  ${this.key} updater.`);
+    rollbar_client.info(`Updater ${this.key} initialized`);
     this.doUpdates = true;
     return this.updateLoop();
   }

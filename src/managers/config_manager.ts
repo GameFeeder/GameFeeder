@@ -52,6 +52,8 @@ export type RollbarConfig = {
 
 /** The configuration settings for the used APIs. */
 export type APIConfig = {
+  /** The environment the application is running in (e.g., 'dev', 'production', 'test', 'ci'). */
+  environment?: string;
   /** The configuration settings for the bots. */
   bots: BotConfig;
   /** The configuration settings for the reddit client. */
@@ -264,5 +266,10 @@ export default class ConfigManager {
   /** Sets the updater config object. */
   public static setUpdatersConfig(config: UpdatersConfig): void {
     this.writeObject(CONFIG.UPDATER, config);
+  }
+
+  /** Gets the environment the application is running in. */
+  public static getEnvironment(): string {
+    return this.getAPIConfig().environment || 'dev';
   }
 }

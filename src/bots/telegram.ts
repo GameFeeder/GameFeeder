@@ -106,14 +106,14 @@ export default class TelegramBot extends BotClient {
 
   public getUserName(): string {
     if (!this.enabled || !this.userName) {
-      return '?';
+      return 'Telegram bot user name not set';
     }
     return this.userName;
   }
 
   public getUserTag(): string {
     if (!this.enabled || !this.userTag) {
-      return '?';
+      return 'Telegram bot user tag not set';
     }
     return this.userTag;
   }
@@ -372,8 +372,7 @@ export default class TelegramBot extends BotClient {
   public async start(): Promise<boolean> {
     // Startup check
     if (!this.enabled) {
-      this.logger.info('Autostart disabled.');
-      return false;
+      throw new Error(`Bot ${this.name} is not enabled.`);
     }
     assertIsDefined(this.token, `Token is undefined`);
 

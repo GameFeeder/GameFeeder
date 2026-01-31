@@ -52,7 +52,7 @@ export default class Reddit {
     }
 
     const userAgent =
-      `discord/telegram(${ProjectManager.getEnvironment()}):` +
+      `discord/telegram(${ConfigManager.getEnvironment()}):` +
       `${ProjectManager.getIdentifier()}:v${ProjectManager.getVersionNumber()}` +
       ` (by /u/${userName})`;
 
