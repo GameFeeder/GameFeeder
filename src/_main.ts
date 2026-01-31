@@ -48,7 +48,8 @@ export default class Main {
     await mapAsync(getBots(), async (bot) => {
       try {
         await bot.start();
-        Main.logger.info(`Started ${bot.userTag}.`);
+        Main.logger.info(`Started ${bot.getUserTag()}.`);
+        rollbar_client.info(`Started bot ${bot.name} (${bot.getUserTag()})`);
       } catch (error) {
         rollbar_client.reportCaughtError(`Failed to start bot ${bot.name}`, error, Main.logger);
       }
