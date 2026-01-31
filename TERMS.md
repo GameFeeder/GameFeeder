@@ -58,7 +58,6 @@ You agree NOT to:
 - Exploit bugs, vulnerabilities, or glitches in the bot
 - Use automated scripts or bots to interact with GameFeeder (beyond normal platform interactions)
 - Spam commands or abuse the bot's functionality
-- Attempt to reverse engineer, decompile, or disassemble the bot (except as permitted by the GPL-3.0 license)
 - Use the bot to harass, abuse, or harm others
 - Impersonate the bot, its developers, or any other person or entity
 - Circumvent any rate limits or access restrictions
