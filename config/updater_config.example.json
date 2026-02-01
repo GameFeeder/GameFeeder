@@ -1,11 +1,4 @@
 {
-  "reddit": {
-    "gameInterval": 1,
-    "cycleInterval": 20,
-    "limit": 2,
-    "enabled": true,
-    "autosave": true
-  },
   "steam": {
     "gameInterval": 1,
     "cycleInterval": 10,
@@ -13,13 +6,7 @@
     "enabled": true,
     "autosave": true
   },
-  "rss": {
-    "gameInterval": 0,
-    "cycleInterval": 60,
-    "limit": 2,
-    "enabled": true,
-    "autosave": true
-  },
+  "rss": { "gameInterval": 0, "cycleInterval": 60, "limit": 2, "enabled": true, "autosave": true },
   "dota_patches": {
     "gameInterval": 0,
     "cycleInterval": 60,

@@ -5,16 +5,7 @@
   "color": "#c1454c",
   "icon": "https://imgur.com/VHWSO4y.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "HadesTheGame",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 1145360,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1145360, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

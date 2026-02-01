@@ -5,16 +5,7 @@
   "color": "#212121",
   "icon": "https://imgur.com/fVn0tRs.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "deadbydaylight",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 381210,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 381210, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

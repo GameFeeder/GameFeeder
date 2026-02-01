@@ -19,7 +19,6 @@ if (!fs.existsSync(apiConfigPath)) {
     JSON.stringify({
       environment: 'test',
       bots: {},
-      reddit: {},
       rollbar: { enabled: false, accessToken: 'mock' },
     }),
   );
@@ -37,11 +36,9 @@ jest.mock('../src/managers/config_manager.js', () => {
       getAPIConfig: () => ({
         environment: 'test',
         bots: {},
-        reddit: {},
         rollbar: { enabled: false, accessToken: 'mock' },
       }),
       getBotConfig: () => ({}),
-      getRedditConfig: () => ({}),
       getGameConfig: () => [],
       getUpdatersConfig: () => ({}),
       getEnvironment: () => 'test',

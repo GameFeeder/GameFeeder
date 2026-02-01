@@ -21,7 +21,7 @@ Several `config/` changes are recommended for testing and debugging:
   - It might be necessary to increase the `limit` to test out an older update
   - If your work is unrelated to the updater, you can disable it by setting `enabled` to `false`
 - In `api_config.json`:
-  - You can disable one of the bots or reddit updates by setting its `enabled` value to `false`
+  - You can disable one of the bots by setting its `enabled` value to `false`
 
 To test out the bot's functionality, we recommend to try the following steps:
 

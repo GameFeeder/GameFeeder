@@ -1,29 +1,9 @@
 {
   "environment": "dev",
   "bots": {
-    "telegram": {
-      "enabled": false,
-      "prefix": "/",
-      "token": "",
-      "owners": []
-    },
+    "telegram": { "enabled": false, "prefix": "/", "token": "", "owners": [] },
 
-    "discord": {
-      "enabled": false,
-      "prefix": "!",
-      "token": "",
-      "owners": []
-    }
+    "discord": { "enabled": false, "prefix": "!", "token": "", "owners": [] }
   },
-  "reddit": {
-    "enabled": true,
-    "clientId": "",
-    "clientSecret": "",
-    "refreshToken": "",
-    "userName": ""
-  },
-  "rollbar": {
-    "enabled": false,
-    "accessToken": ""
-  }
+  "rollbar": { "enabled": false, "accessToken": "" }
 }

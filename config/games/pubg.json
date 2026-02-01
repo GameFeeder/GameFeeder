@@ -11,16 +11,7 @@
   "color": "#fad234",
   "icon": "https://imgur.com/Emx9o83.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "PUBATTLEGROUNDS",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 578080,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 578080, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

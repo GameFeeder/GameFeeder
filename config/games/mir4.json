@@ -5,16 +5,7 @@
   "color": "#fa1c19",
   "icon": "https://imgur.com/VwEx3Mp.jpg",
   "providers": {
-    "steam": {
-      "appID": 1623660,
-      "feeds": ["steam_community_announcements"]
-    },
-    "reddit": [
-      {
-        "subreddit": "MIR4",
-        "users": []
-      }
-    ],
+    "steam": { "appID": 1623660, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

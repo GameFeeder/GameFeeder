@@ -5,29 +5,7 @@
   "color": "#FFD700",
   "icon": "https://i.imgur.com/DblOFap.png",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "Artifact",
-        "users": [
-          {
-            "name": "Magesunite",
-            "titleFilter": "Artifact Update"
-          },
-          {
-            "name": "SirBelvedere",
-            "titleFilter": "Artifact Update"
-          },
-          {
-            "name": "wykrhm",
-            "titleFilter": ".*"
-          }
-        ]
-      }
-    ],
-    "steam": {
-      "appID": 1269260,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 1269260, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

@@ -5,16 +5,7 @@
   "color": "#a9e4e9",
   "icon": "https://imgur.com/oQhrK1N.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "ror2",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 632360,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 632360, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

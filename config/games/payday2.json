@@ -5,16 +5,7 @@
   "color": "#0f9eec",
   "icon": "https://imgur.com/oblgpMY.jpg",
   "providers": {
-    "reddit": [
-      {
-        "subreddit": "paydaytheheist",
-        "users": []
-      }
-    ],
-    "steam": {
-      "appID": 218620,
-      "feeds": ["steam_community_announcements"]
-    },
+    "steam": { "appID": 218620, "feeds": ["steam_community_announcements"] },
     "rss": []
   }
 }

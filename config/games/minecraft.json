@@ -4,12 +4,5 @@
   "aliases": ["minecraft", "mc"],
   "color": "#527b47",
   "icon": "https://imgur.com/GKVk9ve.png",
-  "providers": {
-    "reddit": [
-      {
-        "subreddit": "Minecraft"
-      }
-    ],
-    "rss": []
-  }
+  "providers": { "rss": [] }
 }
