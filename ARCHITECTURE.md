@@ -1,7 +1,7 @@
 # GameFeeder Architecture & Dependency Diagram
 
 ## Project Overview
-**GameFeeder** is a Node.js notification bot for games, available on Discord and Telegram. It aggregates news from multiple sources (Steam, RSS, Reddit, Dota) and sends notifications to users.
+**GameFeeder** is a Node.js notification bot for games, available on Discord and Telegram. It aggregates news from multiple sources (Steam, RSS, Dota) and sends notifications to users.
 
 ---
 
@@ -31,12 +31,12 @@ graph TD
     Updater["Updater<br/>Main Loop"]
     Provider["Provider"]
     SteamProvider["SteamProvider"]
-    RedditProvider["RedditProvider"]
     RSSProvider["RSSProvider"]
+    DotaProvider["DotaProvider"]
     
     SteamAPI["SteamWebAPI"]
-    Reddit["Reddit"]
     RSS["RSS Parser"]
+    Dota["Dota API"]
     
     Notification["Notification"]
     NotificationBuilder["NotificationBuilder"]
@@ -85,12 +85,12 @@ graph TD
     Updater --> Logger
     
     Provider --> SteamProvider
-    Provider --> RedditProvider
     Provider --> RSSProvider
+    Provider --> DotaProvider
     
     SteamProvider --> SteamAPI
-    RedditProvider --> Reddit
     RSSProvider --> RSS
+    DotaProvider --> Dota
     
     NotificationBuilder --> Notification
     
@@ -146,15 +146,13 @@ graph TD
 ### 5. **Provider Layer** (`providers/`)
 - **Provider**: Abstract data provider
 - **SteamProvider**: Fetches Steam app news
-- **RedditProvider**: Fetches Reddit posts
 - **RSSProvider**: Parses RSS feeds
-- **SubredditProvider**: Fetches subreddit posts
 - **DotaProvider**: Fetches Dota 2 specific data
 
 ### 6. **Data Source Layer**
 - **Steam API**: `steam_web_api.ts`, `steam_app_news.ts`
-- **Reddit**: `reddit.ts`, `reddit_post.ts`, `reddit_user.ts`
 - **RSS**: `rss.ts`, `rss_item.ts`
+- **Dota API**: Dota 2 specific data sources
 
 ### 7. **Notification System** (`notifications/`)
 - **Notification**: Main notification object
@@ -183,7 +181,6 @@ graph TD
 - **discord.js**: Discord client
 - **telegraf**: Telegram bot framework
 - **rss-parser**: RSS parsing
-- **snoowrap**: Reddit API wrapper
 - **steam-web-api**: Steam API client
 - **pubsub-js**: Pub/Sub messaging
 - **winston**: Logging framework
