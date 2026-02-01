@@ -3,6 +3,7 @@ import getBots from './bots/bots.js';
 import Updater from './updater.js';
 import InitManager from './managers/init_manager.js';
 import ProjectManager from './managers/project_manager.js';
+import ConfigManager from './managers/config_manager.js';
 import { mapAsync, naturalJoin } from './util/array_util.js';
 import rollbar_client from './util/rollbar_client.js';
 
@@ -12,7 +13,7 @@ export default class Main {
   /** Registers the commands, starts the bots and the updater. */
   public static async start(): Promise<void> {
     Main.logger.info(
-      `Starting main in ${ProjectManager.getEnvironment()} mode,` +
+      `Starting main in ${ConfigManager.getEnvironment()} mode,` +
         ` v${ProjectManager.getVersionNumber()}.`,
     );
     InitManager.initAll();
@@ -47,7 +48,8 @@ export default class Main {
     await mapAsync(getBots(), async (bot) => {
       try {
         await bot.start();
-        Main.logger.info(`Started ${bot.userTag}.`);
+        Main.logger.info(`Started ${bot.getUserTag()}.`);
+        rollbar_client.info(`Started bot ${bot.name} (${bot.getUserTag()})`);
       } catch (error) {
         rollbar_client.reportCaughtError(`Failed to start bot ${bot.name}`, error, Main.logger);
       }

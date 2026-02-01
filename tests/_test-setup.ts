@@ -17,6 +17,7 @@ if (!fs.existsSync(apiConfigPath)) {
   fs.writeFileSync(
     apiConfigPath,
     JSON.stringify({
+      environment: 'test',
       bots: {},
       rollbar: { enabled: false, accessToken: 'mock' },
     }),
@@ -33,12 +34,14 @@ jest.mock('../src/managers/config_manager.js', () => {
     default: {
       getRollbarConfig: () => ({ enabled: false, accessToken: 'mock' }),
       getAPIConfig: () => ({
+        environment: 'test',
         bots: {},
         rollbar: { enabled: false, accessToken: 'mock' },
       }),
       getBotConfig: () => ({}),
       getGameConfig: () => [],
       getUpdatersConfig: () => ({}),
+      getEnvironment: () => 'test',
     },
   };
 });

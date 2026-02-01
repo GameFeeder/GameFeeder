@@ -1,4 +1,5 @@
 {
+  "environment": "dev",
   "bots": {
     "telegram": { "enabled": false, "prefix": "/", "token": "", "owners": [] },
 
