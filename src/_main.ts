@@ -1,9 +1,9 @@
-import Logger from './logger.js';
 import getBots from './bots/bots.js';
-import Updater from './updater.js';
+import Logger from './logger.js';
+import ConfigManager from './managers/config_manager.js';
 import InitManager from './managers/init_manager.js';
 import ProjectManager from './managers/project_manager.js';
-import ConfigManager from './managers/config_manager.js';
+import Updater from './updater.js';
 import { mapAsync, naturalJoin } from './util/array_util.js';
 import rollbar_client from './util/rollbar_client.js';
 

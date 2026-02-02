@@ -1,30 +1,30 @@
 import {
-  DMChannel,
-  TextChannel,
-  APIEmbed,
-  GatewayIntentBits,
   ActivityType,
-  PermissionsBitField,
-  EmbedBuilder,
-  HexColorString,
+  APIEmbed,
   Client,
-  PresenceData,
+  DMChannel,
+  EmbedBuilder,
+  GatewayIntentBits,
+  HexColorString,
   MessageCreateOptions,
+  PermissionsBitField,
+  PresenceData,
+  TextChannel,
 } from 'discord.js';
-import { BotClient } from './bot.js';
-import User, { UserRole } from '../user.js';
 import Channel from '../channel.js';
 import Command from '../commands/command.js';
-import ConfigManager from '../managers/config_manager.js';
-import Notification from '../notifications/notification.js';
-import MDRegex from '../util/regex.js';
-import { mapAsync } from '../util/array_util.js';
-import { assertIsDefined, StrUtil } from '../util/util.js';
-import Message from '../message.js';
-import Permissions from '../permissions.js';
-import ProjectManager from '../managers/project_manager.js';
 import Game from '../game.js';
+import ConfigManager from '../managers/config_manager.js';
+import ProjectManager from '../managers/project_manager.js';
+import Message from '../message.js';
+import Notification from '../notifications/notification.js';
+import Permissions from '../permissions.js';
+import User, { UserRole } from '../user.js';
+import { mapAsync } from '../util/array_util.js';
+import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
+import { assertIsDefined, StrUtil } from '../util/util.js';
+import { BotClient } from './bot.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
 const EMBED_TITLE_LIMIT = 256;

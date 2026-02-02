@@ -1,18 +1,18 @@
-import { Context, Telegraf, TelegramError } from 'telegraf';
 import Queue from 'smart-request-balancer';
-import { BotClient } from './bot.js';
-import User, { UserRole } from '../user.js';
+import { Context, Telegraf, TelegramError } from 'telegraf';
 import Channel from '../channel.js';
 import Command from '../commands/command.js';
-import ConfigManager from '../managers/config_manager.js';
-import Notification from '../notifications/notification.js';
-import MDRegex from '../util/regex.js';
-import { mapAsync } from '../util/array_util.js';
-import { assertIsDefined, StrUtil } from '../util/util.js';
-import Message from '../message.js';
-import Permissions from '../permissions.js';
 import Game from '../game.js';
+import ConfigManager from '../managers/config_manager.js';
+import Message from '../message.js';
+import Notification from '../notifications/notification.js';
+import Permissions from '../permissions.js';
+import User, { UserRole } from '../user.js';
+import { mapAsync } from '../util/array_util.js';
+import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
+import { assertIsDefined, StrUtil } from '../util/util.js';
+import { BotClient } from './bot.js';
 
 enum MessageType {
   notification = 'notification',

@@ -2,15 +2,13 @@ import Winston from 'winston';
 
 const winstonFormat = Winston.format.combine(
   Winston.format.colorize(),
-  Winston.format.timestamp(),
+  Winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
   Winston.format.printf((info) => {
-    const { timestamp, label, level, message, ...args } = info;
-
-    const ts = timestamp.slice(0, 19).replace('T', ' ');
+    const { timestamp = '', label = '', level, message, ...args } = info;
     const obj = Object.keys(args).length ? JSON.stringify(args, null, 2) : '';
     const printLabel = (label ? ` [${label}]` : '').substring(0, 20).padEnd(20);
     const printLevel = `${level}:`.padEnd(17);
-    return `${ts}${printLabel} ${printLevel} ${message} ${obj}`;
+    return `${timestamp}${printLabel} ${printLevel} ${message} ${obj}`;
   }),
 );
 

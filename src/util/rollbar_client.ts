@@ -1,6 +1,6 @@
 import Rollbar from 'rollbar';
-import ConfigManager from '../managers/config_manager.js';
 import Logger from '../logger.js';
+import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
 import { StrUtil } from './util.js';
 

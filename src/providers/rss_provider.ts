@@ -1,11 +1,11 @@
 import Game from '../game.js';
+import { ProviderData } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
-import Provider from './provider.js';
-import { rss } from '../rss/rss.js';
+import NotificationBuilder from '../notifications/notification_builder.js';
 import PreProcessor from '../processors/pre_processor.js';
 import SteamProcessor from '../processors/steam_processor.js';
-import NotificationBuilder from '../notifications/notification_builder.js';
-import { ProviderData } from '../managers/data_manager.js';
+import { rss } from '../rss/rss.js';
+import Provider from './provider.js';
 
 export default class RSSProvider extends Provider {
   public preProcessors: PreProcessor[];

@@ -1,6 +1,6 @@
-import Command from './command.js';
 import Message from '../message.js';
 import { UserRole } from '../user.js';
+import Command from './command.js';
 
 /** An action represents a command that is executed directly. */
 export default class Action extends Command {

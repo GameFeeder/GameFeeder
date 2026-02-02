@@ -7,7 +7,7 @@ function fetch(url, options) {
     headers: {
       raw: () => ({}),
       get: () => '',
-      forEach: () => {}
+      forEach: () => {},
     },
     json: () => Promise.resolve({}),
     text: () => Promise.resolve(''),
@@ -24,8 +24,9 @@ const Response = class {};
 const Headers = class {};
 const Request = class {};
 
-// Use CommonJS exports format instead of ESM
+// biome-ignore-start lint: Use CommonJS exports format instead of ESM
 module.exports = fetch;
 module.exports.Response = Response;
 module.exports.Headers = Headers;
 module.exports.Request = Request;
+// biome-ignore-end lint: Use CommonJS exports format instead of ESM

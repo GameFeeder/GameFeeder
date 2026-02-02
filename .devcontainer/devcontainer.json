@@ -1,13 +1,13 @@
 {
-	"name": "GameFeederDev",
-	"dockerFile": "Dockerfile",
-	"postCreateCommand": "npm install",
-	"extensions": [
-		"ban.spellright",
-		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode",
-		"mutantdino.resourcemonitor",
-		"yzhang.markdown-all-in-one",
-		"eamodio.toggle-excluded-files"
-	]
+  "name": "GameFeederDev",
+  "dockerFile": "Dockerfile",
+  "postCreateCommand": "npm install",
+  "extensions": [
+    "ban.spellright",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "mutantdino.resourcemonitor",
+    "yzhang.markdown-all-in-one",
+    "eamodio.toggle-excluded-files"
+  ]
 }

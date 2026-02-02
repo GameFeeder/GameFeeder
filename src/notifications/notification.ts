@@ -1,7 +1,7 @@
 import Game from '../game.js';
-import NotificationElement from './notification_element.js';
 import Comparable from '../util/comparable.js';
 import { StrUtil } from '../util/util.js';
+import NotificationElement from './notification_element.js';
 
 /** A representation of a bot notification. */
 export default class Notification implements Comparable<Notification> {

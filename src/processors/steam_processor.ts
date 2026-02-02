@@ -1,5 +1,5 @@
-import PreProcessor from './pre_processor.js';
 import Logger from '../logger.js';
+import PreProcessor from './pre_processor.js';
 
 export default class SteamProcessor extends PreProcessor {
   public static logger = new Logger('SteamProcessor');

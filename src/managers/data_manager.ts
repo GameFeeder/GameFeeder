@@ -2,8 +2,8 @@ import FileManager from './file_manager.js';
 
 /** The available data files. */
 export enum DATA {
-  'SUBS',
-  'UPDATER',
+  SUBS,
+  UPDATER,
 }
 
 /** The data for one subscribing channel. */

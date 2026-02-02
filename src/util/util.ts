@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import { AssertionError } from 'assert';
+import _ from 'lodash';
 
 export type JSONObj = Record<string, unknown> | string[];
 

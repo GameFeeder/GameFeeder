@@ -1,21 +1,21 @@
 import EscapeRegex from 'escape-string-regexp';
 import PubSub from 'pubsub-js';
-import { UserRole } from '../user.js';
 import getBots from '../bots/bots.js';
 import Game from '../game.js';
-import { mapAsync, naturalJoin } from '../util/array_util.js';
-import { matchGroups } from '../util/util.js';
 import ProjectManager from '../managers/project_manager.js';
-import CommandGroup from './command_group.js';
-import SimpleAction from './simple_action.js';
-import NoLabelAction from './no_label_action.js';
-import Command from './command.js';
-import TwoPartCommand from './two_part_command.js';
 import Notification from '../notifications/notification.js';
 import NotificationElement from '../notifications/notification_element.js';
 import Updater from '../updater.js';
+import { UserRole } from '../user.js';
+import { mapAsync, naturalJoin } from '../util/array_util.js';
 import constants from '../util/constants.js';
 import rollbar_client from '../util/rollbar_client.js';
+import { matchGroups } from '../util/util.js';
+import Command from './command.js';
+import CommandGroup from './command_group.js';
+import NoLabelAction from './no_label_action.js';
+import SimpleAction from './simple_action.js';
+import TwoPartCommand from './two_part_command.js';
 
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
