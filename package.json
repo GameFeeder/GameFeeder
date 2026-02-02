@@ -22,8 +22,8 @@
     "build": "tsc --build",
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"node --import ./register.mjs src/_main.ts\"",
     "start": "NODE_ENV=production node --loader commonjs-extension-resolution-loader dist/src/_main.js",
-    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.spec.ts\"",
-    "format": "eslint \"src/**/*.ts\" --fix",
+    "biome:check": "biome ci",
+    "biome:fix": "biome check --write",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "watch": "tsc --watch"
@@ -43,6 +43,7 @@
     "winston": "3.13.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.13",
     "@eslint/compat": "^2.0.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
