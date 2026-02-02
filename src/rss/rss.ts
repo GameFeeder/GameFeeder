@@ -1,10 +1,10 @@
 import RSSParser from 'rss-parser';
 import TurndownService from 'turndown';
-import RSSItem from './rss_item.js';
-import { sortLimitEnd } from '../util/array_util.js';
 import Logger from '../logger.js';
 import PreProcessor from '../processors/pre_processor.js';
+import { sortLimitEnd } from '../util/array_util.js';
 import rollbar_client from '../util/rollbar_client.js';
+import RSSItem from './rss_item.js';
 
 export default class RSS {
   public static logger = new Logger('RSS');

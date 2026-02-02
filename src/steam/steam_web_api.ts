@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import { URL, URLSearchParams } from 'url';
 import Logger from '../logger.js';
-import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news.js';
 import rollbar_client from '../util/rollbar_client.js';
+import SteamAppNews, { SteamAppNewsResponse } from './steam_app_news.js';
 
 /** The timeout duration in ms for all API requests. */
 const REQUEST_TIMEOUT = 10000;

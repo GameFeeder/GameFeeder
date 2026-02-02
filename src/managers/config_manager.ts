@@ -2,8 +2,8 @@ import FileManager from './file_manager.js';
 
 /** The available config files. */
 export enum CONFIG {
-  'API',
-  'UPDATER',
+  API,
+  UPDATER,
 }
 
 /** The configuration settings for a bot. */

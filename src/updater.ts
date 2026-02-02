@@ -1,12 +1,12 @@
 import PubSub from 'pubsub-js';
-import DataManager, { ProviderData } from './managers/data_manager.js';
-import ConfigManager from './managers/config_manager.js';
 import Game from './game.js';
 import Logger from './logger.js';
+import ConfigManager from './managers/config_manager.js';
+import DataManager, { ProviderData } from './managers/data_manager.js';
 import Notification from './notifications/notification.js';
 import { sortLimitEnd } from './util/array_util.js';
-import { sleep } from './util/util.js';
 import rollbar_client from './util/rollbar_client.js';
+import { sleep } from './util/util.js';
 
 export default class Updater {
   private static updaters: Updater[];

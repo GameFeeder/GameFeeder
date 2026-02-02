@@ -10,20 +10,20 @@ export default {
     // Map imports from 'src/whatever.js' to their TypeScript source files
     '^src/(.*)\\.js$': '<rootDir>/src/$1.ts',
     // For imports without extensions (like in mockBot.ts)
-    '^src/(.*)$': '<rootDir>/src/$1.ts'
+    '^src/(.*)$': '<rootDir>/src/$1.ts',
   },
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
-        useESM: true
-      }
-    ]
+        useESM: true,
+      },
+    ],
   },
   setupFilesAfterEnv: ['<rootDir>/tests/_test-setup.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   modulePathIgnorePatterns: ['/dist/'],
   injectGlobals: true,
-  transformIgnorePatterns: []
+  transformIgnorePatterns: [],
 };

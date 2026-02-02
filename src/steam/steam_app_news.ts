@@ -1,8 +1,8 @@
 import TurndownService from 'turndown';
-import SteamProcessor from '../processors/steam_processor.js';
-import Notification from '../notifications/notification.js';
 import Game from '../game.js';
+import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
+import SteamProcessor from '../processors/steam_processor.js';
 
 /** A news item for a Steam app. */
 export type SteamNewsItemResponse = {

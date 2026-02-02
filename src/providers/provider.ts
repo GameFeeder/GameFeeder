@@ -1,7 +1,7 @@
 import Game from '../game.js';
-import Notification from '../notifications/notification.js';
 import Logger from '../logger.js';
 import { ProviderData } from '../managers/data_manager.js';
+import Notification from '../notifications/notification.js';
 import { assertIsDefined } from '../util/util.js';
 
 export default abstract class Provider {

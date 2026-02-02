@@ -1,5 +1,5 @@
-import Comparable from 'src/util/comparable.js';
 import * as arrayUtil from 'src/util/array_util.js';
+import Comparable from 'src/util/comparable.js';
 
 class TestComparable implements Comparable<TestComparable> {
   value: number;

@@ -1,5 +1,5 @@
-import { UserRole } from '../user.js';
 import Message from '../message.js';
+import { UserRole } from '../user.js';
 import NoLabelAction from './no_label_action.js';
 
 /** A very simple action. */

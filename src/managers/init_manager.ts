@@ -1,11 +1,11 @@
 import FS from 'fs';
 import _ from 'lodash';
-import { ObjUtil } from '../util/util.js';
-import FileManager from './file_manager.js';
 import Logger from '../logger.js';
+import rollbar_client from '../util/rollbar_client.js';
+import { ObjUtil } from '../util/util.js';
 import ConfigManager from './config_manager.js';
 import DataManager from './data_manager.js';
-import rollbar_client from '../util/rollbar_client.js';
+import FileManager from './file_manager.js';
 
 export default class InitManager {
   public static logger = new Logger('Init Manager');

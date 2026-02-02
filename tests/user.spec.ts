@@ -1,5 +1,5 @@
-import User, { UserRole } from 'src/user.js';
 import Channel from 'src/channel.js';
+import User, { UserRole } from 'src/user.js';
 import MockBot from './mockClasses/mockBot.js';
 
 jest.mock('src/bots/telegram');

@@ -1,7 +1,7 @@
-import User from './user.js';
-import Channel from './channel.js';
 import BotClient from './bots/bot.js';
+import Channel from './channel.js';
 import Notification from './notifications/notification.js';
+import User from './user.js';
 
 /** A message sent to one of the bots. */
 export default class Message {
