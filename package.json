@@ -47,7 +47,7 @@
     "@jest/globals": "^30.0.0",
     "@types/jest": "30.0.0",
     "@types/lodash": "4.17.23",
-    "@types/node": "24.10.9",
+    "@types/node": "24.10.11",
     "@types/node-fetch": "2.6.13",
     "@types/pubsub-js": "1.8.6",
     "@types/request": "2.48.13",
