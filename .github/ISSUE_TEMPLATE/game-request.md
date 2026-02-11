@@ -2,7 +2,7 @@
 name: Game request
 about: Request to add a new game.
 title: Add <game name> as game
-labels: 'request: game'
+labels: 'request'
 assignees: ''
 
 ---
