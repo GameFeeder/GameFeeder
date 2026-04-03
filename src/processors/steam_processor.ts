@@ -12,7 +12,7 @@ export default class SteamProcessor extends PreProcessor {
   public linkFilter = /(?:(?<=")https:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*?)(?="))/g;
 
   // [list] ... [/list]
-  public listReg = /(?:\[list\]\s*((?:.|\s)*?)\[\/list\])/gm;
+  public listReg = /(?:\[list\]\s*((?:(?!\[\/list\])[\s\S])*)\[\/list\])/gm;
   // [*] List item
   public listElemReg = /(?:\[\*\])\s*(.*)\s*/g;
 
