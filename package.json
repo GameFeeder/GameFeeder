@@ -29,6 +29,8 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@logtail/node": "0.5.8",
+    "@logtail/winston": "0.5.8",
     "commonjs-extension-resolution-loader": "0.1.0",
     "discord.js": "14.26.3",
     "escape-string-regexp": "5.0.0",

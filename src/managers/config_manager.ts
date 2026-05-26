@@ -36,6 +36,15 @@ export type RollbarConfig = {
   accessToken: string;
 };
 
+
+/** The configuration settings for BetterStack log forwarding. */
+export type BetterstackConfig = {
+  /** Determines whether BetterStack log forwarding is enabled. */
+  enabled: boolean;
+  /** The source token used to authenticate with BetterStack Logs. */
+  sourceToken: string;
+};
+
 /** The configuration settings for the used APIs. */
 export type APIConfig = {
   /** The environment the application is running in (e.g., 'dev', 'production', 'test', 'ci'). */
@@ -44,6 +53,8 @@ export type APIConfig = {
   bots: BotConfig;
   /** The configuration settings for Rollbar error tracking. */
   rollbar: RollbarConfig;
+  /** The configuration settings for BetterStack log forwarding. */
+  betterstack?: BetterstackConfig;
 };
 
 /** An RSS provider. */
@@ -191,6 +202,20 @@ export default class ConfigManager {
   public static setRollbarConfig(config: RollbarConfig): void {
     const apiConfig = this.getAPIConfig();
     apiConfig.rollbar = config;
+
+    this.setAPIConfig(apiConfig);
+  }
+
+
+  /** Gets the betterstack config object. */
+  public static getBetterstackConfig(): BetterstackConfig | undefined {
+    return this.getAPIConfig().betterstack;
+  }
+
+  /** Sets the betterstack config object. */
+  public static setBetterstackConfig(config: BetterstackConfig): void {
+    const apiConfig = this.getAPIConfig();
+    apiConfig.betterstack = config;
 
     this.setAPIConfig(apiConfig);
   }

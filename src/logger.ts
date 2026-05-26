@@ -12,7 +12,9 @@ const winstonFormat = Winston.format.combine(
   }),
 );
 
-const winstonLogger = Winston.createLogger({
+// Exported so additional transports (e.g. BetterstackClient) can be attached
+// after initialization without coupling them to this module's internals.
+export const winstonLogger = Winston.createLogger({
   format: winstonFormat,
   level: process.env.LOG_LEVEL || 'debug',
   transports: [new Winston.transports.Console()],

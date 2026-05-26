@@ -1,6 +1,7 @@
 import FS from 'fs';
 import _ from 'lodash';
 import Logger from '../logger.js';
+import betterstack_client from '../util/betterstack_client.js';
 import rollbar_client from '../util/rollbar_client.js';
 import { ObjUtil } from '../util/util.js';
 import ConfigManager from './config_manager.js';
@@ -257,6 +258,7 @@ export default class InitManager {
     this.addMissingUserConfigs();
     this.addMissingUserDatas();
     rollbar_client.initialize();
+    betterstack_client.initialize();
 
     // Migrations
     // 1. Rename 'dota' provider to 'dota_patches'
