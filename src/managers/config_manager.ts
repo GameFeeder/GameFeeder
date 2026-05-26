@@ -36,7 +36,6 @@ export type RollbarConfig = {
   accessToken: string;
 };
 
-
 /** The configuration settings for BetterStack log forwarding. */
 export type BetterstackConfig = {
   /** Determines whether BetterStack log forwarding is enabled. */
@@ -205,7 +204,6 @@ export default class ConfigManager {
 
     this.setAPIConfig(apiConfig);
   }
-
 
   /** Gets the betterstack config object. */
   public static getBetterstackConfig(): BetterstackConfig | undefined {
