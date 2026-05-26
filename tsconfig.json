@@ -42,9 +42,7 @@
 
     /* Module Resolution Options */
     "moduleResolution": "NodeNext" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
-    "baseUrl": "./" /* Base directory to resolve non-absolute module names. */,
-    "ignoreDeprecations": "6.0",
-    // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+    "paths": { "src/*": ["./src/*"] },
     "rootDirs": [
       "./dist/"
     ] /* List of root folders whose combined content represents the structure of the project at runtime. */,
