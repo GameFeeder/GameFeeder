@@ -5,10 +5,10 @@ WORKDIR /app
 COPY ./package.json ./package-lock.json /app/
 RUN npm ci --omit=dev
 
-FROM node:${NODE_VERSION}-alpine AS workspace
-WORKDIR /app
-COPY . .
+# Bring only devDependencies
+FROM production-dependencies AS workspace
 RUN npm ci
+COPY . .
 
 FROM workspace AS build-dependencies
 RUN npm run build
@@ -18,7 +18,7 @@ WORKDIR /app
 COPY ./package.json .
 COPY --from=build-dependencies /app/dist ./dist
 COPY --from=production-dependencies /app/node_modules ./node_modules
-COPY config config
-COPY data data
-
-CMD ["npm", "run", "start"]
+COPY ./config/games ./config/games
+ENV NODE_ENV=production
+ENV LOG_LEVEL=info
+CMD ["node", "--loader", "commonjs-extension-resolution-loader", "/app/dist/src/_main.js"]
