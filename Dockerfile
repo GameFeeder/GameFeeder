@@ -1,22 +1,24 @@
-FROM node:24.16.0-alpine AS production-dependencies
+ARG NODE_VERSION=24.16.0
+
+FROM node:${NODE_VERSION}-alpine AS production-dependencies
 WORKDIR /app
 COPY ./package.json ./package-lock.json /app/
 RUN npm ci --omit=dev
 
-# Bring only devDependencies
-FROM production-dependencies AS workspace
-RUN npm ci
+FROM node:${NODE_VERSION}-alpine AS workspace
+WORKDIR /app
 COPY . .
+RUN npm ci
 
 FROM workspace AS build-dependencies
 RUN npm run build
 
-FROM node:24.16.0-alpine AS production
+FROM node:${NODE_VERSION}-alpine AS production
 WORKDIR /app
 COPY ./package.json .
 COPY --from=build-dependencies /app/dist ./dist
 COPY --from=production-dependencies /app/node_modules ./node_modules
-COPY ./config/games ./config/games
-ENV NODE_ENV=production
-ENV LOG_LEVEL=info
-CMD ["node", "--loader", "commonjs-extension-resolution-loader", "/app/dist/src/_main.js"]
+COPY config config
+COPY data data
+
+CMD ["npm", "run", "start"]
