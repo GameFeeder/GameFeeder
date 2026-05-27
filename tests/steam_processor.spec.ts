@@ -22,6 +22,17 @@ describe('Steam processor', () => {
 
         expect(actual).toEqual(expected);
       });
+      test('should not match unclosed list tag', () => {
+        // Regression: the original (?:.|\\s)*? pattern is ambiguous and
+        // vulnerable to catastrophic backtracking on inputs without a
+        // closing [/list] tag. The fixed tempered-dot pattern fails fast.
+        const processor = new SteamProcessor();
+        const unclosed = `[list]${'item\n'.repeat(20)}`;
+        expect(processor.listReg.test(unclosed)).toBe(false);
+        // Reset lastIndex after stateful global regex test
+        processor.listReg.lastIndex = 0;
+      });
+
       test('should parse sample list', () => {
         const sampleText = `[list]\n[*] Storm Spirit’s Overload lasts until end of round rather than until Storm spirit's next combat.\n[*] Abaddon’s stats changed from 3/6 -> 2/8 \n[*] Abaddon’s Borrowed Time purges Abaddon and may be used when stunned or silenced. Cooldown reduced from 3 -> 2.\n[*] Abaddon’s Mist Coil self-damage reduced from 3 -> 2.\n[*] Corpse Horde is now an After Combat effect and will spread Zombies more sanely when there is a mix of new Zombies and old units to devour.\n[*] Claszureme Hourglass gives +2 Health.\n[*] No Hesitation and Raid can only be used if there is still a combat phase (i.e. there is only one combat phase per lane).\n[*] Axe’s Berserker’s Call, Keefe the Bold’s Stop Hittin’ Yourself, Shadow Fiend’s Requiem of Souls, Bristleback’s Quill Spray, and Nyctasha’s Guard must have valid targets to use.\n[*] Phase Boots and Rebel Decoy require that both units are not rooted.\n[*] Force Staff cannot target rooted units.\n[/list]`;
         const expected = `<p><ul><li>Storm Spirit’s Overload lasts until end of round rather than until Storm spirit's next combat.</li><li>Abaddon’s stats changed from 3/6 -> 2/8 </li><li>Abaddon’s Borrowed Time purges Abaddon and may be used when stunned or silenced. Cooldown reduced from 3 -> 2.</li><li>Abaddon’s Mist Coil self-damage reduced from 3 -> 2.</li><li>Corpse Horde is now an After Combat effect and will spread Zombies more sanely when there is a mix of new Zombies and old units to devour.</li><li>Claszureme Hourglass gives +2 Health.</li><li>No Hesitation and Raid can only be used if there is still a combat phase (i.e. there is only one combat phase per lane).</li><li>Axe’s Berserker’s Call, Keefe the Bold’s Stop Hittin’ Yourself, Shadow Fiend’s Requiem of Souls, Bristleback’s Quill Spray, and Nyctasha’s Guard must have valid targets to use.</li><li>Phase Boots and Rebel Decoy require that both units are not rooted.</li><li>Force Staff cannot target rooted units.</li></ul></p>`;
