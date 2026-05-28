@@ -143,22 +143,13 @@ const subCmd = new TwoPartCommand(
 
     // The games matching the alias
     let aliasGames: Game[] = [];
-    let invalidAliases: string[] = [];
-
     for (alias of aliases) {
       const newGames = Game.getGamesByAlias(alias);
-
-      if (newGames.length === 0) {
-        // We don't recognize that alias
-        invalidAliases.push(alias);
-      } else {
-        aliasGames = aliasGames.concat(newGames);
-      }
+      aliasGames = aliasGames.concat(newGames);
     }
 
     // Remove duplicates
     aliasGames = [...new Set(aliasGames)];
-    invalidAliases = [...new Set(invalidAliases)];
 
     // The map of which game is a new sub
     const gameMap = await mapAsync(aliasGames, async (game) => {
@@ -226,22 +217,13 @@ const unsubCmd = new TwoPartCommand(
 
     // The games matching the alias
     let aliasGames: Game[] = [];
-    let invalidAliases: string[] = [];
-
     for (alias of aliases) {
       const newGames = Game.getGamesByAlias(alias);
-
-      if (newGames.length === 0) {
-        // We don't recognize that alias
-        invalidAliases.push(alias);
-      } else {
-        aliasGames = aliasGames.concat(newGames);
-      }
+      aliasGames = aliasGames.concat(newGames);
     }
 
     // Remove duplicates
     aliasGames = [...new Set(aliasGames)];
-    invalidAliases = [...new Set(invalidAliases)];
 
     // The map of which game is a new sub
     const gameMap = aliasGames.map((game) => {
