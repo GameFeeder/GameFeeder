@@ -48,7 +48,7 @@ But first, take some time to get familiar with the configuration files. The file
 
 The `config` folder contains files that configure the behaviour of the bot. In `config/api_config.json` you can configure the settings for the different APIs and enable or disable bot clients. In `config/updater_config.json` you can change the behaviour of the updater, e.g. the delay between each update cycle. For debugging, consider setting `autosave` to `false`. This will disable the bot to write the last time it checked for updates to the `data` files, so every time you restart the bot, it will provide you with fresh updates. Furthermore, the `games` folder contains one configuration file for each supported game. Here you can change the providers for each game. Changes in that folder will get uploaded to GitHub.
 
-The `data` folder saves data that will change while the bot is running. In `data/subscriber_data.json`, the subscriptions and custom prefixes of each channel are stored. `data/updater_data.json` stores information such as the time of the last update.
+The `data` folder saves data that will change while the bot is running, stored in the `data/gamefeeder.db` SQLite database. It contains the subscriptions and custom prefixes of each channel, as well as information such as the time of the last update. The database is created automatically on the first start. If you are upgrading from an older version, the legacy `data/*.json` files are imported into the database once and renamed to `*.json.bak`.
 
 ### API Keys
 

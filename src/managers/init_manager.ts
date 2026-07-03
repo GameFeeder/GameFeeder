@@ -149,12 +149,6 @@ export default class InitManager {
     return this.addMissingUserFiles(configPath);
   }
 
-  /** Adds all missing data files. */
-  public static addMissingUserDatas(): string[] {
-    const dataPath = DataManager.basePath;
-    return this.addMissingUserFiles(dataPath);
-  }
-
   public static getMissingKeys(
     reference: Record<string, unknown>,
     object: Record<string, unknown>,
@@ -227,11 +221,6 @@ export default class InitManager {
     return this.addMissingUserKeys(configPath);
   }
 
-  public static addMissingUserDataKeys(): void {
-    const configPath = DataManager.basePath;
-    return this.addMissingUserKeys(configPath);
-  }
-
   // To be deprecated after 2021/01/01
   public static dotaPatchesMigration(): void {
     const updatersConfig = ConfigManager.getUpdatersConfig();
@@ -250,12 +239,11 @@ export default class InitManager {
     }
   }
 
-  /** Initializes and validates all config and data files. */
+  /** Initializes and validates all config files.
+   * The data is stored in a database managed by the DataManager. */
   public static initAll(): void {
     this.addMissingUserConfigKeys();
-    this.addMissingUserDataKeys();
     this.addMissingUserConfigs();
-    this.addMissingUserDatas();
     rollbar_client.initialize();
 
     // Migrations

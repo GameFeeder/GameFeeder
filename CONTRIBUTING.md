@@ -17,7 +17,7 @@ To test out the bot in development, use the `npm run dev` command. The bot will 
 Several `config/` changes are recommended for testing and debugging:
 
 - In `config/updater_config.json`:
-  - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a `lastUpdate` date in `data/updater_data.json` for your testing needs without it being overwritten by the updater
+  - Setting `autosave` to `false` will reset the updater date on restart. This way you can configure a last update date in the `data/gamefeeder.db` SQLite database for your testing needs without it being overwritten by the updater, e.g. with `sqlite3 data/gamefeeder.db "UPDATE provider_updates SET published_at = '2020-01-01T00:00:00.000Z' WHERE provider = 'steam' AND game = 'dota'"`
   - It might be necessary to increase the `limit` to test out an older update
   - If your work is unrelated to the updater, you can disable it by setting `enabled` to `false`
 - In `api_config.json`:
