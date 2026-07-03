@@ -19,7 +19,6 @@ function testRegExp(regExp: RegExp, testStr: string, results: Array<string | und
 
   if (!match) {
     throw new Error(`Not matching '${testStr}'.`);
-    return;
   }
 
   expect(match).toHaveLength(results.length);
