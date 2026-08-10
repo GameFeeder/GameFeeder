@@ -8,7 +8,8 @@ config/*
 !config/schemas
 
 data/*
-!data/*example.json
+
+CLAUDE.md
 
 # ------------------------------
 # TypeScript
