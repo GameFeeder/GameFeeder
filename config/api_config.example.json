@@ -5,5 +5,6 @@
 
     "discord": { "enabled": false, "prefix": "!", "token": "", "owners": [] }
   },
-  "rollbar": { "enabled": false, "accessToken": "" }
+  "rollbar": { "enabled": false, "accessToken": "" },
+  "betterstack": { "enabled": false, "sourceToken": "" }
 }
