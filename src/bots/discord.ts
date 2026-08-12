@@ -7,12 +7,16 @@ import {
   GatewayIntentBits,
   HexColorString,
   MessageCreateOptions,
+  MessageFlags,
   PermissionsBitField,
   PresenceData,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  SlashCommandBuilder,
   TextChannel,
 } from 'discord.js';
 import Channel from '../channel.js';
 import Command from '../commands/command.js';
+import CommandGroup from '../commands/command_group.js';
 import Game from '../game.js';
 import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
@@ -36,6 +40,10 @@ const EMBED_CONTENT_LIMIT = 2048;
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: Client;
+  /** The slash commands registered with Discord, keyed by their (kebab-case) name. */
+  private commandByName: Map<string, Command> = new Map();
+  /** The slash command definitions to register with the Discord API on startup. */
+  private slashCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
   constructor(
     prefix: string,
@@ -50,9 +58,17 @@ export default class DiscordBot extends BotClient {
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
       ],
     });
+  }
+
+  /** Converts a command's internal camelCase name to a Discord-legal, lowercase, kebab-case
+   * slash command name (e.g. 'notifyGameSubs' -> 'notify-game-subs').
+   *
+   * @param name - The internal command name.
+   */
+  public static toSlashCommandName(name: string): string {
+    return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
   public static getBot(): DiscordBot {
@@ -312,22 +328,68 @@ export default class DiscordBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    this.bot.on('messageCreate', async (msg) => {
-      const channel = this.getChannelByID(msg.channel.id);
-      const user = new User(this, msg.author.id);
-      const now = new Date();
-      // Ensure proper timestamp
-      const timestamp = msg.createdAt > now ? now : msg.createdAt;
-      const content = msg.toString();
+    if (!(command instanceof CommandGroup)) {
+      throw new Error('Discord bot can only register a CommandGroup as its root command.');
+    }
 
-      const reg = await command.getRegExp(channel);
-      // Run regex on the msg
-      const regMatch = reg.exec(content);
-      const message = new Message(user, channel, content, timestamp);
-      // If the regex matched, execute the handler function
-      if (regMatch) {
-        // Execute the command
-        await command.execute(message, regMatch);
+    // Build the slash command definitions from the top-level commands
+    this.slashCommands = [];
+    this.commandByName = new Map();
+
+    for (const cmd of command.commands) {
+      const builder = new SlashCommandBuilder()
+        .setName(DiscordBot.toSlashCommandName(cmd.name))
+        .setDescription(cmd.description.slice(0, 100));
+
+      if (cmd instanceof CommandGroup) {
+        // Command groups (e.g. TwoPartCommands) take free-text arguments, parsed the same
+        // way as on Telegram, via a single string option.
+        builder.addStringOption((option) =>
+          option.setName('args').setDescription('Arguments for the command.').setRequired(false),
+        );
+      }
+
+      this.slashCommands.push(builder.toJSON());
+      this.commandByName.set(builder.name, cmd);
+    }
+
+    this.bot.on('interactionCreate', async (interaction) => {
+      if (!interaction.isChatInputCommand()) {
+        return;
+      }
+
+      const cmd = this.commandByName.get(interaction.commandName);
+      if (!cmd) {
+        this.logger.warn(`Received unknown slash command '${interaction.commandName}'.`);
+        return;
+      }
+
+      const channel = this.getChannelByID(interaction.channelId);
+      const user = new User(this, interaction.user.id);
+      const argsString = interaction.options.getString('args') ?? '';
+      const message = new Message(user, channel, argsString, new Date());
+      // The command's own trigger has already been matched by Discord (it invoked this
+      // exact slash command), so we only need to carry the remaining free text along as
+      // the 'group' the command's regex-based argument parsing expects.
+      const fakeMatch = { groups: { group: argsString } } as unknown as RegExpMatchArray;
+
+      try {
+        // Interactions must be acknowledged within 3 seconds. The command's actual reply is
+        // sent as a normal channel message below, so this placeholder is deleted afterwards.
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to acknowledge Discord interaction for command '${interaction.commandName}'`,
+          error,
+          this.logger,
+        );
+        return;
+      }
+
+      try {
+        await cmd.execute(message, fakeMatch);
+      } finally {
+        await interaction.deleteReply().catch(() => undefined);
       }
     });
   }
@@ -350,6 +412,25 @@ export default class DiscordBot extends BotClient {
     // Start the bot
     await this.bot.login(this.token);
     this.isRunning = true;
+
+    // Register the slash commands with Discord
+    if (this.bot.application) {
+      try {
+        await this.bot.application.commands.set(this.slashCommands);
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to register Discord slash commands`,
+          error,
+          this.logger,
+        );
+      }
+    } else {
+      rollbar_client.warning(
+        'Discord application not found, could not register slash commands',
+        this.bot,
+      );
+      this.logger.error('Discord application not found, could not register slash commands');
+    }
 
     // Setup the user
     const user = this.bot.user;

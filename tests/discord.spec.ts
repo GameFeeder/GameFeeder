@@ -291,4 +291,23 @@ describe('Discord bot', () => {
       expect(testEmbed).toEqual(expected);
     });
   });
+
+  // SLASH COMMAND NAME
+  describe('slash command name', () => {
+    test('single lowercase word is unchanged', () => {
+      expect(DiscordBot.toSlashCommandName('roll')).toEqual('roll');
+    });
+
+    test('camelCase word is converted to kebab-case', () => {
+      expect(DiscordBot.toSlashCommandName('notifyAll')).toEqual('notify-all');
+    });
+
+    test('multi-word camelCase word is converted to kebab-case', () => {
+      expect(DiscordBot.toSlashCommandName('notifyGameSubs')).toEqual('notify-game-subs');
+    });
+
+    test('lowercases a trailing acronym-like segment', () => {
+      expect(DiscordBot.toSlashCommandName('telegramCmds')).toEqual('telegram-cmds');
+    });
+  });
 });

@@ -62,63 +62,6 @@ const aboutCmd = new NoLabelAction(
   },
 );
 
-/** Prefix command, used to change the prefix of the bot on that channel. */
-const prefixCmd = new TwoPartCommand(
-  'prefix',
-  `Change the bot's prefix used in this channel.`,
-  'prefix <new prefix>',
-  // Group trigger
-  /^\s*prefix(?<group>.*)$/,
-  // Actiont trigger
-  /^\s*(?<newPrefix>.+?)\s*$/,
-  // Action
-  async (message, match) => {
-    const bot = message.getBot();
-    const channel = message.channel;
-    const user = await bot.getUser();
-    let { newPrefix } = matchGroups(match);
-    newPrefix = newPrefix ? newPrefix.trim() : '';
-
-    // Check if the bot can write to this channel
-    const permissions = await bot.getUserPermissions(user, channel);
-
-    if (!permissions) {
-      rollbar_client.warning(
-        `Failed to get bot permissions while assigning new prefix for channel`,
-        channel,
-        permissions,
-        user,
-      );
-      bot.logger.error(
-        `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
-      );
-      return;
-    }
-
-    if (!permissions.canWrite) {
-      if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
-      }
-      return;
-    }
-
-    channel.prefix = newPrefix;
-  },
-  // Default action
-  async (message) => {
-    if (message.isEmpty()) {
-      const prefix = message.channel.prefix;
-      await message.reply(
-        `The prefix currently used on this channel is \`${prefix}\`.\n` +
-          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
-          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
-          `(\`${message.getBot().prefix}\`).`,
-      );
-    }
-  },
-  UserRole.ADMIN,
-);
-
 /** Subscribe command, used to subscribe to a game. */
 const subCmd = new TwoPartCommand(
   'subscribe',
@@ -299,13 +242,7 @@ const settingsCmd = new NoLabelAction(
         : '> You are currently not subscribed to any games.';
 
     await message.reply(
-      `You can use \`${commands.tryFindCmdLabel(
-        prefixCmd,
-        message.channel,
-      )}\` to change the prefix the bot uses ` +
-        `on this channel.\n` +
-        `> The prefix currently used on this channel is \`${channel.prefix}\`.\n` +
-        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
+      `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
         `\`${commands.tryFindCmdLabel(
           unsubCmd,
           message.channel,
@@ -871,7 +808,6 @@ const commands: CommandGroup = new CommandGroup(
     // Admin commands
     subCmd,
     unsubCmd,
-    prefixCmd,
     // Owner commands
     notifyAllCmd,
     notifyGameSubsCmd,
