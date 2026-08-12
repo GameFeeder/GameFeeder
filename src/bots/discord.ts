@@ -1,6 +1,7 @@
 import {
   ActivityType,
   APIEmbed,
+  BaseGuildTextChannel,
   Client,
   DMChannel,
   EmbedBuilder,
@@ -196,7 +197,8 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof DMChannel) {
       return UserRole.ADMIN;
     }
-    if (discordChannel instanceof TextChannel) {
+    // Covers both TextChannel and NewsChannel (announcement channels)
+    if (discordChannel instanceof BaseGuildTextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser?.permissions.has(PermissionsBitField.Flags.Administrator)) {
@@ -226,7 +228,8 @@ export default class DiscordBot extends BotClient {
       return new Permissions(true, true, true, true);
     }
 
-    if (discordChannel instanceof TextChannel) {
+    // Covers both TextChannel and NewsChannel (announcement channels)
+    if (discordChannel instanceof BaseGuildTextChannel) {
       try {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
@@ -274,7 +277,8 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof DMChannel) {
       // You always have all permissions in DM and group channels
       canEmbed = true;
-    } else if (discordChannel instanceof TextChannel) {
+    } else if (discordChannel instanceof BaseGuildTextChannel) {
+      // Covers both TextChannel and NewsChannel (announcement channels)
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
       canEmbed = discordUser
@@ -732,15 +736,13 @@ export default class DiscordBot extends BotClient {
     };
 
     try {
-      if (discordChannel instanceof DMChannel) {
+      // Covers DMChannel, TextChannel, NewsChannel (announcement channels), and any other
+      // channel type that supports .send() - unlike the previous DMChannel/TextChannel-only
+      // check, which silently dropped replies in e.g. announcement channels.
+      if (discordChannel.isSendable()) {
         await discordChannel.send(discordMessage);
         return true;
       }
-      if (discordChannel instanceof TextChannel) {
-        await discordChannel.send(discordMessage);
-        return true;
-      }
-      // Group DMs seem to be deprecated
     } catch (error) {
       rollbar_client.reportCaughtError(
         `Failed to send message to channel ${channel.label}`,
