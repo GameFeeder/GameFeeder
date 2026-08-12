@@ -10,6 +10,7 @@ import {
   MessageCreateOptions,
   MessageFlags,
   Partials,
+  PermissionFlagsBits,
   PermissionsBitField,
   PresenceData,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -353,6 +354,14 @@ export default class DiscordBot extends BotClient {
         builder.addStringOption((option) =>
           option.setName('args').setDescription('Arguments for the command.').setRequired(false),
         );
+      }
+
+      if (cmd.role === UserRole.ADMIN || cmd.role === UserRole.OWNER) {
+        // Hide admin/owner-only commands from the slash command picker for regular
+        // members by default. This is only a UX/discoverability measure - Discord's
+        // permission model has no concept of our bot-configured OWNER role, so
+        // Command.execute's role check below remains the actual security boundary.
+        builder.setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
       }
 
       this.slashCommands.push(builder.toJSON());
