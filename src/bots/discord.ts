@@ -397,6 +397,12 @@ export default class DiscordBot extends BotClient {
 
       try {
         await cmd.execute(message, fakeMatch);
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to execute Discord command '${interaction.commandName}'`,
+          error,
+          this.logger,
+        );
       } finally {
         await interaction.deleteReply().catch(() => undefined);
       }
