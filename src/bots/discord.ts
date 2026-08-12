@@ -80,6 +80,17 @@ export default class DiscordBot extends BotClient {
     return toKebabCase(name);
   }
 
+  /** Converts a Discord slash command's (trimmed) 'args' string option into the
+   * CommandGroup 'group' text its regex-based argument parsing expects. That parsing
+   * requires a leading whitespace character (e.g. subscribe's action trigger is
+   * /^\s+.../), which Discord's trimmed string option never includes on its own.
+   *
+   * @param argsString - The raw value of the 'args' string option.
+   */
+  public static toCommandGroupArgs(argsString: string): string {
+    return argsString ? ` ${argsString}` : '';
+  }
+
   public static getBot(): DiscordBot {
     if (this.standardBot) {
       return this.standardBot;
@@ -391,10 +402,8 @@ export default class DiscordBot extends BotClient {
       const message = new Message(user, channel, argsString, timestamp);
       // The command's own trigger has already been matched by Discord (it invoked this
       // exact slash command), so we only need to carry the remaining free text along as
-      // the 'group' the command's regex-based argument parsing expects. That parsing
-      // requires a leading whitespace character (e.g. subscribe's action trigger is
-      // /^\s+.../), which Discord's trimmed string option never includes on its own.
-      const groupString = argsString ? ` ${argsString}` : '';
+      // the 'group' the command's regex-based argument parsing expects.
+      const groupString = DiscordBot.toCommandGroupArgs(argsString);
       const fakeMatch = { groups: { group: groupString } } as unknown as RegExpMatchArray;
 
       try {

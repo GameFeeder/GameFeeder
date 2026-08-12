@@ -1,6 +1,7 @@
 import EscapeRegex from 'escape-string-regexp';
 import PubSub from 'pubsub-js';
 import getBots from '../bots/bots.js';
+import Channel from '../channel.js';
 import Game from '../game.js';
 import ProjectManager from '../managers/project_manager.js';
 import Notification from '../notifications/notification.js';
@@ -753,6 +754,24 @@ const labelCmd = new TwoPartCommand(
   UserRole.OWNER,
 );
 
+/** Renders a single command's help line. Discord's slash command names are kebab-case
+ * (e.g. 'notifyGameSubs' is registered as 'notify-game-subs'), unlike the camelCase
+ * internal names used everywhere else (including Telegram's BotFather registration), so
+ * the leading name is rewritten for Discord channels to keep the displayed syntax
+ * actually typeable there.
+ *
+ * @param cmd - The command to render the help line for.
+ * @param channel - The channel to render the help line for.
+ * @param cmdPrefix - The command prefix to use, i.e. channel.prefix.
+ */
+export function renderCmdHelpLine(cmd: Command, channel: Channel, cmdPrefix: string): string {
+  const helpText = cmd.channelHelp(channel, cmdPrefix);
+  if (channel.bot.name !== 'discord') {
+    return helpText;
+  }
+  return helpText.replace(`${cmdPrefix}${cmd.name}`, `${cmdPrefix}${toKebabCase(cmd.name)}`);
+}
+
 /**
  * The group containing all available commands.
  * They share the channels prefix as prefix, e.g. '/' for Telegram.
@@ -768,18 +787,9 @@ const commands: CommandGroup = new CommandGroup(
   // Help
   (channel, prefix, role) => {
     const cmdPrefix = channel.prefix;
-    const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map((cmd) => {
-      const helpText = cmd.channelHelp(channel, cmdPrefix);
-      // Discord's slash command names are kebab-case (e.g. 'notifyGameSubs' is registered
-      // as 'notify-game-subs'), unlike the camelCase internal names used everywhere else
-      // (including Telegram's BotFather registration). Rewrite the leading name in the
-      // rendered label so the displayed syntax is actually typeable on Discord.
-      const displayText =
-        channel.bot.name === 'discord'
-          ? helpText.replace(`${cmdPrefix}${cmd.name}`, `${cmdPrefix}${toKebabCase(cmd.name)}`)
-          : helpText;
-      return `${prefix}${displayText}`;
-    });
+    const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map(
+      (cmd) => `${prefix}${renderCmdHelpLine(cmd, channel, cmdPrefix)}`,
+    );
     return cmdLabels.join('\n');
   },
   // Trigger: The channels prefix, e.g. '/' for Telegram
