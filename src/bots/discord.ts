@@ -370,8 +370,11 @@ export default class DiscordBot extends BotClient {
       const message = new Message(user, channel, argsString, new Date());
       // The command's own trigger has already been matched by Discord (it invoked this
       // exact slash command), so we only need to carry the remaining free text along as
-      // the 'group' the command's regex-based argument parsing expects.
-      const fakeMatch = { groups: { group: argsString } } as unknown as RegExpMatchArray;
+      // the 'group' the command's regex-based argument parsing expects. That parsing
+      // requires a leading whitespace character (e.g. subscribe's action trigger is
+      // /^\s+.../), which Discord's trimmed string option never includes on its own.
+      const groupString = argsString ? ` ${argsString}` : '';
+      const fakeMatch = { groups: { group: groupString } } as unknown as RegExpMatchArray;
 
       try {
         // Interactions must be acknowledged within 3 seconds. The command's actual reply is
