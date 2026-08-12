@@ -30,7 +30,7 @@ import User, { UserRole } from '../user.js';
 import { mapAsync } from '../util/array_util.js';
 import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
-import { assertIsDefined, StrUtil } from '../util/util.js';
+import { assertIsDefined, StrUtil, toKebabCase } from '../util/util.js';
 import { BotClient } from './bot.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
@@ -75,7 +75,7 @@ export default class DiscordBot extends BotClient {
    * @param name - The internal command name.
    */
   public static toSlashCommandName(name: string): string {
-    return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    return toKebabCase(name);
   }
 
   public static getBot(): DiscordBot {

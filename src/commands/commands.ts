@@ -10,7 +10,7 @@ import { UserRole } from '../user.js';
 import { mapAsync, naturalJoin } from '../util/array_util.js';
 import constants from '../util/constants.js';
 import rollbar_client from '../util/rollbar_client.js';
-import { matchGroups } from '../util/util.js';
+import { matchGroups, toKebabCase } from '../util/util.js';
 import Command from './command.js';
 import CommandGroup from './command_group.js';
 import NoLabelAction from './no_label_action.js';
@@ -768,9 +768,18 @@ const commands: CommandGroup = new CommandGroup(
   // Help
   (channel, prefix, role) => {
     const cmdPrefix = channel.prefix;
-    const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map(
-      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
-    );
+    const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map((cmd) => {
+      const helpText = cmd.channelHelp(channel, cmdPrefix);
+      // Discord's slash command names are kebab-case (e.g. 'notifyGameSubs' is registered
+      // as 'notify-game-subs'), unlike the camelCase internal names used everywhere else
+      // (including Telegram's BotFather registration). Rewrite the leading name in the
+      // rendered label so the displayed syntax is actually typeable on Discord.
+      const displayText =
+        channel.bot.name === 'discord'
+          ? helpText.replace(`${cmdPrefix}${cmd.name}`, `${cmdPrefix}${toKebabCase(cmd.name)}`)
+          : helpText;
+      return `${prefix}${displayText}`;
+    });
     return cmdLabels.join('\n');
   },
   // Trigger: The channels prefix, e.g. '/' for Telegram
