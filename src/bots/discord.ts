@@ -8,6 +8,7 @@ import {
   HexColorString,
   MessageCreateOptions,
   MessageFlags,
+  Partials,
   PermissionsBitField,
   PresenceData,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -59,6 +60,10 @@ export default class DiscordBot extends BotClient {
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
       ],
+      // Without this, DM interactions resolve to an uncached channel (the client only
+      // caches a channel from interaction data when its partial is enabled), which makes
+      // permission checks fail closed and wrongly wipes the channel's subscription data.
+      partials: [Partials.Channel],
     });
   }
 
