@@ -54,9 +54,9 @@ export default class Channel {
   }
 
   get prefix(): string {
-    if (this._prefix) {
-      return this._prefix;
-    }
+    // Per-channel custom prefixes are no longer configurable (there's no command left to
+    // set, discover, or reset one), so always fall back to the bot's default prefix, even
+    // for channels that persisted a custom _prefix before that command was removed.
     return this.bot.prefix;
   }
 
