@@ -386,7 +386,12 @@ export default class DiscordBot extends BotClient {
       const channel = this.getChannelByID(interaction.channelId);
       const user = new User(this, interaction.user.id);
       const argsString = interaction.options.getString('args') ?? '';
-      const message = new Message(user, channel, argsString, new Date());
+      const now = new Date();
+      // Use the interaction's own creation time (clamped in case of clock skew) so that
+      // /ping and command-duration logging measure actual delivery latency, rather than
+      // just the time since this handler started running.
+      const timestamp = interaction.createdAt > now ? now : interaction.createdAt;
+      const message = new Message(user, channel, argsString, timestamp);
       // The command's own trigger has already been matched by Discord (it invoked this
       // exact slash command), so we only need to carry the remaining free text along as
       // the 'group' the command's regex-based argument parsing expects. That parsing
