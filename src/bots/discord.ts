@@ -4,6 +4,7 @@ import {
   Client,
   DMChannel,
   EmbedBuilder,
+  Events,
   GatewayIntentBits,
   HexColorString,
   MessageCreateOptions,
@@ -417,8 +418,17 @@ export default class DiscordBot extends BotClient {
     this.setupUpdaterSubscription();
     this.setupEveryoneSubscription();
 
+    // client.application (and client.user) are only guaranteed to be populated once the
+    // client emits 'clientReady' - login() itself can resolve before that happens, since
+    // the underlying gateway shard reports its own low-level ready state first. Attach the
+    // listener before logging in to avoid a race with the event firing early.
+    const clientReady = new Promise<void>((resolve) => {
+      this.bot.once(Events.ClientReady, () => resolve());
+    });
+
     // Start the bot
     await this.bot.login(this.token);
+    await clientReady;
     this.isRunning = true;
 
     // Register the slash commands with Discord
