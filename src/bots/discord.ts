@@ -50,11 +50,12 @@ export default class DiscordBot extends BotClient {
   private slashCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
   constructor(
-    prefix: string,
     private token: string,
     autostart: boolean,
   ) {
-    super('discord', 'Discord', prefix, autostart);
+    // Discord only uses slash commands, which are always triggered with '/'; unlike
+    // Telegram, its prefix isn't configurable.
+    super('discord', 'Discord', '/', autostart);
 
     // Set up the bot
     this.bot = new Client({
@@ -84,13 +85,9 @@ export default class DiscordBot extends BotClient {
       return this.standardBot;
     }
     // Discord Bot
-    const {
-      prefix: discordPrefix,
-      token: discordToken,
-      enabled: discordAutostart,
-    } = ConfigManager.getBotConfig().discord;
+    const { token: discordToken, enabled: discordAutostart } = ConfigManager.getBotConfig().discord;
 
-    this.standardBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
+    this.standardBot = new DiscordBot(discordToken, discordAutostart);
     return this.standardBot;
   }
 

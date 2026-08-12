@@ -54,10 +54,6 @@ export default class Channel {
   }
 
   get prefix(): string {
-    if (this.bot.name === 'discord') {
-      // Discord only uses slash commands, which are always triggered with '/'.
-      return '/';
-    }
     if (this._prefix) {
       return this._prefix;
     }
