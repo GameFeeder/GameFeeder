@@ -55,3 +55,23 @@ describe.skip('Channel', () => {
     expect(testChannel.hasLabel).toBeFalsy();
   });
 });
+
+describe('Channel prefix fallback', () => {
+  const mockBot = new MockBot();
+
+  test('falls back to the bot prefix when no custom prefix is set', () => {
+    const channel = new Channel('mockChannel', mockBot);
+
+    expect(channel.prefix).toEqual(mockBot.prefix);
+  });
+
+  test('ignores a persisted custom prefix, always using the bot prefix', () => {
+    // Simulates a channel that persisted a custom prefix before the /prefix command was
+    // removed from both bots - there's no longer any way to discover, change, or reset
+    // it, so it should no longer take effect.
+    const channel = new Channel('mockChannel', mockBot, [], 'customPrefix');
+
+    expect(channel.prefix).toEqual(mockBot.prefix);
+    expect(channel.prefix).not.toEqual('customPrefix');
+  });
+});
