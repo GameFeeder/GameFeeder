@@ -1,8 +1,7 @@
-import TurndownService from 'turndown';
 import Game from '../game.js';
 import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
-import SteamProcessor from '../processors/steam_processor.js';
+import bbcodeToMarkdown from './bbcode/index.js';
 
 /** A news item for a Steam app. */
 export type SteamNewsItemResponse = {
@@ -74,16 +73,13 @@ export class SteamNewsItem {
   public tags: string[];
 
   constructor(response: SteamNewsItemResponse) {
-    const steamProcessor = new SteamProcessor();
-    const turndownService = new TurndownService();
-
     this.gID = response.gid;
     this.title = response.title;
     this.url = response.url;
     this.isExternalUrl = response.is_external_url;
     this.author = response.author;
-    // First, convert the Steam formatting to HTML, then convert the HTML to Markdown
-    this.contents = turndownService.turndown(steamProcessor.process(response.contents));
+    // Steam posts are written in its own BBCode flavor.
+    this.contents = bbcodeToMarkdown(response.contents);
     this.feedLabel = response.feedlabel;
     this.date = response.date;
     this.feedName = response.feedname;
@@ -97,7 +93,6 @@ export class SteamNewsItem {
    * @param game - The game to generate the notification for.
    */
   public toGameNotification(game: Game): Notification {
-    // const steamProcessor = new SteamProcessor();
     return new NotificationBuilder(new Date(this.date * 1000))
       .withTitle(this.title, this.url)
       .withAuthor(this.author)

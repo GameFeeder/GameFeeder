@@ -162,8 +162,12 @@ graph TD
 
 ### 8. **Processing Layer** (`processors/`)
 - **PreProcessor**: Preprocesses raw data
-- **SteamProcessor**: Special processing for Steam data
+- **SteamProcessor**: Normalizes the HTML of the Steam Community RSS feeds
 - **Updater**: Main update loop that fetches new data
+
+The Steam Web API serves its posts in Steam's own BBCode flavor rather than
+HTML. Those are handled by the recursive descent parser in `steam/bbcode/`
+(tokenizer → parser → markdown renderer), not by `SteamProcessor`.
 
 ### 9. **Manager Layer** (`managers/`)
 - **ConfigManager**: Loads and manages configuration
@@ -199,7 +203,7 @@ Updater (main loop)
     ↓
   SteamAppNews (parsed data)
     ↓
-  SteamProcessor (validate & process)
+  steam/bbcode (BBCode → Markdown)
     ↓
   NotificationBuilder (format message)
     ↓

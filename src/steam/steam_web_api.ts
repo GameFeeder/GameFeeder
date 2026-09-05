@@ -49,7 +49,6 @@ export default class SteamWebAPI {
     };
 
     try {
-      // TODO: Fix that the formatting is currently lost when retrieving the content of the post
       const uri = new URL('https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/');
       const params = new URLSearchParams(newsOptions);
       uri.search = params.toString();
