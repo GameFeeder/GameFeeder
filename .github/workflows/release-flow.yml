@@ -14,14 +14,20 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.1
+      - name: Determine release version
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
       - name: Build and tag the Docker image
         run: docker build .
           --target production
-          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:$(jq -r '.version' package.json)
+          --build-arg VERSION=${{ steps.version.outputs.version }}
+          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:${{ steps.version.outputs.version }}
           --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest
       - name: Login to Docker
         run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
       - name: Publish the Docker image:version
-        run: docker push docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:$(jq -r '.version' package.json)
+        run: docker push docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:${{ steps.version.outputs.version }}
       - name: Publish the Docker image:latest
         run: docker push docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest

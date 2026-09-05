@@ -14,8 +14,10 @@ FROM workspace AS build-dependencies
 RUN npm run build
 
 FROM node:${NODE_VERSION}-alpine AS production
+ARG VERSION=0.0.0-dont-touch
 WORKDIR /app
 COPY ./package.json .
+RUN npm pkg set version=${VERSION}
 COPY --from=build-dependencies /app/dist ./dist
 COPY --from=production-dependencies /app/node_modules ./node_modules
 COPY ./config/games ./config/games
