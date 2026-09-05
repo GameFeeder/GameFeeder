@@ -1,18 +1,26 @@
 import {
   ActivityType,
   APIEmbed,
+  BaseGuildTextChannel,
   Client,
   DMChannel,
   EmbedBuilder,
+  Events,
   GatewayIntentBits,
   HexColorString,
   MessageCreateOptions,
+  MessageFlags,
+  Partials,
+  PermissionFlagsBits,
   PermissionsBitField,
   PresenceData,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  SlashCommandBuilder,
   TextChannel,
 } from 'discord.js';
 import Channel from '../channel.js';
 import Command from '../commands/command.js';
+import CommandGroup from '../commands/command_group.js';
 import Game from '../game.js';
 import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
@@ -23,7 +31,7 @@ import User, { UserRole } from '../user.js';
 import { mapAsync } from '../util/array_util.js';
 import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
-import { assertIsDefined, StrUtil } from '../util/util.js';
+import { assertIsDefined, StrUtil, toKebabCase } from '../util/util.js';
 import { BotClient } from './bot.js';
 
 /** The maximum amount of characters allowed in the title of embeds. */
@@ -36,13 +44,18 @@ const EMBED_CONTENT_LIMIT = 2048;
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
   private bot: Client;
+  /** The slash commands registered with Discord, keyed by their (kebab-case) name. */
+  private commandByName: Map<string, Command> = new Map();
+  /** The slash command definitions to register with the Discord API on startup. */
+  private slashCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
   constructor(
-    prefix: string,
     private token: string,
     autostart: boolean,
   ) {
-    super('discord', 'Discord', prefix, autostart);
+    // Discord only uses slash commands, which are always triggered with '/'; unlike
+    // Telegram, its prefix isn't configurable.
+    super('discord', 'Discord', '/', autostart);
 
     // Set up the bot
     this.bot = new Client({
@@ -50,9 +63,32 @@ export default class DiscordBot extends BotClient {
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
       ],
+      // Without this, DM interactions resolve to an uncached channel (the client only
+      // caches a channel from interaction data when its partial is enabled), which makes
+      // permission checks fail closed and wrongly wipes the channel's subscription data.
+      partials: [Partials.Channel],
     });
+  }
+
+  /** Converts a command's internal camelCase name to a Discord-legal, lowercase, kebab-case
+   * slash command name (e.g. 'notifyGameSubs' -> 'notify-game-subs').
+   *
+   * @param name - The internal command name.
+   */
+  public static toSlashCommandName(name: string): string {
+    return toKebabCase(name);
+  }
+
+  /** Converts a Discord slash command's (trimmed) 'args' string option into the
+   * CommandGroup 'group' text its regex-based argument parsing expects. That parsing
+   * requires a leading whitespace character (e.g. subscribe's action trigger is
+   * /^\s+.../), which Discord's trimmed string option never includes on its own.
+   *
+   * @param argsString - The raw value of the 'args' string option.
+   */
+  public static toCommandGroupArgs(argsString: string): string {
+    return argsString ? ` ${argsString}` : '';
   }
 
   public static getBot(): DiscordBot {
@@ -60,13 +96,9 @@ export default class DiscordBot extends BotClient {
       return this.standardBot;
     }
     // Discord Bot
-    const {
-      prefix: discordPrefix,
-      token: discordToken,
-      enabled: discordAutostart,
-    } = ConfigManager.getBotConfig().discord;
+    const { token: discordToken, enabled: discordAutostart } = ConfigManager.getBotConfig().discord;
 
-    this.standardBot = new DiscordBot(discordPrefix, discordToken, discordAutostart);
+    this.standardBot = new DiscordBot(discordToken, discordAutostart);
     return this.standardBot;
   }
 
@@ -173,7 +205,8 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof DMChannel) {
       return UserRole.ADMIN;
     }
-    if (discordChannel instanceof TextChannel) {
+    // Covers both TextChannel and NewsChannel (announcement channels)
+    if (discordChannel instanceof BaseGuildTextChannel) {
       // Check if the user is an admin on this channel
       const discordUser = discordChannel.members.get(user.id);
       if (discordUser?.permissions.has(PermissionsBitField.Flags.Administrator)) {
@@ -203,7 +236,8 @@ export default class DiscordBot extends BotClient {
       return new Permissions(true, true, true, true);
     }
 
-    if (discordChannel instanceof TextChannel) {
+    // Covers both TextChannel and NewsChannel (announcement channels)
+    if (discordChannel instanceof BaseGuildTextChannel) {
       try {
         // Check for the permissions
         const discordUser = discordChannel.members.get(user.id);
@@ -251,7 +285,8 @@ export default class DiscordBot extends BotClient {
     if (discordChannel instanceof DMChannel) {
       // You always have all permissions in DM and group channels
       canEmbed = true;
-    } else if (discordChannel instanceof TextChannel) {
+    } else if (discordChannel instanceof BaseGuildTextChannel) {
+      // Covers both TextChannel and NewsChannel (announcement channels)
       // Check for the permissions
       const discordUser = discordChannel.members.get(user.id);
       canEmbed = discordUser
@@ -312,22 +347,88 @@ export default class DiscordBot extends BotClient {
   }
 
   public registerCommand(command: Command): void {
-    this.bot.on('messageCreate', async (msg) => {
-      const channel = this.getChannelByID(msg.channel.id);
-      const user = new User(this, msg.author.id);
-      const now = new Date();
-      // Ensure proper timestamp
-      const timestamp = msg.createdAt > now ? now : msg.createdAt;
-      const content = msg.toString();
+    if (!(command instanceof CommandGroup)) {
+      throw new Error('Discord bot can only register a CommandGroup as its root command.');
+    }
 
-      const reg = await command.getRegExp(channel);
-      // Run regex on the msg
-      const regMatch = reg.exec(content);
-      const message = new Message(user, channel, content, timestamp);
-      // If the regex matched, execute the handler function
-      if (regMatch) {
-        // Execute the command
-        await command.execute(message, regMatch);
+    // Build the slash command definitions from the top-level commands
+    this.slashCommands = [];
+    this.commandByName = new Map();
+
+    for (const cmd of command.commands) {
+      const builder = new SlashCommandBuilder()
+        .setName(DiscordBot.toSlashCommandName(cmd.name))
+        .setDescription(cmd.description.slice(0, 100));
+
+      if (cmd instanceof CommandGroup) {
+        // Command groups (e.g. TwoPartCommands) take free-text arguments, parsed the same
+        // way as on Telegram, via a single string option.
+        builder.addStringOption((option) =>
+          option.setName('args').setDescription('Arguments for the command.').setRequired(false),
+        );
+      }
+
+      if (cmd.role === UserRole.ADMIN || cmd.role === UserRole.OWNER) {
+        // Hide admin/owner-only commands from the slash command picker for regular
+        // members by default. This is only a UX/discoverability measure - Discord's
+        // permission model has no concept of our bot-configured OWNER role, so
+        // Command.execute's role check below remains the actual security boundary.
+        builder.setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+      }
+
+      this.slashCommands.push(builder.toJSON());
+      this.commandByName.set(builder.name, cmd);
+    }
+
+    this.bot.on('interactionCreate', async (interaction) => {
+      if (!interaction.isChatInputCommand()) {
+        return;
+      }
+
+      const cmd = this.commandByName.get(interaction.commandName);
+      if (!cmd) {
+        this.logger.warn(`Received unknown slash command '${interaction.commandName}'.`);
+        return;
+      }
+
+      const channel = this.getChannelByID(interaction.channelId);
+      const user = new User(this, interaction.user.id);
+      const argsString = interaction.options.getString('args') ?? '';
+      const now = new Date();
+      // Use the interaction's own creation time (clamped in case of clock skew) so that
+      // /ping and command-duration logging measure actual delivery latency, rather than
+      // just the time since this handler started running.
+      const timestamp = interaction.createdAt > now ? now : interaction.createdAt;
+      const message = new Message(user, channel, argsString, timestamp);
+      // The command's own trigger has already been matched by Discord (it invoked this
+      // exact slash command), so we only need to carry the remaining free text along as
+      // the 'group' the command's regex-based argument parsing expects.
+      const groupString = DiscordBot.toCommandGroupArgs(argsString);
+      const fakeMatch = { groups: { group: groupString } } as unknown as RegExpMatchArray;
+
+      try {
+        // Interactions must be acknowledged within 3 seconds. The command's actual reply is
+        // sent as a normal channel message below, so this placeholder is deleted afterwards.
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to acknowledge Discord interaction for command '${interaction.commandName}'`,
+          error,
+          this.logger,
+        );
+        return;
+      }
+
+      try {
+        await cmd.execute(message, fakeMatch);
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to execute Discord command '${interaction.commandName}'`,
+          error,
+          this.logger,
+        );
+      } finally {
+        await interaction.deleteReply().catch(() => undefined);
       }
     });
   }
@@ -347,9 +448,37 @@ export default class DiscordBot extends BotClient {
     this.setupUpdaterSubscription();
     this.setupEveryoneSubscription();
 
+    // client.application (and client.user) are only guaranteed to be populated once the
+    // client emits 'clientReady' - login() itself can resolve before that happens, since
+    // the underlying gateway shard reports its own low-level ready state first. Attach the
+    // listener before logging in to avoid a race with the event firing early.
+    const clientReady = new Promise<void>((resolve) => {
+      this.bot.once(Events.ClientReady, () => resolve());
+    });
+
     // Start the bot
     await this.bot.login(this.token);
+    await clientReady;
     this.isRunning = true;
+
+    // Register the slash commands with Discord
+    if (this.bot.application) {
+      try {
+        await this.bot.application.commands.set(this.slashCommands);
+      } catch (error) {
+        rollbar_client.reportCaughtError(
+          `Failed to register Discord slash commands`,
+          error,
+          this.logger,
+        );
+      }
+    } else {
+      rollbar_client.warning(
+        'Discord application not found, could not register slash commands',
+        this.bot,
+      );
+      this.logger.error('Discord application not found, could not register slash commands');
+    }
 
     // Setup the user
     const user = this.bot.user;
@@ -618,15 +747,13 @@ export default class DiscordBot extends BotClient {
     };
 
     try {
-      if (discordChannel instanceof DMChannel) {
+      // Covers DMChannel, TextChannel, NewsChannel (announcement channels), and any other
+      // channel type that supports .send() - unlike the previous DMChannel/TextChannel-only
+      // check, which silently dropped replies in e.g. announcement channels.
+      if (discordChannel.isSendable()) {
         await discordChannel.send(discordMessage);
         return true;
       }
-      if (discordChannel instanceof TextChannel) {
-        await discordChannel.send(discordMessage);
-        return true;
-      }
-      // Group DMs seem to be deprecated
     } catch (error) {
       rollbar_client.reportCaughtError(
         `Failed to send message to channel ${channel.label}`,

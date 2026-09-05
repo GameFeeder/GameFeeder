@@ -25,6 +25,14 @@ export function matchGroups(match: RegExpMatchArray): { [key: string]: string } 
   return match.groups;
 }
 
+/** Converts a camelCase identifier to lowercase, kebab-case (e.g. 'notifyGameSubs' ->
+ * 'notify-game-subs'). Used to derive Discord-legal slash command names from the internal
+ * camelCase command names, which stay camelCase for Telegram's BotFather registration.
+ */
+export function toKebabCase(name: string): string {
+  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
 /** Utility functions for strings. */
 export class StrUtil {
   /** Limits the given string to the given maximum length.

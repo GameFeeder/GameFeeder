@@ -1,6 +1,7 @@
 import EscapeRegex from 'escape-string-regexp';
 import PubSub from 'pubsub-js';
 import getBots from '../bots/bots.js';
+import Channel from '../channel.js';
 import Game from '../game.js';
 import ProjectManager from '../managers/project_manager.js';
 import Notification from '../notifications/notification.js';
@@ -10,7 +11,7 @@ import { UserRole } from '../user.js';
 import { mapAsync, naturalJoin } from '../util/array_util.js';
 import constants from '../util/constants.js';
 import rollbar_client from '../util/rollbar_client.js';
-import { matchGroups } from '../util/util.js';
+import { matchGroups, toKebabCase } from '../util/util.js';
 import Command from './command.js';
 import CommandGroup from './command_group.js';
 import NoLabelAction from './no_label_action.js';
@@ -60,63 +61,6 @@ const aboutCmd = new NoLabelAction(
       `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
     );
   },
-);
-
-/** Prefix command, used to change the prefix of the bot on that channel. */
-const prefixCmd = new TwoPartCommand(
-  'prefix',
-  `Change the bot's prefix used in this channel.`,
-  'prefix <new prefix>',
-  // Group trigger
-  /^\s*prefix(?<group>.*)$/,
-  // Actiont trigger
-  /^\s*(?<newPrefix>.+?)\s*$/,
-  // Action
-  async (message, match) => {
-    const bot = message.getBot();
-    const channel = message.channel;
-    const user = await bot.getUser();
-    let { newPrefix } = matchGroups(match);
-    newPrefix = newPrefix ? newPrefix.trim() : '';
-
-    // Check if the bot can write to this channel
-    const permissions = await bot.getUserPermissions(user, channel);
-
-    if (!permissions) {
-      rollbar_client.warning(
-        `Failed to get bot permissions while assigning new prefix for channel`,
-        channel,
-        permissions,
-        user,
-      );
-      bot.logger.error(
-        `Failed to get bot permissions while assigning new prefix for channel ${channel.label}.`,
-      );
-      return;
-    }
-
-    if (!permissions.canWrite) {
-      if (bot.removeData(channel)) {
-        bot.logger.warn(`Can't write to channel ${channel.label}, removing all data.`);
-      }
-      return;
-    }
-
-    channel.prefix = newPrefix;
-  },
-  // Default action
-  async (message) => {
-    if (message.isEmpty()) {
-      const prefix = message.channel.prefix;
-      await message.reply(
-        `The prefix currently used on this channel is \`${prefix}\`.\n` +
-          `Use \`${prefix}prefix <new prefix>\` to use another prefix.\n` +
-          `Use \`${prefix}prefix reset\` to reset the prefix to the default` +
-          `(\`${message.getBot().prefix}\`).`,
-      );
-    }
-  },
-  UserRole.ADMIN,
 );
 
 /** Subscribe command, used to subscribe to a game. */
@@ -299,13 +243,7 @@ const settingsCmd = new NoLabelAction(
         : '> You are currently not subscribed to any games.';
 
     await message.reply(
-      `You can use \`${commands.tryFindCmdLabel(
-        prefixCmd,
-        message.channel,
-      )}\` to change the prefix the bot uses ` +
-        `on this channel.\n` +
-        `> The prefix currently used on this channel is \`${channel.prefix}\`.\n` +
-        `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
+      `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
         `\`${commands.tryFindCmdLabel(
           unsubCmd,
           message.channel,
@@ -816,6 +754,24 @@ const labelCmd = new TwoPartCommand(
   UserRole.OWNER,
 );
 
+/** Renders a single command's help line. Discord's slash command names are kebab-case
+ * (e.g. 'notifyGameSubs' is registered as 'notify-game-subs'), unlike the camelCase
+ * internal names used everywhere else (including Telegram's BotFather registration), so
+ * the leading name is rewritten for Discord channels to keep the displayed syntax
+ * actually typeable there.
+ *
+ * @param cmd - The command to render the help line for.
+ * @param channel - The channel to render the help line for.
+ * @param cmdPrefix - The command prefix to use, i.e. channel.prefix.
+ */
+export function renderCmdHelpLine(cmd: Command, channel: Channel, cmdPrefix: string): string {
+  const helpText = cmd.channelHelp(channel, cmdPrefix);
+  if (channel.bot.name !== 'discord') {
+    return helpText;
+  }
+  return helpText.replace(`${cmdPrefix}${cmd.name}`, `${cmdPrefix}${toKebabCase(cmd.name)}`);
+}
+
 /**
  * The group containing all available commands.
  * They share the channels prefix as prefix, e.g. '/' for Telegram.
@@ -832,7 +788,7 @@ const commands: CommandGroup = new CommandGroup(
   (channel, prefix, role) => {
     const cmdPrefix = channel.prefix;
     const cmdLabels = Command.filterByRole(commands.commands, role || UserRole.OWNER).map(
-      (cmd) => `${prefix}${cmd.channelHelp(channel, cmdPrefix)}`,
+      (cmd) => `${prefix}${renderCmdHelpLine(cmd, channel, cmdPrefix)}`,
     );
     return cmdLabels.join('\n');
   },
@@ -871,7 +827,6 @@ const commands: CommandGroup = new CommandGroup(
     // Admin commands
     subCmd,
     unsubCmd,
-    prefixCmd,
     // Owner commands
     notifyAllCmd,
     notifyGameSubsCmd,
