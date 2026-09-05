@@ -1,0 +1,32 @@
+![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)
+Congratulations to Team Spirit, Grand Champions at The International 2026. After enduring a challenging year, Team Spirit regained their ultimate form just in time to take a five-game Grand Finals slugfest and claim the Aegis of Champions in Shanghai.
+
+Spirit's Group Stage started strong, with 2-0 victories over both Xtreme Gaming and Aurora Gaming. They followed with 2-1 win over Team Liquid that put Spirit just one series win away from qualifying for the main stage. They wouldn't get it. Instead, they served as a stepping stone. First to Team Vision, who dropped Spirit in just two games to secure their own invite to the arena. Next, Nigma Galaxy followed suit, handing Spirit another 0-2 loss to snatch a spot on the main stage and force Spirit into elimination play.
+
+Their elimination-round opponent? A scrappy Team Resilience who, despite their lower spot in the standings, had clawed out at least one victory in every series they'd played. This round would be no different. Team Spirit took game one with ease, but Resilience rebounded to force a win-or-go-home game three. There, Team Resilience managed to keep pace for a while, until Spirit pulled away in the back half of the match to secure their spot at The International Main Event.
+
+The first obstacle at the arena would be the dangerous Iron Wing -- who'd already taken Group Stage series wins off three teams who'd reached the main stage. It wouldn't matter. Team Spirit clipped Iron Wing to send them spiraling into the Lower Bracket and eventual elimination.
+
+The next series wouldn't net Spirit the same results. Team Vision, the foe that had already denied them an easy path to the Playoffs, was waiting for them once more. And the result was mostly the same -- Spirit lost. This time 1-2. This time falling into the Lower Bracket, where Team Liquid was already waiting after eliminating last year's champions. Liquid had a stellar showing in the groups, dropping only one series. But that loss came to this same Team Spirit squad they were again facing, and now Team Spirit wouldn't concede even one game.
+
+Spirit flushed Liquid out of the tournament to begin an undefeated run through the Lower Bracket, next bouncing both BoomBoys and Team Yandex with 2-0 statements to reach the Grand Finals against -- who else -- Team Vision, the front-runners that had been blocking Spirit's path every step of the way. The team that had stopped Spirit from skipping the elimination round. That had dropped them into the Lower Bracket to fight for their lives. The team that hadn't lost a single series in Shanghai... was now the one thing standing between Team Spirit and the Aegis of Champions.
+
+Game one was Team Spirit all the way. They looked to be cruising to victory in game two as well, but Vision had other plans, clawing back to even the series at one game apiece. It seemed that Vision might steal the momentum by snatching game three, but Spirit held firm to retake the series lead 2-1, just one win away from the Aegis. Once again, Vision would deny them. Their steady play in game four left no room for doubt -- this series was bound for a winner-take-all game five. And it didn't disappoint.
+
+After an hour-long showdown that was still anyone's game until the very end, Team Spirit finally overcame the team that had tormented them throughout the tournament, claiming the Aegis of Champions and crowning themselves the very best Dota team in the world. Three-time winners Yatoro and Collapse, and two-time winner Larl now welcome their teammates not_me and rue into an immortal pantheon.
+
+As bearers of the ultimate symbol of victory, these names shall forever be inscribed upon the Aegis of Champions:
+
+**2026 - Team Spirit**
+
+- Illia "Yatoro" Muliarchuk
+- Denis "Larl" Sigitov
+- Magomed "Collapse" Khalilov
+- Alexey "not_me" Kosmynin
+- Alexander "rue" Filin
+
+![Image](https://live.staticflickr.com/65535/55481652342_4378ab4bed_6k.jpg)
+
+### Until Next Time
+
+If you missed any of the broadcast, or just want to rewatch some of the iconic plays, head over to the [Dota 2 YouTube channel](https://www.youtube.com/user/dota2), where you'll find replays of the entire show. You can also find a collection of photos from the event over on the [Dota 2 Instagram](https://www.instagram.com/dota2/) and even more hi-res shots on our [Dota 2 flickr](https://www.flickr.com/photos/dota2ti/).  As always, we'd like to thank all of the players, talent, and everyone in the Dota community for helping bring this global celebration to life. We've been honored to once again help shepherd this event to the stage, but it wouldn't be what it is without all of you.
