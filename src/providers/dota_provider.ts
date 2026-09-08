@@ -2,7 +2,7 @@ import assert from 'assert';
 import fetch from 'node-fetch';
 import Game from '../game.js';
 import Logger from '../logger.js';
-import { ProviderData } from '../managers/data_manager.js';
+import type { ProviderData } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
 import Version from '../notifications/version.js';

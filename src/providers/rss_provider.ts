@@ -1,5 +1,5 @@
 import Game from '../game.js';
-import { ProviderData } from '../managers/data_manager.js';
+import type { ProviderData } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
 import PreProcessor from '../processors/pre_processor.js';

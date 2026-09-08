@@ -3,7 +3,7 @@ import Channel from '../channel.js';
 import Command from '../commands/command.js';
 import Game from '../game.js';
 import Logger from '../logger.js';
-import DataManager, { Subscriber } from '../managers/data_manager.js';
+import DataManager, { type Subscriber } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
 import Permissions from '../permissions.js';
 import Updater from '../updater.js';

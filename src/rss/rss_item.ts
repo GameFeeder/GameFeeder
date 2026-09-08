@@ -1,4 +1,4 @@
-import Comparable from '../util/comparable.js';
+import type Comparable from '../util/comparable.js';
 
 export default class RSSItem implements Comparable<RSSItem> {
   /**

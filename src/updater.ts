@@ -2,7 +2,7 @@ import PubSub from 'pubsub-js';
 import Game from './game.js';
 import Logger from './logger.js';
 import ConfigManager from './managers/config_manager.js';
-import DataManager, { ProviderData } from './managers/data_manager.js';
+import DataManager, { type ProviderData } from './managers/data_manager.js';
 import Notification from './notifications/notification.js';
 import { sortLimitEnd } from './util/array_util.js';
 import rollbar_client from './util/rollbar_client.js';
