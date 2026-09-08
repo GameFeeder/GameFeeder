@@ -1,5 +1,5 @@
 import Game from '../game.js';
-import Comparable from '../util/comparable.js';
+import type Comparable from '../util/comparable.js';
 import { StrUtil } from '../util/util.js';
 import NotificationElement from './notification_element.js';
 

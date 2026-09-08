@@ -1,6 +1,6 @@
 import Game from '../game.js';
 import Logger from '../logger.js';
-import { ProviderData } from '../managers/data_manager.js';
+import type { ProviderData } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
 import { assertIsDefined } from '../util/util.js';
 

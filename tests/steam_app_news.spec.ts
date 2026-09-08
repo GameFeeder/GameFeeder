@@ -1,8 +1,8 @@
 import Game from 'src/game.js';
 import SteamAppNews, {
-  SteamAppNewsResponse,
+  type SteamAppNewsResponse,
   SteamNewsItem,
-  SteamNewsItemResponse,
+  type SteamNewsItemResponse,
 } from 'src/steam/steam_app_news.js';
 
 describe('Steam App News', () => {

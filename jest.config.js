@@ -1,6 +1,5 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+/** @type {import('jest').Config} */
 export default {
-  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   // Fix module resolution for both relative imports and src/ imports
@@ -14,9 +13,13 @@ export default {
   },
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        useESM: true,
+        jsc: {
+          target: 'es2022',
+          parser: { syntax: 'typescript' },
+        },
+        module: { type: 'nodenext' },
       },
     ],
   },

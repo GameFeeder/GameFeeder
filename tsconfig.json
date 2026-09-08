@@ -64,9 +64,6 @@
 
     "skipLibCheck": true
   },
-  "ts-node": {
-    "esm": true
-  },
   "include": ["src/**/*", "@types", "tests/**/*.ts", "jest.config.ts"],
   "exclude": ["dist/*", "node_modules"]
 }

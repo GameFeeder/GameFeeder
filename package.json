@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"node --import ./register.mjs src/_main.ts\"",
+    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"node --experimental-transform-types --import ./register.mjs src/_main.ts\"",
     "start": "NODE_ENV=production node --loader commonjs-extension-resolution-loader dist/src/_main.js",
     "biome:check": "biome ci",
     "biome:fix": "biome check --write",
@@ -45,6 +45,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
     "@jest/globals": "^30.0.0",
+    "@swc/core": "1.16.2",
+    "@swc/jest": "0.2.39",
     "@types/jest": "30.0.0",
     "@types/lodash": "4.17.24",
     "@types/node": "24.12.4",
@@ -57,8 +59,6 @@
     "husky": "9.1.7",
     "jest": "30.4.2",
     "nodemon": "3.1.14",
-    "ts-jest": "29.4.11",
-    "ts-node": "10.9.2",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

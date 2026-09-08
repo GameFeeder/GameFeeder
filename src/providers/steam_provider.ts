@@ -1,5 +1,5 @@
 import Game from '../game.js';
-import { ProviderData } from '../managers/data_manager.js';
+import type { ProviderData } from '../managers/data_manager.js';
 import Notification from '../notifications/notification.js';
 import SteamWebAPI from '../steam/steam_web_api.js';
 import { sortLimitEnd } from '../util/array_util.js';
