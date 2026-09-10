@@ -1,6 +1,7 @@
 import bbcodeToMarkdown from 'src/steam/bbcode/index.js';
 
-const CLAN_IMAGES = 'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans';
+const CLAN_IMAGES =
+  'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans';
 
 describe('Steam BBCode markdown renderer', () => {
   describe('character styles', () => {
@@ -42,9 +43,14 @@ describe('Steam BBCode markdown renderer', () => {
   });
 
   describe('headings', () => {
-    test.each([1, 2, 3, 4, 5, 6])('should render an h%i tag with hashes', (level) => {
-      expect(bbcodeToMarkdown(`[h${level}]Text[/h${level}]`)).toBe(`${'#'.repeat(level)} Text`);
-    });
+    test.each([1, 2, 3, 4, 5, 6])(
+      'should render an h%i tag with hashes',
+      (level) => {
+        expect(bbcodeToMarkdown(`[h${level}]Text[/h${level}]`)).toBe(
+          `${'#'.repeat(level)} Text`,
+        );
+      },
+    );
 
     test('should strip emphasis from a heading', () => {
       // Both bots wrap headings in their own markers, which would nest badly.
@@ -52,13 +58,17 @@ describe('Steam BBCode markdown renderer', () => {
     });
 
     test('should put a heading on its own line', () => {
-      expect(bbcodeToMarkdown('[p]a[/p][h2]Title[/h2][p]b[/p]')).toBe('a\n\n## Title\n\nb');
+      expect(bbcodeToMarkdown('[p]a[/p][h2]Title[/h2][p]b[/p]')).toBe(
+        'a\n\n## Title\n\nb',
+      );
     });
   });
 
   describe('links', () => {
     test('should render a link', () => {
-      expect(bbcodeToMarkdown('[url=https://x.com]Text[/url]')).toBe('[Text](https://x.com)');
+      expect(bbcodeToMarkdown('[url=https://x.com]Text[/url]')).toBe(
+        '[Text](https://x.com)',
+      );
     });
 
     test('should render the quoted and unquoted forms alike', () => {
@@ -76,9 +86,9 @@ describe('Steam BBCode markdown renderer', () => {
 
     test('should encode parentheses in a URL', () => {
       // `MDRegex.link` ends the URL at the first closing parenthesis.
-      expect(bbcodeToMarkdown('[url=https://x.com/Rust_(game)]Rust[/url]')).toBe(
-        '[Rust](https://x.com/Rust_%28game%29)',
-      );
+      expect(
+        bbcodeToMarkdown('[url=https://x.com/Rust_(game)]Rust[/url]'),
+      ).toBe('[Rust](https://x.com/Rust_%28game%29)');
     });
 
     test('should unwrap the Steam link filter', () => {
@@ -91,7 +101,9 @@ describe('Steam BBCode markdown renderer', () => {
 
     test('should name a link that has no label after its target', () => {
       expect(
-        bbcodeToMarkdown('[dynamiclink href="https://www.twitch.tv/corky"][/dynamiclink]'),
+        bbcodeToMarkdown(
+          '[dynamiclink href="https://www.twitch.tv/corky"][/dynamiclink]',
+        ),
       ).toBe('[twitch.tv/corky](https://www.twitch.tv/corky)');
     });
 
@@ -100,41 +112,58 @@ describe('Steam BBCode markdown renderer', () => {
         bbcodeToMarkdown(
           '[dynamiclink href="https://store.steampowered.com/app/251570/7_Days_to_Die/"][/dynamiclink]',
         ),
-      ).toBe('[7 Days to Die](https://store.steampowered.com/app/251570/7_Days_to_Die/)');
+      ).toBe(
+        '[7 Days to Die](https://store.steampowered.com/app/251570/7_Days_to_Die/)',
+      );
     });
   });
 
   describe('images and video', () => {
     test.each([
-      ['[img]{STEAM_CLAN_IMAGE}/a.png[/img]', `![Image](${CLAN_IMAGES}/a.png)`],
-      ['[img src="{STEAM_CLAN_LOC_IMAGE}/a.png"][/img]', `![Image](${CLAN_IMAGES}/a.png)`],
-      ['[img src="https://x.com/a.png"][/img]', '![Image](https://x.com/a.png)'],
+      [
+        '[img]{STEAM_CLAN_IMAGE}/a.png[/img]',
+        `![Image](${CLAN_IMAGES}/a.png)`,
+      ],
+      [
+        '[img src="{STEAM_CLAN_LOC_IMAGE}/a.png"][/img]',
+        `![Image](${CLAN_IMAGES}/a.png)`,
+      ],
+      [
+        '[img src="https://x.com/a.png"][/img]',
+        '![Image](https://x.com/a.png)',
+      ],
     ])('should render %s as an image', (input, expected) => {
       expect(bbcodeToMarkdown(input)).toBe(expected);
     });
 
     test('should render an image inside a link in the shape MDRegex expects', () => {
-      expect(bbcodeToMarkdown('[url=https://x.com][img]https://x.com/a.png[/img][/url]')).toBe(
-        '[![Image](https://x.com/a.png)](https://x.com)',
-      );
+      expect(
+        bbcodeToMarkdown(
+          '[url=https://x.com][img]https://x.com/a.png[/img][/url]',
+        ),
+      ).toBe('[![Image](https://x.com/a.png)](https://x.com)');
     });
 
     test('should still recognise an image link that is split over lines', () => {
-      expect(bbcodeToMarkdown('[url=https://x.com]\n[img]https://x.com/a.png[/img]\n[/url]')).toBe(
-        '[![Image](https://x.com/a.png)](https://x.com)',
-      );
+      expect(
+        bbcodeToMarkdown(
+          '[url=https://x.com]\n[img]https://x.com/a.png[/img]\n[/url]',
+        ),
+      ).toBe('[![Image](https://x.com/a.png)](https://x.com)');
     });
 
     test('should give an image its own line', () => {
-      expect(bbcodeToMarkdown('[p][img]https://x.com/a.png[/img]Caption[/p]')).toBe(
-        '![Image](https://x.com/a.png)\nCaption',
-      );
+      expect(
+        bbcodeToMarkdown('[p][img]https://x.com/a.png[/img]Caption[/p]'),
+      ).toBe('![Image](https://x.com/a.png)\nCaption');
     });
 
     test('should render a YouTube preview as a link', () => {
-      expect(bbcodeToMarkdown('[previewyoutube=PVNSct9atp8;full][/previewyoutube]')).toBe(
-        '[YouTube Video](https://youtu.be/PVNSct9atp8)',
-      );
+      expect(
+        bbcodeToMarkdown(
+          '[previewyoutube=PVNSct9atp8;full][/previewyoutube]',
+        ),
+      ).toBe('[YouTube Video](https://youtu.be/PVNSct9atp8)');
     });
   });
 
@@ -148,16 +177,22 @@ describe('Steam BBCode markdown renderer', () => {
     });
 
     test('should indent a nested list', () => {
-      expect(bbcodeToMarkdown('[list][*]a[list][*]b[/list][/*][/list]')).toBe('- a\n  - b');
+      expect(
+        bbcodeToMarkdown('[list][*]a[list][*]b[/list][/*][/list]'),
+      ).toBe('- a\n  - b');
     });
 
     test('should keep an item on a single line', () => {
       // `MDRegex.list` only matches a bullet at the start of a line.
-      expect(bbcodeToMarkdown('[list][*][p]one\ntwo[/p][/*][/list]')).toBe('- one\n  two');
+      expect(
+        bbcodeToMarkdown('[list][*][p]one\ntwo[/p][/*][/list]'),
+      ).toBe('- one\n  two');
     });
 
     test('should merge the single item lists Steam emits in sequence', () => {
-      expect(bbcodeToMarkdown('[list][*]a[/*][/list][list][*]b[/*][/list]')).toBe('- a\n- b');
+      expect(
+        bbcodeToMarkdown('[list][*]a[/*][/list][list][*]b[/*][/list]'),
+      ).toBe('- a\n- b');
     });
   });
 
@@ -171,12 +206,16 @@ describe('Steam BBCode markdown renderer', () => {
     });
 
     test('should fence a code block', () => {
-      expect(bbcodeToMarkdown('[code]x = 1[/code]')).toBe('```\nx = 1\n```');
+      expect(bbcodeToMarkdown('[code]x = 1[/code]')).toBe(
+        '```\nx = 1\n```',
+      );
     });
 
     test('should surround a separator with blank lines', () => {
       // Without the blank line `MDRegex.h2Alt` would turn `a\n---` into a heading.
-      expect(bbcodeToMarkdown('[p]a[/p][hr][/hr][p]b[/p]')).toBe('a\n\n---\n\nb');
+      expect(bbcodeToMarkdown('[p]a[/p][hr][/hr][p]b[/p]')).toBe(
+        'a\n\n---\n\nb',
+      );
     });
 
     test('should render a table as one line per row', () => {
@@ -188,7 +227,9 @@ describe('Steam BBCode markdown renderer', () => {
     });
 
     test('should keep the content of a collapsible section', () => {
-      expect(bbcodeToMarkdown('[expand type=details]Hidden[/expand]')).toBe('Hidden');
+      expect(bbcodeToMarkdown('[expand type=details]Hidden[/expand]')).toBe(
+        'Hidden',
+      );
     });
   });
 
@@ -198,7 +239,9 @@ describe('Steam BBCode markdown renderer', () => {
     });
 
     test('should separate blocks by exactly one blank line', () => {
-      const markdown = bbcodeToMarkdown('[p]a[/p][p][/p][p][/p][p]b[/p]');
+      const markdown = bbcodeToMarkdown(
+        '[p]a[/p][p][/p][p][/p][p]b[/p]',
+      );
 
       expect(markdown).toBe('a\n\nb');
       expect(markdown).not.toMatch(/\n{3,}/);
