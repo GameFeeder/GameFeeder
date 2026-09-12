@@ -258,7 +258,15 @@ describe('Discord renderer', () => {
     });
 
     test('should quote every line of a multi-block quote', () => {
-      expect(renderDiscord(doc(quote({}, paragraph('a'), paragraph('b'))))).toBe('> a\n>\n> b');
+      // The blank line keeps its space: a bare `>` is literal text to Discord,
+      // which would end the quote and show the marker to the reader.
+      expect(renderDiscord(doc(quote({}, paragraph('a'), paragraph('b'))))).toBe('> a\n> \n> b');
+    });
+
+    test('should keep a nested quote continuous too', () => {
+      const nested = doc(quote({}, paragraph('a'), quote({}, paragraph('b'), paragraph('c'))));
+
+      expect(renderDiscord(nested)).not.toMatch(/^>+$/m);
     });
 
     test('should show a collapsed section as ordinary content', () => {

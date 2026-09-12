@@ -221,7 +221,9 @@ class Renderer {
     }
     const author = block.author ? `**${escapeDiscord(block.author)}**:\n` : '';
 
-    return prefixLines(`${author}${body}`, '> ');
+    // The blank lines between the quote's own blocks keep the trailing space:
+    // a bare `>` is literal text to Discord, and would end the quote there.
+    return prefixLines(`${author}${body}`, '> ', '> ');
   }
 
   /** Renders a table as one line per row.

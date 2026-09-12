@@ -92,7 +92,17 @@ describe('Steam BBCode against real posts', () => {
       test('should be trimmed and free of blank line runs', () => {
         expect(rendered).toBe(rendered.trim());
         expect(rendered).not.toMatch(/\n{3,}/);
-        expect(rendered).not.toMatch(/[ \t]\n/);
+        // A line of quote markers keeps its trailing space, which is syntax.
+        for (const line of rendered.split('\n')) {
+          if (!/^(?:> )+$/.test(line)) {
+            expect(line).not.toMatch(/[ \t]$/);
+          }
+        }
+      });
+
+      test('should leave no quote marker stranded on its own', () => {
+        // Discord reads a bare `>` as text and ends the quote at that line.
+        expect(rendered).not.toMatch(/^>+$/m);
       });
 
       test('should put no raw whitespace inside a URL', () => {

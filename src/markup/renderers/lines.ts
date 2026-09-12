@@ -37,10 +37,19 @@ export function joinBlocks(blocks: string[]): string {
   return blocks.filter((block) => block !== '').join('\n\n');
 }
 
+/** A line made only of quote markers, whose trailing space is syntax.
+ *
+ * Discord needs the space after `>` even on an otherwise empty line; a bare `>`
+ * is literal text to it, and ends the quote it was meant to continue.
+ */
+const QUOTE_ONLY_LINE = /^(?:> )+$/;
+
 /** Tidies a finished document: no trailing spaces, no runs of blank lines. */
 export function tidy(text: string): string {
   return text
-    .replace(/[ \t]+\n/g, '\n')
+    .split('\n')
+    .map((line) => (QUOTE_ONLY_LINE.test(line) ? line : line.replace(/[ \t]+$/, '')))
+    .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }

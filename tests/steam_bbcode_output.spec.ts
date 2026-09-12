@@ -187,7 +187,7 @@ describe('Steam BBCode output', () => {
 
   describe('other blocks', () => {
     test('should prefix every line of a quote', () => {
-      expect(discord('[quote]a\n\nb[/quote]')).toBe('> a\n>\n> b');
+      expect(discord('[quote]a\n\nb[/quote]')).toBe('> a\n> \n> b');
     });
 
     test('should name the author of a quote', () => {
