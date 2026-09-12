@@ -187,6 +187,8 @@ string.
 - **limits**: The character limits each messenger imposes
 - **limit**: Shortening a document to fit one of them, by removing nodes rather
   than characters, so no message is ever cut mid-link or mid-emphasis
+- **media**: Lifting the image a post opens or closes with out of the text, for
+  a messenger with an image slot of its own, such as a Discord embed
 - **parsers/html**: HTML (the RSS feeds) → tree, driven by a tag table
 - **renderers/discord**, **renderers/telegram**, **renderers/plain**: tree →
   each messenger's own flavor

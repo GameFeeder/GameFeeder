@@ -1,4 +1,5 @@
 [Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)
+
 Congratulations to Team Spirit, Grand Champions at The International 2026. After enduring a challenging year, Team Spirit regained their ultimate form just in time to take a five-game Grand Finals slugfest and claim the Aegis of Champions in Shanghai.
 
 Spirit's Group Stage started strong, with 2-0 victories over both Xtreme Gaming and Aurora Gaming. They followed with 2-1 win over Team Liquid that put Spirit just one series win away from qualifying for the main stage. They wouldn't get it. Instead, they served as a stepping stone. First to Team Vision, who dropped Spirit in just two games to secure their own invite to the arena. Next, Nigma Galaxy followed suit, handing Spirit another 0-2 loss to snatch a spot on the main stage and force Spirit into elimination play.

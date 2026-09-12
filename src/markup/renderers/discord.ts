@@ -12,7 +12,8 @@ import type {
   VideoNode,
 } from '../ast.js';
 import { escapeDiscord, escapeDiscordLineStart, sanitizeUrl } from '../escape.js';
-import { flatten, indentRest, joinBlocks, prefixLines, tidy, wrap } from './lines.js';
+import type { Segment } from './lines.js';
+import { flatten, indentRest, joinBlocks, joinSegments, prefixLines, tidy, wrap } from './lines.js';
 
 /** Options for {@link renderDiscord}. */
 export type DiscordRenderOptions = {
@@ -130,24 +131,24 @@ class Renderer {
    * is common, and a link sitting flush against the prose reads badly.
    */
   private renderParagraph(nodes: InlineNode[], context: Context): string {
-    const segments: string[] = [];
+    const segments: Segment[] = [];
     let run = '';
 
     for (const child of nodes) {
       if (child.type === 'image' || child.type === 'video') {
         if (run.trim() !== '') {
-          segments.push(run.trim());
+          segments.push({ media: false, text: run.trim() });
         }
         run = '';
-        segments.push(this.renderInlineNode(child, context));
+        segments.push({ media: true, text: this.renderInlineNode(child, context) });
         continue;
       }
       run += this.renderInlineNode(child, context);
     }
     if (run.trim() !== '') {
-      segments.push(run.trim());
+      segments.push({ media: false, text: run.trim() });
     }
-    return segments.filter((segment) => segment !== '').join('\n');
+    return joinSegments(segments);
   }
 
   private renderHeading(block: HeadingNode): string {

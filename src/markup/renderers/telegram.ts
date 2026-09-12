@@ -10,7 +10,8 @@ import type {
   VideoNode,
 } from '../ast.js';
 import { sanitizeTelegramMarkdown, sanitizeUrl } from '../escape.js';
-import { flatten, indentRest, joinBlocks, prefixLines, tidy, wrap } from './lines.js';
+import type { Segment } from './lines.js';
+import { flatten, indentRest, joinBlocks, joinSegments, prefixLines, tidy, wrap } from './lines.js';
 
 /** Options for {@link renderTelegram}. */
 export type TelegramRenderOptions = {
@@ -188,24 +189,24 @@ class Renderer {
    * is common, and a link sitting flush against the prose reads badly.
    */
   private renderParagraph(nodes: InlineNode[], plain: boolean): string {
-    const segments: string[] = [];
+    const segments: Segment[] = [];
     let run = '';
 
     for (const child of nodes) {
       if (child.type === 'image' || child.type === 'video') {
         if (run.trim() !== '') {
-          segments.push(run.trim());
+          segments.push({ media: false, text: run.trim() });
         }
         run = '';
-        segments.push(this.renderInlineNode(child, plain));
+        segments.push({ media: true, text: this.renderInlineNode(child, plain) });
         continue;
       }
       run += this.renderInlineNode(child, plain);
     }
     if (run.trim() !== '') {
-      segments.push(run.trim());
+      segments.push({ media: false, text: run.trim() });
     }
-    return segments.filter((segment) => segment !== '').join('\n');
+    return joinSegments(segments);
   }
 
   private renderInlineNode(node: InlineNode, plain: boolean): string {

@@ -78,3 +78,25 @@ export function wrap(rendered: string, marker: string): string {
 
   return `${lead}${marker}${core}${marker}${trail}`;
 }
+
+/** One run of a paragraph: either media, or the text around it. */
+export type Segment = { media: boolean; text: string };
+
+/** Joins the runs of a paragraph, setting media apart from the prose.
+ *
+ * A blank line is what makes an image read as a thing of its own rather than a
+ * stray line of a sentence. Consecutive images stay on consecutive lines: they
+ * are one gallery, and blank lines between them only spread it out.
+ */
+export function joinSegments(segments: Segment[]): string {
+  const filled = segments.filter((segment) => segment.text !== '');
+
+  return filled.reduce((text, segment, index) => {
+    if (index === 0) {
+      return segment.text;
+    }
+    const separator = filled[index - 1].media === segment.media ? '\n' : '\n\n';
+
+    return `${text}${separator}${segment.text}`;
+  }, '');
+}

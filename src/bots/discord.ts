@@ -26,6 +26,7 @@ import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
 import type { RootNode } from '../markup/ast.js';
 import { doc, paragraph, text } from '../markup/build.js';
+import { sanitizeUrl } from '../markup/escape.js';
 import { fitDocument } from '../markup/limit.js';
 import {
   DISCORD_EMBED_AUTHOR,
@@ -35,6 +36,7 @@ import {
   DISCORD_EMBED_TOTAL,
   DISCORD_MESSAGE,
 } from '../markup/limits.js';
+import extractCoverImage from '../markup/media.js';
 import renderDiscord from '../markup/renderers/discord.js';
 import Message from '../message.js';
 import Notification from '../notifications/notification.js';
@@ -621,17 +623,35 @@ export default class DiscordBot extends BotClient {
     if (notification.color) {
       embed.setColor(notification.color as HexColorString);
     }
+    // An image the post opens or closes with is shown in the embed's own image
+    // slot rather than as a link in the text. Only while that slot is free: an
+    // image the notification already carries would otherwise lose this one.
+    const cover =
+      notification.content && !notification.image
+        ? extractCoverImage(notification.content)
+        : undefined;
+    const coverUrl = cover?.image ? sanitizeUrl(cover.image.url) : '';
+    // An image whose URL cannot be used stays where it was, rather than being
+    // taken out of the text and then shown nowhere.
+    const content = coverUrl ? cover?.document : notification.content;
+
     // Description. The embed carries the title itself, so the body leaves it out.
-    if (notification.content) {
+    if (content && content.children.length > 0) {
       // Discord rejects the whole embed on the sum of its fields, so what is
       // left of that allowance bounds the body just as its own limit does.
       const budget = Math.min(
         DISCORD_EMBED_DESCRIPTION,
         DISCORD_EMBED_TOTAL - title.length - author.length - footer.length,
       );
-      embed.setDescription(
-        fitDocument(notification.content, (tree) => renderDiscord(tree, { masked: true }), budget),
+      const description = fitDocument(
+        content,
+        (tree) => renderDiscord(tree, { masked: true }),
+        budget,
       );
+
+      if (description !== '') {
+        embed.setDescription(description);
+      }
     }
     // Footer
     if (notification.footer) {
@@ -641,8 +661,9 @@ export default class DiscordBot extends BotClient {
       });
     }
     // Image
-    if (notification.image) {
-      embed.setImage(notification.image);
+    const image = notification.image || coverUrl;
+    if (image) {
+      embed.setImage(image);
     }
     // Thumbnail
     if (notification.thumbnail) {

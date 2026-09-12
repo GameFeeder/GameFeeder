@@ -153,9 +153,15 @@ describe('Steam BBCode output', () => {
       );
     });
 
-    test('should give media a line of its own', () => {
+    test('should set media apart from the text with a blank line', () => {
       expect(discord('[p][img]https://x.com/a.png[/img]Caption[/p]')).toBe(
-        '[Image](https://x.com/a.png)\nCaption',
+        '[Image](https://x.com/a.png)\n\nCaption',
+      );
+    });
+
+    test('should keep consecutive images together as one gallery', () => {
+      expect(discord('[p][img]https://x.com/a.png[/img][img]https://x.com/b.png[/img][/p]')).toBe(
+        '[Image](https://x.com/a.png)\n[Image](https://x.com/b.png)',
       );
     });
 

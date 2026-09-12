@@ -3,7 +3,11 @@ import DiscordBot from 'src/bots/discord.js';
 import Channel from 'src/channel.js';
 import Action from 'src/commands/action.js';
 import CommandGroup from 'src/commands/command_group.js';
+import Game from 'src/game.js';
+import { br, doc, image, paragraph } from 'src/markup/build.js';
 import Message from 'src/message.js';
+import Notification from 'src/notifications/notification.js';
+import NotificationElement from 'src/notifications/notification_element.js';
 import User, { UserRole } from 'src/user.js';
 import MockBot from './mockClasses/mockBot.js';
 
@@ -77,6 +81,72 @@ describe('Discord bot', () => {
       // Without this, DM interactions resolve to an uncached channel, which silently
       // wipes the channel's subscription data (see src/bots/discord.ts).
       expect(bot['bot'].options.partials).toContain(Partials.Channel);
+    });
+  });
+
+  // EMBED
+  describe('embed from notification', () => {
+    const BANNER = 'https://example.com/banner.png';
+    const game = new Game('dota', ['dota'], 'Dota 2', '#A9372B', 'icon.png', {}, []);
+
+    function embedOf(content: ReturnType<typeof doc>, preset?: string) {
+      const notification = new Notification(
+        new Date('2026-01-01T00:00:00Z'),
+        game,
+        new NotificationElement('Patch', 'https://example.com/patch'),
+        content,
+        undefined,
+        undefined,
+        undefined,
+        preset,
+      );
+      return new DiscordBot('mock-token', false).embedFromNotification(notification);
+    }
+
+    test('should show an opening image in the embed image slot', () => {
+      const embed = embedOf(doc(paragraph(image(BANNER), br(), 'The first sentence.')));
+
+      expect(embed.image?.url).toBe(BANNER);
+      expect(embed.description).toBe('The first sentence.');
+    });
+
+    test('should show a closing image in the embed image slot', () => {
+      const embed = embedOf(doc(paragraph('Body'), paragraph(image(BANNER))));
+
+      expect(embed.image?.url).toBe(BANNER);
+      expect(embed.description).toBe('Body');
+    });
+
+    test('should leave an image in the middle of the post in the text', () => {
+      const embed = embedOf(doc(paragraph('Before'), paragraph(image(BANNER)), paragraph('After')));
+
+      expect(embed.image).toBeUndefined();
+      expect(embed.description).toContain(BANNER);
+    });
+
+    test('should not displace an image the notification already carries', () => {
+      const preset = 'https://example.com/preset.png';
+      const embed = embedOf(doc(paragraph(image(BANNER)), paragraph('Body')), preset);
+
+      expect(embed.image?.url).toBe(preset);
+      // The post's own image is not lost: it stays in the text.
+      expect(embed.description).toContain(BANNER);
+    });
+
+    test('should keep an image whose URL cannot be used in the text', () => {
+      const embed = embedOf(
+        doc(paragraph(image('javascript:alert(1)', 'Cover')), paragraph('Body')),
+      );
+
+      expect(embed.image).toBeUndefined();
+      expect(embed.description).toContain('Cover');
+    });
+
+    test('should send no description when the post was only an image', () => {
+      const embed = embedOf(doc(paragraph(image(BANNER))));
+
+      expect(embed.image?.url).toBe(BANNER);
+      expect(embed.description).toBeUndefined();
     });
   });
 
