@@ -6,8 +6,13 @@
  * game called `Half-Life 2: Episode_One` must not silently turn into emphasis.
  */
 
-/** Characters Discord treats as markup, all of which it lets us backslash-escape. */
-const DISCORD_SPECIAL = /[\\*_~`|[\]()>#-]/g;
+/** Characters Discord treats as markup wherever they appear. */
+const DISCORD_INLINE = /[\\*_~`|[\]()]/g;
+
+/** Markup Discord only recognizes at the start of a line: headings, quotes,
+ * bullets and numbered items.
+ */
+const DISCORD_LINE_START = /^([ \t]*)([#>+-]|\d+[.)])/;
 
 /** Schemes a link is allowed to use. Anything else is dropped entirely. */
 const ALLOWED_SCHEMES = new Set(['http:', 'https:', 'mailto:']);
@@ -23,7 +28,22 @@ const URL_UNSAFE = /[\s<>"'\\^`{|}]/g;
  * @param value - The literal text to show.
  */
 export function escapeDiscord(value: string): string {
-  return value.replace(DISCORD_SPECIAL, (char) => `\\${char}`);
+  return value.replace(DISCORD_INLINE, (char) => `\\${char}`);
+}
+
+/** Escapes the markup Discord only recognises at the start of a line.
+ *
+ * Kept apart from {@link escapeDiscord} so that a hyphen or a `#` in the middle
+ * of a sentence is left alone: escaping those everywhere would litter ordinary
+ * prose such as `Half-Life` with backslashes.
+ *
+ * Apply this to a line of already rendered text, before any prefix the renderer
+ * adds itself — a list bullet is markup we *want* Discord to read.
+ *
+ * @param line - One rendered line.
+ */
+export function escapeDiscordLineStart(line: string): string {
+  return line.replace(DISCORD_LINE_START, (_match, indent, marker) => `${indent}\\${marker}`);
 }
 
 /** Telegram's legacy `Markdown` parse mode has no escape syntax, so a marker

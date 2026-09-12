@@ -1,23 +1,27 @@
-import { escapeDiscord, sanitizeTelegramMarkdown, sanitizeUrl } from 'src/markup/escape.js';
+import {
+  escapeDiscord,
+  escapeDiscordLineStart,
+  sanitizeTelegramMarkdown,
+  sanitizeUrl,
+} from 'src/markup/escape.js';
 
 describe('Markup escaping', () => {
   describe('escapeDiscord', () => {
-    test.each([
-      '*',
-      '_',
-      '~',
-      '`',
-      '|',
-      '[',
-      ']',
-      '(',
-      ')',
-      '>',
-      '#',
-      '-',
-      '\\',
-    ])('should escape %s', (char) => {
+    test.each(['*', '_', '~', '`', '|', '[', ']', '(', ')', '\\'])('should escape %s', (char) => {
       expect(escapeDiscord(char)).toBe(`\\${char}`);
+    });
+
+    test.each([
+      '#',
+      '>',
+      '-',
+      '+',
+    ])('should leave %s alone, as it is only markup at a line start', (char) => {
+      expect(escapeDiscord(`a${char}b`)).toBe(`a${char}b`);
+    });
+
+    test('should leave an ordinary hyphenated word alone', () => {
+      expect(escapeDiscord('Half-Life 2')).toBe('Half-Life 2');
     });
 
     test('should leave ordinary text alone', () => {
@@ -39,6 +43,31 @@ describe('Markup escaping', () => {
     test('should escape the backslash before anything else', () => {
       // Otherwise the escape of a later character could itself be escaped.
       expect(escapeDiscord('\\*')).toBe('\\\\\\*');
+    });
+  });
+
+  describe('escapeDiscordLineStart', () => {
+    test.each([
+      '# heading',
+      '> quote',
+      '- bullet',
+      '+ bullet',
+      '1. item',
+      '2) item',
+    ])('should defuse a line beginning with %s', (line) => {
+      expect(escapeDiscordLineStart(line)).toBe(`\\${line}`);
+    });
+
+    test('should keep the indentation in front of the marker', () => {
+      expect(escapeDiscordLineStart('  - bullet')).toBe('  \\- bullet');
+    });
+
+    test('should leave a line that begins with ordinary text alone', () => {
+      expect(escapeDiscordLineStart('Half-Life 2 is out')).toBe('Half-Life 2 is out');
+    });
+
+    test('should only touch the start of the line', () => {
+      expect(escapeDiscordLineStart('a - b - c')).toBe('a - b - c');
     });
   });
 

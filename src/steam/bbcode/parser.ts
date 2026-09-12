@@ -17,6 +17,7 @@ import type { TagSpec } from './tags.js';
 import { isBlockTag, tagSpec } from './tags.js';
 import type { OpenToken, Token } from './tokenizer.js';
 import tokenize from './tokenizer.js';
+import { resolveSteamUrl } from './url.js';
 
 /** Options for {@link parse}. */
 export type ParseOptions = {
@@ -459,7 +460,7 @@ class Parser {
     switch (token.name) {
       case 'url': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.value ?? token.attrs.get('href') ?? '';
+        const url = resolveSteamUrl(token.value ?? token.attrs.get('href') ?? '');
         if (!url) {
           return children;
         }
@@ -467,7 +468,7 @@ class Parser {
       }
       case 'dynamiclink': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.attrs.get('href') ?? token.value ?? '';
+        const url = resolveSteamUrl(token.attrs.get('href') ?? token.value ?? '');
         if (!url) {
           return children;
         }
@@ -477,8 +478,8 @@ class Parser {
       case 'previewimg': {
         const children = this.parseInlineChildren(token.name, spec);
         // Both `[img]URL[/img]` and `[img src="URL"][/img]` occur in the wild.
-        const url = token.attrs.get('src') ?? token.value ?? inlineText(children);
-        return url.trim() ? [{ type: 'image', url }] : children;
+        const url = resolveSteamUrl(token.attrs.get('src') ?? token.value ?? inlineText(children));
+        return url ? [{ type: 'image', url }] : children;
       }
       case 'previewyoutube': {
         const children = this.parseInlineChildren(token.name, spec);
@@ -491,7 +492,9 @@ class Parser {
       }
       case 'video': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.attrs.get('mp4') ?? token.attrs.get('webm') ?? token.value ?? '';
+        const url = resolveSteamUrl(
+          token.attrs.get('mp4') ?? token.attrs.get('webm') ?? token.value ?? '',
+        );
         if (!url) {
           return children;
         }
