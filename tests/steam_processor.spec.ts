@@ -1,78 +1,69 @@
+import parseHtml from 'src/markup/parsers/html.js';
+import renderDiscord from 'src/markup/renderers/discord.js';
 import SteamProcessor from 'src/processors/steam_processor.js';
 
+/** Runs the Steam RSS pipeline: normalize the markup, then read it. */
+function render(html: string): string {
+  const processed = new SteamProcessor().process(html);
+
+  return renderDiscord(parseHtml(processed, { preserveLineBreaks: true }), { masked: true });
+}
+
 describe('Steam processor', () => {
-  // Link filter
   describe('link filter', () => {
-    test('should remove linkfilters', () => {
+    test('should point a link at where it actually goes', () => {
       const sampleText =
         '<a href="https://steamcommunity.com/linkfilter/?url=https://github.com">Text</a>';
-      const expected = '<p><a href="https://github.com">Text</a></p>';
 
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
+      expect(new SteamProcessor().process(sampleText)).toEqual(
+        '<a href="https://github.com">Text</a>',
+      );
+    });
 
-      expect(actual).toEqual(expected);
+    test('should leave an ordinary link alone', () => {
+      const sampleText = '<a href="https://github.com">Text</a>';
+
+      expect(new SteamProcessor().process(sampleText)).toEqual(sampleText);
     });
   });
-  // BB Headers
-  describe('bb header', () => {
-    test.each([1, 2, 3, 4])('should parse bb h%i header', (level) => {
-      const sampleText = `<div class="bb_h${level}">Text</div>`;
-      const expected = `<p><h${level}>Text</h${level}></p>`;
 
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
-
-      expect(actual).toEqual(expected);
-    });
-  });
-  // BB Link Hosts
-  describe('bb link host', () => {
-    test('should remove bb link hosts', () => {
-      const sampleText = '<p><span class="bb_link_host">[github.com]</span></p>';
-      const expected = '<p><p></p></p>';
-
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
-
-      expect(actual).toEqual(expected);
-    });
-  });
-  // Paragraphs and line breaks
-  describe('paragraphs and line breaks', () => {
-    test('should convert double line break to paragraph', () => {
-      const sampleText = 'First\n\nSecond';
-      const expected = '<p>First</p><p>Second</p>';
-
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
-
-      expect(actual).toEqual(expected);
+  describe('boundary with the HTML parser', () => {
+    // These used to be rewritten here. The HTML parser understands them
+    // directly, so the processor no longer has to know about them.
+    test('should leave a heading div to the HTML parser', () => {
+      expect(render('<div class="bb_h2">Title</div>')).toEqual('## Title');
     });
 
-    test('should convert line break to <br>', () => {
-      const sampleText = 'First\nSecond';
-      const expected = '<p>First<br>Second</p>';
+    test('should leave a link host to the HTML parser', () => {
+      const sampleText =
+        '<a href="https://github.com">Repo</a><span class="bb_link_host">[github.com]</span>';
 
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
+      expect(render(sampleText)).toEqual('[Repo](https://github.com)');
+    });
 
-      expect(actual).toEqual(expected);
+    test('should leave paragraph splitting to the HTML parser', () => {
+      expect(render('First\n\nSecond')).toEqual('First\n\nSecond');
+    });
+
+    test('should leave line breaks to the HTML parser', () => {
+      expect(render('First\nSecond')).toEqual('First\nSecond');
     });
   });
 
   describe('sample text', () => {
-    test('should normalize a Steam RSS description', () => {
+    test('should read a Steam RSS description', () => {
       const sampleText =
         '<p class="bb_paragraph"><i><a class="bb_link" href="https://steamcommunity.com/linkfilter/?url=https://factorio.com/blog/post/fff-318" target="_blank" rel="noreferrer" >Read this post on our website.</a><span class="bb_link_host">[factorio.com]</span></i></p><div class="bb_h1">The new tooltips</div><ul class="bb_ul"><li>Many things were changed.</li></ul>';
 
-      const expected =
-        '<p><p class="bb_paragraph"><i><a class="bb_link" href="https://factorio.com/blog/post/fff-318" target="_blank" rel="noreferrer" >Read this post on our website.</a></i></p><h1>The new tooltips</h1><ul class="bb_ul"><li>Many things were changed.</li></ul></p>';
-
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
-
-      expect(actual).toEqual(expected);
+      expect(render(sampleText)).toEqual(
+        [
+          '*[Read this post on our website.](https://factorio.com/blog/post/fff-318)*',
+          '',
+          '# The new tooltips',
+          '',
+          '- Many things were changed.',
+        ].join('\n'),
+      );
     });
   });
 
@@ -82,10 +73,7 @@ describe('Steam processor', () => {
       // `src/steam/bbcode/` handles instead of this processor.
       const sampleText = '[p]Text with [b]markup[/b] and [url="https://x.com"]a link[/url].[/p]';
 
-      const processor = new SteamProcessor();
-      const actual = processor.process(sampleText);
-
-      expect(actual).toEqual(`<p>${sampleText}</p>`);
+      expect(new SteamProcessor().process(sampleText)).toEqual(sampleText);
     });
   });
 });

@@ -118,8 +118,13 @@ function collapseBreaks(nodes: InlineNode[]): InlineNode[] {
   return result;
 }
 
-/** Normalizes a run of inline nodes and their descendants. */
-function normalizeInline(nodes: InlineNode[]): InlineNode[] {
+/** Normalizes a run of inline nodes and their descendants.
+ *
+ * Only the outermost run is trimmed. The space in `a<b> text </b>b` belongs to
+ * the sentence, not to the emphasis, and a renderer moves it outside the
+ * markers; trimming it here would run the words together instead.
+ */
+function normalizeInline(nodes: InlineNode[], blockLevel: boolean): InlineNode[] {
   const walked = nodes.map((node) => {
     switch (node.type) {
       case 'bold':
@@ -129,13 +134,14 @@ function normalizeInline(nodes: InlineNode[]): InlineNode[] {
       case 'spoiler':
       case 'link':
       case 'video':
-        return { ...node, children: normalizeInline(node.children) };
+        return { ...node, children: normalizeInline(node.children, false) };
       default:
         return node;
     }
   });
+  const collapsed = collapseBreaks(walked);
 
-  return trimInline(collapseBreaks(walked));
+  return blockLevel ? trimInline(collapsed) : collapsed;
 }
 
 /** Normalizes a block and everything below it. */
@@ -143,7 +149,7 @@ function normalizeBlock(block: BlockNode): BlockNode {
   switch (block.type) {
     case 'paragraph':
     case 'heading':
-      return { ...block, children: normalizeInline(block.children) };
+      return { ...block, children: normalizeInline(block.children, true) };
     case 'quote':
       return { ...block, children: normalizeBlocks(block.children.map(normalizeBlock)) };
     case 'list':

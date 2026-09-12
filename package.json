@@ -40,7 +40,6 @@
     "rss-parser": "3.13.0",
     "smart-request-balancer": "2.2.0",
     "telegraf": "4.16.3",
-    "turndown": "7.2.4",
     "winston": "3.19.0"
   },
   "devDependencies": {
@@ -54,7 +53,6 @@
     "@types/node-fetch": "2.6.13",
     "@types/pubsub-js": "1.8.6",
     "@types/request": "2.48.13",
-    "@types/turndown": "5.0.6",
     "@types/ws": "8.18.1",
     "@types/xml2js": "0.4.14",
     "husky": "9.1.7",

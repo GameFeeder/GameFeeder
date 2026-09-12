@@ -6,8 +6,13 @@
  * game called `Half-Life 2: Episode_One` must not silently turn into emphasis.
  */
 
-/** Characters Discord treats as markup wherever they appear. */
-const DISCORD_INLINE = /[\\*_~`|[\]()]/g;
+/** Characters Discord treats as markup wherever they appear.
+ *
+ * Parentheses are deliberately absent: they only mean anything as part of
+ * `](...)`, and since the brackets are escaped, text can never form a link.
+ * Escaping them as well would litter ordinary prose with backslashes.
+ */
+const DISCORD_INLINE = /[\\*_~`|[\]]/g;
 
 /** Markup Discord only recognizes at the start of a line: headings, quotes,
  * bullets and numbered items.

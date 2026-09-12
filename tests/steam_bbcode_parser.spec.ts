@@ -230,8 +230,18 @@ describe('Steam BBCode parser', () => {
     });
 
     test('should read the target of a dynamic link', () => {
+      // A tag with no text of its own gets a label derived from its URL.
       expect(blocks('[dynamiclink href="https://x.com"][/dynamiclink]')).toEqual([
-        { type: 'paragraph', children: [{ type: 'link', url: 'https://x.com', children: [] }] },
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'link',
+              url: 'https://x.com',
+              children: [{ type: 'text', value: 'x.com' }],
+            },
+          ],
+        },
       ]);
     });
   });

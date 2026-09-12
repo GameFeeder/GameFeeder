@@ -4,14 +4,18 @@ import Channel from '../channel.js';
 import Command from '../commands/command.js';
 import Game from '../game.js';
 import ConfigManager from '../managers/config_manager.js';
+import type { RootNode } from '../markup/ast.js';
+import { doc, paragraph, text } from '../markup/build.js';
+import { TELEGRAM_MESSAGE } from '../markup/limits.js';
+import renderTelegram from '../markup/renderers/telegram.js';
 import Message from '../message.js';
 import Notification from '../notifications/notification.js';
 import Permissions from '../permissions.js';
 import User, { UserRole } from '../user.js';
 import { mapAsync } from '../util/array_util.js';
-import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
 import { assertIsDefined, StrUtil } from '../util/util.js';
+import type { BotMessage } from './bot.js';
 import { BotClient } from './bot.js';
 
 enum MessageType {
@@ -412,7 +416,7 @@ export default class TelegramBot extends BotClient {
 
   public async sendMessage(
     channel: Channel,
-    messageText: string | Notification,
+    messageText: BotMessage,
     retryAttempt = 0,
   ): Promise<boolean> {
     try {
@@ -444,7 +448,7 @@ export default class TelegramBot extends BotClient {
 
   private async sendMessageInstantly(
     channel: Channel,
-    messageText: string | Notification,
+    messageText: BotMessage,
     retryAttempt = 0,
   ): Promise<boolean> {
     if (channel.disabled) {
@@ -468,52 +472,11 @@ export default class TelegramBot extends BotClient {
     // }
 
     // Set up the message
-    const message = messageText;
-    let text = '';
-    // TODO: The options need to be of type ExtraReplyMessage
-    let options = {};
-    if (typeof message === 'string') {
-      text = TelegramBot.msgFromMarkdown(message);
-      options = { parse_mode: 'Markdown' };
-    } else {
-      const link = message.title.link;
-      let templateFound = false;
-
-      const templates = message.game.telegramIVTemplates;
-
-      // Test for IV template matches
-      for (const telegramIVtemplate of templates) {
-        const templateLink = telegramIVtemplate.testUrl(link);
-        if (templateLink) {
-          templateFound = true;
-          const titleText = `[${message.title.text}](${templateLink})`;
-
-          if (message.author?.text) {
-            const authorText = message.author.link
-              ? `[${message.author.text}](${message.author.link})`
-              : message.author.text;
-
-            text = `New **${message.game.label}** update - ${authorText}:\n\n${titleText}`;
-          } else {
-            text = `New **${message.game.label}** update:\n\n${titleText}`;
-          }
-        }
-        break;
-      }
-
-      // Check if an IV template matched
-      if (!templateFound) {
-        // Convert to normal text
-        text = TelegramBot.msgFromMarkdown(message.toMDString());
-      }
-
-      // 2048 is the maximum notification length
-      text = StrUtil.naturalLimit(text, 2048);
-
-      // Snakecase used by Telegram API
-      options = { parse_mode: 'Markdown' };
-      // TODO: Add link_preview_options
-    }
+    const document = TelegramBot.documentFrom(messageText);
+    const text = StrUtil.naturalLimit(renderTelegram(document), TELEGRAM_MESSAGE);
+    // Snakecase used by Telegram API
+    // TODO: Add link_preview_options
+    const options = { parse_mode: 'Markdown' } as const;
     // Send the message
     try {
       await this.bot.telegram.sendMessage(channel.id, text, options);
@@ -534,6 +497,30 @@ export default class TelegramBot extends BotClient {
       return false;
     }
     return true;
+  }
+
+  /** Turns anything a bot can be asked to send into one tree.
+   *
+   * A notification whose URL an Instant View template covers points its title
+   * at the template instead, and leaves the body out: Instant View renders the
+   * post itself, so repeating it here would only duplicate it.
+   */
+  private static documentFrom(message: BotMessage): RootNode {
+    if (typeof message === 'string') {
+      // A bare string is literal text, so it is sanitized rather than parsed.
+      return doc(paragraph(text(message)));
+    }
+    if (!(message instanceof Notification)) {
+      return message;
+    }
+
+    for (const template of message.game.telegramIVTemplates) {
+      const templateLink = template.testUrl(message.title.link);
+      if (templateLink) {
+        return message.toDocument({ titleUrl: templateLink, includeContent: false });
+      }
+    }
+    return message.toDocument();
   }
 
   /**
@@ -571,75 +558,5 @@ export default class TelegramBot extends BotClient {
       return false;
     }
     return true;
-  }
-
-  public static msgFromMarkdown(text: string): string {
-    if (!text) {
-      return '';
-    }
-    let markdown = text;
-
-    // Links
-    markdown = MDRegex.replaceLinkImage(markdown, (_unusedText, label, linkUrl, imageUrl) => {
-      let newLabel = label || 'Link';
-      // Remove nested formatting
-      newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
-      newLabel = MDRegex.replaceBold(newLabel, (__, boldText) => boldText);
-
-      if (imageUrl) {
-        return `[${newLabel}](${linkUrl}) ([image](${imageUrl}))`;
-      }
-
-      return `[${newLabel}](${linkUrl})`;
-    });
-
-    // Images
-    markdown = MDRegex.replaceImageLink(markdown, (_unusedText, label, imageUrl, linkUrl) => {
-      let newLabel = label || 'Image';
-      // Remove nested formatting
-      newLabel = MDRegex.replaceItalic(newLabel, (__, italicText) => italicText);
-      newLabel = MDRegex.replaceBold(newLabel, (__, boldText) => boldText);
-
-      if (linkUrl) {
-        return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
-      }
-
-      return `[${newLabel}](${imageUrl})`;
-    });
-
-    // Italic
-    markdown = MDRegex.replaceItalic(markdown, (_unusedText, italicText) => {
-      return `_${italicText}_`;
-    });
-
-    // Bold
-    markdown = MDRegex.replaceBold(markdown, (_unusedText, boldText) => {
-      return `*${boldText}*`;
-    });
-
-    // Lists
-    markdown = MDRegex.replaceList(markdown, (_unusedText, listElement) => {
-      return `- ${listElement}`;
-    });
-
-    // Blockquotes
-    markdown = MDRegex.replaceQuote(markdown, (_unusedText, quoteText) => {
-      return `"${quoteText}"`;
-    });
-
-    // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_unusedText, headerText) => {
-      return `\n\n*${headerText}*\n`;
-    });
-
-    // Separators
-    markdown = MDRegex.replaceSeparator(markdown, () => {
-      return `\n--\n`;
-    });
-
-    // Compress multiple linebreaks
-    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
-
-    return markdown;
   }
 }

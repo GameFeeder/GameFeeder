@@ -1,11 +1,13 @@
 import type {
   BlockNode,
+  ImageNode,
   InlineNode,
   ListItemNode,
   ListNode,
   QuoteNode,
   RootNode,
   TableNode,
+  VideoNode,
 } from '../ast.js';
 import { sanitizeTelegramMarkdown, sanitizeUrl } from '../escape.js';
 import { flatten, indentRest, joinBlocks, prefixLines, tidy, wrap } from './lines.js';
@@ -44,6 +46,19 @@ const DEFAULTS = {
  * Both constraints disappear under the `HTML` parse mode, which is why the
  * rendering decisions are kept here rather than spread across the bot.
  */
+
+/** The single image or video a node's children consist of, if that is all they are. */
+function soleMedia(children: InlineNode[]): ImageNode | VideoNode | undefined {
+  const meaningful = children.filter(
+    (child) => child.type !== 'break' && (child.type !== 'text' || child.value.trim() !== ''),
+  );
+  const [only] = meaningful;
+
+  return meaningful.length === 1 && (only.type === 'image' || only.type === 'video')
+    ? only
+    : undefined;
+}
+
 class Renderer {
   private readonly options: Required<TelegramRenderOptions>;
 
@@ -62,7 +77,7 @@ class Renderer {
   private renderBlock(block: BlockNode, level: number): string {
     switch (block.type) {
       case 'paragraph':
-        return this.renderInline(block.children, false);
+        return this.renderParagraph(block.children, false);
       case 'heading': {
         // Telegram has no headings, so one reads as a line of bold text.
         const text = flatten(this.renderInline(block.children, true));
@@ -167,6 +182,32 @@ class Renderer {
     return nodes.map((node) => this.renderInlineNode(node, plain)).join('');
   }
 
+  /** Renders a paragraph, giving media a line of its own.
+   *
+   * A post that opens with a banner and runs straight into its first sentence
+   * is common, and a link sitting flush against the prose reads badly.
+   */
+  private renderParagraph(nodes: InlineNode[], plain: boolean): string {
+    const segments: string[] = [];
+    let run = '';
+
+    for (const child of nodes) {
+      if (child.type === 'image' || child.type === 'video') {
+        if (run.trim() !== '') {
+          segments.push(run.trim());
+        }
+        run = '';
+        segments.push(this.renderInlineNode(child, plain));
+        continue;
+      }
+      run += this.renderInlineNode(child, plain);
+    }
+    if (run.trim() !== '') {
+      segments.push(run.trim());
+    }
+    return segments.filter((segment) => segment !== '').join('\n');
+  }
+
   private renderInlineNode(node: InlineNode, plain: boolean): string {
     switch (node.type) {
       case 'text':
@@ -196,13 +237,25 @@ class Renderer {
         const fallback = node.url.includes('youtu') ? 'YouTube Video' : 'Video';
         return this.renderTarget(node.url, this.renderInline(node.children, true), fallback, plain);
       }
-      case 'link':
+      case 'link': {
+        // A clickable banner, `[url=X][img]Y[/img][/url]`, is common in posts.
+        // Keep both what it shows and where it points, rather than losing one.
+        const media = soleMedia(node.children);
+        if (media && !plain) {
+          const shown = this.renderInlineNode(media, plain);
+          const target = sanitizeUrl(node.url);
+
+          if (shown !== '' && target !== '') {
+            return `${shown} ([${sanitizeTelegramMarkdown(this.options.linkLabel)}](${target}))`;
+          }
+        }
         return this.renderTarget(
           node.url,
           this.renderInline(node.children, true),
           this.options.linkLabel,
           plain,
         );
+      }
     }
   }
 

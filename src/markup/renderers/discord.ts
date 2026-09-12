@@ -2,12 +2,14 @@ import type {
   BlockNode,
   CodeNode,
   HeadingNode,
+  ImageNode,
   InlineNode,
   ListItemNode,
   ListNode,
   QuoteNode,
   RootNode,
   TableNode,
+  VideoNode,
 } from '../ast.js';
 import { escapeDiscord, escapeDiscordLineStart, sanitizeUrl } from '../escape.js';
 import { flatten, indentRest, joinBlocks, prefixLines, tidy, wrap } from './lines.js';
@@ -59,6 +61,18 @@ function fenceFor(value: string, minimum: number): string {
   return '`'.repeat(longest + 1);
 }
 
+/** The single image or video a node's children consist of, if that is all they are. */
+function soleMedia(children: InlineNode[]): ImageNode | VideoNode | undefined {
+  const meaningful = children.filter(
+    (child) => child.type !== 'break' && (child.type !== 'text' || child.value.trim() !== ''),
+  );
+  const [only] = meaningful;
+
+  return meaningful.length === 1 && (only.type === 'image' || only.type === 'video')
+    ? only
+    : undefined;
+}
+
 class Renderer {
   private readonly options: Required<DiscordRenderOptions>;
 
@@ -77,7 +91,7 @@ class Renderer {
   private renderBlock(block: BlockNode, level: number): string {
     switch (block.type) {
       case 'paragraph':
-        return this.renderLines(block.children, ROOT_CONTEXT);
+        return this.defuseLines(this.renderParagraph(block.children, ROOT_CONTEXT));
       case 'heading':
         return this.renderHeading(block);
       case 'list':
@@ -93,22 +107,53 @@ class Renderer {
     }
   }
 
-  /** Renders an inline run, defusing the markup Discord reads at a line start.
+  /** Defuses the markup Discord reads at the start of a line.
    *
    * A paragraph that happens to begin with `- ` or `# ` is prose, not a list or
    * a heading. The prefixes the renderer adds itself are applied afterwards, so
    * they are never caught by this.
    */
-  private renderLines(nodes: InlineNode[], context: Context): string {
-    return this.renderInline(nodes, context)
+  private defuseLines(rendered: string): string {
+    return rendered
       .split('\n')
       .map((line) => escapeDiscordLineStart(line))
       .join('\n');
   }
 
+  /** Renders an inline run as one line of a heading or a cell. */
+  private renderLines(nodes: InlineNode[], context: Context): string {
+    return this.defuseLines(this.renderInline(nodes, context));
+  }
+  /** Renders a paragraph, giving media a line of its own.
+   *
+   * A post that opens with a banner and runs straight into its first sentence
+   * is common, and a link sitting flush against the prose reads badly.
+   */
+  private renderParagraph(nodes: InlineNode[], context: Context): string {
+    const segments: string[] = [];
+    let run = '';
+
+    for (const child of nodes) {
+      if (child.type === 'image' || child.type === 'video') {
+        if (run.trim() !== '') {
+          segments.push(run.trim());
+        }
+        run = '';
+        segments.push(this.renderInlineNode(child, context));
+        continue;
+      }
+      run += this.renderInlineNode(child, context);
+    }
+    if (run.trim() !== '') {
+      segments.push(run.trim());
+    }
+    return segments.filter((segment) => segment !== '').join('\n');
+  }
+
   private renderHeading(block: HeadingNode): string {
     if (block.level <= MAX_NATIVE_HEADING) {
-      const text = flatten(this.renderLines(block.children, ROOT_CONTEXT));
+      // A heading already reads as bold, so bold inside one adds only markers.
+      const text = flatten(this.renderLines(block.children, { ...ROOT_CONTEXT, inBold: true }));
       return text === '' ? '' : `${'#'.repeat(block.level)} ${text}`;
     }
     // Discord has no heading this deep, so it becomes bold text of its own.
@@ -229,7 +274,12 @@ class Renderer {
       case 'spoiler':
         return wrap(this.renderInline(node.children, context), '||');
       case 'image':
-        return this.renderTarget(node.url, node.alt ?? '', this.options.imageLabel, context);
+        return this.renderTarget(
+          node.url,
+          escapeDiscord(node.alt ?? ''),
+          this.options.imageLabel,
+          context,
+        );
       case 'video': {
         const fallback = node.url.includes('youtu') ? 'YouTube Video' : 'Video';
         return this.renderTarget(
@@ -239,13 +289,28 @@ class Renderer {
           context,
         );
       }
-      case 'link':
+      case 'link': {
+        // A clickable banner, `[url=X][img]Y[/img][/url]`, is common in posts.
+        // Keep both what it shows and where it points, rather than losing one.
+        const media = soleMedia(node.children);
+        if (media && !context.inLink) {
+          const shown = this.renderInlineNode(media, context);
+          const target = sanitizeUrl(node.url);
+
+          if (shown !== '' && target !== '') {
+            const destination = this.options.masked
+              ? `[${escapeDiscord(this.options.linkLabel)}](${target})`
+              : target;
+            return `${shown} (${destination})`;
+          }
+        }
         return this.renderTarget(
           node.url,
           this.renderInline(node.children, { ...context, inLink: true }),
           this.options.linkLabel,
           context,
         );
+      }
     }
   }
 
@@ -270,6 +335,12 @@ class Renderer {
     // A link inside a link cannot render, so only its text survives.
     if (context.inLink) {
       return label;
+    }
+    // Discord refuses to mask a link whose text is the URL itself and prints
+    // the markup verbatim instead. Spelling the URL out twice is no better, so
+    // either way a bare URL is sent: Discord links that on its own.
+    if (label === url || label === escapeDiscord(url)) {
+      return url;
     }
     return this.options.masked ? `[${label}](${url})` : `${label} (${url})`;
   }

@@ -10,6 +10,9 @@ const LINK_FILTER = /^https?:\/\/steamcommunity\.com\/linkfilter\/\?url=(.*)$/;
 
 /** Expands Steam's placeholders and unwraps its link filter.
  *
+ * The parser applies this so that the tree carries URLs a renderer can use
+ * without knowing anything about Steam.
+ *
  * @param raw - The URL as it appears in the post.
  */
 export function resolveSteamUrl(raw: string): string {
@@ -38,34 +41,29 @@ export function resolveSteamUrl(raw: string): string {
   return url;
 }
 
-/** Makes a URL safe to put inside `](...)`.
+/** `https://store.steampowered.com/app/251570/7_Days_to_Die/` */
+const STEAM_APP_URL = /\/app\/\d+\/([^/?#]+)/;
+
+/** Derives a label for a tag that carries no text of its own.
  *
- * `MDRegex.link` ends the URL at the first `)`, so parentheses and whitespace
- * have to be percent-encoded or the link falls apart downstream.
+ * `[dynamiclink]` and a bare `[url=...][/url]` are both common in Steam posts.
+ * A store link becomes the app's name, anything else a readable form of the URL
+ * itself, which reads far better than a generic placeholder.
  *
  * @param url - The resolved URL.
+ * @returns The label, or an empty string if none could be derived.
  */
-export function encodeMarkdownUrl(url: string): string {
-  return url.replace(/[\s()]/g, (char) => {
-    switch (char) {
-      case '(':
-        return '%28';
-      case ')':
-        return '%29';
-      default:
-        return '%20';
-    }
-  });
-}
+export function labelFromUrl(url: string): string {
+  const app = STEAM_APP_URL.exec(url);
 
-/** Makes a string safe to use as a markdown link label.
- *
- * `MDRegex.link` ends the label at the first `]` and does not match across
- * lines. Brackets are replaced rather than backslash-escaped because Telegram
- * sends with the legacy `Markdown` parse mode, which renders `\[` literally.
- *
- * @param label - The rendered label text.
- */
-export function escapeMarkdownLabel(label: string): string {
-  return label.replace(/\s+/g, ' ').replace(/\[/g, '(').replace(/\]/g, ')').trim();
+  if (app) {
+    const name = decodeURIComponent(app[1]).replace(/_/g, ' ').trim();
+    if (name !== '') {
+      return name;
+    }
+  }
+  return url
+    .replace(/^[a-z]+:\/\//i, '')
+    .replace(/^www\./i, '')
+    .replace(/\/$/, '');
 }

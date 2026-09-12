@@ -1,7 +1,8 @@
 import Game from '../game.js';
+import type { RootNode } from '../markup/ast.js';
 import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
-import bbcodeToMarkdown from './bbcode/index.js';
+import parseBBCode from './bbcode/index.js';
 
 /** A news item for a Steam app. */
 export type SteamNewsItemResponse = {
@@ -58,7 +59,7 @@ export class SteamNewsItem {
   /** The name of the author of the news item. */
   public author: string;
   /** The contents of the news item. */
-  public contents: string;
+  public contents: RootNode;
   /** The label of the feed this item was posted to. */
   public feedLabel: string;
   /** The date of the news item (Unix time). */
@@ -79,7 +80,7 @@ export class SteamNewsItem {
     this.isExternalUrl = response.is_external_url;
     this.author = response.author;
     // Steam posts are written in its own BBCode flavor.
-    this.contents = bbcodeToMarkdown(response.contents);
+    this.contents = parseBBCode(response.contents);
     this.feedLabel = response.feedlabel;
     this.date = response.date;
     this.feedName = response.feedname;

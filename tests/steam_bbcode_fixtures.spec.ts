@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import DiscordBot from 'src/bots/discord.js';
-import TelegramBot from 'src/bots/telegram.js';
-import bbcodeToMarkdown from 'src/steam/bbcode/index.js';
+import renderDiscord from 'src/markup/renderers/discord.js';
+import renderTelegram from 'src/markup/renderers/telegram.js';
+import parseBBCode from 'src/steam/bbcode/index.js';
 import type { SteamNewsItemResponse } from 'src/steam/steam_app_news.js';
 import { SteamNewsItem } from 'src/steam/steam_app_news.js';
 
@@ -24,13 +24,37 @@ function loadPost(name: string): SteamNewsItemResponse {
   ) as SteamNewsItemResponse;
 }
 
-function loadExpected(name: string): string {
-  return fs.readFileSync(path.join(FIXTURE_DIR, `${name}.md`), 'utf8').replace(/\n$/, '');
+function loadExpected(name: string, target: string): string {
+  return fs.readFileSync(path.join(FIXTURE_DIR, `${name}.${target}.md`), 'utf8').replace(/\n$/, '');
 }
 
-/** Strips the parts of the markdown where brackets are legitimate. */
+/** Strips the parts of the output where brackets are legitimate. */
 function withoutLinksAndCode(markdown: string): string {
   return markdown.replace(/```[\s\S]*?```/g, '').replace(/\[([^\]]*)\]\(/g, '(');
+}
+
+/** Whether every emphasis marker Discord reads has a partner. */
+function hasBalancedDiscordMarkers(rendered: string): boolean {
+  const bare = rendered.replace(/```[\s\S]*?```/g, '').replace(/\\./g, '');
+
+  return (['\\*\\*', '__', '~~', '\\|\\|'] as const).every(
+    (marker) => (bare.match(new RegExp(marker, 'g')) ?? []).length % 2 === 0,
+  );
+}
+
+/** Whether every entity marker Telegram reads has a partner.
+ *
+ * An unpaired one is a hard API error in the legacy parse mode, not merely a
+ * rendering glitch, so this is the invariant that keeps messages deliverable.
+ */
+function hasBalancedTelegramMarkers(rendered: string): boolean {
+  const outsideCode = rendered.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
+  const outsideLinks = outsideCode.replace(/\[[^\]]*\]\([^)]*\)/g, '');
+
+  return (
+    (outsideLinks.match(/\*/g) ?? []).length % 2 === 0 &&
+    (outsideLinks.match(/_/g) ?? []).length % 2 === 0
+  );
 }
 
 describe('Steam BBCode against real posts', () => {
@@ -40,73 +64,92 @@ describe('Steam BBCode against real posts', () => {
 
   describe.each(FIXTURES)('%s', (name) => {
     const post = loadPost(name);
-    const markdown = bbcodeToMarkdown(post.contents);
+    const tree = parseBBCode(post.contents);
+    const outputs = {
+      discord: renderDiscord(tree, { masked: true }),
+      telegram: renderTelegram(tree),
+    };
 
-    test('should match the recorded markdown', () => {
-      expect(markdown).toEqual(loadExpected(name));
+    test('should be the tree the news item exposes as its contents', () => {
+      expect(new SteamNewsItem(post).contents).toEqual(tree);
     });
 
-    test('should not leave any BBCode behind', () => {
-      expect(withoutLinksAndCode(markdown)).not.toMatch(BBCODE_TAG);
+    describe.each(['discord', 'telegram'] as const)('%s', (target) => {
+      const rendered = outputs[target];
+
+      test('should match the recorded output', () => {
+        expect(rendered).toEqual(loadExpected(name, target));
+      });
+
+      test('should not leave any BBCode behind', () => {
+        expect(withoutLinksAndCode(rendered)).not.toMatch(BBCODE_TAG);
+      });
+
+      test('should not leave the image placeholders unresolved', () => {
+        expect(rendered).not.toMatch(/\{STEAM_CLAN_(?:LOC_)?IMAGE\}/);
+      });
+
+      test('should be trimmed and free of blank line runs', () => {
+        expect(rendered).toBe(rendered.trim());
+        expect(rendered).not.toMatch(/\n{3,}/);
+        expect(rendered).not.toMatch(/[ \t]\n/);
+      });
+
+      test('should put no raw whitespace inside a URL', () => {
+        for (const [, url] of rendered.matchAll(/\]\(([^)]*)\)/g)) {
+          expect(url).not.toMatch(/\s/);
+        }
+      });
+
+      test('should keep something to read', () => {
+        expect(rendered.length).toBeGreaterThan(100);
+      });
     });
 
-    test('should not leave the image placeholders unresolved', () => {
-      expect(markdown).not.toMatch(/\{STEAM_CLAN_(?:LOC_)?IMAGE\}/);
+    test('should leave the Discord markers balanced', () => {
+      expect(hasBalancedDiscordMarkers(outputs.discord)).toBe(true);
     });
 
-    test('should be trimmed and free of blank line runs', () => {
-      expect(markdown).toBe(markdown.trim());
-      expect(markdown).not.toMatch(/\n{3,}/);
-      expect(markdown).not.toMatch(/[ \t]\n/);
+    test('should leave the Telegram markers balanced', () => {
+      expect(hasBalancedTelegramMarkers(outputs.telegram)).toBe(true);
     });
 
-    test('should be what the news item exposes as its contents', () => {
-      expect(new SteamNewsItem(post).contents).toEqual(markdown);
-    });
-
-    test('should survive transcoding to Discord and Telegram', () => {
-      // The renderer targets the dialect `MDRegex` understands, so nothing
-      // should be left in the generic syntax after either bot converts it.
-      const discord = DiscordBot.msgFromMarkdown(markdown, true);
-      const telegram = TelegramBot.msgFromMarkdown(markdown);
-
-      expect(discord).toContain('](');
-      expect(telegram).toContain('](');
-      expect(telegram).not.toContain('**');
-      expect(discord).not.toMatch(/^#{1,6} /m);
-      expect(telegram).not.toMatch(/^#{1,6} /m);
+    test('should render no heading syntax for Telegram, which has none', () => {
+      expect(outputs.telegram).not.toMatch(/^#{1,6} /m);
     });
   });
 
   describe('the reported Dota 2 post', () => {
-    const markdown = bbcodeToMarkdown(loadPost('dota_ti_champions').contents);
+    const rendered = renderDiscord(parseBBCode(loadPost('dota_ti_champions').contents), {
+      masked: true,
+    });
 
     test('should no longer start with a raw paragraph tag', () => {
-      expect(markdown).not.toContain('[p]');
-      expect(markdown.startsWith('![Image](')).toBe(true);
+      expect(rendered).not.toContain('[p]');
+      expect(rendered.startsWith('[Image](')).toBe(true);
     });
 
     test('should resolve the localised clan image', () => {
-      expect(markdown).toContain(
-        '![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)',
+      expect(rendered).toContain(
+        '[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)',
       );
     });
 
     test('should keep quotes out of a link target', () => {
-      expect(markdown).toContain('[Dota 2 YouTube channel](https://www.youtube.com/user/dota2)');
+      expect(rendered).toContain('[Dota 2 YouTube channel](https://www.youtube.com/user/dota2)');
     });
 
     test('should render the heading', () => {
-      expect(markdown).toContain('### Until Next Time');
+      expect(rendered).toContain('### Until Next Time');
     });
 
     test('should merge the champion roster into one list', () => {
-      expect(markdown).toContain(
+      expect(rendered).toContain(
         [
           '- Illia "Yatoro" Muliarchuk',
           '- Denis "Larl" Sigitov',
           '- Magomed "Collapse" Khalilov',
-          '- Alexey "not_me" Kosmynin',
+          '- Alexey "not\\_me" Kosmynin',
           '- Alexander "rue" Filin',
         ].join('\n'),
       );

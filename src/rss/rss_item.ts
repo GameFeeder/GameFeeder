@@ -1,3 +1,4 @@
+import type { RootNode } from '../markup/ast.js';
 import type Comparable from '../util/comparable.js';
 
 export default class RSSItem implements Comparable<RSSItem> {
@@ -14,7 +15,7 @@ export default class RSSItem implements Comparable<RSSItem> {
     public title: string,
     public author: string,
     public link: string,
-    public content: string,
+    public content: RootNode,
     public timestamp: Date,
     public feed: { name?: string; source?: string; link?: string },
   ) {}

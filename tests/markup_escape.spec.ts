@@ -7,8 +7,15 @@ import {
 
 describe('Markup escaping', () => {
   describe('escapeDiscord', () => {
-    test.each(['*', '_', '~', '`', '|', '[', ']', '(', ')', '\\'])('should escape %s', (char) => {
+    test.each(['*', '_', '~', '`', '|', '[', ']', '\\'])('should escape %s', (char) => {
       expect(escapeDiscord(char)).toBe(`\\${char}`);
+    });
+
+    test.each([
+      '(',
+      ')',
+    ])('should leave %s alone, as it only means anything after a bracket', (char) => {
+      expect(escapeDiscord(`a${char}b`)).toBe(`a${char}b`);
     });
 
     test.each([
@@ -37,7 +44,8 @@ describe('Markup escaping', () => {
     });
 
     test('should stop text from turning into a link', () => {
-      expect(escapeDiscord('[YOUR NAME](here)')).toBe('\\[YOUR NAME\\]\\(here\\)');
+      // Escaping the brackets is enough: without them the parentheses are prose.
+      expect(escapeDiscord('[YOUR NAME](here)')).toBe('\\[YOUR NAME\\](here)');
     });
 
     test('should escape the backslash before anything else', () => {

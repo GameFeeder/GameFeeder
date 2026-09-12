@@ -162,7 +162,9 @@ graph TD
 
 ### 8. **Processing Layer** (`processors/`)
 - **PreProcessor**: Preprocesses raw data
-- **SteamProcessor**: Normalizes the HTML of the Steam Community RSS feeds
+- **SteamProcessor**: Points the Steam Community RSS feeds' links at where they
+  actually go. Everything else about that markup is understood directly by the
+  HTML parser in section 8a.
 - **Updater**: Main update loop that fetches new data
 
 The Steam Web API serves its posts in Steam's own BBCode flavor rather than
@@ -183,6 +185,11 @@ string.
 - **normalize**: The cleanup every parser runs before a renderer sees its tree
 - **escape**: Making arbitrary source text safe for each target's markup
 - **limits**: The character limits each messenger imposes
+- **parsers/html**: HTML (the RSS feeds) → tree, driven by a tag table
+- **renderers/discord**, **renderers/telegram**, **renderers/plain**: tree →
+  each messenger's own flavor
+
+`steam/bbcode/` is the third parser, for the BBCode the Steam Web API serves.
 
 The model covers the union of what Discord and Telegram can express, so a
 renderer never has to guess what a source meant — only how to say it, or that
@@ -198,12 +205,13 @@ its target cannot.
 ### 10. **Utility Layer** (`util/`)
 - **Logger**: Winston-based logging
 - **RollbarClient**: Error tracking with Rollbar
-- **Utilities**: String, array, regex, constants helpers
+- **Utilities**: String, array, constants helpers
 
 ### 11. **External Dependencies**
 - **discord.js**: Discord client
 - **telegraf**: Telegram bot framework
 - **rss-parser**: RSS parsing
+- **htmlparser2**: HTML parsing, for the markup layer
 - **steam-web-api**: Steam API client
 - **pubsub-js**: Pub/Sub messaging
 - **winston**: Logging framework
@@ -224,11 +232,13 @@ Updater (main loop)
     ↓
   steam/bbcode (BBCode → markup tree)
     ↓
-  NotificationBuilder (format message)
+  NotificationBuilder (assemble the notification)
     ↓
-  Notification (ready to send)
+  Notification (carries the tree; toDocument() adds the envelope)
     ↓
   BotClient (DiscordBot or TelegramBot)
+    ↓
+  markup/renderers (tree → that messenger's flavor)
     ↓
   Send to Channel/User
 ```

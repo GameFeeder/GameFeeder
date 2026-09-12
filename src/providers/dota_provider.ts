@@ -3,6 +3,8 @@ import fetch from 'node-fetch';
 import Game from '../game.js';
 import Logger from '../logger.js';
 import type { ProviderData } from '../managers/data_manager.js';
+import type { RootNode } from '../markup/ast.js';
+import { doc, list, listItem, paragraph, text } from '../markup/build.js';
 import Notification from '../notifications/notification.js';
 import NotificationBuilder from '../notifications/notification_builder.js';
 import Version from '../notifications/version.js';
@@ -82,25 +84,39 @@ export default class DotaProvider extends Provider {
     }
   }
 
-  async getPatchDetails(version: string): Promise<string> {
+  /** Summarizes what a patch changed.
+   *
+   * The datafeed gives no prose to parse, only counts, so the summary is built
+   * as a tree directly rather than written out as markup and read back.
+   */
+  async getPatchDetails(version: string): Promise<RootNode> {
     try {
       const response = await fetch(
         `https://www.dota2.com/datafeed/patchnotes?version=${version}&language=english`,
       );
       const body = await response.text();
       const patchDetails = JSON.parse(body);
-      const genericChanges = patchDetails.generic?.length ?? 0;
-      const heroChanges = patchDetails.heroes?.length ?? 0;
-      const itemChanges = patchDetails.items?.length ?? 0;
-      const neutralItemChanges = patchDetails.neutral_items?.length ?? 0;
-      return `${genericChanges} generic changes, ${heroChanges} hero changes, ${itemChanges} item changes, ${neutralItemChanges} neutral item changes`;
+      const counts: [number, string][] = [
+        [patchDetails.generic?.length ?? 0, 'generic'],
+        [patchDetails.heroes?.length ?? 0, 'hero'],
+        [patchDetails.items?.length ?? 0, 'item'],
+        [patchDetails.neutral_items?.length ?? 0, 'neutral item'],
+      ];
+
+      return doc(
+        list(
+          ...counts.map(([count, label]) =>
+            listItem(paragraph(text(`${count} ${label} ${count === 1 ? 'change' : 'changes'}`))),
+          ),
+        ),
+      );
     } catch (error) {
       rollbar_client.reportCaughtError(
         `Failed to get Dota patch details for version ${version}`,
         error,
         this.logger,
       );
-      return '';
+      return doc();
     }
   }
 }

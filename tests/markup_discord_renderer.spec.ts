@@ -135,6 +135,36 @@ describe('Discord renderer', () => {
       expect(line(link('javascript:alert(1)', 'Click'))).toBe('Click');
     });
 
+    test('should send a bare URL when the label is the URL itself', () => {
+      // Discord refuses to mask such a link and prints the markup verbatim.
+      const url = 'https://store.playstation.com/concept/10018186';
+
+      expect(renderDiscord(doc(paragraph(link(url, url))), { masked: true })).toBe(url);
+      expect(renderDiscord(doc(paragraph(link(url))), { masked: true })).toBe(url);
+    });
+
+    test('should send a bare URL even when its characters need escaping', () => {
+      const url = 'https://x.com/a_b';
+
+      expect(renderDiscord(doc(paragraph(link(url, url))), { masked: true })).toBe(url);
+    });
+
+    test('should not spell an unmasked URL out twice', () => {
+      const url = 'https://x.com/a';
+
+      expect(line(link(url, url))).toBe(url);
+    });
+
+    test('should still mask a link that has a label of its own', () => {
+      expect(renderDiscord(doc(paragraph(link('https://x.com', 'Shop'))), { masked: true })).toBe(
+        '[Shop](https://x.com)',
+      );
+    });
+
+    test('should escape the alt text of an image', () => {
+      expect(line(image('https://x.com/a.png', '2 * 3'))).toBe('2 \\* 3 (https://x.com/a.png)');
+    });
+
     test('should use the alt text of an image as its label', () => {
       expect(line(image('https://example.com/a.png', 'Cover'))).toBe(
         'Cover (https://example.com/a.png)',

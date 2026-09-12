@@ -1,4 +1,4 @@
-![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3703047/bab4343d906943ef2117ae553347d8f8991ebca3.png)
 Congratulations to Team Spirit, Grand Champions at The International 2026. After enduring a challenging year, Team Spirit regained their ultimate form just in time to take a five-game Grand Finals slugfest and claim the Aegis of Champions in Shanghai.
 
 Spirit's Group Stage started strong, with 2-0 victories over both Xtreme Gaming and Aurora Gaming. They followed with 2-1 win over Team Liquid that put Spirit just one series win away from qualifying for the main stage. They wouldn't get it. Instead, they served as a stepping stone. First to Team Vision, who dropped Spirit in just two games to secure their own invite to the arena. Next, Nigma Galaxy followed suit, handing Spirit another 0-2 loss to snatch a spot on the main stage and force Spirit into elimination play.
@@ -13,7 +13,7 @@ Spirit flushed Liquid out of the tournament to begin an undefeated run through t
 
 Game one was Team Spirit all the way. They looked to be cruising to victory in game two as well, but Vision had other plans, clawing back to even the series at one game apiece. It seemed that Vision might steal the momentum by snatching game three, but Spirit held firm to retake the series lead 2-1, just one win away from the Aegis. Once again, Vision would deny them. Their steady play in game four left no room for doubt -- this series was bound for a winner-take-all game five. And it didn't disappoint.
 
-After an hour-long showdown that was still anyone's game until the very end, Team Spirit finally overcame the team that had tormented them throughout the tournament, claiming the Aegis of Champions and crowning themselves the very best Dota team in the world. Three-time winners Yatoro and Collapse, and two-time winner Larl now welcome their teammates not_me and rue into an immortal pantheon.
+After an hour-long showdown that was still anyone's game until the very end, Team Spirit finally overcame the team that had tormented them throughout the tournament, claiming the Aegis of Champions and crowning themselves the very best Dota team in the world. Three-time winners Yatoro and Collapse, and two-time winner Larl now welcome their teammates not\_me and rue into an immortal pantheon.
 
 As bearers of the ultimate symbol of victory, these names shall forever be inscribed upon the Aegis of Champions:
 
@@ -22,10 +22,10 @@ As bearers of the ultimate symbol of victory, these names shall forever be inscr
 - Illia "Yatoro" Muliarchuk
 - Denis "Larl" Sigitov
 - Magomed "Collapse" Khalilov
-- Alexey "not_me" Kosmynin
+- Alexey "not\_me" Kosmynin
 - Alexander "rue" Filin
 
-![Image](https://live.staticflickr.com/65535/55481652342_4378ab4bed_6k.jpg)
+[Image](https://live.staticflickr.com/65535/55481652342_4378ab4bed_6k.jpg)
 
 ### Until Next Time
 

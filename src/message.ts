@@ -1,6 +1,6 @@
+import type { BotMessage } from './bots/bot.js';
 import BotClient from './bots/bot.js';
 import Channel from './channel.js';
-import Notification from './notifications/notification.js';
 import User from './user.js';
 
 /** A message sent to one of the bots. */
@@ -31,9 +31,12 @@ export default class Message {
 
   /** Replies to this message.
    *
+   * A plain string is literal text and is escaped. Use `markup/build.ts` to
+   * reply with something formatted.
+   *
    * @param message - The message to send.
    */
-  public reply(message: string | Notification): Promise<boolean> {
+  public reply(message: BotMessage): Promise<boolean> {
     return this.getBot().sendMessage(this.channel, message);
   }
 }

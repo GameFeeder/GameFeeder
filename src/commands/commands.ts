@@ -4,6 +4,19 @@ import getBots from '../bots/bots.js';
 import Channel from '../channel.js';
 import Game from '../game.js';
 import ProjectManager from '../managers/project_manager.js';
+import type { BlockNode, InlineCodeNode, InlineNode, ListItemNode } from '../markup/ast.js';
+import {
+  bold,
+  code,
+  doc,
+  inlineCode,
+  italic,
+  link,
+  list,
+  listItem,
+  paragraph,
+  text,
+} from '../markup/build.js';
 import Notification from '../notifications/notification.js';
 import NotificationElement from '../notifications/notification_element.js';
 import Updater from '../updater.js';
@@ -18,18 +31,30 @@ import NoLabelAction from './no_label_action.js';
 import SimpleAction from './simple_action.js';
 import TwoPartCommand from './two_part_command.js';
 
+/** The label a command is invoked by in a channel, rendered as inline code.
+ *
+ * `tryFindCmdLabel` finds nothing for a command the channel cannot use. The
+ * command's own name is a better thing to show a reader than the word
+ * `undefined`, which is what the template strings this replaces used to print.
+ *
+ * @param command - The command to label.
+ * @param channel - The channel the label is for.
+ */
+function cmdLabel(command: Command, channel: Channel): InlineCodeNode {
+  return inlineCode(commands.tryFindCmdLabel(command, channel) ?? command.name);
+}
+
 /** Help command, used to display a list of all available commands. */
 const helpCmd = new SimpleAction(
   'help',
   'Display a list of all available commands.',
   async (message) => {
-    const helpMD = `You can use the following commands:\n${commands.channelHelp(
-      message.channel,
-      '- ',
-      await message.user.getRole(message.channel),
-    )}`;
+    const role = await message.user.getRole(message.channel);
+    const entries = Command.filterByRole(commands.commands, role).map((cmd) =>
+      renderCmdHelpEntry(cmd, message.channel, message.channel.prefix),
+    );
 
-    await message.reply(helpMD);
+    await message.reply(doc(paragraph('You can use the following commands:'), list(...entries)));
   },
 );
 
@@ -39,12 +64,15 @@ const startCmd = new SimpleAction('start', 'Get started with the GameFeeder.', a
   const gitLink = ProjectManager.getURL();
   const version = ProjectManager.getVersionNumber();
   await message.reply(
-    `Welcome to the **${name}** (v${version})!\n` +
-      `Use \`${commands.tryFindCmdLabel(
-        helpCmd,
-        message.channel,
-      )}\` to display all available commands.\n` +
-      `View the project on [GitHub](${gitLink}) to learn more or to report an issue!`,
+    doc(
+      paragraph('Welcome to the ', bold(name), ` (v${version})!`),
+      paragraph('Use ', cmdLabel(helpCmd, message.channel), ' to display all available commands.'),
+      paragraph(
+        'View the project on ',
+        link(gitLink, 'GitHub'),
+        ' to learn more or to report an issue!',
+      ),
+    ),
   );
 });
 
@@ -58,7 +86,14 @@ const aboutCmd = new NoLabelAction(
     const gitLink = ProjectManager.getURL();
     const version = ProjectManager.getVersionNumber();
     await message.reply(
-      `**${name}** (v${version})\nA notification bot for several games. Learn more on [GitHub](${gitLink}).`,
+      doc(
+        paragraph(bold(name), ` (v${version})`),
+        paragraph(
+          'A notification bot for several games. Learn more on ',
+          link(gitLink, 'GitHub'),
+          '.',
+        ),
+      ),
     );
   },
 );
@@ -236,34 +271,44 @@ const settingsCmd = new NoLabelAction(
   /^\s*(settings)|(options)|(config)\s*$/,
   async (message) => {
     const channel = message.channel;
-    const gameStr =
-      channel.gameSubs && channel.gameSubs.length > 0
-        ? `> You are currently subscribed to the following games:\n` +
-          `${channel.gameSubs.map((game) => `- **${game.label}**`).join('\n')}`
-        : '> You are currently not subscribed to any games.';
+    const blocks: BlockNode[] = [
+      paragraph(
+        'You can use ',
+        cmdLabel(subCmd, message.channel),
+        ' and ',
+        cmdLabel(unsubCmd, message.channel),
+        ' to change the games you are subscribed to.',
+      ),
+    ];
 
-    await message.reply(
-      `You can use \`${commands.tryFindCmdLabel(subCmd, message.channel)}\` and ` +
-        `\`${commands.tryFindCmdLabel(
-          unsubCmd,
-          message.channel,
-        )}\` to change the games you are subscribed to.\n` +
-        gameStr,
-    );
+    if (channel.gameSubs && channel.gameSubs.length > 0) {
+      blocks.push(paragraph('You are currently subscribed to the following games:'));
+      blocks.push(
+        ...[list(...channel.gameSubs.map((game) => listItem(paragraph(bold(game.label)))))],
+      );
+    } else {
+      blocks.push(paragraph('You are currently not subscribed to any games.'));
+    }
+
+    await message.reply(doc(...blocks));
   },
 );
 
 /** Games command, used to display a list of all games. */
 const gamesCmd = new SimpleAction('games', 'Display all available games.', async (message) => {
   const gamesList = Game.getGames()
-    .map((game) => `- ${game.label}`)
+    .map((game) => game.label)
     .sort((a, b) => {
       // Ignore capitalization for sorting
       return a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase());
     });
-  const gamesMD = `Available games:\n${gamesList.join('\n')}`;
 
-  await message.reply(gamesMD);
+  await message.reply(
+    doc(
+      paragraph('Available games:'),
+      list(...gamesList.map((label) => listItem(paragraph(label)))),
+    ),
+  );
 });
 
 /**  Notify All command, used to manually send a notification to all subscribers. */
@@ -283,13 +328,15 @@ const notifyAllCmd = new TwoPartCommand(
     // Check if the user has provided a message
     if (!msg) {
       await message.reply(
-        `You need to provide a message to send to everyone.\n` +
-          `Try \`${commands.tryFindCmdLabel(notifyAllCmd, message.channel)}\`.`,
+        doc(
+          paragraph('You need to provide a message to send to everyone.'),
+          paragraph('Try ', cmdLabel(notifyAllCmd, message.channel), '.'),
+        ),
       );
       return;
     }
 
-    await message.reply(`Notifying all subs with:\n"${msg}"`);
+    await message.reply(doc(paragraph('Notifying all subs with:'), paragraph(`"${msg}"`)));
 
     // Send the provided message to all subs
     PubSub.publish(constants.EVERYONE_TOPIC, msg);
@@ -324,16 +371,20 @@ const notifyGameSubsCmd = new TwoPartCommand(
     // Check if the user has provided a message
     if (!msg) {
       await message.reply(
-        `You need to provide a message to send to everyone.\n` +
-          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+        doc(
+          paragraph('You need to provide a message to send to everyone.'),
+          paragraph('Try ', cmdLabel(notifyGameSubsCmd, message.channel), '.'),
+        ),
       );
       return;
     }
     // Check if the user has provided a game
     if (!alias) {
       await message.reply(
-        `You need to provide a game to notify the subs of.\n` +
-          `Try \`${commands.tryFindCmdLabel(notifyGameSubsCmd, message.channel)}\`.`,
+        doc(
+          paragraph('You need to provide a game to notify the subs of.'),
+          paragraph('Try ', cmdLabel(notifyGameSubsCmd, message.channel), '.'),
+        ),
       );
       return;
     }
@@ -355,8 +406,19 @@ const notifyGameSubsCmd = new TwoPartCommand(
     allGames
       .filter((game) => game.hasAlias(alias))
       .forEach(async (game) => {
-        await message.reply(`Notifying the subs of **${game.label}** with:\n"${msg}"`);
-        const notification = new Notification(new Date(), game, new NotificationElement(''), msg);
+        await message.reply(
+          doc(
+            paragraph('Notifying the subs of ', bold(game.label), ' with:'),
+            paragraph(`"${msg}"`),
+          ),
+        );
+        const notification = new Notification(
+          new Date(),
+          game,
+          new NotificationElement(''),
+          // What the owner typed is literal text, not markup.
+          doc(paragraph(msg)),
+        );
         PubSub.publish(Updater.UPDATER_TOPIC, notification);
       });
   },
@@ -392,7 +454,7 @@ const flipCmd = new SimpleAction(
     }
 
     // Notify the user
-    await message.reply(`Flipping a coin: **${result}**`);
+    await message.reply(doc(paragraph('Flipping a coin: ', bold(result))));
   },
   UserRole.USER,
 );
@@ -424,7 +486,7 @@ const rollCmd = new TwoPartCommand(
     const modifier = modifierStr ? parseInt(modifierStr, 10) : 0;
 
     let sum = 0;
-    const resultStrs = [];
+    const dice: InlineNode[] = [];
 
     for (let i = 0; i < diceCount; i++) {
       // Throw a die
@@ -433,21 +495,23 @@ const rollCmd = new TwoPartCommand(
       sum += dieResult;
       // Mark critical failure / success
       const isCrit = dieResult === 1 || dieResult === diceType;
-      // Generate str
-      const dieStr = isCrit ? `_${dieResult}_` : `${dieResult}`;
 
-      resultStrs.push(dieStr);
+      if (i > 0) {
+        dice.push(text(' + '));
+      }
+      dice.push(isCrit ? italic(`${dieResult}`) : text(`${dieResult}`));
     }
 
-    let resultStr = diceCount === 1 ? `${sum}` : `${resultStrs.join(' + ')} = **${sum}**`;
+    const result: InlineNode[] =
+      diceCount === 1 ? [text(`${sum}`)] : [...dice, text(' = '), bold(`${sum}`)];
 
-    let text = `Rolling ${diceCount} d${diceType}`;
+    const heading: InlineNode[] = [text(`Rolling ${diceCount} d${diceType}`)];
 
     // Add modifier
     if (modifier !== 0) {
-      text += ` with a modifier of ${modifier}`;
+      heading.push(text(` with a modifier of ${modifier}`));
       sum += modifier;
-      resultStr += `${modifierStr} = **${sum}**`;
+      result.push(text(`${modifierStr} = `), bold(`${sum}`));
     }
 
     // Mark critical failure / success
@@ -455,13 +519,13 @@ const rollCmd = new TwoPartCommand(
     const isCriticalSuccess = diceCount === 1 && sum === diceType;
 
     if (isCriticalFailure) {
-      resultStr += ' _(critical failure)_';
+      result.push(text(' '), italic('(critical failure)'));
     } else if (isCriticalSuccess) {
-      resultStr += ' _(critical success)_';
+      result.push(text(' '), italic('(critical success)'));
     }
 
     // Notify user
-    await message.reply(`${text}:\n${resultStr}`);
+    await message.reply(doc(paragraph(...heading, text(':')), paragraph(...result)));
   },
   // Default action
   async (message) => {
@@ -492,7 +556,7 @@ const statsCmd = new TwoPartCommand(
 
     const game = Game.getGamesByAlias(alias)[0];
 
-    const botStatStrings: string[] = [];
+    const botStats: ListItemNode[] = [];
 
     let totalUserCount = 0;
     let totalChannelCount = 0;
@@ -511,8 +575,12 @@ const statsCmd = new TwoPartCommand(
 
       const userString = userCount > 1 ? 'subscribers' : 'subscriber';
       const channelString = channelCount > 1 ? 'servers' : 'server';
-      botStatStrings.push(
-        `     ${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+      botStats.push(
+        listItem(
+          paragraph(
+            `${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+          ),
+        ),
       );
     }
 
@@ -523,17 +591,25 @@ const statsCmd = new TwoPartCommand(
     const name = ProjectManager.getName();
     const version = ProjectManager.getVersionNumber();
 
-    const statString =
-      `**${name}** (v${version}) statistics for **${game.label}**:\n` +
-      `- **Subscribers**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
-      botStatStrings.join('\n');
-
-    await message.reply(statString);
+    await message.reply(
+      doc(
+        paragraph(bold(name), ` (v${version}) statistics for `, bold(game.label), ':'),
+        list(
+          listItem(
+            paragraph(
+              bold('Subscribers'),
+              `: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:`,
+            ),
+            list(...botStats),
+          ),
+        ),
+      ),
+    );
   },
   async (message) => {
     if (message.isEmpty()) {
       // No game specified, display general stats
-      const botStatStrings: string[] = [];
+      const botStats: ListItemNode[] = [];
 
       let totalUserCount = 0;
       let totalChannelCount = 0;
@@ -552,8 +628,12 @@ const statsCmd = new TwoPartCommand(
 
         const userString = userCount > 1 ? 'users' : 'user';
         const channelString = channelCount > 1 ? 'servers' : 'server';
-        botStatStrings.push(
-          `     ${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+        botStats.push(
+          listItem(
+            paragraph(
+              `${myBot.label}: ${userCount} ${userString} in ${channelCount} ${channelString}.`,
+            ),
+          ),
         );
       }
 
@@ -571,14 +651,22 @@ const statsCmd = new TwoPartCommand(
         ', ',
       );
 
-      const statString =
-        `**${name}** (v${version}) statistics:\n` +
-        `- **Games**: ${gameCount}\n` +
-        `- **Clients**: ${clientCount} (${clients})\n` +
-        `- **Users**: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:\n` +
-        botStatStrings.join('\n');
-
-      await message.reply(statString);
+      await message.reply(
+        doc(
+          paragraph(bold(name), ` (v${version}) statistics:`),
+          list(
+            listItem(paragraph(bold('Games'), `: ${gameCount}`)),
+            listItem(paragraph(bold('Clients'), `: ${clientCount} (${clients})`)),
+            listItem(
+              paragraph(
+                bold('Users'),
+                `: ${totalUserCount} ${totalUserStr} in ${totalChannelCount} ${totalChannelStr}:`,
+              ),
+              list(...botStats),
+            ),
+          ),
+        ),
+      );
     } else {
       await message.reply(`'${message.content}' is an invalid game alias.`);
     }
@@ -608,10 +696,8 @@ const telegramCmdsCmd = new SimpleAction(
       return `${cmd.name} - ${cmd.description}`;
     });
 
-    // Block code format
-    const telegramCmdStr = `\`\`\`\n${cmdEntries.join('\n')}\n\`\`\``;
-
-    await message.reply(telegramCmdStr);
+    // Block code format, so the list can be copied verbatim to BotFather.
+    await message.reply(doc(code(cmdEntries.join('\n'))));
   },
   UserRole.OWNER,
 );
@@ -630,12 +716,19 @@ const debugCmd = new SimpleAction(
     const botTag = bot.getUserTag();
     const time = Date.now() - message.timestamp.valueOf();
 
-    const debugStr =
-      `**User info:**\n- ID: ${userID}\n- Role: ${userRole}\n` +
-      `**Channel info:**\n- ID: ${channelID}\n- Server members: ${serverMembers}\n` +
-      `**Bot info:**\n- Tag: ${botTag}\n- Delay: ${time} ms`;
-
-    await message.reply(debugStr);
+    await message.reply(
+      doc(
+        paragraph(bold('User info:')),
+        list(listItem(paragraph(`ID: ${userID}`)), listItem(paragraph(`Role: ${userRole}`))),
+        paragraph(bold('Channel info:')),
+        list(
+          listItem(paragraph(`ID: ${channelID}`)),
+          listItem(paragraph(`Server members: ${serverMembers}`)),
+        ),
+        paragraph(bold('Bot info:')),
+        list(listItem(paragraph(`Tag: ${botTag}`)), listItem(paragraph(`Delay: ${time} ms`))),
+      ),
+    );
   },
 );
 
@@ -754,22 +847,50 @@ const labelCmd = new TwoPartCommand(
   UserRole.OWNER,
 );
 
-/** Renders a single command's help line. Discord's slash command names are kebab-case
- * (e.g. 'notifyGameSubs' is registered as 'notify-game-subs'), unlike the camelCase
- * internal names used everywhere else (including Telegram's BotFather registration), so
- * the leading name is rewritten for Discord channels to keep the displayed syntax
- * actually typeable there.
+/** The syntax of a command, exactly as a user has to type it.
  *
- * @param cmd - The command to render the help line for.
- * @param channel - The channel to render the help line for.
+ * Discord's slash command names are kebab-case (e.g. 'notifyGameSubs' is
+ * registered as 'notify-game-subs'), unlike the camelCase internal names used
+ * everywhere else (including Telegram's BotFather registration), so the leading
+ * name is rewritten for Discord channels to keep the syntax actually typeable
+ * there.
+ *
+ * @param cmd - The command to render the syntax of.
+ * @param channel - The channel the syntax is for.
  * @param cmdPrefix - The command prefix to use, i.e. channel.prefix.
  */
-export function renderCmdHelpLine(cmd: Command, channel: Channel, cmdPrefix: string): string {
-  const helpText = cmd.channelHelp(channel, cmdPrefix);
+export function renderCmdSyntax(cmd: Command, channel: Channel, cmdPrefix: string): string {
+  const label = cmd.channelLabel(channel);
+
   if (channel.bot.name !== 'discord') {
-    return helpText;
+    return `${cmdPrefix}${label}`;
   }
-  return helpText.replace(`${cmdPrefix}${cmd.name}`, `${cmdPrefix}${toKebabCase(cmd.name)}`);
+  return `${cmdPrefix}${label.replace(cmd.name, toKebabCase(cmd.name))}`;
+}
+
+/** Renders a single command's entry in the help list.
+ *
+ * The syntax is a code span rather than backticks written into the text: a
+ * command is something to type, and only the tree can say so in a way that
+ * every messenger then renders for itself.
+ *
+ * @param cmd - The command to render the entry for.
+ * @param channel - The channel to render the entry for.
+ * @param cmdPrefix - The command prefix to use, i.e. channel.prefix.
+ */
+export function renderCmdHelpEntry(
+  cmd: Command,
+  channel: Channel,
+  cmdPrefix: string,
+): ListItemNode {
+  return listItem(
+    paragraph(inlineCode(renderCmdSyntax(cmd, channel, cmdPrefix)), ` - ${cmd.description}`),
+  );
+}
+
+/** Renders a single command's help line as plain text. */
+export function renderCmdHelpLine(cmd: Command, channel: Channel, cmdPrefix: string): string {
+  return `${renderCmdSyntax(cmd, channel, cmdPrefix)} - ${cmd.description}`;
 }
 
 /**

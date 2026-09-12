@@ -110,10 +110,16 @@ describe('Markup normalization', () => {
       expect(normalize(doc(heading(1, '  Title  '))).children[0]).toEqual(heading(1, 'Title'));
     });
 
-    test('should reach inside a style node', () => {
-      const result = normalize(doc(paragraph(bold('  a  '))));
+    test('should leave the whitespace inside a style node alone', () => {
+      // The space in `a <b> text </b>b` belongs to the sentence, and a renderer
+      // moves it outside the markers. Trimming it here would join the words.
+      const result = normalize(doc(paragraph('a', bold(' text '), 'b')));
 
-      expect(result.children[0]).toEqual(paragraph(bold('a')));
+      expect(result.children[0]).toEqual(paragraph('a', bold(' text '), 'b'));
+    });
+
+    test('should still trim the outermost run of a block', () => {
+      expect(normalize(doc(paragraph('  a  '))).children[0]).toEqual(paragraph('a'));
     });
 
     test('should drop empty blocks nested in a list item', () => {

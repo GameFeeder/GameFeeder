@@ -4,6 +4,7 @@ import Command from '../commands/command.js';
 import Game from '../game.js';
 import Logger from '../logger.js';
 import DataManager, { type Subscriber } from '../managers/data_manager.js';
+import type { RootNode } from '../markup/ast.js';
 import Notification from '../notifications/notification.js';
 import Permissions from '../permissions.js';
 import Updater from '../updater.js';
@@ -12,6 +13,13 @@ import { mapAsync } from '../util/array_util.js';
 import constants from '../util/constants.js';
 import rollbar_client from '../util/rollbar_client.js';
 import { assertIsDefined } from '../util/util.js';
+
+/** What a bot can be asked to send.
+ *
+ * A `string` is literal text and is escaped; a {@link RootNode} is formatted
+ * content; a {@link Notification} is a whole news post.
+ */
+export type BotMessage = string | RootNode | Notification;
 
 export default abstract class BotClient {
   /** Indicator whether the bot is currently running. */
@@ -344,11 +352,14 @@ export default abstract class BotClient {
 
   /** Sends a message to a channel.
    *
+   * A plain string is literal text: it is escaped, never parsed as markup. Use
+   * `markup/build.ts` to say something formatted.
+   *
    * @param  {Channel} channel - The channel to message.
-   * @param  {string|Notification} message - The message to send to the channel.
+   * @param  {string|RootNode|Notification} message - The message to send.
    * @returns void
    */
-  public abstract sendMessage(channel: Channel, message: string | Notification): Promise<boolean>;
+  public abstract sendMessage(channel: Channel, message: BotMessage): Promise<boolean>;
 
   /** Sends a message to all subscribers of a game.
    *
@@ -382,10 +393,10 @@ export default abstract class BotClient {
 
   /** Sends a message to all subscribers.
    *
-   * @param  {string|Notification} message - The message to send to the subscribers.
+   * @param  {BotMessage} message - The message to send to the subscribers.
    * @returns void
    */
-  public async sendMessageToAllSubs(message: string | Notification): Promise<void> {
+  public async sendMessageToAllSubs(message: BotMessage): Promise<void> {
     const subscribers = DataManager.getSubscriberData()[this.name];
 
     if (subscribers) {

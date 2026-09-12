@@ -17,7 +17,7 @@ import type { TagSpec } from './tags.js';
 import { isBlockTag, tagSpec } from './tags.js';
 import type { OpenToken, Token } from './tokenizer.js';
 import tokenize from './tokenizer.js';
-import { resolveSteamUrl } from './url.js';
+import { labelFromUrl, resolveSteamUrl } from './url.js';
 
 /** Options for {@link parse}. */
 export type ParseOptions = {
@@ -464,7 +464,7 @@ class Parser {
         if (!url) {
           return children;
         }
-        return [{ type: 'link', url, children }];
+        return [{ type: 'link', url, children: linkLabel(children, url) }];
       }
       case 'dynamiclink': {
         const children = this.parseInlineChildren(token.name, spec);
@@ -472,7 +472,7 @@ class Parser {
         if (!url) {
           return children;
         }
-        return [{ type: 'link', url, children }];
+        return [{ type: 'link', url, children: linkLabel(children, url) }];
       }
       case 'img':
       case 'previewimg': {
@@ -578,6 +578,20 @@ function breakBlocks(blocks: BlockNode[]): BlockNode[] {
         return block;
     }
   });
+}
+
+/** Gives a link a label derived from its URL when it carries no text.
+ *
+ * Steam writes plenty of links as a bare tag, and a readable URL or app name
+ * tells the reader far more than a generic placeholder would.
+ */
+function linkLabel(children: InlineNode[], url: string): InlineNode[] {
+  if (children.length > 0) {
+    return children;
+  }
+  const label = labelFromUrl(url);
+
+  return label === '' ? [] : [{ type: 'text', value: label }];
 }
 
 /** Joins the text of a run of inline nodes. */
