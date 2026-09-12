@@ -167,7 +167,26 @@ graph TD
 
 The Steam Web API serves its posts in Steam's own BBCode flavor rather than
 HTML. Those are handled by the recursive descent parser in `steam/bbcode/`
-(tokenizer → parser → markdown renderer), not by `SteamProcessor`.
+(tokenizer → parser), not by `SteamProcessor`. The parser produces the shared
+markup tree described in section 8a.
+
+### 8a. **Markup Layer** (`markup/`)
+
+The document model every news source is parsed into and every messenger client
+renders from, so that no formatting has to survive a round trip through a
+string.
+
+- **ast**: The node types, plus the `isInlineNode` / `isBlockNode` guards and
+  the `textContent` walker
+- **build**: Constructors for code that builds a tree directly, rather than
+  parsing one
+- **normalize**: The cleanup every parser runs before a renderer sees its tree
+- **escape**: Making arbitrary source text safe for each target's markup
+- **limits**: The character limits each messenger imposes
+
+The model covers the union of what Discord and Telegram can express, so a
+renderer never has to guess what a source meant — only how to say it, or that
+its target cannot.
 
 ### 9. **Manager Layer** (`managers/`)
 - **ConfigManager**: Loads and manages configuration
@@ -203,7 +222,7 @@ Updater (main loop)
     ↓
   SteamAppNews (parsed data)
     ↓
-  steam/bbcode (BBCode → Markdown)
+  steam/bbcode (BBCode → markup tree)
     ↓
   NotificationBuilder (format message)
     ↓

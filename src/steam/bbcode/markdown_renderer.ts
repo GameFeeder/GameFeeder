@@ -7,7 +7,7 @@ import type {
   QuoteNode,
   RootNode,
   TableNode,
-} from './ast.js';
+} from '../../markup/ast.js';
 import { encodeMarkdownUrl, escapeMarkdownLabel, resolveSteamUrl } from './url.js';
 
 /** Options for {@link renderMarkdown}. */
@@ -110,13 +110,15 @@ class Renderer {
       case 'list':
         return this.renderList(block, level);
       case 'quote':
-        return this.renderQuote(block, level);
+        // An expandable quote is Steam's [expand]: a collapsed section rather
+        // than a quotation, so only its contents are rendered.
+        return block.expandable
+          ? this.renderBlocks(block.children, level).join('\n\n')
+          : this.renderQuote(block, level);
       case 'code':
         return `\`\`\`\n${block.value}\n\`\`\``;
       case 'table':
         return this.renderTable(block);
-      case 'expand':
-        return this.renderBlocks(block.children, level).join('\n\n');
       case 'separator':
         return '---';
     }
@@ -226,6 +228,10 @@ class Renderer {
     switch (node.type) {
       case 'text':
         return node.value;
+      case 'break':
+        return '\n';
+      case 'inlineCode':
+        return `\`${node.value}\``;
       case 'bold':
         return this.style(node.children, '**', plain);
       case 'italic':
@@ -282,7 +288,7 @@ class Renderer {
     // `MDRegex.replaceLinkImage` as long as it keeps this exact shape. Steam
     // often puts each tag on its own line, so surrounding whitespace is ignored.
     const meaningful = children.filter(
-      (child) => child.type !== 'text' || child.value.trim() !== '',
+      (child) => child.type !== 'break' && (child.type !== 'text' || child.value.trim() !== ''),
     );
     const [only] = meaningful;
     if (meaningful.length === 1 && only.type === 'image') {

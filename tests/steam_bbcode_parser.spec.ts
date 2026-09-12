@@ -1,5 +1,5 @@
-import type { BlockNode, ListNode } from 'src/steam/bbcode/ast.js';
-import { textContent } from 'src/steam/bbcode/ast.js';
+import type { BlockNode, ListNode } from 'src/markup/ast.js';
+import { textContent } from 'src/markup/ast.js';
 import parse from 'src/steam/bbcode/parser.js';
 
 function blocks(input: string): BlockNode[] {
@@ -13,6 +13,18 @@ function texts(input: string): string[] {
 
 function paragraph(value: string): BlockNode {
   return { type: 'paragraph', children: [{ type: 'text', value }] };
+}
+
+/** A paragraph whose lines are separated by a hard break rather than a `\n`. */
+function softBreak(...lines: string[]): BlockNode {
+  return {
+    type: 'paragraph',
+    children: lines.flatMap((value, index) =>
+      index === 0
+        ? [{ type: 'text' as const, value }]
+        : [{ type: 'break' as const }, { type: 'text' as const, value }],
+    ),
+  };
 }
 
 describe('Steam BBCode parser', () => {
@@ -30,11 +42,11 @@ describe('Steam BBCode parser', () => {
     });
 
     test('should keep a single line break as a soft break', () => {
-      expect(blocks('First\nSecond')).toEqual([paragraph('First\nSecond')]);
+      expect(blocks('First\nSecond')).toEqual([softBreak('First', 'Second')]);
     });
 
     test('should keep line breaks inside a paragraph tag', () => {
-      expect(blocks('[p]First\nSecond[/p]')).toEqual([paragraph('First\nSecond')]);
+      expect(blocks('[p]First\nSecond[/p]')).toEqual([softBreak('First', 'Second')]);
     });
   });
 
@@ -128,7 +140,7 @@ describe('Steam BBCode parser', () => {
 
       expect(list.children[0].children).toEqual([
         paragraph('Aurora'),
-        { type: 'expand', children: [paragraph('Nightfall')] },
+        { type: 'quote', expandable: true, children: [paragraph('Nightfall')] },
       ]);
     });
   });
