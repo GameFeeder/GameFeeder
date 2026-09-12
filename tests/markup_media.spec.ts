@@ -59,21 +59,69 @@ describe('Cover image extraction', () => {
     });
   });
 
-  describe('what it leaves alone', () => {
-    test('should not take an image from the middle of the post', () => {
+  describe('an image elsewhere in the post', () => {
+    test('should pick an image from the middle when there is no opening or closing one', () => {
       const tree = doc(paragraph('Before'), paragraph(image(BANNER)), paragraph('After'));
+
+      expect(extractCoverImage(tree).image).toEqual(image(BANNER));
+    });
+
+    test('should leave that image in the document', () => {
+      // It illustrates the part of the post around it, so it is only borrowed.
+      const tree = doc(paragraph('Before'), paragraph(image(BANNER)), paragraph('After'));
+
+      expect(extractCoverImage(tree).document).toBe(tree);
+    });
+
+    test('should pick the first of several', () => {
+      const tree = doc(
+        paragraph('Before'),
+        paragraph(image(BANNER)),
+        paragraph('Between'),
+        paragraph(image(CLOSER)),
+        paragraph('After'),
+      );
+
+      expect(extractCoverImage(tree).image).toEqual(image(BANNER));
+    });
+
+    test('should pick an image that shares a paragraph with text', () => {
+      const tree = doc(paragraph('Look at this: ', image(BANNER)), paragraph('Body'));
       const result = extractCoverImage(tree);
 
-      expect(result.image).toBeUndefined();
+      expect(result.image).toEqual(image(BANNER));
       expect(result.document).toBe(tree);
     });
 
-    test('should not take an image that follows text in the first paragraph', () => {
-      const tree = doc(paragraph('Look at this: ', image(BANNER)), paragraph('Body'));
+    test('should still prefer an opening image, and lift that one out', () => {
+      const tree = doc(
+        paragraph(image(CLOSER)),
+        paragraph('Body'),
+        paragraph(image(BANNER)),
+        paragraph('After'),
+      );
+      const result = extractCoverImage(tree);
+
+      expect(result.image).toEqual(image(CLOSER));
+      expect(result.document).toEqual(
+        doc(paragraph('Body'), paragraph(image(BANNER)), paragraph('After')),
+      );
+    });
+
+    test('should not pick an image that does not stand on its own', () => {
+      const tree = doc(
+        paragraph('Before'),
+        paragraph(link('https://example.com', image(BANNER))),
+        paragraph(bold(image(BANNER))),
+        list(listItem(paragraph(image(BANNER)))),
+        paragraph('After'),
+      );
 
       expect(extractCoverImage(tree).image).toBeUndefined();
     });
+  });
 
+  describe('what it leaves alone', () => {
     test('should not take a clickable banner, which would lose where it points', () => {
       const tree = doc(paragraph(link('https://example.com', image(BANNER))), paragraph('Body'));
 
@@ -90,6 +138,12 @@ describe('Cover image extraction', () => {
       const tree = doc(paragraph(bold(image(BANNER))), paragraph('Body'));
 
       expect(extractCoverImage(tree).image).toBeUndefined();
+    });
+
+    test('should return a post with no images as it is', () => {
+      const tree = doc(paragraph('Before'), paragraph('After'));
+
+      expect(extractCoverImage(tree)).toEqual({ document: tree });
     });
 
     test('should return an empty document as it is', () => {

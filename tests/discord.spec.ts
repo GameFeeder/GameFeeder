@@ -117,11 +117,12 @@ describe('Discord bot', () => {
       expect(embed.description).toBe('Body');
     });
 
-    test('should leave an image in the middle of the post in the text', () => {
+    test('should show an image from the middle of the post in the slot as well', () => {
       const embed = embedOf(doc(paragraph('Before'), paragraph(image(BANNER)), paragraph('After')));
 
-      expect(embed.image).toBeUndefined();
-      expect(embed.description).toContain(BANNER);
+      expect(embed.image?.url).toBe(BANNER);
+      // It stays in the text too, next to what it illustrates.
+      expect(embed.description).toBe(`Before\n\n[Image](${BANNER})\n\nAfter`);
     });
 
     test('should not displace an image the notification already carries', () => {

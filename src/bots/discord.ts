@@ -624,8 +624,10 @@ export default class DiscordBot extends BotClient {
       embed.setColor(notification.color as HexColorString);
     }
     // An image the post opens or closes with is shown in the embed's own image
-    // slot rather than as a link in the text. Only while that slot is free: an
-    // image the notification already carries would otherwise lose this one.
+    // slot rather than as a link in the text; failing that, the first image in
+    // the post is shown there too, but also stays in the text. Only while that
+    // slot is free: an image the notification already carries would otherwise
+    // lose this one.
     const cover =
       notification.content && !notification.image
         ? extractCoverImage(notification.content)
