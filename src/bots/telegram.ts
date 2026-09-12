@@ -6,6 +6,7 @@ import Game from '../game.js';
 import ConfigManager from '../managers/config_manager.js';
 import type { RootNode } from '../markup/ast.js';
 import { doc, paragraph, text } from '../markup/build.js';
+import { fitDocument } from '../markup/limit.js';
 import { TELEGRAM_MESSAGE } from '../markup/limits.js';
 import renderTelegram from '../markup/renderers/telegram.js';
 import Message from '../message.js';
@@ -14,7 +15,7 @@ import Permissions from '../permissions.js';
 import User, { UserRole } from '../user.js';
 import { mapAsync } from '../util/array_util.js';
 import rollbar_client from '../util/rollbar_client.js';
-import { assertIsDefined, StrUtil } from '../util/util.js';
+import { assertIsDefined } from '../util/util.js';
 import type { BotMessage } from './bot.js';
 import { BotClient } from './bot.js';
 
@@ -473,7 +474,7 @@ export default class TelegramBot extends BotClient {
 
     // Set up the message
     const document = TelegramBot.documentFrom(messageText);
-    const text = StrUtil.naturalLimit(renderTelegram(document), TELEGRAM_MESSAGE);
+    const text = fitDocument(document, renderTelegram, TELEGRAM_MESSAGE);
     // Snakecase used by Telegram API
     // TODO: Add link_preview_options
     const options = { parse_mode: 'Markdown' } as const;

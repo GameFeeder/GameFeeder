@@ -9,6 +9,8 @@
 export * from './ast.js';
 export * from './build.js';
 export * from './escape.js';
+export type { LimitOptions } from './limit.js';
+export { default as limitDocument, fitDocument } from './limit.js';
 export * as limits from './limits.js';
 export { default as normalize } from './normalize.js';
 export type { DiscordRenderOptions } from './renderers/discord.js';

@@ -26,9 +26,13 @@ import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
 import type { RootNode } from '../markup/ast.js';
 import { doc, paragraph, text } from '../markup/build.js';
+import { fitDocument } from '../markup/limit.js';
 import {
+  DISCORD_EMBED_AUTHOR,
   DISCORD_EMBED_DESCRIPTION,
+  DISCORD_EMBED_FOOTER,
   DISCORD_EMBED_TITLE,
+  DISCORD_EMBED_TOTAL,
   DISCORD_MESSAGE,
 } from '../markup/limits.js';
 import renderDiscord from '../markup/renderers/discord.js';
@@ -560,8 +564,9 @@ export default class DiscordBot extends BotClient {
     // Outside an embed Discord shows the markup of a masked link rather than
     // resolving it, so the URL has to be spelled out.
     const document = DiscordBot.documentFrom(message);
-    const messageText = StrUtil.naturalLimit(
-      renderDiscord(document, { masked: false }),
+    const messageText = fitDocument(
+      document,
+      (tree) => renderDiscord(tree, { masked: false }),
       DISCORD_MESSAGE,
     );
 
@@ -587,8 +592,18 @@ export default class DiscordBot extends BotClient {
 
     // Title. An embed renders no markup in its title, author or footer, so
     // those fields take plain text.
+    const title = notification.title
+      ? StrUtil.naturalLimit(notification.title.text, DISCORD_EMBED_TITLE)
+      : '';
+    const author = notification.author
+      ? StrUtil.naturalLimit(notification.author.text, DISCORD_EMBED_AUTHOR)
+      : '';
+    const footer = notification.footer
+      ? StrUtil.naturalLimit(notification.footer.text, DISCORD_EMBED_FOOTER)
+      : '';
+
     if (notification.title) {
-      embed.setTitle(StrUtil.naturalLimit(notification.title.text, DISCORD_EMBED_TITLE));
+      embed.setTitle(title);
 
       if (notification.title.link) {
         embed.setURL(notification.title.link);
@@ -597,7 +612,7 @@ export default class DiscordBot extends BotClient {
     // Author
     if (notification.author) {
       embed.setAuthor({
-        name: notification.author.text,
+        name: author,
         iconURL: notification.author?.icon,
         url: notification.author?.link,
       });
@@ -608,13 +623,20 @@ export default class DiscordBot extends BotClient {
     }
     // Description. The embed carries the title itself, so the body leaves it out.
     if (notification.content) {
-      const description = renderDiscord(notification.content, { masked: true });
-      embed.setDescription(StrUtil.naturalLimit(description, DISCORD_EMBED_DESCRIPTION));
+      // Discord rejects the whole embed on the sum of its fields, so what is
+      // left of that allowance bounds the body just as its own limit does.
+      const budget = Math.min(
+        DISCORD_EMBED_DESCRIPTION,
+        DISCORD_EMBED_TOTAL - title.length - author.length - footer.length,
+      );
+      embed.setDescription(
+        fitDocument(notification.content, (tree) => renderDiscord(tree, { masked: true }), budget),
+      );
     }
     // Footer
     if (notification.footer) {
       embed.setFooter({
-        text: notification.footer.text,
+        text: footer,
         iconURL: notification.footer.icon,
       });
     }

@@ -185,6 +185,8 @@ string.
 - **normalize**: The cleanup every parser runs before a renderer sees its tree
 - **escape**: Making arbitrary source text safe for each target's markup
 - **limits**: The character limits each messenger imposes
+- **limit**: Shortening a document to fit one of them, by removing nodes rather
+  than characters, so no message is ever cut mid-link or mid-emphasis
 - **parsers/html**: HTML (the RSS feeds) → tree, driven by a tag table
 - **renderers/discord**, **renderers/telegram**, **renderers/plain**: tree →
   each messenger's own flavor
