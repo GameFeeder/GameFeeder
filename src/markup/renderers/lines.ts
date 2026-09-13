@@ -1,0 +1,102 @@
+/** Line handling shared by the renderers.
+ *
+ * Every target lays blocks out the same way — one blank line between them, a
+ * prefix or an indent on each line of a nested one — and differs only in what
+ * the prefix is. These helpers hold the part that does not differ.
+ */
+
+/** Puts a prefix on every line of a rendered block.
+ *
+ * @param text - The rendered block.
+ * @param prefix - What to put on each line.
+ * @param blankPrefix - What to put on lines that are empty, if not `prefix`.
+ */
+export function prefixLines(text: string, prefix: string, blankPrefix = prefix.trimEnd()): string {
+  return text
+    .split('\n')
+    .map((line) => (line.trim() === '' ? blankPrefix : `${prefix}${line}`))
+    .join('\n');
+}
+
+/** Indents every line of a rendered block except the first.
+ *
+ * The first line belongs to whatever introduced the block — a list bullet, say
+ * — so it is already positioned.
+ *
+ * @param text - The rendered block.
+ * @param indent - The indent to apply.
+ */
+export function indentRest(text: string, indent: string): string {
+  const [first, ...rest] = text.split('\n');
+
+  return [first, ...rest.map((line) => (line.trim() === '' ? '' : `${indent}${line}`))].join('\n');
+}
+
+/** Joins rendered blocks with a blank line, dropping the ones that came out empty. */
+export function joinBlocks(blocks: string[]): string {
+  return blocks.filter((block) => block !== '').join('\n\n');
+}
+
+/** A line made only of quote markers, whose trailing space is syntax.
+ *
+ * Discord needs the space after `>` even on an otherwise empty line; a bare `>`
+ * is literal text to it, and ends the quote it was meant to continue.
+ */
+const QUOTE_ONLY_LINE = /^(?:> )+$/;
+
+/** Tidies a finished document: no trailing spaces, no runs of blank lines. */
+export function tidy(text: string): string {
+  return text
+    .split('\n')
+    .map((line) => (QUOTE_ONLY_LINE.test(line) ? line : line.replace(/[ \t]+$/, '')))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/** Collapses a rendered fragment onto a single line. */
+export function flatten(text: string): string {
+  return text.replace(/\s*\n\s*/g, ' ').trim();
+}
+
+/** Wraps a rendered fragment in emphasis markers.
+ *
+ * Whitespace is moved outside the markers and empty emphasis is dropped, so
+ * that the markers always sit against the text they apply to.
+ *
+ * @param rendered - The already rendered fragment.
+ * @param marker - The marker to put on each side.
+ */
+export function wrap(rendered: string, marker: string): string {
+  const core = rendered.trim();
+
+  if (core === '') {
+    return '';
+  }
+  const lead = /^\s/.test(rendered) ? ' ' : '';
+  const trail = /\s$/.test(rendered) ? ' ' : '';
+
+  return `${lead}${marker}${core}${marker}${trail}`;
+}
+
+/** One run of a paragraph: either media, or the text around it. */
+export type Segment = { media: boolean; text: string };
+
+/** Joins the runs of a paragraph, setting media apart from the prose.
+ *
+ * A blank line is what makes an image read as a thing of its own rather than a
+ * stray line of a sentence. Consecutive images stay on consecutive lines: they
+ * are one gallery, and blank lines between them only spread it out.
+ */
+export function joinSegments(segments: Segment[]): string {
+  const filled = segments.filter((segment) => segment.text !== '');
+
+  return filled.reduce((text, segment, index) => {
+    if (index === 0) {
+      return segment.text;
+    }
+    const separator = filled[index - 1].media === segment.media ? '\n' : '\n\n';
+
+    return `${text}${separator}${segment.text}`;
+  }, '');
+}

@@ -1,3 +1,4 @@
+import { doc } from 'src/markup/build.js';
 import RSSItem from 'src/rss/rss_item.js';
 
 const timeout = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -15,7 +16,7 @@ describe('RSSItem', () => {
       'testTitle',
       'testAuthor',
       'test.link.com',
-      'test content',
+      doc('test content'),
       before,
       testFeed,
     );
@@ -23,7 +24,7 @@ describe('RSSItem', () => {
       'testTitle',
       'testAuthor',
       'test.link.com',
-      'test content',
+      doc('test content'),
       after,
       testFeed,
     );

@@ -1,7 +1,28 @@
 import Game from '../game.js';
+import type { BlockNode, InlineNode, RootNode } from '../markup/ast.js';
+import { bold, doc, link, paragraph, text } from '../markup/build.js';
+import renderPlain from '../markup/renderers/plain.js';
 import type Comparable from '../util/comparable.js';
-import { StrUtil } from '../util/util.js';
 import NotificationElement from './notification_element.js';
+
+/** Options for {@link Notification.toDocument}. */
+export type NotificationDocumentOptions = {
+  /** The URL to put on the title, if not the title's own link.
+   *
+   * Telegram's Instant View wraps the post URL, so the link on the title is not
+   * always the link the notification carries.
+   */
+  titleUrl?: string;
+  /** Whether to include the title. Off for a Discord embed, which has its own. */
+  includeTitle?: boolean;
+  /** Whether to include the body of the post. */
+  includeContent?: boolean;
+};
+
+const DEFAULTS = {
+  includeTitle: true,
+  includeContent: true,
+};
 
 /** A representation of a bot notification. */
 export default class Notification implements Comparable<Notification> {
@@ -22,7 +43,7 @@ export default class Notification implements Comparable<Notification> {
     public timestamp: Date,
     public game: Game,
     public title: NotificationElement,
-    public content?: string,
+    public content?: RootNode,
     public author?: NotificationElement,
     public color?: string,
     public thumbnail?: string,
@@ -41,31 +62,54 @@ export default class Notification implements Comparable<Notification> {
     return 0;
   }
 
-  public toMDString(limit?: number): string {
-    const titleText = this.title.link
-      ? `[**${this.title.text}**](${this.title.link})`
-      : this.title.text;
+  /** Builds the whole notification as one markup tree.
+   *
+   * Each bot renders this single tree rather than splicing its own markup
+   * around the content, which is what keeps the two of them consistent and
+   * lets either one make its own formatting decisions throughout.
+   *
+   * @param options - What to include, and where the title points.
+   */
+  public toDocument(options: NotificationDocumentOptions = {}): RootNode {
+    const { titleUrl, includeTitle, includeContent } = { ...DEFAULTS, ...options };
+    const blocks: BlockNode[] = [paragraph(...this.introduction())];
 
-    let mdStr;
+    if (includeTitle) {
+      blocks.push(paragraph(this.titleNode(titleUrl ?? this.title.link)));
+    }
+    if (includeContent && this.content) {
+      blocks.push(...this.content.children);
+    }
+    return doc(...blocks);
+  }
 
-    const authorText = this.author?.text
-      ? this.author.link
-        ? ` - [${this.author.text}](${this.author.link})`
-        : ` - ${this.author.text}`
-      : '';
+  /** The `New <game> update - <author>:` line that opens a notification. */
+  private introduction(): InlineNode[] {
+    const nodes: InlineNode[] = [text('New '), bold(this.game.label), text(' update')];
 
-    const contentText = this.content ? `\n\n${this.content}` : '';
-    mdStr = `New **${this.game.label}** update${authorText}:\n\n${titleText}${contentText}`;
+    if (this.author?.text) {
+      nodes.push(text(' - '));
+      nodes.push(
+        this.author.link ? link(this.author.link, this.author.text) : text(this.author.text),
+      );
+    }
+    nodes.push(text(':'));
 
-    mdStr = StrUtil.naturalLimit(mdStr, limit ?? Number.MAX_SAFE_INTEGER);
+    return nodes;
+  }
 
-    return mdStr;
+  private titleNode(url?: string): InlineNode {
+    const label = bold(this.title.text);
+
+    return url ? link(url, label) : label;
   }
 
   /**
    *  Debug method that makes Notification objects printable inside templated strings
    */
   public toString(): string {
-    return `${this.title.text} -  ${this.content}`;
+    const content = this.content ? renderPlain(this.content) : '';
+
+    return `${this.title.text} -  ${content}`;
   }
 }

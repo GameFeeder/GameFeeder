@@ -10,12 +10,14 @@ import type {
   TableCellNode,
   TableNode,
   TableRowNode,
-} from './ast.js';
-import { textContent } from './ast.js';
+} from '../../markup/ast.js';
+import { textContent } from '../../markup/ast.js';
+import { normalizeBlocks, trimInline } from '../../markup/normalize.js';
 import type { TagSpec } from './tags.js';
 import { isBlockTag, tagSpec } from './tags.js';
 import type { OpenToken, Token } from './tokenizer.js';
 import tokenize from './tokenizer.js';
+import { labelFromUrl, resolveSteamUrl } from './url.js';
 
 /** Options for {@link parse}. */
 export type ParseOptions = {
@@ -44,78 +46,6 @@ const HEADING_LEVELS: Record<string, HeadingNode['level']> = {
   h5: 5,
   h6: 6,
 };
-
-/** Determines whether a block carries anything worth rendering. */
-function isEmptyBlock(block: BlockNode): boolean {
-  switch (block.type) {
-    case 'separator':
-      return false;
-    case 'code':
-      return block.value.trim() === '';
-    case 'paragraph':
-    case 'heading':
-      return !block.children.some((child) => child.type !== 'text' || child.value.trim() !== '');
-    case 'list':
-      return block.children.length === 0;
-    case 'table':
-      return block.children.length === 0;
-    default:
-      return block.children.length === 0;
-  }
-}
-
-/** Drops empty blocks and merges lists that Steam split into single-item chunks. */
-function normalizeBlocks(blocks: BlockNode[]): BlockNode[] {
-  const result: BlockNode[] = [];
-
-  for (const block of blocks) {
-    if (isEmptyBlock(block)) {
-      continue;
-    }
-    const previous = result[result.length - 1];
-
-    if (previous?.type === 'list' && block.type === 'list' && previous.ordered === block.ordered) {
-      previous.children.push(...block.children);
-      continue;
-    }
-    result.push(block);
-  }
-  return result;
-}
-
-/** Removes the whitespace surrounding a run of inline nodes. */
-function trimInline(nodes: InlineNode[]): InlineNode[] {
-  const result = [...nodes];
-
-  while (result.length > 0) {
-    const first = result[0];
-    if (first.type !== 'text') {
-      break;
-    }
-    const value = first.value.replace(/^\s+/, '');
-    if (value === '') {
-      result.shift();
-      continue;
-    }
-    result[0] = { type: 'text', value };
-    break;
-  }
-
-  while (result.length > 0) {
-    const last = result[result.length - 1];
-    if (last.type !== 'text') {
-      break;
-    }
-    const value = last.value.replace(/\s+$/, '');
-    if (value === '') {
-      result.pop();
-      continue;
-    }
-    result[result.length - 1] = { type: 'text', value };
-    break;
-  }
-  return result;
-}
 
 /** Splits a run of inline nodes into paragraphs at blank lines.
  *
@@ -167,7 +97,7 @@ class Parser {
   }
 
   public parse(): RootNode {
-    return { type: 'root', children: this.parseBlocks(undefined) };
+    return { type: 'root', children: breakBlocks(this.parseBlocks(undefined)) };
   }
 
   private peek(): Token | undefined {
@@ -291,7 +221,8 @@ class Parser {
       }
       case 'expand': {
         this.pos += 1;
-        return [{ type: 'expand', children: this.parseContainer(token.name, spec) }];
+        const children = this.parseContainer(token.name, spec);
+        return [{ type: 'quote', expandable: true, children }];
       }
       case 'p': {
         this.pos += 1;
@@ -529,26 +460,26 @@ class Parser {
     switch (token.name) {
       case 'url': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.value ?? token.attrs.get('href') ?? '';
+        const url = resolveSteamUrl(token.value ?? token.attrs.get('href') ?? '');
         if (!url) {
           return children;
         }
-        return [{ type: 'link', url, children }];
+        return [{ type: 'link', url, children: linkLabel(children, url) }];
       }
       case 'dynamiclink': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.attrs.get('href') ?? token.value ?? '';
+        const url = resolveSteamUrl(token.attrs.get('href') ?? token.value ?? '');
         if (!url) {
           return children;
         }
-        return [{ type: 'link', url, children }];
+        return [{ type: 'link', url, children: linkLabel(children, url) }];
       }
       case 'img':
       case 'previewimg': {
         const children = this.parseInlineChildren(token.name, spec);
         // Both `[img]URL[/img]` and `[img src="URL"][/img]` occur in the wild.
-        const url = token.attrs.get('src') ?? token.value ?? inlineText(children);
-        return url.trim() ? [{ type: 'image', url }] : children;
+        const url = resolveSteamUrl(token.attrs.get('src') ?? token.value ?? inlineText(children));
+        return url ? [{ type: 'image', url }] : children;
       }
       case 'previewyoutube': {
         const children = this.parseInlineChildren(token.name, spec);
@@ -561,7 +492,9 @@ class Parser {
       }
       case 'video': {
         const children = this.parseInlineChildren(token.name, spec);
-        const url = token.attrs.get('mp4') ?? token.attrs.get('webm') ?? token.value ?? '';
+        const url = resolveSteamUrl(
+          token.attrs.get('mp4') ?? token.attrs.get('webm') ?? token.value ?? '',
+        );
         if (!url) {
           return children;
         }
@@ -572,6 +505,93 @@ class Parser {
       }
     }
   }
+}
+
+/** Splits the line breaks of a text node out into {@link BreakNode}s.
+ *
+ * Paragraph splitting has already claimed the blank lines by this point, so
+ * every `\n` that is left is a break within a block.
+ */
+function breakInline(nodes: InlineNode[]): InlineNode[] {
+  return nodes.flatMap((node) => {
+    switch (node.type) {
+      case 'text': {
+        if (!node.value.includes('\n')) {
+          return [node];
+        }
+        const parts = node.value.split('\n');
+        const result: InlineNode[] = [];
+
+        parts.forEach((part, index) => {
+          if (index > 0) {
+            result.push({ type: 'break' });
+          }
+          if (part !== '') {
+            result.push({ type: 'text', value: part });
+          }
+        });
+        return result;
+      }
+      case 'bold':
+      case 'italic':
+      case 'underline':
+      case 'strike':
+      case 'spoiler':
+      case 'link':
+      case 'video':
+        return [{ ...node, children: breakInline(node.children) }];
+      default:
+        return [node];
+    }
+  });
+}
+
+/** Applies {@link breakInline} to every inline run below a set of blocks. */
+function breakBlocks(blocks: BlockNode[]): BlockNode[] {
+  return blocks.map((block) => {
+    switch (block.type) {
+      case 'paragraph':
+      case 'heading':
+        return { ...block, children: breakInline(block.children) };
+      case 'quote':
+        return { ...block, children: breakBlocks(block.children) };
+      case 'list':
+        return {
+          ...block,
+          children: block.children.map((item) => ({
+            ...item,
+            children: breakBlocks(item.children),
+          })),
+        };
+      case 'table':
+        return {
+          ...block,
+          children: block.children.map((tableRow) => ({
+            ...tableRow,
+            children: tableRow.children.map((tableCell) => ({
+              ...tableCell,
+              children: breakBlocks(tableCell.children),
+            })),
+          })),
+        };
+      default:
+        return block;
+    }
+  });
+}
+
+/** Gives a link a label derived from its URL when it carries no text.
+ *
+ * Steam writes plenty of links as a bare tag, and a readable URL or app name
+ * tells the reader far more than a generic placeholder would.
+ */
+function linkLabel(children: InlineNode[], url: string): InlineNode[] {
+  if (children.length > 0) {
+    return children;
+  }
+  const label = labelFromUrl(url);
+
+  return label === '' ? [] : [{ type: 'text', value: label }];
 }
 
 /** Joins the text of a run of inline nodes. */

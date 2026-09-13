@@ -1,4 +1,5 @@
 import Game from '../game.js';
+import type { RootNode } from '../markup/ast.js';
 import { assertIsDefined } from '../util/util.js';
 import Notification from './notification.js';
 import NotificationElement from './notification_element.js';
@@ -14,7 +15,7 @@ export default class NotificationBuilder {
   /** The color of the notification. */
   public color?: string;
   /** The content of the notification. */
-  public content?: string;
+  public content?: RootNode;
   /** The (small) thumbnail of the notification. */
   public thumbnail?: string;
   /** The (big) image of the notification. */
@@ -35,7 +36,7 @@ export default class NotificationBuilder {
    *
    * @param content - The new content of the notification.
    */
-  public withContent(content: string): NotificationBuilder {
+  public withContent(content: RootNode): NotificationBuilder {
     this.content = content;
     return this;
   }

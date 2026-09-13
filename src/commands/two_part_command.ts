@@ -20,7 +20,7 @@ export default class TwoPartCommand extends CommandGroup {
       // Channel label
       () => label,
       // Channel help
-      (channel, prefix) => `\`${prefix}${label}\` - ${description}`,
+      (channel, prefix) => `${prefix}${label} - ${description}`,
       // Channel trigger
       () => groupTrigger,
       // Default action

@@ -1,104 +1,7 @@
-# GameFeeder Architecture & Dependency Diagram
+# GameFeeder Architecture
 
 ## Project Overview
 **GameFeeder** is a Node.js notification bot for games, available on Discord and Telegram. It aggregates news from multiple sources (Steam, RSS, Dota) and sends notifications to users.
-
----
-
-## High-Level Architecture Diagram
-
-```mermaid
-graph TD
-    Main["_main.ts"]
-    
-    Bots["bots.ts<br/>Factory"]
-    BotClient["BotClient<br/>Abstract"]
-    DiscordBot["DiscordBot"]
-    TelegramBot["TelegramBot"]
-    
-    Commands["commands.ts<br/>Registry"]
-    Command["Command"]
-    CommandGroup["CommandGroup"]
-    SimpleAction["SimpleAction"]
-    Action["Action"]
-    
-    User["User"]
-    Channel["Channel"]
-    Message["Message"]
-    Game["Game"]
-    Permissions["Permissions"]
-    
-    Updater["Updater<br/>Main Loop"]
-    Provider["Provider"]
-    SteamProvider["SteamProvider"]
-    RSSProvider["RSSProvider"]
-    DotaProvider["DotaProvider"]
-    
-    SteamAPI["SteamWebAPI"]
-    RSS["RSS Parser"]
-    Dota["Dota API"]
-    
-    Notification["Notification"]
-    NotificationBuilder["NotificationBuilder"]
-    
-    ConfigManager["ConfigManager"]
-    DataManager["DataManager"]
-    Logger["Logger"]
-    RollbarClient["RollbarClient"]
-    
-    Discord["discord.js"]
-    Telegraf["telegraf"]
-    
-    Main --> Bots
-    Main --> Updater
-    Main --> Commands
-    Main --> ConfigManager
-    
-    Bots --> DiscordBot
-    Bots --> TelegramBot
-    DiscordBot --> BotClient
-    TelegramBot --> BotClient
-    
-    DiscordBot --> Discord
-    TelegramBot --> Telegraf
-    
-    BotClient --> Commands
-    BotClient --> Notification
-    BotClient --> User
-    BotClient --> Channel
-    BotClient --> Logger
-    
-    Commands --> Command
-    Commands --> CommandGroup
-    Commands --> SimpleAction
-    Commands --> Logger
-    
-    Command --> Message
-    Command --> Permissions
-    
-    Channel --> User
-    Channel --> Game
-    
-    Updater --> Provider
-    Updater --> Notification
-    Updater --> ConfigManager
-    Updater --> Logger
-    
-    Provider --> SteamProvider
-    Provider --> RSSProvider
-    Provider --> DotaProvider
-    
-    SteamProvider --> SteamAPI
-    RSSProvider --> RSS
-    DotaProvider --> Dota
-    
-    NotificationBuilder --> Notification
-    
-    ConfigManager --> DataManager
-    DataManager --> Logger
-    
-    Logger --> RollbarClient
-```
 
 ---
 
@@ -162,12 +65,44 @@ graph TD
 
 ### 8. **Processing Layer** (`processors/`)
 - **PreProcessor**: Preprocesses raw data
-- **SteamProcessor**: Normalizes the HTML of the Steam Community RSS feeds
+- **SteamProcessor**: Points the Steam Community RSS feeds' links at where they
+  actually go. Everything else about that markup is understood directly by the
+  HTML parser in section 8a.
 - **Updater**: Main update loop that fetches new data
 
 The Steam Web API serves its posts in Steam's own BBCode flavor rather than
 HTML. Those are handled by the recursive descent parser in `steam/bbcode/`
-(tokenizer → parser → markdown renderer), not by `SteamProcessor`.
+(tokenizer → parser), not by `SteamProcessor`. The parser produces the shared
+markup tree described in section 8a.
+
+### 8a. **Markup Layer** (`markup/`)
+
+The document model every news source is parsed into and every messenger client
+renders from, so that no formatting has to survive a round trip through a
+string.
+
+- **ast**: The node types, plus the `isInlineNode` / `isBlockNode` guards and
+  the `textContent` walker
+- **build**: Constructors for code that builds a tree directly, rather than
+  parsing one
+- **normalize**: The cleanup every parser runs before a renderer sees its tree
+- **escape**: Making arbitrary source text safe for each target's markup
+- **limits**: The character limits each messenger imposes
+- **limit**: Shortening a document to fit one of them, by removing nodes rather
+  than characters, so no message is ever cut mid-link or mid-emphasis
+- **media**: Picking the image that represents a post, for a messenger with an
+  image slot of its own such as a Discord embed. One the post opens or closes
+  with is lifted out of the text; failing that, the first image elsewhere is
+  used but left in place
+- **parsers/html**: HTML (the RSS feeds) → tree, driven by a tag table
+- **renderers/discord**, **renderers/telegram**, **renderers/plain**: tree →
+  each messenger's own flavor
+
+`steam/bbcode/` is the third parser, for the BBCode the Steam Web API serves.
+
+The model covers the union of what Discord and Telegram can express, so a
+renderer never has to guess what a source meant — only how to say it, or that
+its target cannot.
 
 ### 9. **Manager Layer** (`managers/`)
 - **ConfigManager**: Loads and manages configuration
@@ -179,12 +114,13 @@ HTML. Those are handled by the recursive descent parser in `steam/bbcode/`
 ### 10. **Utility Layer** (`util/`)
 - **Logger**: Winston-based logging
 - **RollbarClient**: Error tracking with Rollbar
-- **Utilities**: String, array, regex, constants helpers
+- **Utilities**: String, array, constants helpers
 
 ### 11. **External Dependencies**
 - **discord.js**: Discord client
 - **telegraf**: Telegram bot framework
 - **rss-parser**: RSS parsing
+- **htmlparser2**: HTML parsing, for the markup layer
 - **steam-web-api**: Steam API client
 - **pubsub-js**: Pub/Sub messaging
 - **winston**: Logging framework
@@ -203,13 +139,15 @@ Updater (main loop)
     ↓
   SteamAppNews (parsed data)
     ↓
-  steam/bbcode (BBCode → Markdown)
+  steam/bbcode (BBCode → markup tree)
     ↓
-  NotificationBuilder (format message)
+  NotificationBuilder (assemble the notification)
     ↓
-  Notification (ready to send)
+  Notification (carries the tree; toDocument() adds the envelope)
     ↓
   BotClient (DiscordBot or TelegramBot)
+    ↓
+  markup/renderers (tree → that messenger's flavor)
     ↓
   Send to Channel/User
 ```

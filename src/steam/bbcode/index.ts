@@ -1,22 +1,18 @@
-import type { MarkdownRenderOptions } from './markdown_renderer.js';
-import renderMarkdown from './markdown_renderer.js';
+import type { RootNode } from '../../markup/ast.js';
+import normalize from '../../markup/normalize.js';
 import type { ParseOptions } from './parser.js';
 import parse from './parser.js';
 
-export type BBCodeToMarkdownOptions = ParseOptions & MarkdownRenderOptions;
+export type { ParseOptions } from './parser.js';
 
-/** Converts the BBCode of a Steam news post to markdown.
+/** Parses the BBCode of a Steam news post into the shared markup tree.
  *
  * @param input - The raw `contents` of a Steam news item.
- * @param options - Parsing and rendering overrides.
+ * @param options - Parser limits.
  */
-export default function bbcodeToMarkdown(
-  input: string,
-  options: BBCodeToMarkdownOptions = {},
-): string {
-  return renderMarkdown(parse(input, options), options);
+export default function parseBBCode(input: string, options: ParseOptions = {}): RootNode {
+  return normalize(parse(input, options));
 }
 
-export { default as renderMarkdown } from './markdown_renderer.js';
 export { default as parse } from './parser.js';
 export { default as tokenize } from './tokenizer.js';

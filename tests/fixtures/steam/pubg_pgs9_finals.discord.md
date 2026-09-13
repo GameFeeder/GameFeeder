@@ -21,31 +21,31 @@ Advantage Points | 10 | 6 | 5 | 4 | 3 | 2 | 1 | 1
 
 Tune in on Twitch and Kick to earn progress towards Drops! Full details here:
 
-[https://pubgesports.com/en/news/10906](https://pubgesports.com/en/news/10906)
+https://pubgesports.com/en/news/10906
 
-![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/5366e70e1dfe95873bf35e416cc388de8110ba7c.png)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/5366e70e1dfe95873bf35e416cc388de8110ba7c.png)
 
 **English Language Broadcast**
 
-[Twitch](https://www.twitch.tv/pubg_battlegrounds)  /  [Kick](https://kick.com/pubg_battlegrounds)  /  [YouTube](https://www.youtube.com/@PUBGEsports/streams)
+[__Twitch__](https://www.twitch.tv/pubg_battlegrounds)  /  [__Kick__](https://kick.com/pubg_battlegrounds)  /  [__YouTube__](https://www.youtube.com/@PUBGEsports/streams)
 
 August 20th - 23rd, 12:00 CEST / 3am PST / 6am PST
 
 **Turkish Language Broadcast**
 
-[Kick](https://kick.com/pubg_battlegroundstr)  /  [Twitch](https://www.twitch.tv/pubg_battlegroundstr)  /  [YouTube](https://www.youtube.com/@PUBG_TR/streams)
+[__Kick__](https://kick.com/pubg_battlegroundstr)  /  [__Twitch__](https://www.twitch.tv/pubg_battlegroundstr)  /  [__YouTube__](https://www.youtube.com/@PUBG_TR/streams)
 
 August 20th - 23rd, 13:00 IST
 
 **Russian Language Broadcast**
 
-[Twitch](https://www.twitch.tv/pubg_cis)  /  [YouTube](https://www.youtube.com/@PUBG_CIS/streams)
+[__Twitch__](https://www.twitch.tv/pubg_cis)  /  [__YouTube__](https://www.youtube.com/@PUBG_CIS/streams)
 
 August 20th - 23rd, 13:00 MSK
 
 **Portugese (Brazil) Broadcast**
 
-[Twitch](https://www.twitch.tv/pubg_br)  /  [Kick](https://kick.com/pubgesportsbra)  /  [YouTube](https://www.youtube.com/@PUBG_BRASIL/streams)
+[__Twitch__](https://www.twitch.tv/pubg_br)  /  [__Kick__](https://kick.com/pubgesportsbra)  /  [__YouTube__](https://www.youtube.com/@PUBG_BRASIL/streams)
 
 August 20th - 23rd, 7am BRT
 
@@ -65,6 +65,6 @@ August 20th - 23rd, 7am BRT
 
 [twitch.tv/droogtv](https://www.twitch.tv/droogtv)
 
-![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/99cf33e3ebe35d7b9524a797f305c3991cf76142.png)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/99cf33e3ebe35d7b9524a797f305c3991cf76142.png)
 
-![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/75b11994cb409f086d65e1b1af6ac208941f1742.png)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/27971017/75b11994cb409f086d65e1b1af6ac208941f1742.png)

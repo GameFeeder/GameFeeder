@@ -24,22 +24,29 @@ import CommandGroup from '../commands/command_group.js';
 import Game from '../game.js';
 import ConfigManager from '../managers/config_manager.js';
 import ProjectManager from '../managers/project_manager.js';
+import type { RootNode } from '../markup/ast.js';
+import { doc, paragraph, text } from '../markup/build.js';
+import { sanitizeUrl } from '../markup/escape.js';
+import { fitDocument } from '../markup/limit.js';
+import {
+  DISCORD_EMBED_AUTHOR,
+  DISCORD_EMBED_DESCRIPTION,
+  DISCORD_EMBED_FOOTER,
+  DISCORD_EMBED_TITLE,
+  DISCORD_EMBED_TOTAL,
+  DISCORD_MESSAGE,
+} from '../markup/limits.js';
+import extractCoverImage from '../markup/media.js';
+import renderDiscord from '../markup/renderers/discord.js';
 import Message from '../message.js';
 import Notification from '../notifications/notification.js';
 import Permissions from '../permissions.js';
 import User, { UserRole } from '../user.js';
 import { mapAsync } from '../util/array_util.js';
-import MDRegex from '../util/regex.js';
 import rollbar_client from '../util/rollbar_client.js';
 import { assertIsDefined, StrUtil, toKebabCase } from '../util/util.js';
+import type { BotMessage } from './bot.js';
 import { BotClient } from './bot.js';
-
-/** The maximum amount of characters allowed in the title of embeds. */
-const EMBED_TITLE_LIMIT = 256;
-/** The amount of characters needed to format an H1 text. */
-const HEADER_FORMAT_CHARS = 4 * 2;
-/** The maximum amount of characters allowed in the content of embeds. */
-const EMBED_CONTENT_LIMIT = 2048;
 
 export default class DiscordBot extends BotClient {
   private static standardBot: DiscordBot;
@@ -513,7 +520,7 @@ export default class DiscordBot extends BotClient {
     this.logger.info(`Stopped bot.`);
   }
 
-  public async sendMessage(channel: Channel, message: string | Notification): Promise<boolean> {
+  public async sendMessage(channel: Channel, message: BotMessage): Promise<boolean> {
     try {
       // Check if the bot can write to this channel
       const user = await this.getUser();
@@ -546,31 +553,25 @@ export default class DiscordBot extends BotClient {
       return false;
     }
 
-    if (typeof message === 'string') {
-      // Parse markdown
-      const messageText = DiscordBot.msgFromMarkdown(message, false);
+    // An embed is the richest form, so a notification prefers one.
+    if (message instanceof Notification && this.canEmbed(await this.getUser(), channel)) {
       try {
-        return await this.sendToChannel(channel, messageText);
-      } catch (error) {
-        this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
-        return false;
-      }
-    }
-    // Check if the bot can send embeds
-    if (this.canEmbed(await this.getUser(), channel)) {
-      // Parse markdown
-      const embed = this.embedFromNotification(message);
-
-      try {
-        return await this.sendToChannel(channel, '', embed);
+        return await this.sendToChannel(channel, '', this.embedFromNotification(message));
       } catch (error) {
         this.logger.error(`Failed to send message to channel ${channel.label}:\n${error}`);
         return false;
       }
     }
 
-    // Convert to text and send it
-    const messageText = DiscordBot.msgFromMarkdown(message.toMDString(2000), false);
+    // Outside an embed Discord shows the markup of a masked link rather than
+    // resolving it, so the URL has to be spelled out.
+    const document = DiscordBot.documentFrom(message);
+    const messageText = fitDocument(
+      document,
+      (tree) => renderDiscord(tree, { masked: false }),
+      DISCORD_MESSAGE,
+    );
+
     try {
       return await this.sendToChannel(channel, messageText);
     } catch (error) {
@@ -579,19 +580,32 @@ export default class DiscordBot extends BotClient {
     }
   }
 
+  /** Turns anything a bot can be asked to send into one tree. */
+  private static documentFrom(message: BotMessage): RootNode {
+    if (typeof message === 'string') {
+      // A bare string is literal text, so it is escaped rather than parsed.
+      return doc(paragraph(text(message)));
+    }
+    return message instanceof Notification ? message.toDocument() : message;
+  }
+
   public embedFromNotification(notification: Notification): APIEmbed {
     const embed: EmbedBuilder = new EmbedBuilder();
 
-    // Title
-    if (notification.title) {
-      // Respect title character limits
-      const limitedTitle = StrUtil.naturalLimit(
-        notification.title.text,
-        EMBED_TITLE_LIMIT - HEADER_FORMAT_CHARS,
-      );
+    // Title. An embed renders no markup in its title, author or footer, so
+    // those fields take plain text.
+    const title = notification.title
+      ? StrUtil.naturalLimit(notification.title.text, DISCORD_EMBED_TITLE)
+      : '';
+    const author = notification.author
+      ? StrUtil.naturalLimit(notification.author.text, DISCORD_EMBED_AUTHOR)
+      : '';
+    const footer = notification.footer
+      ? StrUtil.naturalLimit(notification.footer.text, DISCORD_EMBED_FOOTER)
+      : '';
 
-      const titleMD = DiscordBot.msgFromMarkdown(`#${limitedTitle}`, true).trim();
-      embed.setTitle(titleMD);
+    if (notification.title) {
+      embed.setTitle(title);
 
       if (notification.title.link) {
         embed.setURL(notification.title.link);
@@ -599,10 +613,8 @@ export default class DiscordBot extends BotClient {
     }
     // Author
     if (notification.author) {
-      const authorMD = DiscordBot.msgFromMarkdown(notification.author.text, true);
-
       embed.setAuthor({
-        name: authorMD,
+        name: author,
         iconURL: notification.author?.icon,
         url: notification.author?.link,
       });
@@ -611,23 +623,49 @@ export default class DiscordBot extends BotClient {
     if (notification.color) {
       embed.setColor(notification.color as HexColorString);
     }
-    // Description
-    if (notification.content) {
-      const descriptionMD = DiscordBot.msgFromMarkdown(notification.content, true);
-      // Respect the content character limit
-      embed.setDescription(StrUtil.naturalLimit(descriptionMD, EMBED_CONTENT_LIMIT));
+    // An image the post opens or closes with is shown in the embed's own image
+    // slot rather than as a link in the text; failing that, the first image in
+    // the post is shown there too, but also stays in the text. Only while that
+    // slot is free: an image the notification already carries would otherwise
+    // lose this one.
+    const cover =
+      notification.content && !notification.image
+        ? extractCoverImage(notification.content)
+        : undefined;
+    const coverUrl = cover?.image ? sanitizeUrl(cover.image.url) : '';
+    // An image whose URL cannot be used stays where it was, rather than being
+    // taken out of the text and then shown nowhere.
+    const content = coverUrl ? cover?.document : notification.content;
+
+    // Description. The embed carries the title itself, so the body leaves it out.
+    if (content && content.children.length > 0) {
+      // Discord rejects the whole embed on the sum of its fields, so what is
+      // left of that allowance bounds the body just as its own limit does.
+      const budget = Math.min(
+        DISCORD_EMBED_DESCRIPTION,
+        DISCORD_EMBED_TOTAL - title.length - author.length - footer.length,
+      );
+      const description = fitDocument(
+        content,
+        (tree) => renderDiscord(tree, { masked: true }),
+        budget,
+      );
+
+      if (description !== '') {
+        embed.setDescription(description);
+      }
     }
     // Footer
     if (notification.footer) {
-      const footerMD = DiscordBot.msgFromMarkdown(notification.footer.text, true);
       embed.setFooter({
-        text: footerMD,
+        text: footer,
         iconURL: notification.footer.icon,
       });
     }
     // Image
-    if (notification.image) {
-      embed.setImage(notification.image);
+    const image = notification.image || coverUrl;
+    if (image) {
+      embed.setImage(image);
     }
     // Thumbnail
     if (notification.thumbnail) {
@@ -640,86 +678,6 @@ export default class DiscordBot extends BotClient {
     }
 
     return embed.toJSON();
-  }
-
-  public static msgFromMarkdown(text: string, isEmbed: boolean): string {
-    if (!text) {
-      return '';
-    }
-    let markdown = text;
-
-    // Bold
-    markdown = MDRegex.replaceBold(markdown, (_, boldText) => {
-      return `**${boldText}**`;
-    });
-
-    // Italic
-    markdown = MDRegex.replaceItalic(markdown, (_, italicText) => {
-      return `_${italicText}_`;
-    });
-
-    // Links
-    markdown = MDRegex.replaceLinkImage(markdown, (_, label, linkUrl, imageUrl) => {
-      const newLabel = label || 'Link';
-
-      if (isEmbed) {
-        if (imageUrl) {
-          return `[${newLabel}](${linkUrl}) ([image](${imageUrl}))`;
-        }
-        return `[${newLabel}](${linkUrl})`;
-      }
-
-      return `${newLabel} (${linkUrl})`;
-    });
-
-    // Images
-    markdown = MDRegex.replaceImageLink(markdown, (_, label, imageUrl, linkUrl) => {
-      const newLabel = label || 'Image';
-
-      if (linkUrl) {
-        if (isEmbed) {
-          return `[${newLabel}](${imageUrl}) ([link](${linkUrl}))`;
-        }
-        return `${newLabel} (${linkUrl})`;
-      }
-
-      if (isEmbed) {
-        return `[${newLabel}](${imageUrl})`;
-      }
-
-      return `${newLabel} (${imageUrl})`;
-    });
-
-    // Lists
-    markdown = MDRegex.replaceList(markdown, (_, listElement) => {
-      return `- ${listElement}`;
-    });
-
-    // Blockquotes
-    markdown = MDRegex.replaceQuote(markdown, (_, quoteText) => {
-      return `> ${quoteText}`;
-    });
-
-    // Headers
-    markdown = MDRegex.replaceHeader(markdown, (_, headerText, level) => {
-      // H1-3
-      if (level <= 3) {
-        return `\n\n__**${headerText}**__\n`;
-      }
-
-      // H4-6
-      return `\n\n**${headerText}**\n`;
-    });
-
-    // Separators
-    markdown = MDRegex.replaceSeparator(markdown, () => {
-      return `\n---\n`;
-    });
-
-    // Compress multiple linebreaks
-    markdown = markdown.replace(/\s*\n\s*\n\s*/g, '\n\n');
-
-    return markdown;
   }
 
   private async sendToChannel(channel: Channel, text: string, embed?: APIEmbed): Promise<boolean> {

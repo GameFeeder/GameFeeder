@@ -1,6 +1,6 @@
 # TERRARIA: DESIGN WORKS
 
-[![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/a976cf93cd75c042c57fa321a461b61cb024aa44.jpg)](https://lostincult.co.uk/terraria)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/a976cf93cd75c042c57fa321a461b61cb024aa44.jpg) ([Link](https://lostincult.co.uk/terraria))
 
 This premium book will chart the design and development of Terraria from its inception back in 2011 through to today, written by Christian Donlan.
 
@@ -14,11 +14,11 @@ Pre-order now via the link below or by clicking the banner above!
 
 [Terraria: Design Works — Lost In Cult](https://lostincult.co.uk/terraria)
 
-![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/0fafbfc560bf0a25fbfca5b645c7c5e3f66ac51b.png)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/0fafbfc560bf0a25fbfca5b645c7c5e3f66ac51b.png)
 
 # DELUXE EDITION
 
-[![Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/b4bb87d92169d7a01a4a02156af3cc3f2b7612a0.jpg)](https://lostincult.co.uk/terraria)
+[Image](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3949769/b4bb87d92169d7a01a4a02156af3cc3f2b7612a0.jpg) ([Link](https://lostincult.co.uk/terraria))
 
 Dig deeper into the world of Terraria with our Deluxe edition of Terraria: Design Works!
 

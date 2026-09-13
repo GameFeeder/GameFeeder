@@ -1,6 +1,8 @@
 import RSSParser from 'rss-parser';
-import TurndownService from 'turndown';
 import Logger from '../logger.js';
+import type { HtmlParseOptions } from '../markup/parsers/html.js';
+import parseHtml from '../markup/parsers/html.js';
+import renderPlain from '../markup/renderers/plain.js';
 import PreProcessor from '../processors/pre_processor.js';
 import { sortLimitEnd } from '../util/array_util.js';
 import rollbar_client from '../util/rollbar_client.js';
@@ -17,6 +19,7 @@ export default class RSS {
   public async getFeedItems(
     url: string,
     preProcessors: PreProcessor[],
+    htmlOptions: HtmlParseOptions = {},
     date?: Date,
     limit?: number,
   ): Promise<RSSItem[]> {
@@ -30,23 +33,22 @@ export default class RSS {
     try {
       const feed = await this.parser.parseURL(url);
 
-      const converter = new TurndownService();
       for (const item of feed.items ?? []) {
         const creator = item.creator || '';
         const link = item.link || '';
-        let content = item.content || '';
+        let html = item.content || '';
         const postDate = item.isoDate ? new Date(item.isoDate) : new Date();
 
         // Apply pre-processing
         for (const processor of preProcessors) {
-          content = processor.process(content);
+          html = processor.process(html);
         }
 
-        // Convert to markdown
-        const title = item.title ? converter.turndown(item.title) : '';
-        content = converter.turndown(content);
+        const content = parseHtml(html, htmlOptions);
+        // A title renders no markup wherever it is shown.
+        const title = item.title ? renderPlain(parseHtml(item.title)) : '';
 
-        if (title && content) {
+        if (title && content.children.length > 0) {
           const rssItem = new RSSItem(title, creator, link, content, postDate, {
             link: feed.link,
             name: feed.title,

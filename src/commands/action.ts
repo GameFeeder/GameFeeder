@@ -26,7 +26,7 @@ export default class Action extends Command {
       // The label is independant of the channel
       () => label,
       // The help string is the label and the description
-      (channel, prefix) => `\`${prefix}${label}\` - ${description}`,
+      (channel, prefix) => `${prefix}${label} - ${description}`,
       // The trigger is independant of the channel
       () => trigger,
       action,
