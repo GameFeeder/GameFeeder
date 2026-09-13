@@ -12,7 +12,6 @@ import {
   orderedList,
   paragraph,
   quote,
-  text,
 } from 'src/markup/build.js';
 
 describe('Markup builders', () => {

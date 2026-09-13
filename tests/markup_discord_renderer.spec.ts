@@ -20,7 +20,6 @@ import {
   spoiler,
   strike,
   table,
-  text,
   underline,
   video,
 } from 'src/markup/build.js';
