@@ -18,12 +18,12 @@ describe('Steam BBCode output', () => {
   describe('character styles', () => {
     test('should render bold', () => {
       expect(discord('[b]Text[/b]')).toBe('**Text**');
-      expect(telegram('[b]Text[/b]')).toBe('*Text*');
+      expect(telegram('[b]Text[/b]')).toBe('<b>Text</b>');
     });
 
     test('should render italic', () => {
       expect(discord('[i]Text[/i]')).toBe('*Text*');
-      expect(telegram('[i]Text[/i]')).toBe('_Text_');
+      expect(telegram('[i]Text[/i]')).toBe('<i>Text</i>');
     });
 
     test.each([
@@ -35,12 +35,11 @@ describe('Steam BBCode output', () => {
     });
 
     test.each([
-      '[u]Text[/u]',
-      '[strike]Text[/strike]',
-      '[spoiler]Text[/spoiler]',
-    ])('should fall back to plain text for %s on Telegram', (input) => {
-      // The legacy parse mode has no representation for any of these.
-      expect(telegram(input)).toBe('Text');
+      ['[u]Text[/u]', '<u>Text</u>'],
+      ['[strike]Text[/strike]', '<s>Text</s>'],
+      ['[spoiler]Text[/spoiler]', '<tg-spoiler>Text</tg-spoiler>'],
+    ])('should render %s on Telegram', (input, expected) => {
+      expect(telegram(input)).toBe(expected);
     });
 
     test('should move whitespace outside the emphasis markers', () => {
@@ -75,7 +74,7 @@ describe('Steam BBCode output', () => {
     });
 
     test('should render a heading as bold text on Telegram', () => {
-      expect(telegram('[h1]Text[/h1]')).toBe('*Text*');
+      expect(telegram('[h1]Text[/h1]')).toBe('<b>Text</b>');
     });
 
     test('should not repeat bold inside a heading that is already bold', () => {
@@ -224,9 +223,12 @@ describe('Steam BBCode output', () => {
       expect(discord('2 * 3 and half_life')).toBe('2 \\* 3 and half\\_life');
     });
 
-    test('should leave no unpaired marker for Telegram', () => {
-      // An unpaired marker is a hard API error in the legacy parse mode.
-      expect(telegram('2 * 3 and half_life and `code')).not.toMatch(/[*_`]/);
+    test('should keep post text as written on Telegram', () => {
+      expect(telegram('2 * 3 and half_life and `code')).toBe('2 * 3 and half_life and `code');
+    });
+
+    test('should stop post text from becoming HTML on Telegram', () => {
+      expect(telegram('a <b> & c')).toBe('a &lt;b&gt; &amp; c');
     });
 
     test('should keep bracketed prose out of link syntax', () => {
