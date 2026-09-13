@@ -393,11 +393,14 @@ const notifyGameSubsCmd = new TwoPartCommand(
     if (allGames.findIndex((game) => game.hasAlias(alias)) < 0) {
       // We didn't find the specified game
       await message.reply(
-        `I didn't find a game with the alias '${alias}'.\n` +
-          `Use \`${commands.tryFindCmdLabel(
-            gamesCmd,
-            message.channel,
-          )}\` to view a list of all available games.`,
+        doc(
+          paragraph(`I didn't find a game with the alias '${alias}'.`),
+          paragraph(
+            'Use ',
+            cmdLabel(gamesCmd, message.channel),
+            ' to view a list of all available games.',
+          ),
+        ),
       );
       return;
     }
@@ -927,10 +930,14 @@ const commands: CommandGroup = new CommandGroup(
     const { group } = matchGroups(match);
     await message.channel.bot.sendMessage(
       message.channel,
-      `I don't know a command named '${group}'.\nTry the \`${commands.tryFindCmdLabel(
-        helpCmd,
-        message.channel,
-      )}\` command to see a list of all commands available.`,
+      doc(
+        paragraph(`I don't know a command named '${group}'.`),
+        paragraph(
+          'Try the ',
+          cmdLabel(helpCmd, message.channel),
+          ' command to see a list of all commands available.',
+        ),
+      ),
     );
   },
   [
