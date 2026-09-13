@@ -1,7 +1,7 @@
 import {
   escapeDiscord,
   escapeDiscordLineStart,
-  sanitizeTelegramMarkdown,
+  escapeTelegramHtml,
   sanitizeUrl,
 } from 'src/markup/escape.js';
 
@@ -79,26 +79,28 @@ describe('Markup escaping', () => {
     });
   });
 
-  describe('sanitizeTelegramMarkdown', () => {
+  describe('escapeTelegramHtml', () => {
     test('should leave ordinary text alone', () => {
-      expect(sanitizeTelegramMarkdown('Patch 7.39 is live!')).toBe('Patch 7.39 is live!');
+      expect(escapeTelegramHtml('Patch 7.39 is live! 2 * 3 [half_life] `x`')).toBe(
+        'Patch 7.39 is live! 2 * 3 [half_life] `x`',
+      );
     });
 
-    test.each(['*', '_', '`', '[', ']'])('should replace the marker %s', (char) => {
-      expect(sanitizeTelegramMarkdown(char)).not.toContain(char);
+    test.each([
+      ['&', '&amp;'],
+      ['<', '&lt;'],
+      ['>', '&gt;'],
+    ])('should escape %s', (char, entity) => {
+      expect(escapeTelegramHtml(char)).toBe(entity);
     });
 
-    test('should leave no unpaired marker behind', () => {
-      // An unpaired marker is a hard API error in the legacy parse mode.
-      const result = sanitizeTelegramMarkdown('2 * 3 and half_life and `code');
-
-      expect(result).not.toMatch(/[*_`[\]]/);
+    test('should leave quotes alone, which only matter inside an attribute', () => {
+      expect(escapeTelegramHtml('"Yatoro"')).toBe('"Yatoro"');
     });
 
-    test('should keep the text the same length', () => {
-      const input = 'a*b_c`d[e]f';
-
-      expect(sanitizeTelegramMarkdown(input)).toHaveLength(input.length);
+    test('should escape an existing entity rather than pass it through', () => {
+      // The source text is literal, so `&lt;` in it is meant to be read as such.
+      expect(escapeTelegramHtml('&lt;')).toBe('&amp;lt;');
     });
   });
 

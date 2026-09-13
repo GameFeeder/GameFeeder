@@ -276,20 +276,23 @@ export default function limitDocument(
  * The budget {@link limitDocument} works against counts text, which is not what
  * a messenger counts: Discord counts the markers and URLs too, Telegram counts
  * neither. Rather than keep a cost model per target, the budget is searched for
- * and every candidate is measured as the exact string that would be sent.
+ * and every candidate is rendered to the exact string that would be sent, then
+ * measured the way the target measures it.
  *
  * @param root - The tree to render.
  * @param render - How to render it for the target.
  * @param limit - The most characters the target accepts.
+ * @param measure - How the target counts a rendered string against `limit`.
  */
 export function fitDocument(
   root: RootNode,
   render: (tree: RootNode) => string,
   limit: number,
+  measure: (rendered: string) => number = (rendered) => rendered.length,
 ): string {
   const full = render(root);
 
-  if (full.length <= limit) {
+  if (measure(full) <= limit) {
     return full;
   }
 
@@ -301,7 +304,7 @@ export function fitDocument(
     const budget = Math.floor((low + high) / 2);
     const candidate = render(limitDocument(root, budget));
 
-    if (candidate.length <= limit) {
+    if (measure(candidate) <= limit) {
       best = candidate;
       low = budget + 1;
     } else {

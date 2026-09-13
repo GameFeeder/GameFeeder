@@ -51,34 +51,27 @@ export function escapeDiscordLineStart(line: string): string {
   return line.replace(DISCORD_LINE_START, (_match, indent, marker) => `${indent}\\${marker}`);
 }
 
-/** Telegram's legacy `Markdown` parse mode has no escape syntax, so a marker
- * that cannot be paired is a hard API error rather than a rendering glitch.
- * The only way to make arbitrary text safe is to replace the markers with
- * characters that look like them but carry no meaning.
- *
- * This table, and the function below, are the entire cost of staying on the
- * legacy parse mode: under `HTML` or `MarkdownV2` both collapse into ordinary
- * escaping and the substitutions go away.
+/** The entities Telegram's `HTML` parse mode understands, for the characters
+ * that would otherwise be read as markup.
  */
-const TELEGRAM_LOOKALIKES: Record<string, string> = {
-  // U+2217 ASTERISK OPERATOR
-  '*': '\u2217',
-  // U+02CD MODIFIER LETTER LOW MACRON
-  _: '\u02cd',
-  // U+02BC MODIFIER LETTER APOSTROPHE
-  '`': '\u02bc',
-  '[': '(',
-  ']': ')',
+const TELEGRAM_HTML_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
 };
 
-const TELEGRAM_SPECIAL = /[*_`[\]]/g;
+const TELEGRAM_HTML_SPECIAL = /[&<>]/g;
 
-/** Makes text safe for Telegram's legacy `Markdown` parse mode.
+/** Escapes text for Telegram's `HTML` parse mode.
+ *
+ * A stray `<` or `&` is a hard API error there rather than a rendering glitch.
+ * Quotes are left alone, as they only mean anything inside an attribute: a URL
+ * from {@link sanitizeUrl} never contains one.
  *
  * @param value - The literal text to show.
  */
-export function sanitizeTelegramMarkdown(value: string): string {
-  return value.replace(TELEGRAM_SPECIAL, (char) => TELEGRAM_LOOKALIKES[char] ?? char);
+export function escapeTelegramHtml(value: string): string {
+  return value.replace(TELEGRAM_HTML_SPECIAL, (char) => TELEGRAM_HTML_ENTITIES[char] ?? char);
 }
 
 /** Makes a URL safe to put into a link.

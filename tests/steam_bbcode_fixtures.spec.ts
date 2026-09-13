@@ -5,6 +5,7 @@ import renderTelegram from 'src/markup/renderers/telegram.js';
 import parseBBCode from 'src/steam/bbcode/index.js';
 import type { SteamNewsItemResponse } from 'src/steam/steam_app_news.js';
 import { SteamNewsItem } from 'src/steam/steam_app_news.js';
+import { telegramHtmlProblem } from './telegram_html.js';
 
 const FIXTURE_DIR = path.resolve('tests/fixtures/steam');
 
@@ -24,13 +25,28 @@ function loadPost(name: string): SteamNewsItemResponse {
   ) as SteamNewsItemResponse;
 }
 
-function loadExpected(name: string, target: string): string {
-  return fs.readFileSync(path.join(FIXTURE_DIR, `${name}.${target}.md`), 'utf8').replace(/\n$/, '');
-}
+/** How each target's output is recorded and picked apart. */
+const TARGETS = {
+  discord: {
+    extension: 'md',
+    /** Strips the parts of the output where brackets are legitimate. */
+    withoutLinksAndCode: (markdown: string) =>
+      markdown.replace(/```[\s\S]*?```/g, '').replace(/\[([^\]]*)\]\(/g, '('),
+    urls: (markdown: string) => [...markdown.matchAll(/\]\(([^)]*)\)/g)].map(([, url]) => url),
+  },
+  telegram: {
+    extension: 'html',
+    /** Strips the parts of the output where brackets are legitimate. */
+    withoutLinksAndCode: (html: string) =>
+      html.replace(/<pre>[\s\S]*?<\/pre>/g, '').replace(/ href="[^"]*"/g, ''),
+    urls: (html: string) => [...html.matchAll(/ href="([^"]*)"/g)].map(([, url]) => url),
+  },
+} as const;
 
-/** Strips the parts of the output where brackets are legitimate. */
-function withoutLinksAndCode(markdown: string): string {
-  return markdown.replace(/```[\s\S]*?```/g, '').replace(/\[([^\]]*)\]\(/g, '(');
+function loadExpected(name: string, target: keyof typeof TARGETS): string {
+  const file = `${name}.${target}.${TARGETS[target].extension}`;
+
+  return fs.readFileSync(path.join(FIXTURE_DIR, file), 'utf8').replace(/\n$/, '');
 }
 
 /** Whether every emphasis marker Discord reads has a partner. */
@@ -39,21 +55,6 @@ function hasBalancedDiscordMarkers(rendered: string): boolean {
 
   return (['\\*\\*', '__', '~~', '\\|\\|'] as const).every(
     (marker) => (bare.match(new RegExp(marker, 'g')) ?? []).length % 2 === 0,
-  );
-}
-
-/** Whether every entity marker Telegram reads has a partner.
- *
- * An unpaired one is a hard API error in the legacy parse mode, not merely a
- * rendering glitch, so this is the invariant that keeps messages deliverable.
- */
-function hasBalancedTelegramMarkers(rendered: string): boolean {
-  const outsideCode = rendered.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
-  const outsideLinks = outsideCode.replace(/\[[^\]]*\]\([^)]*\)/g, '');
-
-  return (
-    (outsideLinks.match(/\*/g) ?? []).length % 2 === 0 &&
-    (outsideLinks.match(/_/g) ?? []).length % 2 === 0
   );
 }
 
@@ -76,6 +77,7 @@ describe('Steam BBCode against real posts', () => {
 
     describe.each(['discord', 'telegram'] as const)('%s', (target) => {
       const rendered = outputs[target];
+      const { withoutLinksAndCode, urls } = TARGETS[target];
 
       test('should match the recorded output', () => {
         expect(rendered).toEqual(loadExpected(name, target));
@@ -106,7 +108,7 @@ describe('Steam BBCode against real posts', () => {
       });
 
       test('should put no raw whitespace inside a URL', () => {
-        for (const [, url] of rendered.matchAll(/\]\(([^)]*)\)/g)) {
+        for (const url of urls(rendered)) {
           expect(url).not.toMatch(/\s/);
         }
       });
@@ -120,8 +122,9 @@ describe('Steam BBCode against real posts', () => {
       expect(hasBalancedDiscordMarkers(outputs.discord)).toBe(true);
     });
 
-    test('should leave the Telegram markers balanced', () => {
-      expect(hasBalancedTelegramMarkers(outputs.telegram)).toBe(true);
+    test('should be HTML that Telegram accepts', () => {
+      // Malformed HTML is a hard API error, not merely a rendering glitch.
+      expect(telegramHtmlProblem(outputs.telegram)).toBeUndefined();
     });
 
     test('should render no heading syntax for Telegram, which has none', () => {

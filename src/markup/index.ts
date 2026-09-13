@@ -20,4 +20,4 @@ export { default as renderDiscord } from './renderers/discord.js';
 export type { PlainRenderOptions } from './renderers/plain.js';
 export { default as renderPlain } from './renderers/plain.js';
 export type { TelegramRenderOptions } from './renderers/telegram.js';
-export { default as renderTelegram } from './renderers/telegram.js';
+export { default as renderTelegram, telegramTextLength } from './renderers/telegram.js';

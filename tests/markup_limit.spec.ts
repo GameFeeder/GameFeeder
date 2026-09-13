@@ -18,8 +18,9 @@ import {
 } from 'src/markup/build.js';
 import limitDocument, { fitDocument } from 'src/markup/limit.js';
 import renderDiscord from 'src/markup/renderers/discord.js';
-import renderTelegram from 'src/markup/renderers/telegram.js';
+import renderTelegram, { telegramTextLength } from 'src/markup/renderers/telegram.js';
 import parseBBCode from 'src/steam/bbcode/index.js';
+import { telegramHtmlProblem } from './telegram_html.js';
 
 const FIXTURE_DIR = path.resolve('tests/fixtures/steam');
 
@@ -41,17 +42,6 @@ function hasBalancedDiscordMarkers(rendered: string): boolean {
 
   return (['\\*\\*', '__', '~~', '\\|\\|'] as const).every(
     (marker) => (bare.match(new RegExp(marker, 'g')) ?? []).length % 2 === 0,
-  );
-}
-
-/** Whether every entity marker Telegram reads has a partner. */
-function hasBalancedTelegramMarkers(rendered: string): boolean {
-  const outsideCode = rendered.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
-  const outsideLinks = outsideCode.replace(/\[[^\]]*\]\([^)]*\)/g, '');
-
-  return (
-    (outsideLinks.match(/\*/g) ?? []).length % 2 === 0 &&
-    (outsideLinks.match(/_/g) ?? []).length % 2 === 0
   );
 }
 
@@ -212,6 +202,15 @@ describe('Markup truncation', () => {
 
       expect(fitDocument(tree, render, 5).length).toBeLessThanOrEqual(5);
     });
+
+    test('should measure the render the way the target counts it', () => {
+      // Telegram counts neither tags nor URLs, so a long link costs its label.
+      const tree = doc(paragraph(link('https://example.com/a/very/long/path', 'label')));
+
+      expect(fitDocument(tree, renderTelegram, 10, telegramTextLength)).toBe(
+        '<a href="https://example.com/a/very/long/path">label</a>',
+      );
+    });
   });
 
   describe.each(FIXTURES)('against the %s post', (name) => {
@@ -257,18 +256,19 @@ describe('Markup truncation', () => {
     });
 
     test.each(budgets)('should leave Telegram markup intact at %i', (budget) => {
-      // An unpaired marker is a rejected message, not a cosmetic glitch.
+      // Malformed HTML is a rejected message, not a cosmetic glitch.
       const rendered = renderTelegram(limitDocument(tree, budget));
 
-      expect(hasBalancedTelegramMarkers(rendered)).toBe(true);
-      expect(hasWholeLinks(rendered)).toBe(true);
+      expect(telegramHtmlProblem(rendered)).toBeUndefined();
     });
 
     test.each([2000, 4096])('should fit a hard limit of %i exactly', (limit) => {
       expect(
         fitDocument(tree, (t) => renderDiscord(t, { masked: true }), limit).length,
       ).toBeLessThanOrEqual(limit);
-      expect(fitDocument(tree, renderTelegram, limit).length).toBeLessThanOrEqual(limit);
+      expect(
+        telegramTextLength(fitDocument(tree, renderTelegram, limit, telegramTextLength)),
+      ).toBeLessThanOrEqual(limit);
     });
   });
 });

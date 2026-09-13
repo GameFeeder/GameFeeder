@@ -65,9 +65,10 @@ export function flatten(text: string): string {
  * that the markers always sit against the text they apply to.
  *
  * @param rendered - The already rendered fragment.
- * @param marker - The marker to put on each side.
+ * @param open - The marker to put before it.
+ * @param close - The marker to put after it, if not the same as `open`.
  */
-export function wrap(rendered: string, marker: string): string {
+export function wrap(rendered: string, open: string, close = open): string {
   const core = rendered.trim();
 
   if (core === '') {
@@ -76,7 +77,7 @@ export function wrap(rendered: string, marker: string): string {
   const lead = /^\s/.test(rendered) ? ' ' : '';
   const trail = /\s$/.test(rendered) ? ' ' : '';
 
-  return `${lead}${marker}${core}${marker}${trail}`;
+  return `${lead}${open}${core}${close}${trail}`;
 }
 
 /** One run of a paragraph: either media, or the text around it. */

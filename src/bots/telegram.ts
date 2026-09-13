@@ -8,7 +8,7 @@ import type { RootNode } from '../markup/ast.js';
 import { doc, paragraph, text } from '../markup/build.js';
 import { fitDocument } from '../markup/limit.js';
 import { TELEGRAM_MESSAGE } from '../markup/limits.js';
-import renderTelegram from '../markup/renderers/telegram.js';
+import renderTelegram, { telegramTextLength } from '../markup/renderers/telegram.js';
 import Message from '../message.js';
 import Notification from '../notifications/notification.js';
 import Permissions from '../permissions.js';
@@ -474,10 +474,10 @@ export default class TelegramBot extends BotClient {
 
     // Set up the message
     const document = TelegramBot.documentFrom(messageText);
-    const text = fitDocument(document, renderTelegram, TELEGRAM_MESSAGE);
+    const text = fitDocument(document, renderTelegram, TELEGRAM_MESSAGE, telegramTextLength);
     // Snakecase used by Telegram API
     // TODO: Add link_preview_options
-    const options = { parse_mode: 'Markdown' } as const;
+    const options = { parse_mode: 'HTML' } as const;
     // Send the message
     try {
       await this.bot.telegram.sendMessage(channel.id, text, options);

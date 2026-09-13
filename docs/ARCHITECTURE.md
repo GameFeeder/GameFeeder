@@ -96,7 +96,8 @@ string.
   used but left in place
 - **parsers/html**: HTML (the RSS feeds) → tree, driven by a tag table
 - **renderers/discord**, **renderers/telegram**, **renderers/plain**: tree →
-  each messenger's own flavor
+  each messenger's own flavor (Discord markdown, Telegram's `HTML` parse mode,
+  plain text)
 
 `steam/bbcode/` is the third parser, for the BBCode the Steam Web API serves.
 
