@@ -55,6 +55,16 @@ function hasBalancedTelegramMarkers(rendered: string): boolean {
   );
 }
 
+/** The text of a shortened document, without the mark that says it was cut.
+ *
+ * Truncation closes any emphasis it cuts through, so the rendered output of a
+ * shortened post is not the start of the full render. Its text is, and that is
+ * where the "only cut from the end" property can be checked.
+ */
+function shortenedText(tree: Parameters<typeof textContent>[0]): string {
+  return textContent(tree).replace(/…$/, '').trimEnd();
+}
+
 /** Whether a link is whole, i.e. never cut halfway through. */
 function hasWholeLinks(rendered: string): boolean {
   const withoutLinks = rendered.replace(/\[[^\]]*\]\([^)\s]*\)/g, '');
@@ -160,6 +170,16 @@ describe('Markup truncation', () => {
 
       expect(limitDocument(tree, 6)).toEqual(doc(paragraph('aaaa…')));
     });
+
+    test('should stop at a block that does not fit, not skip past it', () => {
+      // The small paragraph after the code block would fit on its own, but
+      // keeping it would silently drop the code block from the middle.
+      const tree = doc(paragraph('lead in'), code('x'.repeat(100)), paragraph('tail'));
+      const result = limitDocument(tree, 30);
+
+      expect(textContent(result)).not.toContain('tail');
+      expect(textContent(tree).startsWith(shortenedText(result))).toBe(true);
+    });
   });
 
   describe('fitDocument', () => {
@@ -201,6 +221,21 @@ describe('Markup truncation', () => {
 
     test.each(budgets)('should stay within a budget of %i', (budget) => {
       expect(textContent(limitDocument(tree, budget)).length).toBeLessThanOrEqual(budget);
+    });
+
+    test('should only ever cut from the end', () => {
+      // Whatever is kept must be the start of the post: nothing reordered,
+      // reworded or skipped in the middle. Every seventh budget crosses every
+      // kind of boundary a real post has.
+      const full = textContent(tree);
+      const cutsThatBreakIt: number[] = [];
+
+      for (let budget = 0; budget <= full.length; budget += 7) {
+        if (!full.startsWith(shortenedText(limitDocument(tree, budget)))) {
+          cutsThatBreakIt.push(budget);
+        }
+      }
+      expect(cutsThatBreakIt).toEqual([]);
     });
 
     test.each(budgets)('should say that it was shortened at %i', (budget) => {
