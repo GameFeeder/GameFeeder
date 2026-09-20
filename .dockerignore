@@ -1,0 +1,39 @@
+# Build output. Critical: a stale dist/tsconfig.tsbuildinfo makes `tsc --build`
+# a no-op, so the image would ship pre-built host output instead of compiling.
+dist
+*.tsbuildinfo
+
+# Installed inside the image by `npm ci`
+node_modules
+
+# Secrets and runtime state. config/games is re-included because the production
+# stage copies it; everything else in config/ is mounted at run time.
+data
+config/*
+!config/games
+
+# Version control
+.git
+.gitignore
+
+# CI, tooling and editor config
+.github
+.husky
+.vscode
+.claude
+.editorconfig
+.nvmrc
+biome.json
+codecov.yml
+jest.config.js
+register.mjs
+
+# Docker's own files
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Docs
+docs
+*.md
+LICENSE
