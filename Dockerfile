@@ -23,4 +23,4 @@ COPY --from=production-dependencies /app/node_modules ./node_modules
 COPY ./config/games ./config/games
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
-CMD ["node", "--loader", "commonjs-extension-resolution-loader", "/app/dist/src/_main.js"]
+CMD ["node", "/app/dist/src/_main.js"]
