@@ -12,6 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-26.04
+    env:
+      IMAGE: ghcr.io/gamefeeder/gamefeeder/gamefeeder
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Determine release version
@@ -23,11 +25,13 @@ jobs:
         run: docker build .
           --target production
           --build-arg VERSION=${{ steps.version.outputs.version }}
-          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:${{ steps.version.outputs.version }}
-          --tag docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest
-      - name: Login to Docker
-        run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          --tag "${IMAGE}:${{ steps.version.outputs.version }}"
+          --tag "${IMAGE}:latest"
+      - name: Login to the GitHub Container Registry
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$REGISTRY_TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Publish the Docker image:version
-        run: docker push docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:${{ steps.version.outputs.version }}
+        run: docker push "${IMAGE}:${{ steps.version.outputs.version }}"
       - name: Publish the Docker image:latest
-        run: docker push docker.pkg.github.com/gamefeeder/gamefeeder/gamefeeder:latest
+        run: docker push "${IMAGE}:latest"
