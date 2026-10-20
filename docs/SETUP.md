@@ -100,7 +100,7 @@ To run the bot locally (for example to test your changes), follow these steps:
 
 - make sure you are in the root directory of the project
 - make sure you have set up the configuration files as described above
-- `docker-compose up --build -d` to build the image and run the container in the background
+- `NODE_VERSION=$(cat .nvmrc) docker-compose up --build -d` to build the image (the Node version comes from `.nvmrc`) and run the container in the background
 - `docker-compose ps` to check that it's actually up and running
 - `docker-compose logs -f bot` to observe the log output of the bot
 

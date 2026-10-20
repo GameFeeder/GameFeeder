@@ -3,6 +3,8 @@ services:
     build:
       context: .
       target: production
+      args:
+        NODE_VERSION: ${NODE_VERSION:?set NODE_VERSION, e.g. NODE_VERSION=$(cat .nvmrc)}
     volumes:
       - ./config:/app/config
       - ./data:/app/data
