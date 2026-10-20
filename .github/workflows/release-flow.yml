@@ -24,6 +24,7 @@ jobs:
       - name: Build and tag the Docker image
         run: docker build .
           --target production
+          --build-arg NODE_VERSION=$(cat .nvmrc)
           --build-arg VERSION=${{ steps.version.outputs.version }}
           --tag "${IMAGE}:${{ steps.version.outputs.version }}"
           --tag "${IMAGE}:latest"

@@ -1,4 +1,4 @@
-ARG NODE_VERSION=24.16.0
+ARG NODE_VERSION
 
 FROM node:${NODE_VERSION}-alpine AS production-dependencies
 WORKDIR /app
